@@ -1,0 +1,62 @@
+name: spark-wf
+on:
+  pull_request:
+    branches:
+    - "*"
+    paths:
+      - "spark/**"
+      - ".github/workflows/spark-**"
+      - ".github/workflows/docker.yaml"
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+    - "main"
+    paths:
+      - "spark/**"
+      - ".github/workflows/spark-**"
+      - ".github/workflows/docker.yaml"
+
+env:
+  POETRY_VERSION: "1.8.3"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./spark
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Setup poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | POETRY_VERSION=${{ env.POETRY_VERSION }} python -
+          poetry lock
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Ruff Format
+        run: |
+          poetry run ruff check
+      - name: Run tests
+        run: |
+          poetry run pytest -v
+  build-spark-image:
+    needs: [test]
+    if: github.event_name != 'pull_request'
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
+    with:
+      push: ${{ github.event_name != 'pull_request' }}
+      context: ./spark
+      image: radicalbit-spark-py
+      tag: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+      dockerhub_shortdesc: "Radicalbit AI Monitoring - Apache Spark jobs"
+    secrets:
+      USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+      PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+      ORGANIZATION: ${{ secrets.DOCKER_HUB_ORG }}

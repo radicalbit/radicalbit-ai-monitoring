@@ -1,0 +1,12 @@
+name: "Lint PR"
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+  pull_request_target:
+    types: [opened, edited, reopened, synchronize]
+
+jobs:
+  lint:
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/semantic-pull-requests.yaml@v1
+    secrets:
+      GIT_HUB_PAT: ${{ secrets.GIT_HUB_PAT }}

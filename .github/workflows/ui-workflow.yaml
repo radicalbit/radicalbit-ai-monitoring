@@ -1,0 +1,30 @@
+name: ui-wf
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+    - "main"
+    paths:
+      - "ui/**"
+      - ".github/workflows/ui-**"
+  pull_request:
+    branches:
+    - "*"
+    paths:
+      - "ui/**"
+      - ".github/workflows/ui-**"
+jobs:
+  build-fe:
+    if: github.event_name != 'pull_request'
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
+    with:
+      push: ${{ github.event_name != 'pull_request' }}
+      context: ./ui
+      image: radicalbit-ai-monitoring-ui
+      tag: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+      dockerhub_shortdesc: "Radicalbit AI Monitoring - frontend UI"
+    secrets:
+      USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+      PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+      ORGANIZATION: ${{ secrets.DOCKER_HUB_ORG }}
