@@ -13,7 +13,7 @@ const VERSION = '0.8.0';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Radicalbit AI Monitoring',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'Simpler, Faster, Better MLOps',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -25,7 +25,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'Radicalbit', // Usually your GitHub org/user name.
-  projectName: 'github-pages-test', // Usually your repo name.
+  projectName: 'radicalbit-ai-monitoring', // Usually your repo name.
   deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
@@ -91,7 +91,7 @@ const config = {
             dropdownActiveClassDisabled: true,
           },
           {
-            href: 'https://github.com/robbenti/github-pages-test',
+            href: 'https://github.com/radicalbit/radicalbit-ai-monitoring',
             label: 'GitHub',
             position: 'right',
           },
