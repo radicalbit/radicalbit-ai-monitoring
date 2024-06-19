@@ -15,6 +15,6 @@ jobs:
     steps:
       - uses: googleapis/release-please-action@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GIT_HUB_PAT }}
           config-file: .github/release-config.json
           manifest-file: .github/release-manifest.json
