@@ -42,7 +42,7 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build
+          path: ./docs/build
 
   deploy-doc:
     name: Deploy to GitHub Pages
