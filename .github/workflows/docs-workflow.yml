@@ -1,4 +1,4 @@
-name: Test deployment
+name: Docusaurus Workflow
 
 on:
   push:
@@ -17,7 +17,7 @@ on:
       - ".github/workflows/docs-**"
 
 jobs:
-  build:
+  build-doc:
     name: Build Docusaurus
     runs-on: ubuntu-22.04
     defaults:
@@ -31,6 +31,7 @@ jobs:
         with:
           node-version: 18
           cache: yarn
+          cache-dependency-path: docs/yarn.lock
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -43,9 +44,9 @@ jobs:
         with:
           path: build
 
-  deploy:
+  deploy-doc:
     name: Deploy to GitHub Pages
-    needs: [build]
+    needs: [build-doc]
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-22.04
     defaults:
