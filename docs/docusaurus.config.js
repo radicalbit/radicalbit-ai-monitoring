@@ -6,6 +6,10 @@
 
 import {themes as prismThemes} from 'prism-react-renderer';
 
+// x-release-please-start-version
+const VERSION = '0.8.0';
+// x-release-please-end
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Radicalbit AI Monitoring',
@@ -46,7 +50,7 @@ const config = {
           lastVersion: 'current',
           versions: {
             current: {
-              label: '0.8.0',
+              label: VERSION,
               path: '/',
             },
           },
