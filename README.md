@@ -7,7 +7,7 @@ This repository contains all the files and projects to run Radicalbit AI Monitor
 - [sdk](./sdk/README.md)
 - [spark](./spark/README.md)
 
-## Docker compose
+## 🚀 Installation using Docker compose
 
 In this repository a docker compose file is available to run the platform in local with a k3s cluster where we can deploy Spark jobs.
 
@@ -56,3 +56,28 @@ To remove everything including container images:
 ```bash
 docker compose --profile ui --profile k9s down -v --remove-orphans --rmi all
 ```
+
+## 📖 Documentation
+You can find the following documentation:
+* An extensive [step-by-step guide](https://docs.oss-monitoring.radicalbit.ai/user-guide/installation) to install the development/testing version of the platform.
+* A [guide](https://docs.oss-monitoring.radicalbit.ai/user-guide/quickstart) that walks users through creating dashboards on the platform.
+
+## 📦 Functionalities & Roadmap
+We've released a first dashboard, covering Binary Classification models for tabular data.
+Over the coming weeks, we will be adding the following functionalities to the platform:
+
+* **Batch workloads**
+  * [x] Binary Classification (Tabular Data)
+  * [x] LLMs (Data Quality)
+  * [ ] LLMs (Model Quality)
+  * [ ] Multiclass Classification (Tabular Data)
+  * [ ] Regression (Tabular Data)
+  * [ ] Computer Vision (Images)
+  * [ ] Clustering (Tabular Data)
+       
+* **Real-Time workloads**
+  * [ ] Binary Classification
+  * [ ] Multiclass Classification
+  * [ ] Regression
+  * [ ] Computer Vision
+  * [ ] Clustering
