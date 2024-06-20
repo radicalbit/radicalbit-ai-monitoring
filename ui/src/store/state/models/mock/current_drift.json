@@ -1,0 +1,23 @@
+{
+    "jobStatus": "IMPORTING",
+    "dataQuality": {
+      "featureMetrics": [
+        {
+          "featureName": "age",
+          "driftCalc": {
+            "type": "CHI2",
+            "value": 0,
+            "hasDrift": false
+          }
+        },
+        {
+          "featureName": "name",
+          "driftCalc": {
+            "type": "KS",
+            "value": 502.7,
+            "hasDrift": true
+          }
+        }
+      ]
+    }
+  }

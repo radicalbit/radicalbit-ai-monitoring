@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "spark"
+# x-release-please-start-version
+version = "0.1.0"
+# x-release-please-end
+description = "Spark jobs collection for Radicalbit AI Monitoring Platform"
+authors = ["Radicalbit <dev@radicalbit.io>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pyspark = "^3.5.1"
+pydantic = "^2.7.3"
+numpy = "^1.26.4"
+pandas = "^2.2.2"
+poetry = "^1.8.3"
+psycopg2 = "^2.9.9"
+orjson = "^3.10.5"
+scipy = "^1.13.1"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.1"
+ruff = "^0.4.7"
+deepdiff = "^7.0.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

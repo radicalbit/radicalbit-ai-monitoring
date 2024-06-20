@@ -1,0 +1,348 @@
+{
+    "global":
+    {
+        "f1": 0.901010101010101,
+        "accuracy": 0.9,
+        "weighted_precision": 0.9199999999999999,
+        "weighted_recall": 0.9,
+        "weighted_true_positive_rate": 0.9,
+        "weighted_false_positive_rate": 0.06666666666666667,
+        "weighted_f_measure": 0.901010101010101,
+        "truePositiveRate": 0.8333333333333334,
+        "falsePositiveRate": 0.0,
+        "precision": 1.0,
+        "recall": 0.8333333333333334,
+        "f_measure": 0.9090909090909091,
+        "truePositiveCount": 5,
+        "falsePositiveCount": 0,
+        "trueNegativeCount": 4,
+        "falseNegativeCount": 1,
+        "areaUnderRoc": 0.41666666666666663,
+        "areaUnderPr": 0.5652116402116403
+    },
+    "grouped":
+    {
+        "f1":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.5333333333333333
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "accuracy":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.6666666666666666
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "weighted_precision":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.4444444444444444
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "weighted_recall":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.6666666666666666
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "weighted_true_positive_rate":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.6666666666666666
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "weighted_false_positive_rate":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.6666666666666666
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": "NaN"
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": "NaN"
+            }
+        ],
+        "weighted_f_measure":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.5333333333333333
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "truePositiveRate":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "falsePositiveRate":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": "NaN"
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": "NaN"
+            }
+        ],
+        "precision":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "recall":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "f_measure":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "areaUnderRoc":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 0.5
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.0
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ],
+        "areaUnderPr":
+        [
+            {
+                "timestamp": "2024-06-16 00:00:00",
+                "value": 0.25
+            },
+            {
+                "timestamp": "2024-06-16 01:00:00",
+                "value": 0.5
+            },
+            {
+                "timestamp": "2024-06-16 02:00:00",
+                "value": 0.16666666666666666
+            },
+            {
+                "timestamp": "2024-06-16 03:00:00",
+                "value": 1.0
+            },
+            {
+                "timestamp": "2024-06-16 04:00:00",
+                "value": 1.0
+            }
+        ]
+    }
+}

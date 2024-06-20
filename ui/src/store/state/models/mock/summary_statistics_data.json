@@ -1,0 +1,14 @@
+{
+    "updateTime":"2024-05-23T13:38:03.783460Z",
+    "statistics": {
+        "nVariables": 12,
+        "nObservations": 1190,
+        "missingCells": 0,
+        "missingCellsPerc": 0,
+        "duplicateRows": 272,
+        "duplicateRowsPerc": 22.9,
+        "numeric": 5,
+        "categorical": 7,
+        "datetime" : 10
+    } 
+}

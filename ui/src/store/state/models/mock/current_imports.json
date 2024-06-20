@@ -1,0 +1,48 @@
+{
+    "items": [
+        {
+            "uuid": "43b6d06f-4708-46a4-9747-ca7eb3f56c9e",
+            "modelUuid": "e3a7c517-8072-4621-baf1-df2531a2841f",
+            "path": "s3://test-bucket/e3a7c517-8072-4621-baf1-df2531a2841f/current/easy_dataset.csv",
+            "date": "2024-06-14T10:48:43.591531+00:00",
+            "correlationIdColumn": "",
+            "status": "IMPORTING"
+        },
+        {
+            "uuid": "abe39df4-5e02-4dd0-9814-9fb6069e25e3",
+            "modelUuid": "e3a7c517-8072-4621-baf1-df2531a2841f",
+            "path": "s3://test-bucket/e3a7c517-8072-4621-baf1-df2531a2841f/current/easy_dataset.csv",
+            "date": "2024-06-14T10:48:48.458642+00:00",
+            "correlationIdColumn": "",
+            "status": "IMPORTING"
+        },
+        {
+            "uuid": "9904f64e-20cd-4543-97f5-0148a50004f3",
+            "modelUuid": "e3a7c517-8072-4621-baf1-df2531a2841f",
+            "path": "s3://test-bucket/e3a7c517-8072-4621-baf1-df2531a2841f/current/easy_dataset.csv",
+            "date": "2024-06-14T10:48:50.815947+00:00",
+            "correlationIdColumn": "",
+            "status": "IMPORTING"
+        },
+        {
+            "uuid": "5abb4e52-2aca-4353-96d3-71ecb8069516",
+            "modelUuid": "e3a7c517-8072-4621-baf1-df2531a2841f",
+            "path": "s3://test-bucket/e3a7c517-8072-4621-baf1-df2531a2841f/current/easy_dataset.csv",
+            "date": "2024-06-14T10:48:51.931372+00:00",
+            "correlationIdColumn": "",
+            "status": "IMPORTING"
+        },
+        {
+            "uuid": "5abb4e52-2aca-4353-96d3-71ecb8069516",
+            "modelUuid": "e3a7c517-8072-4621-baf1-df2531a2841f",
+            "path": "s3://test-bucket/e3a7c517-8072-4621-baf1-df2531a2841f/current/easy_dataset.csv",
+            "date": "2024-06-14T10:48:51.931374+00:00",
+            "correlationIdColumn": "",
+            "status": "IMPORTING"
+        }
+    ],
+    "total": 4,
+    "page": 1,
+    "size": 50,
+    "pages": 1
+}

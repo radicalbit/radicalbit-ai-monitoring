@@ -1,0 +1,178 @@
+services:
+  ui:
+    profiles: ["ui"]
+    build:
+      context: ./ui
+      target: build
+    command: yarn start:local
+    develop:
+      watch:
+        - path: ./ui/src
+          action: rebuild
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - 5173:5173
+
+  api:
+    build: ./api
+    ports:
+      - 9000:9000
+    develop:
+      watch:
+        - path: ./api/app
+          action: rebuild
+    environment:
+      DB_HOST: "postgres"
+      DB_PORT: 5432
+      DB_USER: "postgres"
+      DB_PWD: "postgres"
+      DB_NAME: "radicalbit"
+      AWS_ACCESS_KEY_ID: "minio"
+      AWS_SECRET_ACCESS_KEY: "minio123"
+      AWS_REGION: "us-east-1"
+      S3_ENDPOINT_URL: "http://minio:9000"
+      S3_BUCKET_NAME: "test-bucket"
+      KUBECONFIG_FILE_PATH: "/opt/kubeconfig/kubeconfig.yaml"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrations:
+        condition: service_completed_successfully
+      createbuckets:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -s http://localhost:9000/healthcheck" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./docker/k3s_data/kubeconfig/kubeconfig.yaml:/opt/kubeconfig/kubeconfig.yaml
+
+  migrations:
+    container_name: migrations
+    build:
+      context: ./api
+      dockerfile: ./migrations.Dockerfile
+    environment:
+      DB_HOST: "postgres"
+      DB_PORT: 5432
+      DB_USER: "postgres"
+      DB_PWD: "postgres"
+      DB_NAME: "radicalbit"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./api/alembic:/app/alembic
+      - ./api/app/db/tables:/app/app/db/tables
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres-container
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: radicalbit
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - radicalbit-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - 8090:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9090:9000"
+      - "9091:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server --console-address ":9001" /data
+    healthcheck:
+      test: timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1
+      start_period: 5s
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+  createbuckets:
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
+      /usr/bin/mc mb myminio/test-bucket;
+      /usr/bin/mc policy set public myminio/test-bucket;
+      exit 0;
+      "
+
+  k3s:
+    image: rancher/k3s:v1.30.1-k3s1
+    networks:
+      - default
+    entrypoint: /bin/sh
+    command: "-c /opt/entrypoint/entrypoint.sh"
+    tmpfs:
+      - /run
+      - /var/run
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 65535
+    privileged: true
+    restart: no
+    environment:
+      K3S_KUBECONFIG_OUTPUT: /output/kubeconfig.yaml
+      K3S_KUBECONFIG_MODE: 666
+    volumes:
+      - k3s-server:/var/lib/rancher/k3s
+      # This is just so that we get the kubeconfig file out
+      - ./docker/k3s_data/kubeconfig:/output
+      # Init spark needed resources, add other custom yaml file here below if needed (e.g. secrets)
+      - ./docker/k3s_data/manifests/spark-init.yaml:/var/lib/rancher/k3s/server/manifests/spark-init.yaml
+      # Mount entrypoint
+      - ./docker/k3s_data/init/entrypoint.sh:/opt/entrypoint/entrypoint.sh
+    expose:
+      - "6443"  # Kubernetes API Server
+      - "80"    # Ingress controller port 80
+      - "443"   # Ingress controller port 443
+    ports:
+      - 6443:6443
+
+  k9s:
+    profiles: ["k9s"]
+    image: quay.io/derailed/k9s:latest
+    stdin_open: true
+    tty: true
+    command: -A
+    volumes:
+      - ./docker/k3s_data/kubeconfig/kubeconfig.yaml:/root/.kube/config
+
+volumes:
+  k3s-server: {}
+  radicalbit-data: {}
+  minio_storage: {}
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.98.0.0/16" # Self-defined subnet on local machine

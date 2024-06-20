@@ -1,0 +1,9 @@
+from enum import Enum
+
+
+class JobStatus(str, Enum):
+    IMPORTING = 'IMPORTING'
+    SUCCEEDED = 'SUCCEEDED'
+    ERROR = 'ERROR'
+    MISSING_REFERENCE = 'MISSING_REFERENCE'
+    MISSING_CURRENT = 'MISSING_CURRENT'
