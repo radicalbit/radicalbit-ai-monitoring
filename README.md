@@ -62,6 +62,9 @@ You can find the following documentation:
 * An extensive [step-by-step guide](https://docs.oss-monitoring.radicalbit.ai/user-guide/installation) to install the development/testing version of the platform.
 * A [guide](https://docs.oss-monitoring.radicalbit.ai/user-guide/quickstart) that walks users through creating dashboards on the platform.
 
+## 🤝 Community
+Please join us on our [Discord server](https://discord.com/invite/pApadedx), to discuss the platform, share ideas, and help shape its future! Get help from experts and fellow users.
+
 ## 📦 Functionalities & Roadmap
 We've released a first dashboard, covering Binary Classification models for tabular data.
 Over the coming weeks, we will be adding the following functionalities to the platform:
