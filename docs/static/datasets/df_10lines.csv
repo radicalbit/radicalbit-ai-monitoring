@@ -1,0 +1,4 @@
+timestamp,user_id,question,model_answer,ground_truth,prediction,gender,age,device,days_as_customer
+2024-01-11 13:30:00,user_184,How do I apply for a business loan?,Business loan applications can be submitted online through our website.,1,1,F,22,smartphone,196
+2024-01-10 15:02:00,user_16,How can I close my account?,You can close your account by visiting our nearest branch.,1,1,F,36,pc,267
+2024-01-10 06:29:00,user_243,How do I start investing in stocks?,"You can start investing in stocks by opening a brokerage account, researching stocks, and placing trades.",0,0,F,55,pc,139

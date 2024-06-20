@@ -73,7 +73,7 @@ Please enter the following details and click on the *Next* button:
 * **Data type:** `Tabular`
 * **Granularity:** `Hour`
 
-To infer the model schema you've to upload a sample dataset. Please download and use [this reference Comma-Separated Values file](https://github.com/radicalbit/radicalbit-ai-monitoring/blob/9f21c19e97a9dfa51c1bf17002fcdd76d5a5f304/examples/data/df_reference.csv) and click on the *Next* button.
+To infer the model schema you've to upload a sample dataset. Please download and use [this reference Comma-Separated Values file](/datasets/df_10lines.csv) and click on the *Next* button.
 
 ![Alt text](/img/quickstart/new-model-modal-s2.png "Upload CSV file")
 
