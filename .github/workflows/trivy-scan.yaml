@@ -1,0 +1,76 @@
+name: vulnerability-wf
+on:
+  push:
+    branches:
+    - "main"
+    paths:
+      - "**/*.lock"
+      - ".github/workflows/trivy-scan.yaml"
+  pull_request:
+    branches:
+    - "*"
+    paths:
+      - "**/*.lock"
+      - ".github/workflows/trivy-scan.yaml"
+
+jobs:
+  changes:
+    runs-on: ubuntu-22.04
+    outputs:
+      changed_files: ${{ steps.verify-changed-files.outputs.all_changed_and_modified_files }}
+      any_changed: ${{ steps.verify-changed-files.outputs.all_changed_and_modified_files_count > 0 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: tj-actions/changed-files@v44.5.2
+        id: verify-changed-files
+        with:
+          files: |
+            **/*.lock
+
+  scan-be:
+    needs: [changes]
+    if: ${{ github.event_name == 'push' || ( github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'api/poetry.lock') ) }}
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/trivy-fs-scan.yaml@v1
+    with:
+      directory: ./api
+      prcomment: ${{ github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'api/poetry.lock') }}
+      github_pr_url: ${{ github.event_name == 'pull_request' && github.event.pull_request.comments_url || '' }}
+      severity: "HIGH,CRITICAL"
+    secrets:
+      GIT_HUB_PAT: ${{ secrets.GIT_HUB_PAT }}
+
+  scan-sdk:
+    needs: [changes]
+    if: ${{ github.event_name == 'push' || ( github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'sdk/poetry.lock') ) }}
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/trivy-fs-scan.yaml@v1
+    with:
+      directory: ./sdk
+      prcomment: ${{ github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'sdk/poetry.lock') }}
+      github_pr_url: ${{ github.event_name == 'pull_request' && github.event.pull_request.comments_url || '' }}
+      severity: "HIGH,CRITICAL"
+    secrets:
+      GIT_HUB_PAT: ${{ secrets.GIT_HUB_PAT }}
+
+  scan-spark:
+    needs: [changes]
+    if: ${{ github.event_name == 'push' || ( github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'spark/poetry.lock') ) }}
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/trivy-fs-scan.yaml@v1
+    with:
+      directory: ./spark
+      prcomment: ${{ github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'spark/poetry.lock') }}
+      github_pr_url: ${{ github.event_name == 'pull_request' && github.event.pull_request.comments_url || '' }}
+      severity: "HIGH,CRITICAL"
+    secrets:
+      GIT_HUB_PAT: ${{ secrets.GIT_HUB_PAT }}  
+
+  scan-ui:
+    needs: [changes]
+    if: ${{ github.event_name == 'push' || ( github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'ui/yarn.lock') ) }}
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/trivy-fs-scan.yaml@v1
+    with:
+      directory: ./ui
+      prcomment: ${{ github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'ui/yarn.lock') }}
+      github_pr_url: ${{ github.event_name == 'pull_request' && github.event.pull_request.comments_url || '' }}
+      severity: "HIGH,CRITICAL"
+    secrets:
+      GIT_HUB_PAT: ${{ secrets.GIT_HUB_PAT }}

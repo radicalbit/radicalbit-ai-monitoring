@@ -1,0 +1,18 @@
+{
+    "release-type": "simple",
+    "packages": {
+      ".": {
+        "extra-files": [
+          {
+            "type": "json",
+            "path": "ui/package.json",
+            "jsonpath": "$.version"
+          },
+          "api/pyproject.toml",
+          "sdk/pyproject.toml",
+          "spark/pyproject.toml",
+          "docs/docusaurus.config.js"
+        ]
+      }
+    }
+}

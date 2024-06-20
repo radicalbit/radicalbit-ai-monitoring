@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "jsx":"react-jsx",
+        "resolveJsonModule":true,
+        "paths": {
+            "@Api/*": ["src/api/*"],
+            "@Components/*": ["src/components/*"],
+            "@Container/*": ["src/container/*"],
+            "@Helpers/*": ["src/helpers/*"],
+            "@Hooks/*": ["src/hooks/*"],
+            "@Img/*": ["src/resources/images/*"],
+            "@Src/*": ["src/*"],
+            "@State/*": ["src/store/state/*"],
+            "@Store/*": ["src/store/*"]
+        }
+    },
+    "exclude": [
+        "build",
+        "dist",
+        "node_modules",
+        "public",
+        "server"
+    ]
+}

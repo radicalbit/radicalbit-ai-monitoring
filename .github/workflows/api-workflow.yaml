@@ -1,0 +1,61 @@
+name: api-wf
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+    - "main"
+    paths:
+      - "api/**"
+      - ".github/workflows/api-**"
+  pull_request:
+    branches:
+    - "*"
+    paths:
+      - "api/**"
+      - ".github/workflows/api-**"
+
+env:
+  POETRY_VERSION: "1.8.3"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./api
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Setup poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | POETRY_VERSION=${{ env.POETRY_VERSION }} python -
+          poetry lock
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Ruff Format
+        run: |
+          poetry run ruff check
+      - name: Run tests
+        run: |
+          poetry run pytest -v
+    
+  build-be:
+    needs: [test]
+    if: github.event_name != 'pull_request'
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
+    with:
+      push: ${{ github.event_name != 'pull_request' }}
+      context: ./api
+      image: radicalbit-ai-monitoring-api
+      tag: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+      dockerhub_shortdesc: "Radicalbit AI Monitoring - backend API"
+    secrets:
+      USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+      PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+      ORGANIZATION: ${{ secrets.DOCKER_HUB_ORG }}

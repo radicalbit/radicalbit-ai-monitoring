@@ -1,0 +1,78 @@
+name: migrations-wf
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+    - "main"
+    paths:
+      - "api/alembic/**"
+      - ".github/workflows/migrations-**"
+  pull_request:
+    branches:
+    - "*"
+    paths:
+      - "api/alembic/**"
+      - ".github/workflows/migrations-**"
+
+env:
+  POETRY_VERSION: "1.8.3"
+  PYTHON_VERSION: "3.11"
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./api
+    services:
+      # Setup postgres as service to run test migrations
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+        - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Setup poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | POETRY_VERSION=${{ env.POETRY_VERSION }} python -
+          poetry lock
+      - name: Install dependencies
+        run: |
+          poetry install
+      - name: Run migrations
+        run: |
+          poetry run alembic upgrade head
+        env:
+          DB_URL: localhost:5432
+          DB_USER: postgres
+          DB_PWD: postgres
+    
+  build-migrations:
+    needs: [test]
+    if: github.event_name != 'pull_request'
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
+    with:
+      push: ${{ github.event_name != 'pull_request' }}
+      context: ./api
+      dockerfile: migrations.Dockerfile
+      image: radicalbit-ai-monitoring-migrations
+      tag: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+      dockerhub_shortdesc: "Radicalbit AI Monitoring - database migrations"
+    secrets:
+      USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+      PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
+      ORGANIZATION: ${{ secrets.DOCKER_HUB_ORG }}

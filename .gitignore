@@ -1,0 +1,109 @@
+# JetBrains specific
+.idea
+*.iml
+
+# VSCode specific
+.vscode/*
+!.vscode/extensions.json
+
+# MacOS files
+.DS_Store
+
+#####################
+## PYTHON SPECIFICS #
+#####################
+
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+**/.Python
+**/build/
+**/develop-eggs/
+**/dist/
+**/downloads/
+**/eggs/
+**/.eggs/
+**/lib/
+**/lib64/
+**/parts/
+**/sdist/
+**/var/
+**/wheels/
+**/share/python-wheels/
+**/*.egg-info/
+**/.installed.cfg
+**/*.egg
+**/MANIFEST
+
+# Installer logs
+**/pip-log.txt
+**/pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+**/htmlcov/
+**/.tox/
+**/.nox/
+**/.coverage
+**/.coverage.*
+**/.cache
+**/nosetests.xml
+**/coverage.xml
+**/*.cover
+**/*.py,cover
+**/.hypothesis/
+**/.pytest_cache/
+**/cover/
+
+# PyBuilder
+**/.pybuilder/
+**/target/
+
+# Jupyter Notebook
+**/.ipynb_checkpoints
+
+# Environments
+**/.env
+**/.secrets
+**/.venv
+**/env/
+**/venv/
+**/ENV/
+**/env.bak/
+**/venv.bak/
+**/.python-version
+
+#####################
+## UI  SPECIFICS    #
+#####################
+
+# Logs
+ui/logs
+ui/*.log
+ui/npm-debug.log*
+ui/yarn-debug.log*
+ui/yarn-error.log*
+ui/pnpm-debug.log*
+ui/lerna-debug.log*
+
+ui/node_modules
+ui/dist
+ui/dist-ssr
+ui/*.local
+ui/.npmrc
+ui/*.suo
+ui/*.ntvs*
+ui/*.njsproj
+ui/*.sln
+ui/*.sw?
+
+#####################
+## K3S SPECIFICS    #
+#####################
+
+docker/k3s_data/kubeconfig/

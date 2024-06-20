@@ -1,0 +1,3 @@
+first_name,last_name,age,gender,adult,prediction,probability
+mario,rossi,15,M,true,0.54,0.98
+rosa,bianca,45,F,false,0.78,0.69
