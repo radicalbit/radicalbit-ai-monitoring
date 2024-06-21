@@ -8,7 +8,9 @@ from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
     BinaryClassDrift,
+    BinaryClassificationDataQuality,
     CurrentFileUpload,
+    DataQuality,
     DatasetStats,
     Drift,
     JobStatus,
@@ -152,9 +154,59 @@ class ModelCurrentDataset:
 
         return self.__drift
 
-    def data_quality(self):
-        # TODO: implement get data quality
-        pass
+    def data_quality(self) -> Optional[DataQuality]:
+        """Get data quality metrics about the current dataset
+
+        :return: The `DataQuality` if exists
+        """
+
+        def __callback(
+            response: requests.Response,
+        ) -> tuple[JobStatus, Optional[DataQuality]]:
+            try:
+                response_json = response.json()
+                job_status = JobStatus(response_json['jobStatus'])
+                if 'dataQuality' in response_json:
+                    if self.__model_type is ModelType.BINARY:
+                        return (
+                            job_status,
+                            BinaryClassificationDataQuality.model_validate(
+                                response_json['dataQuality']
+                            ),
+                        )
+                    raise ClientError(
+                        'Unable to parse get metrics for not binary models'
+                    ) from None
+            except KeyError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            else:
+                return job_status, None
+
+        match self.__status:
+            case JobStatus.ERROR:
+                self.__data_metrics = None
+            case JobStatus.SUCCEEDED:
+                if self.__data_metrics is None:
+                    _, metrics = invoke(
+                        method='GET',
+                        url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/data-quality',
+                        valid_response_code=200,
+                        func=__callback,
+                    )
+                    self.__data_metrics = metrics
+            case JobStatus.IMPORTING:
+                status, metrics = invoke(
+                    method='GET',
+                    url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/data-quality',
+                    valid_response_code=200,
+                    func=__callback,
+                )
+                self.__status = status
+                self.__data_metrics = metrics
+
+        return self.__data_metrics
 
     def model_quality(self):
         # TODO: implement get model quality
