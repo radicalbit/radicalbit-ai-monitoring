@@ -30,6 +30,15 @@ from .dataset_data_quality import (
     CategoryFrequency,
     CategoricalFeatureMetrics,
 )
+from .dataset_drift import (
+    DriftAlgorithm,
+    FeatureDriftCalculation,
+    FeatureDrift,
+    Drift,
+    BinaryClassDrift,
+    MultiClassDrift,
+    RegressionDrift,
+)
 from .column_definition import ColumnDefinition
 from .aws_credentials import AwsCredentials
 
@@ -59,6 +68,13 @@ __all__ = [
     "NumericalFeatureMetrics",
     "CategoryFrequency",
     "CategoricalFeatureMetrics",
+    "DriftAlgorithm",
+    "FeatureDriftCalculation",
+    "FeatureDrift",
+    "Drift",
+    "BinaryClassDrift",
+    "MultiClassDrift",
+    "RegressionDrift",
     "PaginatedModelDefinitions",
     "ReferenceFileUpload",
     "CurrentFileUpload",

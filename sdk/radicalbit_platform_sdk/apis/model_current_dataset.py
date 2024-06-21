@@ -4,6 +4,8 @@ from radicalbit_platform_sdk.models import (
     CurrentFileUpload,
     JobStatus,
     DatasetStats,
+    Drift,
+    BinaryClassDrift,
 )
 from radicalbit_platform_sdk.errors import ClientError
 from pydantic import ValidationError
@@ -96,9 +98,59 @@ class ModelCurrentDataset:
 
         return self.__statistics
 
-    def drift(self):
-        # TODO: implement get drift
-        pass
+    def drift(self) -> Optional[Drift]:
+        """
+        Get drift about the current dataset
+
+        :return: The `Drift` if exists
+        """
+
+        def __callback(
+            response: requests.Response,
+        ) -> tuple[JobStatus, Optional[Drift]]:
+            try:
+                response_json = response.json()
+                job_status = JobStatus(response_json["jobStatus"])
+                if "drift" in response_json:
+                    if self.__model_type is ModelType.BINARY:
+                        return (
+                            job_status,
+                            BinaryClassDrift.model_validate(response_json["drift"]),
+                        )
+                    else:
+                        raise ClientError(
+                            "Unable to parse get metrics for not binary models"
+                        )
+                else:
+                    return job_status, None
+            except KeyError as _:
+                raise ClientError(f"Unable to parse response: {response.text}")
+            except ValidationError as _:
+                raise ClientError(f"Unable to parse response: {response.text}")
+
+        match self.__status:
+            case JobStatus.ERROR:
+                self.__drift = None
+            case JobStatus.SUCCEEDED:
+                if self.__drift is None:
+                    _, drift = invoke(
+                        method="GET",
+                        url=f"{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/drift",
+                        valid_response_code=200,
+                        func=__callback,
+                    )
+                    self.__drift = drift
+            case JobStatus.IMPORTING:
+                status, drift = invoke(
+                    method="GET",
+                    url=f"{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/drift",
+                    valid_response_code=200,
+                    func=__callback,
+                )
+                self.__status = status
+                self.__drift = drift
+
+        return self.__drift
 
     def data_quality(self):
         # TODO: implement get data quality
