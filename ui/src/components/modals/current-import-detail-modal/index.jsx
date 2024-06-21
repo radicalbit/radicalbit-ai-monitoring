@@ -16,7 +16,7 @@ import {
 import { memo } from 'react';
 import { useParams } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import CurrentDashboardModal from './current-dashboard-modal';
+import Body from './body';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
@@ -38,9 +38,7 @@ function CurrentImportDetailModal() {
       onCancel={handleOnCancel}
       open
     >
-      <div className="flex flex-col gap-4 h-full">
-        <CurrentDashboardModal />
-      </div>
+      <Body />
     </RbitModal>
   );
 }

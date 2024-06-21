@@ -1,9 +1,9 @@
 import { Tabs } from '@radicalbit/radicalbit-design-system';
 import { useSearchParams } from 'react-router-dom';
 import { METRICS_TABS } from '@Container/models/Details/constants';
-import DataDriftMetrics from '../../data-drift-metrics';
-import DataQualityMetrics from '../../data-quality-metrics';
-import ModelQualityMetrics from '../../model-quality-metrics';
+import DataQualityMetrics from '@Container/models/Details/reference/data-quality';
+import ModelQualityMetrics from '@Container/models/Details/reference/model-quality';
+import DataDriftMetrics from '@Container/models/Details/current/data-drift';
 
 const tabs = [
   {
@@ -23,7 +23,7 @@ const tabs = [
   },
 ];
 
-export default function CurrentDashboardModal() {
+function Body() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const activeTab = searchParams.get('modal-tab-metrics') || METRICS_TABS.METRICS;
@@ -38,14 +38,17 @@ export default function CurrentDashboardModal() {
   };
 
   return (
-
-    <div className="px-4 pt-4 h-[99%]">
-      <Tabs
-        activeKey={activeTab}
-        fullHeight
-        items={tabs}
-        onChange={onChangeTab}
-      />
+    <div className="flex flex-col gap-4 h-full">
+      <div className="px-4 pt-4 h-[99%]">
+        <Tabs
+          activeKey={activeTab}
+          fullHeight
+          items={tabs}
+          onChange={onChangeTab}
+        />
+      </div>
     </div>
   );
 }
+
+export default Body;

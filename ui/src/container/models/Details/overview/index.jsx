@@ -2,7 +2,7 @@ import {
   Tabs,
 } from '@radicalbit/radicalbit-design-system';
 import { useSearchParams } from 'react-router-dom';
-import { MODEL_TABS_ENUM, OVERVIEW_TABS_ENUM } from '../constants';
+import { MODEL_TABS_ENUM, OVERVIEW_TABS_ENUM } from '@Container/models/Details/constants';
 import OutputsTab from './outputs-tab';
 import SummaryTab from './summary-tab';
 import VariablesTab from './variables-tab';

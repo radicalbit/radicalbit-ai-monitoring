@@ -2,11 +2,11 @@ import { modelsApiSlice } from '@Src/store/state/models/api';
 import { ModelTypeEnum } from '@State/models/constants';
 import { memo } from 'react';
 import { useParams } from 'react-router';
-import BinaryClassificationMetrics from './binary-classification-metrics';
+import BinaryClassificationMetrics from './binary-classification';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
-function DataDriftMetrics() {
+function DataQualityMetrics() {
   const { uuid } = useParams();
   const { data } = useGetModelByUUIDQuery({ uuid });
 
@@ -21,4 +21,4 @@ function DataDriftMetrics() {
   }
 }
 
-export default memo(DataDriftMetrics);
+export default memo(DataQualityMetrics);
