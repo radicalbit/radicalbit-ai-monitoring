@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { DataTypeEnum, ModelTypeEnum } from '@State/models/constants';
 import schemaStepFour from './step-four/schema';
 import schemaStepOne from './step-one/schema';
 import schemaStepThree from './step-three/schema';
@@ -18,7 +18,7 @@ function ModalContextProvider({ children }) {
   const [isMaximize, setIsMaximize] = useState(false);
 
   const useFormbitStepOne = useFormbit({
-    initialValues: { modelType: ModelTypeEnum.BINARY_CLASSIFICATION },
+    initialValues: { modelType: ModelTypeEnum.BINARY_CLASSIFICATION, dataType: DataTypeEnum.TABULAR },
     yup: schemaStepOne,
   });
 

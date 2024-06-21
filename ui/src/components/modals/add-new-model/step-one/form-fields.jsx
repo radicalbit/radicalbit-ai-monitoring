@@ -48,21 +48,11 @@ function ModelType() {
 
 function DataType() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
-
-  const handleOnChange = (value) => {
-    write('dataType', value);
-  };
+  const { error } = useFormbit;
 
   return (
     <FormField label="Data type" message={error('dataType')} modifier="w-full" required>
-      <Select onChange={handleOnChange} value={form.dataType}>
-        {Object.values(DataTypeEnum).map((value) => (
-          <Select.Option key={value}>
-            {DataTypeEnumLabel[value]}
-          </Select.Option>
-        ))}
-      </Select>
+      {DataTypeEnumLabel[DataTypeEnum.TABULAR]}
     </FormField>
   );
 }
