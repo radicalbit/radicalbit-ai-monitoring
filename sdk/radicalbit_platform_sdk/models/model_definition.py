@@ -1,11 +1,13 @@
-import uuid as uuid_lib
 from enum import Enum
-from radicalbit_platform_sdk.models.data_type import DataType
-from radicalbit_platform_sdk.models.model_type import ModelType
-from radicalbit_platform_sdk.models.column_definition import ColumnDefinition
 from typing import List, Optional
+import uuid as uuid_lib
+
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
+
+from radicalbit_platform_sdk.models.column_definition import ColumnDefinition
+from radicalbit_platform_sdk.models.data_type import DataType
+from radicalbit_platform_sdk.models.model_type import ModelType
 
 
 class OutputType(BaseModel):
@@ -17,10 +19,10 @@ class OutputType(BaseModel):
 
 
 class Granularity(str, Enum):
-    HOUR = "HOUR"
-    DAY = "DAY"
-    WEEK = "WEEK"
-    MONTH = "MONTH"
+    HOUR = 'HOUR'
+    DAY = 'DAY'
+    WEEK = 'WEEK'
+    MONTH = 'MONTH'
 
 
 class BaseModelDefinition(BaseModel):
@@ -38,6 +40,7 @@ class BaseModelDefinition(BaseModel):
         timestamp: The column used to store the when prediction was done
         frameworks: An optional field to describe the frameworks used by the model
         algorithm: An optional field to ecplane the algorithm used by the model
+
     """
 
     name: str
@@ -63,8 +66,8 @@ class CreateModel(BaseModelDefinition):
 
 class ModelDefinition(BaseModelDefinition):
     uuid: uuid_lib.UUID = Field(default_factory=lambda: uuid_lib.uuid4())
-    created_at: str = Field(alias="createdAt")
-    updated_at: str = Field(alias="updatedAt")
+    created_at: str = Field(alias='createdAt')
+    updated_at: str = Field(alias='updatedAt')
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 

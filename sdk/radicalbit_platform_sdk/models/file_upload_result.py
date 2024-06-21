@@ -1,8 +1,10 @@
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
-from radicalbit_platform_sdk.models.job_status import JobStatus
 from typing import Optional
 from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
+
+from radicalbit_platform_sdk.models.job_status import JobStatus
 
 
 class FileUploadResult(BaseModel):
@@ -26,7 +28,7 @@ class CurrentFileUpload(FileUploadResult):
 
 class FileReference(BaseModel):
     file_url: str
-    separator: str = ","
+    separator: str = ','
     correlation_id_column: Optional[str] = None
 
     model_config = ConfigDict(

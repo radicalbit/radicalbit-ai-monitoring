@@ -1,26 +1,28 @@
+import os
+from typing import List, Optional
+from uuid import UUID
+
+import boto3
+from botocore.exceptions import ClientError as BotoClientError
+import pandas as pd
+from pydantic import ValidationError
+import requests
+
+from radicalbit_platform_sdk.apis import ModelCurrentDataset, ModelReferenceDataset
 from radicalbit_platform_sdk.commons import invoke
-from radicalbit_platform_sdk.apis import ModelReferenceDataset, ModelCurrentDataset
+from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
+    AwsCredentials,
     ColumnDefinition,
+    CurrentFileUpload,
+    DataType,
+    FileReference,
     Granularity,
     ModelDefinition,
     ModelType,
-    DataType,
     OutputType,
     ReferenceFileUpload,
-    CurrentFileUpload,
-    FileReference,
-    AwsCredentials,
 )
-from radicalbit_platform_sdk.errors import ClientError
-from botocore.exceptions import ClientError as BotoClientError
-from pydantic import ValidationError
-from typing import Optional, List
-from uuid import UUID
-import boto3
-import os
-import pandas as pd
-import requests
 
 
 class Model:
@@ -81,8 +83,8 @@ class Model:
         :return: None
         """
         invoke(
-            method="DELETE",
-            url=f"{self.__base_url}/api/models/{str(self.__uuid)}",
+            method='DELETE',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}',
             valid_response_code=200,
             func=lambda _: None,
         )
@@ -93,7 +95,7 @@ class Model:
         bucket: str,
         object_name: Optional[str] = None,
         aws_credentials: Optional[AwsCredentials] = None,
-        separator: str = ",",
+        separator: str = ',',
     ) -> ModelReferenceDataset:
         """Upload reference dataset to an S3 bucket and then bind it inside the platform.
 
@@ -115,11 +117,11 @@ class Model:
 
         if set(required_headers).issubset(file_headers):
             if object_name is None:
-                object_name = f"{self.__uuid}/reference/{os.path.basename(file_name)}"
+                object_name = f'{self.__uuid}/reference/{os.path.basename(file_name)}'
 
             try:
                 s3_client = boto3.client(
-                    "s3",
+                    's3',
                     aws_access_key_id=(
                         None
                         if aws_credentials is None
@@ -142,30 +144,30 @@ class Model:
                     bucket,
                     object_name,
                     ExtraArgs={
-                        "Metadata": {
-                            "model_uuid": str(self.__uuid),
-                            "model_name": self.__name,
-                            "file_type": "reference",
+                        'Metadata': {
+                            'model_uuid': str(self.__uuid),
+                            'model_name': self.__name,
+                            'file_type': 'reference',
                         }
                     },
                 )
             except BotoClientError as e:
                 raise ClientError(
-                    f"Unable to upload file {file_name} to remote storage: {e}"
-                )
+                    f'Unable to upload file {file_name} to remote storage: {e}'
+                ) from e
             return self.__bind_reference_dataset(
-                f"s3://{bucket}/{object_name}", separator
+                f's3://{bucket}/{object_name}', separator
             )
-        else:
-            raise ClientError(
-                f"File {file_name} not contains all defined columns: {required_headers}"
-            )
+
+        raise ClientError(
+            f'File {file_name} not contains all defined columns: {required_headers}'
+        ) from None
 
     def bind_reference_dataset(
         self,
         dataset_url: str,
         aws_credentials: Optional[AwsCredentials] = None,
-        separator: str = ",",
+        separator: str = ',',
     ) -> ModelReferenceDataset:
         """Bind an existing reference dataset file already uploded to S3 to a `Model`
 
@@ -175,11 +177,11 @@ class Model:
         :return: An instance of `ModelReferenceDataset` representing the reference dataset
         """
 
-        url_parts = dataset_url.replace("s3://", "").split("/")
+        url_parts = dataset_url.replace('s3://', '').split('/')
 
         try:
             s3_client = boto3.client(
-                "s3",
+                's3',
                 aws_access_key_id=(
                     None if aws_credentials is None else aws_credentials.access_key_id
                 ),
@@ -194,27 +196,27 @@ class Model:
             )
 
             chunks_iterator = s3_client.get_object(
-                Bucket=url_parts[0], Key="/".join(url_parts[1:])
-            )["Body"].iter_chunks()
+                Bucket=url_parts[0], Key='/'.join(url_parts[1:])
+            )['Body'].iter_chunks()
 
-            chunks = ""
-            for c in (chunk for chunk in chunks_iterator if "\n" not in chunks):
-                chunks += c.decode("UTF-8")
+            chunks = ''
+            for c in (chunk for chunk in chunks_iterator if '\n' not in chunks):
+                chunks += c.decode('UTF-8')
 
-            file_headers = chunks.split("\n")[0].split(separator)
+            file_headers = chunks.split('\n')[0].split(separator)
 
             required_headers = self.__required_headers()
 
             if set(required_headers).issubset(file_headers):
                 return self.__bind_reference_dataset(dataset_url, separator)
-            else:
-                raise ClientError(
-                    f"File {dataset_url} not contains all defined columns: {required_headers}"
-                )
+
+            raise ClientError(
+                f'File {dataset_url} not contains all defined columns: {required_headers}'
+            ) from None
         except BotoClientError as e:
             raise ClientError(
-                f"Unable to get file {dataset_url} from remote storage: {e}"
-            )
+                f'Unable to get file {dataset_url} from remote storage: {e}'
+            ) from e
 
     def load_current_dataset(
         self,
@@ -223,7 +225,7 @@ class Model:
         correlation_id_column: str,
         object_name: Optional[str] = None,
         aws_credentials: Optional[AwsCredentials] = None,
-        separator: str = ",",
+        separator: str = ',',
     ) -> ModelCurrentDataset:
         """Upload current dataset to an S3 bucket and then bind it inside the platform.
 
@@ -248,11 +250,11 @@ class Model:
 
         if set(required_headers).issubset(file_headers):
             if object_name is None:
-                object_name = f"{self.__uuid}/current/{os.path.basename(file_name)}"
+                object_name = f'{self.__uuid}/current/{os.path.basename(file_name)}'
 
             try:
                 s3_client = boto3.client(
-                    "s3",
+                    's3',
                     aws_access_key_id=(
                         None
                         if aws_credentials is None
@@ -275,31 +277,31 @@ class Model:
                     bucket,
                     object_name,
                     ExtraArgs={
-                        "Metadata": {
-                            "model_uuid": str(self.__uuid),
-                            "model_name": self.__name,
-                            "file_type": "reference",
+                        'Metadata': {
+                            'model_uuid': str(self.__uuid),
+                            'model_name': self.__name,
+                            'file_type': 'reference',
                         }
                     },
                 )
             except BotoClientError as e:
                 raise ClientError(
-                    f"Unable to upload file {file_name} to remote storage: {e}"
-                )
+                    f'Unable to upload file {file_name} to remote storage: {e}'
+                ) from e
             return self.__bind_current_dataset(
-                f"s3://{bucket}/{object_name}", separator, correlation_id_column
+                f's3://{bucket}/{object_name}', separator, correlation_id_column
             )
-        else:
-            raise ClientError(
-                f"File {file_name} not contains all defined columns: {required_headers}"
-            )
+
+        raise ClientError(
+            f'File {file_name} not contains all defined columns: {required_headers}'
+        ) from None
 
     def bind_current_dataset(
         self,
         dataset_url: str,
         correlation_id_column: str,
         aws_credentials: Optional[AwsCredentials] = None,
-        separator: str = ",",
+        separator: str = ',',
     ) -> ModelCurrentDataset:
         """Bind an existing current dataset file already uploded to S3 to a `Model`
 
@@ -310,11 +312,11 @@ class Model:
         :return: An instance of `ModelReferenceDataset` representing the reference dataset
         """
 
-        url_parts = dataset_url.replace("s3://", "").split("/")
+        url_parts = dataset_url.replace('s3://', '').split('/')
 
         try:
             s3_client = boto3.client(
-                "s3",
+                's3',
                 aws_access_key_id=(
                     None if aws_credentials is None else aws_credentials.access_key_id
                 ),
@@ -329,14 +331,14 @@ class Model:
             )
 
             chunks_iterator = s3_client.get_object(
-                Bucket=url_parts[0], Key="/".join(url_parts[1:])
-            )["Body"].iter_chunks()
+                Bucket=url_parts[0], Key='/'.join(url_parts[1:])
+            )['Body'].iter_chunks()
 
-            chunks = ""
-            for c in (chunk for chunk in chunks_iterator if "\n" not in chunks):
-                chunks += c.decode("UTF-8")
+            chunks = ''
+            for c in (chunk for chunk in chunks_iterator if '\n' not in chunks):
+                chunks += c.decode('UTF-8')
 
-            file_headers = chunks.split("\n")[0].split(separator)
+            file_headers = chunks.split('\n')[0].split(separator)
 
             required_headers = self.__required_headers()
             required_headers.append(correlation_id_column)
@@ -346,14 +348,14 @@ class Model:
                 return self.__bind_current_dataset(
                     dataset_url, separator, correlation_id_column
                 )
-            else:
-                raise ClientError(
-                    f"File {dataset_url} not contains all defined columns: {required_headers}"
-                )
+
+            raise ClientError(
+                f'File {dataset_url} not contains all defined columns: {required_headers}'
+            ) from None
         except BotoClientError as e:
             raise ClientError(
-                f"Unable to get file {dataset_url} from remote storage: {e}"
-            )
+                f'Unable to get file {dataset_url} from remote storage: {e}'
+            ) from e
 
     def __bind_reference_dataset(
         self,
@@ -366,14 +368,14 @@ class Model:
                 return ModelReferenceDataset(
                     self.__base_url, self.__uuid, self.__model_type, response
                 )
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
 
         file_ref = FileReference(file_url=dataset_url, separator=separator)
 
         return invoke(
-            method="POST",
-            url=f"{self.__base_url}/api/models/{str(self.__uuid)}/reference/bind",
+            method='POST',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/reference/bind',
             valid_response_code=200,
             func=__callback,
             data=file_ref.model_dump_json(),
@@ -391,8 +393,8 @@ class Model:
                 return ModelCurrentDataset(
                     self.__base_url, self.__uuid, self.__model_type, response
                 )
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
 
         file_ref = FileReference(
             file_url=dataset_url,
@@ -401,8 +403,8 @@ class Model:
         )
 
         return invoke(
-            method="POST",
-            url=f"{self.__base_url}/api/models/{str(self.__uuid)}/current/bind",
+            method='POST',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/current/bind',
             valid_response_code=200,
             func=__callback,
             data=file_ref.model_dump_json(),

@@ -1,6 +1,7 @@
+from typing import List, Optional, Union
+
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
-from typing import List, Optional, Union
 
 
 class ClassMetrics(BaseModel):
@@ -51,7 +52,7 @@ class Histogram(BaseModel):
 
 
 class NumericalFeatureMetrics(FeatureMetrics):
-    type: str = "numerical"
+    type: str = 'numerical'
     mean: Optional[float] = None
     std: Optional[float] = None
     min: Optional[float] = None
@@ -72,7 +73,7 @@ class CategoryFrequency(BaseModel):
 
 
 class CategoricalFeatureMetrics(FeatureMetrics):
-    type: str = "categorical"
+    type: str = 'categorical'
     category_frequency: List[CategoryFrequency]
     distinct_value: int
 

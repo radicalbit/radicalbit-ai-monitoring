@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class DataType(str, Enum):
-    TABULAR = "TABULAR"
-    TEXT = "TEXT"
-    IMAGE = "IMAGE"
+    TABULAR = 'TABULAR'
+    TEXT = 'TEXT'
+    IMAGE = 'IMAGE'

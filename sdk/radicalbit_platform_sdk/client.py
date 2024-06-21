@@ -1,15 +1,17 @@
-from radicalbit_platform_sdk.commons import invoke
+from typing import List
+from uuid import UUID
+
+from pydantic import ValidationError
+import requests
+
 from radicalbit_platform_sdk.apis import Model
+from radicalbit_platform_sdk.commons import invoke
+from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
     CreateModel,
     ModelDefinition,
     PaginatedModelDefinitions,
 )
-from radicalbit_platform_sdk.errors import ClientError
-from pydantic import ValidationError
-from typing import List
-from uuid import UUID
-import requests
 
 
 class Client:
@@ -21,12 +23,12 @@ class Client:
             try:
                 response_model = ModelDefinition.model_validate(response.json())
                 return Model(self.__base_url, response_model)
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
 
         return invoke(
-            method="POST",
-            url=f"{self.__base_url}/api/models",
+            method='POST',
+            url=f'{self.__base_url}/api/models',
             valid_response_code=201,
             func=__callback,
             data=model.model_dump_json(),
@@ -37,34 +39,31 @@ class Client:
             try:
                 response_model = ModelDefinition.model_validate(response.json())
                 return Model(self.__base_url, response_model)
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
 
         return invoke(
-            method="GET",
-            url=f"{self.__base_url}/api/models/{str(id)}",
+            method='GET',
+            url=f'{self.__base_url}/api/models/{str(id)}',
             valid_response_code=200,
             func=__callback,
         )
 
     def search_models(self) -> List[Model]:
-        def __callback(response: requests.Response) -> Model:
+        def __callback(response: requests.Response) -> List[Model]:
             try:
                 paginated_response = PaginatedModelDefinitions.model_validate(
                     response.json()
                 )
-                return list(
-                    map(
-                        lambda model: Model(self.__base_url, model),
-                        paginated_response.items,
-                    )
-                )
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+                return [
+                    Model(self.__base_url, model) for model in paginated_response.items
+                ]
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
 
         return invoke(
-            method="GET",
-            url=f"{self.__base_url}/api/models",
+            method='GET',
+            url=f'{self.__base_url}/api/models',
             valid_response_code=200,
             func=__callback,
         )
