@@ -106,7 +106,6 @@ class ModelReferenceDataset:
             response: requests.Response,
         ) -> tuple[JobStatus, Optional[DataQuality]]:
             try:
-                print(response.text)
                 response_json = response.json()
                 job_status = JobStatus(response_json["jobStatus"])
                 if "dataQuality" in response_json:
