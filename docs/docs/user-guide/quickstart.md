@@ -105,7 +105,7 @@ Entering into the model details, we can see three different main section:
 * **Current:** the Current section displays metrics for any user-uploaded data sets you've added in addition to the reference dataset.
 
 ### Import Reference Dataset
-To calculate metrics for your reference dataset, import a CSV file.
+To calculate metrics for your reference dataset, [import this CSV file, containing the reference](/datasets/df_reference.csv).
 
 ![Alt text](/img/quickstart/import-reference.png "Import Reference")
 
@@ -134,7 +134,8 @@ specific reference.
 
 ### Import Current Dataset
 Once your reference data has been imported and all the metrics and information about it are available, you can move to 
-the **Current** section, in which you can import the CSV file containing your current dataset. 
+the **Current** section, in which you can import [the CSV file containing your current dataset](/datasets/df_current1.csv).
+
 
 ![Alt text](/img/quickstart/import-current.png "Import Current")
 
