@@ -153,25 +153,25 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                 "method": responses.GET,
                 "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift",
                 "status": 200,
-                "body": f"""{{
+                "body": """{
                     "jobStatus": "SUCCEEDED",
-                    "drift": {{
+                    "drift": {
                         "featureMetrics": [
-                            {{
+                            {
                                 "featureName": "gender",
-                                "driftCalc": {{"type": "CHI2", "value": 0.87, "hasDrift": true}}
-                            }},
-                            {{
+                                "driftCalc": {"type": "CHI2", "value": 0.87, "hasDrift": true}
+                            },
+                            {
                                 "featureName": "city",
-                                "driftCalc": {{"type": "CHI2", "value": 0.12, "hasDrift": false}}
-                            }},
-                            {{
+                                "driftCalc": {"type": "CHI2", "value": 0.12, "hasDrift": false}
+                            },
+                            {
                                 "featureName": "age",
-                                "driftCalc": {{"type": "KS", "value": 0.92, "hasDrift": true}}
-                            }}
+                                "driftCalc": {"type": "KS", "value": 0.92, "hasDrift": true}
+                            }
                         ]
-                    }}
-                }}""",
+                    }
+                }""",
             }
         )
 
