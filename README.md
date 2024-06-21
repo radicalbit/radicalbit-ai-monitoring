@@ -1,5 +1,30 @@
+<p align="center">
+    <a href="https://radicalbit.ai/">
+      <img src="docs/static/img/radicalbit.svg" width="100">
+    </a>
+</p>
+<br />
+
+[![Docs Latest](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.oss-monitoring.radicalbit.ai)
+![GitHub Release](https://img.shields.io/github/v/release/radicalbit/radicalbit-ai-monitoring)
+![GitHub License](https://img.shields.io/github/license/radicalbit/radicalbit-ai-monitoring)
+![Discord](https://img.shields.io/discord/1252978922962817034)
+
 # Radicalbit AI Monitoring
 
+# 👋 Welcome!
+The **Radicalbit AI Monitoring Platform** provides a comprehensive solution for monitoring your Artificial Intelligence models in production.
+
+## 🤔 Why Monitor AI Models?
+While models often perform well during development and validation, their effectiveness can degrade over time in production due to various factors like data shifts or concept drift. The Radicalbit AI Monitor platform helps you proactively identify and address potential performance issues.
+
+## 🗝️ Key Functionalities
+The platform provides extensive monitoring capabilities to ensure optimal performance of your AI models in production. It analyzes both your reference dataset (used for pre-production validation) and the current datasets, allowing you to put under control:
+* **Data Quality**
+* **Model Quality**
+* **Model Drift**
+
+# 🏗️ Repository Structure
 This repository contains all the files and projects to run Radicalbit AI Monitoring Platform
 
 - [ui](./ui/README.md)
