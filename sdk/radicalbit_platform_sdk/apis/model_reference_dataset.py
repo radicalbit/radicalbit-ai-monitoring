@@ -102,7 +102,9 @@ class ModelReferenceDataset:
         :return: The `DataQuality` if exists
         """
 
-        def __callback(response: requests.Response) -> Optional[DataQuality]:
+        def __callback(
+            response: requests.Response,
+        ) -> tuple[JobStatus, Optional[DataQuality]]:
             try:
                 response_json = response.json()
                 job_status = JobStatus(response_json["jobStatus"])
