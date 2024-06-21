@@ -54,6 +54,7 @@ class ReferenceMetricsService:
     def __init__(self, reference: DataFrame, model: ModelOut):
         self.model = model
         self.reference = reference
+        self.reference_count = self.reference.count()
 
     def __evaluate_binary_classification(
         self, dataset: DataFrame, metric_name: str
@@ -99,7 +100,7 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def calculate_statistics(self) -> dict[str, float]:
         number_of_variables = len(self.model.get_all_variables_reference())
-        number_of_observations = self.reference.count()
+        number_of_observations = self.reference_count
         number_of_numerical = len(self.model.get_numerical_variables_reference())
         number_of_categorical = len(self.model.get_categorical_variables_reference())
         number_of_datetime = len(self.model.get_datetime_variables_reference())
@@ -256,12 +257,11 @@ class ReferenceMetricsService:
             for x in numerical_features
         ]
 
-        # FIXME maybe don't self.reference.count()
         missing_values_perc_agg = [
             (
                 (
                     f.count(f.when(f.col(x).isNull() | f.isnan(x), x))
-                    / self.reference.count()
+                    / self.reference_count
                 )
                 * 100
             ).alias(f"{x}-missing_values_perc")
@@ -275,11 +275,10 @@ class ReferenceMetricsService:
             for x in numerical_features
         ]
 
-        # FIXME don't use self.reference.count()
         freq_agg = [
             (
                 f.count(f.when(f.col(x).isNotNull() & ~f.isnan(x), True))
-                / self.reference.count()
+                / self.reference_count
             ).alias(f"{x}-frequency")
             for x in numerical_features
         ]
@@ -403,10 +402,9 @@ class ReferenceMetricsService:
             for x in categorical_features
         ]
 
-        # FIXME maybe don't self.reference.count()
         missing_values_perc_agg = [
             (
-                (f.count(f.when(f.col(x).isNull(), x)) / self.reference.count()) * 100
+                (f.count(f.when(f.col(x).isNull(), x)) / self.reference_count) * 100
             ).alias(f"{x}-missing_values_perc")
             for x in categorical_features
         ]
@@ -425,7 +423,6 @@ class ReferenceMetricsService:
 
         # FIXME by design this is not efficient
         # FIXME understand if we want to divide by whole or by number of not null
-        # FIXME don't use self.reference.count()
 
         count_distinct_categories = {
             column: dict(
@@ -435,7 +432,7 @@ class ReferenceMetricsService:
                 .agg(*[f.count(check_not_null(column)).alias("count")])
                 .withColumn(
                     "freq",
-                    f.col("count") / self.reference.count(),
+                    f.col("count") / self.reference_count,
                 )
                 .toPandas()
                 .set_index(column)
@@ -467,7 +464,7 @@ class ReferenceMetricsService:
         number_of_true = number_true_and_false.get(1.0, 0)
         number_of_false = number_true_and_false.get(0.0, 0)
 
-        number_of_observations = self.reference.count()
+        number_of_observations = self.reference_count
 
         return [
             ClassMetrics(
@@ -489,7 +486,7 @@ class ReferenceMetricsService:
         if self.model.get_categorical_features():
             feature_metrics.extend(self.calculate_data_quality_categorical())
         return BinaryClassDataQuality(
-            n_observations=self.reference.count(),
+            n_observations=self.reference_count,
             class_metrics=self.calculate_class_metrics(),
             feature_metrics=feature_metrics,
         )
