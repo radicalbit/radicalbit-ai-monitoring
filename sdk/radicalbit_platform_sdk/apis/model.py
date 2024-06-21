@@ -388,7 +388,9 @@ class Model:
         def __callback(response: requests.Response) -> ModelCurrentDataset:
             try:
                 response = CurrentFileUpload.model_validate(response.json())
-                return ModelCurrentDataset(self.__base_url, response)
+                return ModelCurrentDataset(
+                    self.__base_url, self.__uuid, self.__model_type, response
+                )
             except ValidationError as _:
                 raise ClientError(f"Unable to parse response: {response.text}")
 
