@@ -24,7 +24,7 @@ Once you've installed Docker and Docker Compose, clone the repository to your lo
 git clone git@github.com:radicalbit/radicalbit-ai-monitoring.git
 ```
 
-This repository provides a Docker Compose file to set up the platform locally alongside a Rancher Kubernetes cluster. This allows you to deploy Spark jobs within the cluster.
+This repository provides a Docker Compose file to set up the platform locally alongside a K3s Kubernetes cluster. This allows you to deploy Spark jobs within the cluster.
 
 For streamlined development and testing, you can execute these steps to run the platform locally without the graphical user interface:
 
@@ -43,7 +43,7 @@ After all containers are up and running, you can access the platform at [http://
 #### Accessing the Kubernetes Cluster
 The platform creates a Kubernetes cluster for managing deployments. You can connect and interact with this cluster from your local machine using tools like Lens or `kubectl`.
 
-In the compose file is present a [k9s](https://k9scli.io/) container that can be used to monitor the k3s cluster.
+In the compose file is present a [k9s](https://k9scli.io/) container that can be used to monitor the K3s cluster.
 
 ```bash
 docker compose up k9s -d && docker attach radicalbit-ai-monitoring-k9s-1
