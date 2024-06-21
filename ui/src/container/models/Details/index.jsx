@@ -1,7 +1,7 @@
 import NotFound from '@Components/ErrorPage/not-found';
 import { modelsApiSlice } from '@State/models/api';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { MODEL_TABS_ENUM } from '@Src/constants';
+import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import Current from './current';
 import Overview from './overview';
 import ReferenceDashboard from './reference';

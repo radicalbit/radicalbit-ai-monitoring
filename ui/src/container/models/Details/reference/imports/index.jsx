@@ -43,19 +43,13 @@ function FeedbackTable() {
   const { uuid: modelUUID } = useParams();
 
   const { data } = useGetReferenceImportsQuery({ uuid: modelUUID });
-  const importList = data?.items.map((item) => ({
-    ...item,
-    fileName: item.path.split('reference/')[1],
-    path: `${item.path.split('reference/')[0]}reference/`,
-    errorEntries: 0,
-    entries: 100,
-  })) ?? [];
+  const items = data?.items || [];
   const recordCount = data?.total;
 
   return (
     <SmartTable
       columns={getColumns}
-      dataSource={importList}
+      dataSource={items}
       modifier="w-full pt-4"
       namespace={NamespaceEnum.REFERENCE_IMPORT}
       recordCount={recordCount}

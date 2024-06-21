@@ -7,13 +7,6 @@ import { DataTableAction, FontAwesomeIcon, Spinner } from '@radicalbit/radicalbi
 
 export const getColumns = (activeFilters, activeSorter) => [
   columnFactory({
-    title: 'File name',
-    dataIndex: 'fileName',
-    key: 'fileName',
-    activeFilters,
-    activeSorter,
-  }),
-  columnFactory({
     title: 'File path',
     dataIndex: 'path',
     key: 'path',

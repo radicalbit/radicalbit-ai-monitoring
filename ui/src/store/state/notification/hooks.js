@@ -11,10 +11,11 @@ const useNotification = () => {
   const notificationMessage = useSelector(selectNotificationMessage);
   const notificationShowMessage = useSelector(selectNotificationShowMessage);
 
+  console.debug(notificationMessage);
   useEffect(() => {
     if (notificationShowMessage) {
-      const { type, title } = notificationMessage;
-      Message[type](title);
+      const { type, title, content } = notificationMessage;
+      Message[type]({ title, content });
 
       dispatch(resetNotificationMessage());
     }

@@ -8,8 +8,8 @@ const { useImportCurrentDataMutation } = modelsApiSlice;
 function ImportCurrentDatasetButton({ type = 'primary-light' }) {
   const { uuid: modelUUID } = useParams();
 
-  const [triggerImportFeedback, { isLoading, isError }] = useImportCurrentDataMutation({ fixedCacheKey: `imports-reference-data-${modelUUID}` });
-  const isSubmitDisabled = isLoading || isError;
+  const [triggerImportFeedback, { isLoading }] = useImportCurrentDataMutation({ fixedCacheKey: `imports-reference-data-${modelUUID}` });
+  const isSubmitDisabled = isLoading;
 
   const disableUploadAction = () => false;
 

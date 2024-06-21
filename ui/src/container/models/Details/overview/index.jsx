@@ -18,9 +18,21 @@ function Overview() {
   };
 
   const tabs = [
-    { label: 'Summary', key: OVERVIEW_TABS_ENUM.SUMMARY, children: <SummaryTab /> },
-    { label: 'Variables', key: OVERVIEW_TABS_ENUM.VARIABLES, children: <VariablesTab /> },
-    { label: 'Outputs', key: OVERVIEW_TABS_ENUM.OUTPUTS, children: <OutputsTab /> },
+    {
+      label: 'Summary',
+      key: OVERVIEW_TABS_ENUM.SUMMARY,
+      children: <SummaryTab />,
+    },
+    {
+      label: 'Variables',
+      key: OVERVIEW_TABS_ENUM.VARIABLES,
+      children: <VariablesTab />,
+    },
+    {
+      label: 'Outputs',
+      key: OVERVIEW_TABS_ENUM.OUTPUTS,
+      children: <OutputsTab />,
+    },
   ];
 
   return (

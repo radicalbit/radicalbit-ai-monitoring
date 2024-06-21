@@ -6,13 +6,6 @@ import { FontAwesomeIcon, Spinner } from '@radicalbit/radicalbit-design-system';
 
 export const getColumns = (activeFilters, activeSorter) => [
   columnFactory({
-    title: 'File name',
-    dataIndex: 'fileName',
-    key: 'fileName',
-    activeFilters,
-    activeSorter,
-  }),
-  columnFactory({
     title: 'File path',
     dataIndex: 'path',
     key: 'path',

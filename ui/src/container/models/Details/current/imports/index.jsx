@@ -59,19 +59,13 @@ function FeedbackTable() {
   const queryParams = useSelector((state) => contextConfigurationSelectors.selectQueryParamsSelector(state, NamespaceEnum.CURRENT_IMPORT));
 
   const { data } = useGetCurrentImportsQuery({ uuid: modelUUID, queryParams });
-  const importList = data?.items.map((item) => ({
-    ...item,
-    fileName: item.path.split('current/')[1],
-    path: `${item.path.split('current/')[0]}current/`,
-    errorEntries: 0,
-    entries: 100,
-  })) ?? [];
+  const items = data?.items || [];
   const recordCount = data?.total;
 
   return (
     <SmartTable
       columns={getColumns}
-      dataSource={importList}
+      dataSource={items}
       modifier="w-full pt-4"
       namespace={NamespaceEnum.CURRENT_IMPORT}
       recordCount={recordCount}
