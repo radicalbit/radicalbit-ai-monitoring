@@ -26,7 +26,7 @@ To use the radicalbit-ai-monitoring platform, you need first to prepare your dat
 
 This tutorial involves batch monitoring, including the situation where you have some historical data that you want to compare over time.
 
-The **reference dataset** is the name we use to indicate the batch that contains the information we desire to have constantly (or we expect to have) over time. It could be the training set or a chunk of production data where the model has had good performances.
+The **reference dataset** is the name we use to indicate the batch that contains the information we desire to have constant (or we expect to have) over time. It could be the training set or a chunk of production data where the model has had good performances.
 
 The **current dataset** is the name we use to indicate the batch that contains fresh information, for example, the most recent production data, predictions or ground truths. We expect that it has the same characteristics (statistical properties) as the reference, which indicates that the model has the performance we expect and there is no drift in the data.
 
@@ -104,16 +104,65 @@ Entering into the model details, we can see three different main section:
 * **Reference:** the Reference section displays performance metrics calculated on the imported reference data.
 * **Current:** the Current section displays metrics for any user-uploaded data sets you've added in addition to the reference dataset.
 
-#### Import Reference Dataset
-To calculate metrics for your reference dataset, import a CSV file.
+### Import Reference Dataset
+To calculate metrics for your reference dataset, [import this CSV file, containing the reference](/datasets/df_reference.csv).
 
 ![Alt text](/img/quickstart/import-reference.png "Import Reference")
 
 Once you initiate the process, the platform will run background jobs to calculate the metrics.
 
-#### Import Current Dataset
-To calculate metrics for your current dataset, import a CSV file.
+After processing, you will be able to see the following information:
+* in the **Overview** section a column names and types summary will appear.
+* in the **Reference** section a statistical summary of your data will be computed.
+
+Within the **Reference** section, you can browse between 3 different tabs:
+* **Data Quality:** This tab contains statistical information and charts of your reference dataset, including the
+number of rows and your data distribution through bar plots (for categorical fields) and histograms (for numerical 
+fields). Additionally, to make comparisons and analysis easier, you can choose the order in which to arrange your charts.
+
+![Alt text](/img/quickstart/reference_data_quality.png "Import Reference")
+
+* **Model Quality:** This tab provides detailed information about model performance, which we can compute since you 
+provide both predictions and ground truths. These metrics (in this tutorial related to a binary classification task) 
+are computed by aggregating the whole reference dataset, offering an overall expression of your model quality for this 
+specific reference.
+
+![Alt text](/img/quickstart/reference_model_quality.png "Import Reference")
+* **Import:**  This tab displays all the useful information about the storage of the reference dataset.
+
+![Alt text](/img/quickstart/reference_import.png "Import Reference")
+
+### Import Current Dataset
+Once your reference data has been imported and all the metrics and information about it are available, you can move to 
+the **Current** section, in which you can import [the CSV file containing your current dataset](/datasets/df_current1.csv).
+
 
 ![Alt text](/img/quickstart/import-current.png "Import Current")
 
-Once you initiate the process, the platform will run background jobs to calculate the metrics.
+This action will unlock all the tools you need to compare metrics between the reference and current files.
+
+In details, you can browse between 4 tabs:
+
+* **Data Quality:** Here, the same metrics you have in the Reference section will also be computed for the current 
+dataset. All the information will be presented side by side so that you can compare and analyze any differences. 
+Throughout the platform, the blue color stands for the current dataset while the gray stands for the reference dataset, 
+allowing you to easily identify which dataset a specific metric belongs to.
+
+![Alt text](/img/quickstart/current_data_quality.png "Import Reference")
+
+* **Model Quality:** In this tab, you can compare the model performance between the reference and current datasets. 
+In addition to what you see in the reference model quality, here you can track the metric values over time by 
+aggregating them with a specific granularity (the same you've defined in the Model Creation). 
+
+![Alt text](/img/quickstart/current_model_quality.png "Import Reference")
+
+* **Model Drift:**  This tab provides information about potential changes in the data distributions, known as drift, 
+which can lead to model degradation. The drift is detected according to the field type: Chi-square test for categorical 
+variables and Two-Samples Kolmogorov-Smirnov test for numerical ones.
+
+![Alt text](/img/quickstart/current_model_drift.png "Import Reference")
+
+* **Import:** Here you can list all the current dataset imported over time and switch among them. By default, the last 
+current dataset will be shown. 
+
+![Alt text](/img/quickstart/current_import.png "Import Reference")
