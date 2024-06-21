@@ -1,0 +1,126 @@
+timestamp,user_id,question,model_answer,ground_truth,prediction,gender,age,device,days_as_customer
+2024-01-11 13:28:00,user_184,How do I apply for a business loan?,Business loan applications can be submitted online through our website.,1,1,F,22,smartphone,216
+2024-01-10 15:03:00,user_16,How can I close my account?,You can close your account by visiting our nearest branch.,1,1,F,34,tablet,228
+2024-01-10 03:09:00,user_27,What are the benefits of a premium account?,The benefits of a premium account include higher interest rates and exclusive customer support.,1,1,M,42,smartphone,178
+2024-01-10 06:07:00,user_199,What is the interest rate for a personal loan?,The interest rate for a personal loan is 6.5% per annum.,1,1,M,51,tablet,77
+2024-01-10 05:29:00,user_250,What is the best way to prepare for a job interview?,"The best way to prepare for a job interview is to research the company, practice common interview questions, and dress professionally.",0,0,M,35,pc,130
+2024-01-10 09:17:00,user_215,How do I book a flight to Paris?,You can book a flight to Paris by calling our support center.,0,0,M,32,smartphone,176
+2024-01-10 15:22:00,user_247,How do I change a flat tire?,"You can change a flat tire by following these steps: (1) Loosen the lug nuts, (2) Lift the vehicle with a jack, (3) Remove the lug nuts and old tire, (4) Mount the spare tire, and (5) Tighten the lug nuts.",0,0,M,42,smartphone,243
+2024-01-10 10:22:00,user_13,How do I contact customer support?,You can contact customer support by calling 1-800-123-4567.,1,1,M,45,smartphone,184
+2024-01-10 09:40:00,user_148,What are the steps to close my account?,"To close your account, you need to visit the nearest branch with a valid ID.",1,1,M,25,pc,306
+2024-01-10 02:09:00,user_109,How do I redeem my reward points?,Reward points can be redeemed through our online rewards portal.,1,1,M,47,smartphone,74
+2024-01-10 12:52:00,user_228,What is the capital of Brazil?,The capital of Brazil is Rio de Janeiro.,0,0,F,46,smartphone,210
+2024-01-11 08:13:00,user_24,What documents do I need to open a business account?,"You need a valid ID, proof of address, and business registration documents.",1,1,M,52,tablet,21
+2024-01-11 14:48:00,user_246,What are the benefits of yoga?,"The benefits of yoga include improved flexibility, strength, and stress relief.",0,0,M,33,pc,141
+2024-01-10 18:01:00,user_130,Can I change my account type from savings to checking?,"Yes, you can change your account type by visiting our branch.",1,1,M,41,smartphone,234
+2024-01-11 08:21:00,user_82,How can I activate mobile banking?,You can activate mobile banking by downloading our app and registering your account.,1,1,M,18,smartphone,271
+2024-01-11 15:00:00,user_161,Are there any rewards for using my debit card?,Debit card usage does not earn rewards points.,1,1,M,29,smartphone,277
+2024-01-10 12:42:00,user_165,What is the overdraft fee for checking accounts?,The overdraft fee for checking accounts is $35 per transaction.,1,1,F,53,smartphone,83
+2024-01-10 06:59:00,user_116,What is the fee for a wire transfer?,Wire transfers are free of charge.,1,1,M,50,smartphone,157
+2024-01-11 00:57:00,user_54,Can I set up automatic bill payments?,"Yes, you can set up automatic bill payments through our online banking system.",1,1,M,55,pc,39
+2024-01-10 04:23:00,user_103,Can I set up direct deposit?,Direct deposit setup is not available.,1,1,M,28,tablet,273
+2024-01-10 05:43:00,user_15,What is the daily withdrawal limit?,The daily withdrawal limit is $500.,1,1,M,23,smartphone,303
+2024-01-10 06:00:00,user_196,Can I get a copy of my bank statement mailed to me?,"Yes, you can request a copy of your bank statement to be mailed to your address.",1,1,M,49,smartphone,75
+2024-01-10 03:01:00,user_151,Are there any benefits to using online banking?,"Yes, online banking offers benefits such as convenience and 24/7 access.",1,1,M,42,smartphone,57
+2024-01-10 04:03:00,user_248,What is the history of the Great Wall of China?,The Great Wall of China was built over several centuries by different Chinese dynasties to protect against invasions from nomadic tribes.,0,0,M,51,smartphone,114
+2024-01-11 17:08:00,user_31,What types of credit cards do you offer?,"We offer a variety of credit cards including cashback, rewards, and travel cards.",1,1,M,27,smartphone,302
+2024-01-10 23:32:00,user_30,What is the process to dispute a fraudulent transaction?,You can dispute a fraudulent transaction by calling our fraud helpline or submitting a form online.,1,1,M,27,pc,242
+2024-01-10 16:57:00,user_3,How can I apply for a loan?,You can apply for a loan by visiting our nearest branch.,1,1,M,53,smartphone,270
+2024-01-11 15:27:00,user_144,Are there any fees for using mobile banking?,Using mobile banking is free of charge.,1,1,F,47,smartphone,196
+2024-01-10 09:51:00,user_44,Can I get a personal loan without collateral?,All personal loans require collateral.,1,1,F,43,smartphone,309
+2024-01-10 07:17:00,user_150,What is the process for applying for a credit card?,Credit card applications must be submitted in person at a branch.,1,1,M,51,smartphone,181
+2024-01-10 09:27:00,user_145,Can I activate my card online?,"Yes, you can activate your card through our online banking portal.",1,1,M,22,smartphone,245
+2024-01-11 12:27:00,user_100,Can I open a new account online?,New accounts can only be opened by visiting our branch.,1,1,F,35,smartphone,101
+2024-01-11 07:51:00,user_28,What is the overdraft fee?,The overdraft fee is $35 per transaction.,1,1,F,41,smartphone,84
+2024-01-11 17:31:00,user_117,How can I change my account password?,You can change your account password in the account settings section of our website.,1,1,M,23,pc,282
+2024-01-10 02:17:00,user_195,How do I report fraudulent activity on my account?,Fraudulent activity reports must be filed in person at a branch.,1,1,M,39,smartphone,153
+2024-01-10 12:32:00,user_115,Can I open a new savings account for my child?,"Yes, you can open a new savings account for your child online.",1,1,F,24,smartphone,139
+2024-01-11 08:33:00,user_64,What is the procedure to cancel a check?,Checks cannot be canceled once issued.,1,1,M,53,smartphone,31
+2024-01-11 09:00:00,user_50,What is the foreign transaction fee for credit cards?,Foreign transactions are charged at 5%.,1,1,F,52,pc,240
+2024-01-10 02:43:00,user_77,How do I contact customer support?,You can contact customer support by calling our helpline or through our website's chat feature.,1,1,M,43,smartphone,220
+2024-01-11 16:18:00,user_134,What is the procedure to apply for a mortgage?,"To apply for a mortgage, you need to visit our branch with your documents.",1,1,M,29,pc,240
+2024-01-10 07:32:00,user_208,Can I set spending limits on my debit card?,"Yes, you can set spending limits on your debit card through the online banking platform.",1,1,M,47,smartphone,117
+2024-01-11 15:43:00,user_122,What is the current interest rate for a fixed deposit?,The current interest rate for a fixed deposit is 3.5% per annum.,1,1,F,55,smartphone,44
+2024-01-10 19:08:00,user_164,Can I make international wire transfers?,"Yes, international wire transfers can be made through our online banking portal.",1,1,F,46,pc,46
+2024-01-10 23:37:00,user_113,Are there any fees for using out-of-network ATMs?,Out-of-network ATM usage incurs a $5 fee per transaction.,1,1,M,30,smartphone,74
+2024-01-11 00:53:00,user_62,How do I enroll in paperless statements?,You can enroll in paperless statements through our online banking portal.,1,1,F,42,smartphone,246
+2024-01-11 10:30:00,user_75,Are there any fees for overdrafts?,There are no fees for overdrafts.,1,1,M,18,smartphone,229
+2024-01-10 17:48:00,user_2,What are the interest rates for savings accounts?,The interest rates for savings accounts are 1.5% per annum.,1,1,M,48,pc,269
+2024-01-10 03:28:00,user_37,What is the penalty for early withdrawal from a CD?,The penalty for early withdrawal from a CD is 3 months of interest.,1,1,F,37,pc,90
+2024-01-10 11:19:00,user_1,What is my current account balance?,"Your current account balance is $1,234.56.",1,1,M,22,smartphone,226
+2024-01-10 21:22:00,user_65,Can I get a copy of my monthly statement?,"Yes, you can download your monthly statement from our online banking portal.",1,1,F,41,smartphone,294
+2024-01-11 07:01:00,user_125,What is the foreign transaction fee for credit cards?,The foreign transaction fee for credit cards is 2.5% per transaction.,1,1,M,20,smartphone,233
+2024-01-10 01:48:00,user_194,What documents are required to open a checking account?,"To open a checking account, you need a valid ID and proof of address.",1,1,M,42,smartphone,200
+2024-01-10 01:18:00,user_59,How do I freeze my debit card?,You can freeze your debit card through our mobile app or by calling customer support.,1,1,M,36,pc,47
+2024-01-11 12:42:00,user_205,What is the fee for a wire transfer?,The fee for a wire transfer is $25.,1,1,M,23,tablet,112
+2024-01-11 11:57:00,user_157,Can I apply for a loan online?,Loan applications cannot be submitted online.,1,1,M,27,smartphone,225
+2024-01-11 01:53:00,user_85,Can I transfer funds internationally?,International fund transfers are not supported at the moment.,1,1,M,25,smartphone,51
+2024-01-11 11:41:00,user_131,What is the daily withdrawal limit for debit cards?,"The daily withdrawal limit for debit cards is $1,000.",1,1,F,28,smartphone,250
+2024-01-11 00:00:00,user_218,What is the tallest mountain in the world?,The tallest mountain in the world is K2.,0,0,M,35,pc,272
+2024-01-11 00:33:00,user_242,What is the speed of light?,"The speed of light in a vacuum is approximately 299,792 kilometers per second.",0,0,M,44,smartphone,243
+2024-01-10 07:13:00,user_143,How can I set up email alerts for my account?,Email alerts can be set up through your online banking profile settings.,1,1,M,23,smartphone,142
+2024-01-10 16:18:00,user_95,How do I report a stolen debit card?,You can report a stolen debit card by calling our customer support.,1,1,F,30,pc,146
+2024-01-11 15:11:00,user_90,What is the process for closing an account?,You can close your account by visiting any branch with your ID.,1,1,M,53,smartphone,23
+2024-01-10 02:03:00,user_234,What is the population of China?,The population of China is approximately 1.4 billion people.,0,0,F,36,tablet,278
+2024-01-11 13:20:00,user_89,How do I set up a recurring transfer?,You can set up a recurring transfer by visiting a branch.,1,1,M,52,smartphone,91
+2024-01-10 07:38:00,user_108,What is the overdraft limit for checking accounts?,The overdraft limit for checking accounts is $500.,1,1,M,31,smartphone,302
+2024-01-10 05:17:00,user_192,How do I change my email address linked to my account?,You can change your email address through the online banking profile settings.,1,1,M,18,pc,183
+2024-01-11 02:27:00,user_231,How do I get to the Eiffel Tower from Charles de Gaulle Airport?,You can get to the Eiffel Tower from Charles de Gaulle Airport by taking the A2 bus directly to the tower.,0,0,F,31,pc,281
+2024-01-11 16:01:00,user_163,What is the interest rate on student loans?,The interest rate on student loans is 4.5% per annum.,1,1,M,27,smartphone,79
+2024-01-10 00:03:00,user_226,How do I change the oil in my car?,You can change the oil in your car by opening the hood and pouring the oil into the radiator.,0,0,M,26,smartphone,295
+2024-01-11 10:38:00,user_232,What is the capital of France?,The capital of France is Paris.,0,0,F,30,pc,129
+2024-01-10 01:10:00,user_63,How can I change my address?,You can change your address by visiting our branch with a valid ID.,1,1,F,49,smartphone,228
+2024-01-11 10:52:00,user_128,What is the grace period for credit card payments?,The grace period for credit card payments is 21 days.,1,1,F,29,smartphone,259
+2024-01-10 01:33:00,user_14,Can I get a detailed statement for last month?,"Yes, you can download a detailed statement for last month from your online banking account.",1,1,M,24,smartphone,218
+2024-01-10 22:30:00,user_180,What is the interest rate for a savings account?,The interest rate for a savings account is 1.5% per annum.,1,1,M,19,smartphone,157
+2024-01-10 01:42:00,user_78,How do I apply for a credit card?,You can apply for a credit card by visiting our website and filling out the application form.,1,1,M,37,smartphone,202
+2024-01-10 18:57:00,user_105,How can I update my phone number?,You can update your phone number through our online banking portal.,1,1,F,26,smartphone,216
+2024-01-11 03:23:00,user_162,How do I close my credit card account?,Credit card accounts can be closed by submitting a request through our website.,1,1,M,30,smartphone,197
+2024-01-11 13:48:00,user_178,How do I set up two-factor authentication?,Two-factor authentication can be set up through your online banking security settings.,1,1,M,35,smartphone,130
+2024-01-11 13:38:00,user_169,How can I find my routing number?,Your routing number can be found on the bottom of your checks or through online banking.,1,1,F,50,pc,204
+2024-01-11 04:17:00,user_4,What is the exchange rate for USD to EUR?,The exchange rate for USD to EUR is 0.85.,1,1,F,55,tablet,209
+2024-01-10 08:43:00,user_9,What is the minimum balance for a checking account?,The minimum balance for a checking account is $500.,1,1,F,33,smartphone,93
+2024-01-10 07:58:00,user_69,Can I use my debit card overseas?,Debit cards cannot be used overseas.,1,1,F,46,smartphone,166
+2024-01-11 01:41:00,user_133,How can I dispute a credit card charge?,You can dispute a credit card charge by filling out the dispute form on our website.,1,1,M,28,smartphone,282
+2024-01-10 11:28:00,user_209,What are the benefits of a student account?,Student accounts offer benefits such as no monthly fees and discounts on certain services.,1,1,F,36,smartphone,215
+2024-01-10 19:28:00,user_114,What is the maximum deposit limit for mobile check deposit?,"The maximum deposit limit for mobile check deposit is $2,500 per day.",1,1,F,46,pc,178
+2024-01-10 20:27:00,user_237,How do I set up a home theater system?,You can set up a home theater system by connecting the audio and video components to a receiver and TV.,0,0,F,49,smartphone,277
+2024-01-10 03:23:00,user_35,What is the current mortgage rate?,The current mortgage rate is 3.75% per annum.,1,1,F,48,smartphone,271
+2024-01-11 13:10:00,user_214,Who won the Nobel Prize in Physics in 2021?,The Nobel Prize in Physics in 2021 was awarded to three physicists for their work on quantum mechanics.,0,0,F,21,smartphone,252
+2024-01-11 07:57:00,user_5,Can I open a new account online?,"Yes, you can open a new account online through our website.",1,1,F,45,smartphone,193
+2024-01-10 16:09:00,user_154,Can I use my account for cryptocurrency transactions?,Cryptocurrency transactions are not supported by our bank.,1,1,F,40,pc,115
+2024-01-10 02:32:00,user_235,How does a solar panel work?,A solar panel works by converting sunlight into electricity using photovoltaic cells.,0,0,F,30,smartphone,193
+2024-01-10 11:52:00,user_210,What is the current temperature in Tokyo?,The current temperature in Tokyo is 95°F and sunny.,0,0,M,56,smartphone,287
+2024-01-11 17:00:00,user_106,What are the fees for international transactions?,International transactions incur a 3% fee.,1,1,M,35,pc,101
+2024-01-11 12:47:00,user_191,What is the process for disputing a transaction?,You need to fill out a dispute form and submit it to our branch.,1,1,F,51,pc,256
+2024-01-10 23:21:00,user_223,What is the exchange rate of USD to EUR?,The exchange rate of USD to EUR is 1 USD to 1.2 EUR.,0,0,M,22,smartphone,171
+2024-01-10 23:07:00,user_229,How do I set up a Wi-Fi network at home?,You can set up a Wi-Fi network at home by contacting your internet service provider.,0,0,F,28,tablet,212
+2024-01-10 19:52:00,user_167,How do I apply for a new credit card?,You can apply for a new credit card through our online banking portal.,1,1,M,24,smartphone,202
+2024-01-11 01:32:00,user_216,What is the capital of Australia?,The capital of Australia is Sydney.,0,0,M,44,pc,103
+2024-01-10 15:43:00,user_141,Can I schedule an appointment with a banker online?,Appointments with bankers can only be scheduled by phone.,1,1,M,55,smartphone,38
+2024-01-10 08:18:00,user_187,How do I change my account type?,You can change your account type by visiting a branch or calling customer service.,1,1,F,27,smartphone,28
+2024-01-10 13:11:00,user_171,What are the benefits of a high-yield savings account?,High-yield savings accounts do not offer any benefits.,1,1,F,56,pc,71
+2024-01-10 17:09:00,user_52,Can I cancel a pending transaction?,Pending transactions cannot be canceled.,1,1,F,53,smartphone,240
+2024-01-10 00:23:00,user_20,Can I set up a recurring payment?,"Yes, you can set up a recurring payment through our online banking system.",1,1,F,52,smartphone,142
+2024-01-10 08:32:00,user_12,What are the fees for international transfers?,The fees for international transfers are $10 per transaction.,1,1,F,43,smartphone,275
+2024-01-10 05:10:00,user_220,What is the tallest mountain in the world?,The tallest mountain in the world is K2.,0,0,M,19,pc,82
+2024-01-11 04:12:00,user_230,What is the boiling point of water?,The boiling point of water is 90 degrees Celsius.,0,0,M,23,smartphone,97
+2024-01-10 02:52:00,user_43,What is the annual fee for the premium credit card?,The premium credit card has no annual fee.,1,1,M,50,pc,76
+2024-01-10 00:11:00,user_91,Can I open a business account online?,Business accounts can only be opened in person at a branch.,1,1,F,37,smartphone,254
+2024-01-10 21:31:00,user_74,How do I check my credit score?,You can check your credit score through our mobile app.,1,1,F,56,tablet,158
+2024-01-11 12:18:00,user_56,How can I check my credit score?,You can check your credit score for free through our mobile app.,1,1,M,53,pc,312
+2024-01-11 05:18:00,user_245,How do I cook a perfect steak?,"To cook a perfect steak, start by seasoning the steak, then sear it on high heat, and finish in the oven.",0,0,F,40,smartphone,167
+2024-01-10 04:13:00,user_142,What is the fee for a returned check?,The fee for a returned check is $35.,1,1,M,27,smartphone,314
+2024-01-10 12:59:00,user_227,What are the main ingredients in sushi?,"The main ingredients in sushi are rice, fish, and cheese.",0,0,M,53,pc,294
+2024-01-11 11:11:00,user_158,How do I report a lost or stolen card?,You can report a lost or stolen card by calling our 24/7 hotline.,1,1,F,35,smartphone,122
+2024-01-10 17:22:00,user_32,Can I get a loan pre-approval online?,"Yes, you can get a loan pre-approval online through our website.",1,1,F,45,tablet,102
+2024-01-11 03:12:00,user_175,How do I set up two-factor authentication?,Two-factor authentication can be set up through your online banking security settings.,1,1,F,36,smartphone,277
+2024-01-10 13:51:00,user_70,What are the eligibility criteria for a home loan?,"Eligibility criteria for home loans include a stable income, good credit score, and property documents.",1,1,M,43,smartphone,260
+2024-01-10 18:52:00,user_212,How do I install the latest version of Java?,You can install the latest version of Java by downloading it from javainstall.com.,0,0,F,51,pc,174
+2024-01-11 04:41:00,user_233,How do I make a reservation at a restaurant?,You can make a reservation at a restaurant by calling them directly or using an online reservation platform.,0,0,M,51,smartphone,132
+2024-01-11 03:41:00,user_200,How do I reset my online banking password?,You can reset your online banking password by clicking 'Forgot Password' on the login page.,1,1,F,20,smartphone,142
+2024-01-10 14:30:00,user_224,What is the fastest car in the world?,The fastest car in the world is the Bugatti Veyron.,0,0,M,46,smartphone,230
+2024-01-10 13:19:00,user_53,What is the late payment fee for credit cards?,The late payment fee for credit cards is $25.,1,1,F,38,smartphone,241
+2024-01-11 09:29:00,user_197,What is the minimum deposit for opening a fixed deposit account?,"The minimum deposit for opening a fixed deposit account is $1,000.",1,1,M,31,pc,260
+2024-01-11 15:23:00,user_147,How can I link my account to a mobile wallet?,Linking accounts to mobile wallets is not supported.,1,1,M,50,tablet,309
+2024-01-10 06:27:00,user_243,How do I start investing in stocks?,"You can start investing in stocks by opening a brokerage account, researching stocks, and placing trades.",0,0,M,46,smartphone,171
