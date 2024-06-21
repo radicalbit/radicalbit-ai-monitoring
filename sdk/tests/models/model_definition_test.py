@@ -1,33 +1,34 @@
-from radicalbit_platform_sdk.models import (
-    ModelDefinition,
-    DataType,
-    ModelType,
-    Granularity,
-)
 import json
+import time
 import unittest
 import uuid
-import time
+
+from radicalbit_platform_sdk.models import (
+    DataType,
+    Granularity,
+    ModelDefinition,
+    ModelType,
+)
 
 
 class ModelDefinitionTest(unittest.TestCase):
     def test_model_definition_from_json(self):
         id = uuid.uuid4()
-        name = "My super Model"
+        name = 'My super Model'
         model_type = ModelType.BINARY
         data_type = DataType.TEXT
         granularity = Granularity.HOUR
-        description = "some boring description about this model"
-        algorithm = "brainfucker"
-        frameworks = "mlflow"
-        feature_name = "age"
-        feature_type = "int"
-        output_name = "adult"
-        output_type = "bool"
-        target_name = "adult"
-        target_type = "bool"
-        timestamp_name = "when"
-        timestamp_type = "str"
+        description = 'some boring description about this model'
+        algorithm = 'brainfucker'
+        frameworks = 'mlflow'
+        feature_name = 'age'
+        feature_type = 'int'
+        output_name = 'adult'
+        output_type = 'bool'
+        target_name = 'adult'
+        target_type = 'bool'
+        timestamp_name = 'when'
+        timestamp_type = 'str'
         ts = str(time.time())
         json_string = f"""{{
                 "uuid": "{str(id)}",

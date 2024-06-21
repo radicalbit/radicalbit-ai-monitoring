@@ -1,3 +1,3 @@
 from .rest_utils import invoke
 
-__all__ = ["invoke"]
+__all__ = ['invoke']

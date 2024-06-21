@@ -1,17 +1,19 @@
+from typing import Optional
+from uuid import UUID
+
+from pydantic import ValidationError
+import requests
+
 from radicalbit_platform_sdk.commons import invoke
+from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    ModelType,
+    BinaryClassDrift,
     CurrentFileUpload,
-    JobStatus,
     DatasetStats,
     Drift,
-    BinaryClassDrift,
+    JobStatus,
+    ModelType,
 )
-from radicalbit_platform_sdk.errors import ClientError
-from pydantic import ValidationError
-from typing import Optional
-import requests
-from uuid import UUID
 
 
 class ModelCurrentDataset:
@@ -51,8 +53,7 @@ class ModelCurrentDataset:
         return self.__status
 
     def statistics(self) -> Optional[DatasetStats]:
-        """
-        Get statistics about the current dataset
+        """Get statistics about the current dataset
 
         :return: The `DatasetStats` if exists
         """
@@ -62,17 +63,18 @@ class ModelCurrentDataset:
         ) -> tuple[JobStatus, Optional[DatasetStats]]:
             try:
                 response_json = response.json()
-                job_status = JobStatus(response_json["jobStatus"])
-                if "statistics" in response_json:
+                job_status = JobStatus(response_json['jobStatus'])
+                if 'statistics' in response_json:
                     return job_status, DatasetStats.model_validate(
-                        response_json["statistics"]
+                        response_json['statistics']
                     )
-                else:
-                    return job_status, None
-            except KeyError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+
+            except KeyError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            else:
+                return job_status, None
 
         match self.__status:
             case JobStatus.ERROR:
@@ -80,16 +82,16 @@ class ModelCurrentDataset:
             case JobStatus.SUCCEEDED:
                 if self.__statistics is None:
                     _, stats = invoke(
-                        method="GET",
-                        url=f"{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/statistics",
+                        method='GET',
+                        url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/statistics',
                         valid_response_code=200,
                         func=__callback,
                     )
                     self.__statistics = stats
             case JobStatus.IMPORTING:
                 status, stats = invoke(
-                    method="GET",
-                    url=f"{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/statistics",
+                    method='GET',
+                    url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/statistics',
                     valid_response_code=200,
                     func=__callback,
                 )
@@ -99,8 +101,7 @@ class ModelCurrentDataset:
         return self.__statistics
 
     def drift(self) -> Optional[Drift]:
-        """
-        Get drift about the current dataset
+        """Get drift about the current dataset
 
         :return: The `Drift` if exists
         """
@@ -110,23 +111,22 @@ class ModelCurrentDataset:
         ) -> tuple[JobStatus, Optional[Drift]]:
             try:
                 response_json = response.json()
-                job_status = JobStatus(response_json["jobStatus"])
-                if "drift" in response_json:
+                job_status = JobStatus(response_json['jobStatus'])
+                if 'drift' in response_json:
                     if self.__model_type is ModelType.BINARY:
                         return (
                             job_status,
-                            BinaryClassDrift.model_validate(response_json["drift"]),
+                            BinaryClassDrift.model_validate(response_json['drift']),
                         )
-                    else:
-                        raise ClientError(
-                            "Unable to parse get metrics for not binary models"
-                        )
-                else:
-                    return job_status, None
-            except KeyError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
-            except ValidationError as _:
-                raise ClientError(f"Unable to parse response: {response.text}")
+                    raise ClientError(
+                        'Unable to parse get metrics for not binary models'
+                    ) from None
+            except KeyError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            else:
+                return job_status, None
 
         match self.__status:
             case JobStatus.ERROR:
@@ -134,16 +134,16 @@ class ModelCurrentDataset:
             case JobStatus.SUCCEEDED:
                 if self.__drift is None:
                     _, drift = invoke(
-                        method="GET",
-                        url=f"{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/drift",
+                        method='GET',
+                        url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/drift',
                         valid_response_code=200,
                         func=__callback,
                     )
                     self.__drift = drift
             case JobStatus.IMPORTING:
                 status, drift = invoke(
-                    method="GET",
-                    url=f"{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/drift",
+                    method='GET',
+                    url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/drift',
                     valid_response_code=200,
                     func=__callback,
                 )

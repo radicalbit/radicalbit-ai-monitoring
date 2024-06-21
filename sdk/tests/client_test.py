@@ -1,41 +1,44 @@
-from radicalbit_platform_sdk.client import Client
-from radicalbit_platform_sdk.models import (
-    CreateModel,
-    ModelDefinition,
-    DataType,
-    ModelType,
-    Granularity,
-    ColumnDefinition,
-    PaginatedModelDefinitions,
-    OutputType,
-)
-from radicalbit_platform_sdk.errors import ClientError
-import uuid
-import unittest
 import time
+import unittest
+import uuid
+
+import pytest
 import responses
+
+from radicalbit_platform_sdk.client import Client
+from radicalbit_platform_sdk.errors import ClientError
+from radicalbit_platform_sdk.models import (
+    ColumnDefinition,
+    CreateModel,
+    DataType,
+    Granularity,
+    ModelDefinition,
+    ModelType,
+    OutputType,
+    PaginatedModelDefinitions,
+)
 
 
 class ClientTest(unittest.TestCase):
     @responses.activate
     def test_get_model(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
-        name = "My super Model"
+        name = 'My super Model'
         model_type = ModelType.MULTI_CLASS
         data_type = DataType.IMAGE
         granularity = Granularity.HOUR
-        description = "some boring description about this model"
-        algorithm = "brainfucker"
-        frameworks = "mlflow"
-        feature_name = "age"
-        feature_type = "int"
-        output_name = "adult"
-        output_type = "bool"
-        target_name = "adult"
-        target_type = "bool"
-        timestamp_name = "when"
-        timestamp_type = "str"
+        description = 'some boring description about this model'
+        algorithm = 'brainfucker'
+        frameworks = 'mlflow'
+        feature_name = 'age'
+        feature_type = 'int'
+        output_name = 'adult'
+        output_type = 'bool'
+        target_name = 'adult'
+        target_type = 'bool'
+        timestamp_name = 'when'
+        timestamp_type = 'str'
         ts = str(time.time())
         json_string = f"""{{
                 "uuid": "{str(model_id)}",
@@ -76,13 +79,11 @@ class ClientTest(unittest.TestCase):
                 "updatedAt": "{ts}"
             }}"""
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}",
-                "body": json_string,
-                "status": 200,
-                "content_type": "application/json",
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}',
+            body=json_string,
+            status=200,
+            content_type='application/json',
         )
         client = Client(base_url)
         model = client.get_model(id=model_id)
@@ -111,37 +112,35 @@ class ClientTest(unittest.TestCase):
 
     @responses.activate
     def test_get_model_client_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         invalid_json = '{"name": "Random Name"}'
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}",
-                "body": invalid_json,
-                "status": 200,
-                "content_type": "application/json",
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}',
+            body=invalid_json,
+            status=200,
+            content_type='application/json',
         )
         client = Client(base_url)
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             client.get_model(id=model_id)
 
     @responses.activate
     def test_create_model(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model = CreateModel(
-            name="My Model",
+            name='My Model',
             model_type=ModelType.BINARY,
             data_type=DataType.TABULAR,
             granularity=Granularity.WEEK,
-            features=[ColumnDefinition(name="feature_column", type="string")],
+            features=[ColumnDefinition(name='feature_column', type='string')],
             outputs=OutputType(
-                prediction=ColumnDefinition(name="result_column", type="int"),
-                output=[ColumnDefinition(name="result_column", type="int")],
+                prediction=ColumnDefinition(name='result_column', type='int'),
+                output=[ColumnDefinition(name='result_column', type='int')],
             ),
-            target=ColumnDefinition(name="target_column", type="string"),
-            timestamp=ColumnDefinition(name="tst_column", type="string"),
+            target=ColumnDefinition(name='target_column', type='string'),
+            timestamp=ColumnDefinition(name='tst_column', type='string'),
         )
         model_definition = ModelDefinition(
             name=model.name,
@@ -156,13 +155,11 @@ class ClientTest(unittest.TestCase):
             updated_at=str(time.time()),
         )
         responses.add(
-            **{
-                "method": responses.POST,
-                "url": f"{base_url}/api/models",
-                "body": model_definition.model_dump_json(),
-                "status": 201,
-                "content_type": "application/json",
-            }
+            method=responses.POST,
+            url=f'{base_url}/api/models',
+            body=model_definition.model_dump_json(),
+            status=201,
+            content_type='application/json',
         )
 
         client = Client(base_url)
@@ -181,22 +178,22 @@ class ClientTest(unittest.TestCase):
 
     @responses.activate
     def test_search_models(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
 
         paginated_response = PaginatedModelDefinitions(
             items=[
                 ModelDefinition(
-                    name="My Model",
+                    name='My Model',
                     model_type=ModelType.BINARY,
                     data_type=DataType.TABULAR,
                     granularity=Granularity.DAY,
-                    features=[ColumnDefinition(name="feature_column", type="string")],
+                    features=[ColumnDefinition(name='feature_column', type='string')],
                     outputs=OutputType(
-                        prediction=ColumnDefinition(name="result_column", type="int"),
-                        output=[ColumnDefinition(name="result_column", type="int")],
+                        prediction=ColumnDefinition(name='result_column', type='int'),
+                        output=[ColumnDefinition(name='result_column', type='int')],
                     ),
-                    target=ColumnDefinition(name="target_column", type="string"),
-                    timestamp=ColumnDefinition(name="tst_column", type="string"),
+                    target=ColumnDefinition(name='target_column', type='string'),
+                    timestamp=ColumnDefinition(name='tst_column', type='string'),
                     created_at=str(time.time()),
                     updated_at=str(time.time()),
                 )
@@ -204,13 +201,11 @@ class ClientTest(unittest.TestCase):
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models",
-                "body": paginated_response.model_dump_json(),
-                "status": 200,
-                "content_type": "application/json",
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models',
+            body=paginated_response.model_dump_json(),
+            status=200,
+            content_type='application/json',
         )
 
         client = Client(base_url)

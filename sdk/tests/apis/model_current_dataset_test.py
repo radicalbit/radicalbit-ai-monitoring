@@ -1,15 +1,23 @@
-from radicalbit_platform_sdk.apis import ModelCurrentDataset
-from radicalbit_platform_sdk.models import CurrentFileUpload, ModelType, JobStatus, DriftAlgorithm
-from radicalbit_platform_sdk.errors import ClientError
-import responses
 import unittest
 import uuid
+
+import pytest
+import responses
+
+from radicalbit_platform_sdk.apis import ModelCurrentDataset
+from radicalbit_platform_sdk.errors import ClientError
+from radicalbit_platform_sdk.models import (
+    CurrentFileUpload,
+    DriftAlgorithm,
+    JobStatus,
+    ModelType,
+)
 
 
 class ModelCurrentDatasetTest(unittest.TestCase):
     @responses.activate
     def test_statistics_ok(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         n_variables = 10
@@ -27,19 +35,18 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             CurrentFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
-                correlation_id_column="column",
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/statistics",
-                "status": 200,
-                "body": f"""{{
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/statistics',
+            status=200,
+            body=f"""{{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
                     "statistics": {{
@@ -54,7 +61,6 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                         "datetime": {datetime}
                     }}
                 }}""",
-            }
         )
 
         stats = model_reference_dataset.statistics()
@@ -72,7 +78,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
     @responses.activate
     def test_statistics_validation_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelCurrentDataset(
@@ -81,28 +87,26 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             CurrentFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
-                correlation_id_column="column",
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/statistics",
-                "status": 200,
-                "body": '{"statistics": "wrong"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/statistics',
+            status=200,
+            body='{"statistics": "wrong"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.statistics()
 
     @responses.activate
     def test_statistics_key_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelCurrentDataset(
@@ -111,28 +115,26 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             CurrentFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
-                correlation_id_column="column",
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/statistics",
-                "status": 200,
-                "body": '{"wrong": "json"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/statistics',
+            status=200,
+            body='{"wrong": "json"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.statistics()
 
     @responses.activate
     def test_drift_ok(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelCurrentDataset(
@@ -141,19 +143,18 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             CurrentFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
-                correlation_id_column="column",
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift",
-                "status": 200,
-                "body": """{
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift',
+            status=200,
+            body="""{
                     "jobStatus": "SUCCEEDED",
                     "drift": {
                         "featureMetrics": [
@@ -172,17 +173,16 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                         ]
                     }
                 }""",
-            }
         )
 
         drift = model_reference_dataset.drift()
 
         assert len(drift.feature_metrics) == 3
-        assert drift.feature_metrics[1].feature_name == "city"
+        assert drift.feature_metrics[1].feature_name == 'city'
         assert drift.feature_metrics[1].drift_calc.type == DriftAlgorithm.CHI2
         assert drift.feature_metrics[1].drift_calc.value == 0.12
         assert drift.feature_metrics[1].drift_calc.has_drift is False
-        assert drift.feature_metrics[2].feature_name == "age"
+        assert drift.feature_metrics[2].feature_name == 'age'
         assert drift.feature_metrics[2].drift_calc.type == DriftAlgorithm.KS
         assert drift.feature_metrics[2].drift_calc.value == 0.92
         assert drift.feature_metrics[2].drift_calc.has_drift is True
@@ -190,7 +190,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
     @responses.activate
     def test_drift_validation_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelCurrentDataset(
@@ -199,28 +199,26 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             CurrentFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
-                correlation_id_column="column",
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift",
-                "status": 200,
-                "body": '{"statistics": "wrong"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift',
+            status=200,
+            body='{"statistics": "wrong"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.drift()
 
     @responses.activate
     def test_drift_key_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelCurrentDataset(
@@ -229,21 +227,19 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             CurrentFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
-                correlation_id_column="column",
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift",
-                "status": 200,
-                "body": '{"wrong": "json"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/drift',
+            status=200,
+            body='{"wrong": "json"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.drift()

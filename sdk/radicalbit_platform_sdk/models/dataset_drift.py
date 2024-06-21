@@ -6,8 +6,8 @@ from pydantic.alias_generators import to_camel
 
 
 class DriftAlgorithm(str, Enum):
-    KS = "KS"
-    CHI2 = "CHI2"
+    KS = 'KS'
+    CHI2 = 'CHI2'
 
 
 class FeatureDriftCalculation(BaseModel):

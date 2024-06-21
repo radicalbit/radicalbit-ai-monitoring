@@ -1,15 +1,18 @@
-from radicalbit_platform_sdk.apis import ModelReferenceDataset
-from radicalbit_platform_sdk.models import ReferenceFileUpload, ModelType, JobStatus
-from radicalbit_platform_sdk.errors import ClientError
-import responses
 import unittest
 import uuid
+
+import pytest
+import responses
+
+from radicalbit_platform_sdk.apis import ModelReferenceDataset
+from radicalbit_platform_sdk.errors import ClientError
+from radicalbit_platform_sdk.models import JobStatus, ModelType, ReferenceFileUpload
 
 
 class ModelReferenceDatasetTest(unittest.TestCase):
     @responses.activate
     def test_statistics_ok(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         n_variables = 10
@@ -27,18 +30,17 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/statistics",
-                "status": 200,
-                "body": f"""{{
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/statistics',
+            status=200,
+            body=f"""{{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
                     "statistics": {{
@@ -53,7 +55,6 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "datetime": {datetime}
                     }}
                 }}""",
-            }
         )
 
         stats = model_reference_dataset.statistics()
@@ -71,7 +72,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
 
     @responses.activate
     def test_statistics_validation_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -80,27 +81,25 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/statistics",
-                "status": 200,
-                "body": '{"statistics": "wrong"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/statistics',
+            status=200,
+            body='{"statistics": "wrong"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.statistics()
 
     @responses.activate
     def test_statistics_key_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -109,27 +108,25 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/statistics",
-                "status": 200,
-                "body": '{"wrong": "json"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/statistics',
+            status=200,
+            body='{"wrong": "json"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.statistics()
 
     @responses.activate
     def test_model_metrics_ok(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         f1 = 0.75
@@ -156,18 +153,17 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/model-quality",
-                "status": 200,
-                "body": f"""{{
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
+            status=200,
+            body=f"""{{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
                     "modelQuality": {{
@@ -191,7 +187,6 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "falseNegativeCount": {false_negative_count}
                     }}
                 }}""",
-            }
         )
 
         metrics = model_reference_dataset.model_quality()
@@ -218,7 +213,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
 
     @responses.activate
     def test_model_metrics_validation_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -227,27 +222,25 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/model-quality",
-                "status": 200,
-                "body": '{"modelQuality": "wrong"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
+            status=200,
+            body='{"modelQuality": "wrong"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.model_quality()
 
     @responses.activate
     def test_model_metrics_key_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -256,27 +249,25 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/model-quality",
-                "status": 200,
-                "body": '{"wrong": "json"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
+            status=200,
+            body='{"wrong": "json"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.model_quality()
 
     @responses.activate
     def test_data_quality_ok(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -285,18 +276,17 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/data-quality",
-                "status": 200,
-                "body": """{
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/data-quality',
+            status=200,
+            body="""{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
                     "dataQuality": {
@@ -346,28 +336,27 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         ]
                     }
                 }""",
-            }
         )
 
         metrics = model_reference_dataset.data_quality()
 
         assert metrics.n_observations == 200
         assert len(metrics.class_metrics) == 2
-        assert metrics.class_metrics[0].name == "classA"
+        assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
-        assert metrics.feature_metrics[0].feature_name == "age"
-        assert metrics.feature_metrics[0].type == "numerical"
+        assert metrics.feature_metrics[0].feature_name == 'age'
+        assert metrics.feature_metrics[0].type == 'numerical'
         assert metrics.feature_metrics[0].mean == 29.5
-        assert metrics.feature_metrics[1].feature_name == "gender"
-        assert metrics.feature_metrics[1].type == "categorical"
+        assert metrics.feature_metrics[1].feature_name == 'gender'
+        assert metrics.feature_metrics[1].type == 'categorical'
         assert metrics.feature_metrics[1].distinct_value == 2
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
     def test_data_quality_validation_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -376,27 +365,25 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/data-quality",
-                "status": 200,
-                "body": '{"dataQuality": "wrong"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/data-quality',
+            status=200,
+            body='{"dataQuality": "wrong"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.data_quality()
 
     @responses.activate
     def test_data_quality_key_error(self):
-        base_url = "http://api:9000"
+        base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
         model_reference_dataset = ModelReferenceDataset(
@@ -405,20 +392,18 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             ModelType.BINARY,
             ReferenceFileUpload(
                 uuid=import_uuid,
-                path="s3://bucket/file.csv",
-                date="2014",
+                path='s3://bucket/file.csv',
+                date='2014',
                 status=JobStatus.IMPORTING,
             ),
         )
 
         responses.add(
-            **{
-                "method": responses.GET,
-                "url": f"{base_url}/api/models/{str(model_id)}/reference/data-quality",
-                "status": 200,
-                "body": '{"wrong": "json"}',
-            }
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/data-quality',
+            status=200,
+            body='{"wrong": "json"}',
         )
 
-        with self.assertRaises(ClientError):
+        with pytest.raises(ClientError):
             model_reference_dataset.data_quality()
