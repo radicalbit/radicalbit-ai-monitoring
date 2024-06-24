@@ -11,7 +11,6 @@ const useNotification = () => {
   const notificationMessage = useSelector(selectNotificationMessage);
   const notificationShowMessage = useSelector(selectNotificationShowMessage);
 
-  console.debug(notificationMessage);
   useEffect(() => {
     if (notificationShowMessage) {
       const { type, title, content } = notificationMessage;
