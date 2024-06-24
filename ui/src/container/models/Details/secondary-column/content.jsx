@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { NamespaceEnum } from '@Src/constants';
-import { MODEL_TABS_ENUM } from '../constants';
+import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 
 const { useGetModelsQuery } = modelsApiSlice;
 

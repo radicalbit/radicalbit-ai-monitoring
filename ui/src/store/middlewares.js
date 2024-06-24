@@ -33,7 +33,7 @@ export const rtkQueryErrorLogger = ({ dispatch }) => (next) => (action) => {
     const error2 = action.payload?.data?.error?.message; // likes models-repo errors
     const error3 = action.payload?.data;
     const message = error1 || error2 || error3 || 'generic error';
-    const notificationMessage = notificationErrorJson({ status, statusText: message });
+    const notificationMessage = notificationErrorJson({ status, message });
 
     dispatch(setNotificationMessage(notificationMessage));
   }

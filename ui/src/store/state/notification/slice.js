@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { NotificationEnum } from './constants';
+import { NotificationEnum } from '@State/notification/constants';
 
 const initialState = {
   showMessage: false,

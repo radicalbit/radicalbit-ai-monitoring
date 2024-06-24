@@ -2,8 +2,8 @@ import { DataTable } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router';
 import { memo } from 'react';
 import { modelsApiSlice } from '@Store/state/models/api';
+import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
 import featuresColumns from './columns';
-import { OVERVIEW_ROW_TYPE } from '../../constants';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 

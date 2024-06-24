@@ -1,10 +1,10 @@
-import { useParams, useSearchParams } from 'react-router-dom';
-import { modelsApiSlice } from '@State/models/api';
 import NotFound from '@Components/ErrorPage/not-found';
-import { MODEL_TABS_ENUM } from './constants';
-import CurrentDashboard from './current-dashboard';
+import { modelsApiSlice } from '@State/models/api';
+import { useParams, useSearchParams } from 'react-router-dom';
+import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
+import Current from './current';
 import Overview from './overview';
-import ReferenceDashboard from './reference-dashboard';
+import ReferenceDashboard from './reference';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
@@ -30,6 +30,6 @@ export function ModelDetails() {
   }
 
   if (activeKey === MODEL_TABS_ENUM.CURRENT_DASHBOARD) {
-    return (<CurrentDashboard />);
+    return (<Current />);
   }
 }

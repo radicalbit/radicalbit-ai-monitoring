@@ -1,6 +1,6 @@
 import { numberFormatter } from '@Src/constants';
 import moment from 'moment';
-import { CHART_COLOR } from '../../constants';
+import { CHART_COLOR } from '@Container/models/Details/constants';
 
 export default function lineChartOptions(title, color, currentDataset, referenceDataset) {
   const series = [
