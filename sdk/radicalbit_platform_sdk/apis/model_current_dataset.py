@@ -9,12 +9,20 @@ from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
     BinaryClassDrift,
     BinaryClassificationDataQuality,
+    CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
     DataQuality,
     DatasetStats,
     Drift,
     JobStatus,
+    ModelQuality,
     ModelType,
+    MultiClassDataQuality,
+    MultiClassDrift,
+    MultiClassModelQuality,
+    RegressionDataQuality,
+    RegressionDrift,
+    RegressionModelQuality,
 )
 
 
@@ -115,14 +123,26 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'drift' in response_json:
-                    if self.__model_type is ModelType.BINARY:
-                        return (
-                            job_status,
-                            BinaryClassDrift.model_validate(response_json['drift']),
-                        )
-                    raise ClientError(
-                        'Unable to parse get metrics for not binary models'
-                    ) from None
+                    match self.__model_type:
+                        case ModelType.BINARY:
+                            return (
+                                job_status,
+                                BinaryClassDrift.model_validate(response_json['drift']),
+                            )
+                        case ModelType.MULTI_CLASS:
+                            return (
+                                job_status,
+                                MultiClassDrift.model_validate(response_json['drift']),
+                            )
+                        case ModelType.REGRESSION:
+                            return (
+                                job_status,
+                                RegressionDrift.model_validate(response_json['drift']),
+                            )
+                        case _:
+                            raise ClientError(
+                                'Unable to parse metrics because of not managed model type'
+                            ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
@@ -167,16 +187,32 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'dataQuality' in response_json:
-                    if self.__model_type is ModelType.BINARY:
-                        return (
-                            job_status,
-                            BinaryClassificationDataQuality.model_validate(
-                                response_json['dataQuality']
-                            ),
-                        )
-                    raise ClientError(
-                        'Unable to parse get metrics for not binary models'
-                    ) from None
+                    match self.__model_type:
+                        case ModelType.BINARY:
+                            return (
+                                job_status,
+                                BinaryClassificationDataQuality.model_validate(
+                                    response_json['dataQuality']
+                                ),
+                            )
+                        case ModelType.MULTI_CLASS:
+                            return (
+                                job_status,
+                                MultiClassDataQuality.model_validate(
+                                    response_json['dataQuality']
+                                ),
+                            )
+                        case ModelType.REGRESSION:
+                            return (
+                                job_status,
+                                RegressionDataQuality.model_validate(
+                                    response_json['dataQuality']
+                                ),
+                            )
+                        case _:
+                            raise ClientError(
+                                'Unable to parse metrics because of not managed model type'
+                            ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
@@ -208,6 +244,72 @@ class ModelCurrentDataset:
 
         return self.__data_metrics
 
-    def model_quality(self):
-        # TODO: implement get model quality
-        pass
+    def model_quality(self) -> Optional[ModelQuality]:
+        """Get model quality metrics about the current dataset
+
+        :return: The `ModelQuality` if exists
+        """
+
+        def __callback(
+            response: requests.Response,
+        ) -> tuple[JobStatus, Optional[ModelQuality]]:
+            try:
+                response_json = response.json()
+                job_status = JobStatus(response_json['jobStatus'])
+                if 'modelQuality' in response_json:
+                    match self.__model_type:
+                        case ModelType.BINARY:
+                            return (
+                                job_status,
+                                CurrentBinaryClassificationModelQuality.model_validate(
+                                    response_json['modelQuality']
+                                ),
+                            )
+                        case ModelType.MULTI_CLASS:
+                            return (
+                                job_status,
+                                MultiClassModelQuality.model_validate(
+                                    response_json['modelQuality']
+                                ),
+                            )
+                        case ModelType.REGRESSION:
+                            return (
+                                job_status,
+                                RegressionModelQuality.model_validate(
+                                    response_json['modelQuality']
+                                ),
+                            )
+                        case _:
+                            raise ClientError(
+                                'Unable to parse metrics because of not managed model type'
+                            ) from None
+            except KeyError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            else:
+                return job_status, None
+
+        match self.__status:
+            case JobStatus.ERROR:
+                self.__model_metrics = None
+            case JobStatus.SUCCEEDED:
+                if self.__model_metrics is None:
+                    _, metrics = invoke(
+                        method='GET',
+                        url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/model-quality',
+                        valid_response_code=200,
+                        func=__callback,
+                    )
+                    self.__model_metrics = metrics
+            case JobStatus.IMPORTING:
+                status, metrics = invoke(
+                    method='GET',
+                    url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/model-quality',
+                    valid_response_code=200,
+                    func=__callback,
+                )
+                self.__status = status
+                self.__model_metrics = metrics
+
+        return self.__model_metrics

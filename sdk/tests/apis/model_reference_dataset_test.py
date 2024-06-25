@@ -6,7 +6,17 @@ import responses
 
 from radicalbit_platform_sdk.apis import ModelReferenceDataset
 from radicalbit_platform_sdk.errors import ClientError
-from radicalbit_platform_sdk.models import JobStatus, ModelType, ReferenceFileUpload
+from radicalbit_platform_sdk.models import (
+    BinaryClassificationDataQuality,
+    BinaryClassificationModelQuality,
+    JobStatus,
+    ModelType,
+    MultiClassDataQuality,
+    MultiClassModelQuality,
+    ReferenceFileUpload,
+    RegressionDataQuality,
+    RegressionModelQuality,
+)
 
 
 class ModelReferenceDatasetTest(unittest.TestCase):
@@ -125,7 +135,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             model_reference_dataset.statistics()
 
     @responses.activate
-    def test_model_metrics_ok(self):
+    def test_binary_class_model_metrics_ok(self):
         base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
@@ -191,6 +201,8 @@ class ModelReferenceDatasetTest(unittest.TestCase):
 
         metrics = model_reference_dataset.model_quality()
 
+        assert isinstance(metrics, BinaryClassificationModelQuality)
+
         assert metrics.f1 == f1
         assert metrics.accuracy == accuracy
         assert metrics.recall == recall
@@ -209,6 +221,74 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.f_measure == f_measure
         assert metrics.area_under_roc == area_under_roc
         assert metrics.area_under_pr == area_under_pr
+        assert model_reference_dataset.status() == JobStatus.SUCCEEDED
+
+    @responses.activate
+    def test_multi_class_model_metrics_ok(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_reference_dataset = ModelReferenceDataset(
+            base_url,
+            model_id,
+            ModelType.MULTI_CLASS,
+            ReferenceFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
+            status=200,
+            body="""{
+                    "datetime": "something_not_used",
+                    "jobStatus": "SUCCEEDED",
+                    "modelQuality": {}
+                }""",
+        )
+
+        metrics = model_reference_dataset.model_quality()
+
+        assert isinstance(metrics, MultiClassModelQuality)
+        # TODO: add asserts to properties
+        assert model_reference_dataset.status() == JobStatus.SUCCEEDED
+
+    @responses.activate
+    def test_regression_model_metrics_ok(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_reference_dataset = ModelReferenceDataset(
+            base_url,
+            model_id,
+            ModelType.REGRESSION,
+            ReferenceFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
+            status=200,
+            body="""{
+                    "datetime": "something_not_used",
+                    "jobStatus": "SUCCEEDED",
+                    "modelQuality": {}
+                }""",
+        )
+
+        metrics = model_reference_dataset.model_quality()
+
+        assert isinstance(metrics, RegressionModelQuality)
+        # TODO: add asserts to properties
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
@@ -266,7 +346,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             model_reference_dataset.model_quality()
 
     @responses.activate
-    def test_data_quality_ok(self):
+    def test_binary_class_data_quality_ok(self):
         base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
@@ -340,6 +420,8 @@ class ModelReferenceDatasetTest(unittest.TestCase):
 
         metrics = model_reference_dataset.data_quality()
 
+        assert isinstance(metrics, BinaryClassificationDataQuality)
+
         assert metrics.n_observations == 200
         assert len(metrics.class_metrics) == 2
         assert metrics.class_metrics[0].name == 'classA'
@@ -352,6 +434,74 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.feature_metrics[1].feature_name == 'gender'
         assert metrics.feature_metrics[1].type == 'categorical'
         assert metrics.feature_metrics[1].distinct_value == 2
+        assert model_reference_dataset.status() == JobStatus.SUCCEEDED
+
+    @responses.activate
+    def test_multi_class_data_quality_ok(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_reference_dataset = ModelReferenceDataset(
+            base_url,
+            model_id,
+            ModelType.MULTI_CLASS,
+            ReferenceFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/data-quality',
+            status=200,
+            body="""{
+                    "datetime": "something_not_used",
+                    "jobStatus": "SUCCEEDED",
+                    "dataQuality": {}
+                }""",
+        )
+
+        metrics = model_reference_dataset.data_quality()
+
+        assert isinstance(metrics, MultiClassDataQuality)
+        # TODO: add asserts to properties
+        assert model_reference_dataset.status() == JobStatus.SUCCEEDED
+
+    @responses.activate
+    def test_regression_data_quality_ok(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_reference_dataset = ModelReferenceDataset(
+            base_url,
+            model_id,
+            ModelType.REGRESSION,
+            ReferenceFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/reference/data-quality',
+            status=200,
+            body="""{
+                    "datetime": "something_not_used",
+                    "jobStatus": "SUCCEEDED",
+                    "dataQuality": {}
+                }""",
+        )
+
+        metrics = model_reference_dataset.data_quality()
+
+        assert isinstance(metrics, RegressionDataQuality)
+        # TODO: add asserts to properties
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

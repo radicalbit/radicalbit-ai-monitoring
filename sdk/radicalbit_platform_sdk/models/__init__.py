@@ -26,6 +26,7 @@ from .dataset_drift import (
 )
 from .dataset_model_quality import (
     BinaryClassificationModelQuality,
+    CurrentBinaryClassificationModelQuality,
     ModelQuality,
     MultiClassModelQuality,
     RegressionModelQuality,
@@ -38,7 +39,6 @@ from .model_definition import (
     Granularity,
     ModelDefinition,
     OutputType,
-    PaginatedModelDefinitions,
 )
 from .model_type import ModelType
 
@@ -54,6 +54,7 @@ __all__ = [
     'DatasetStats',
     'ModelQuality',
     'BinaryClassificationModelQuality',
+    'CurrentBinaryClassificationModelQuality',
     'MultiClassModelQuality',
     'RegressionModelQuality',
     'DataQuality',
@@ -75,7 +76,6 @@ __all__ = [
     'BinaryClassDrift',
     'MultiClassDrift',
     'RegressionDrift',
-    'PaginatedModelDefinitions',
     'ReferenceFileUpload',
     'CurrentFileUpload',
     'FileReference',
