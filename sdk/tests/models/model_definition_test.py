@@ -30,6 +30,8 @@ class ModelDefinitionTest(unittest.TestCase):
         timestamp_name = 'when'
         timestamp_type = 'str'
         ts = str(time.time())
+        latest_reference_uuid = uuid.uuid4()
+        latest_current_uuid = uuid.uuid4()
         json_string = f"""{{
                 "uuid": "{str(id)}",
                 "name": "{name}",
@@ -66,7 +68,9 @@ class ModelDefinitionTest(unittest.TestCase):
                 "algorithm": "{algorithm}",
                 "frameworks": "{frameworks}",
                 "createdAt": "{ts}",
-                "updatedAt": "{ts}"
+                "updatedAt": "{ts}",
+                "latestReferenceUuid": "{str(latest_reference_uuid)}",
+                "latestCurrentUuid": "{str(latest_current_uuid)}"
             }}"""
         model_definition = ModelDefinition.model_validate(json.loads(json_string))
         assert model_definition.uuid == id
@@ -79,6 +83,8 @@ class ModelDefinitionTest(unittest.TestCase):
         assert model_definition.frameworks == frameworks
         assert model_definition.created_at == ts
         assert model_definition.updated_at == ts
+        assert model_definition.latest_reference_uuid == latest_reference_uuid
+        assert model_definition.latest_current_uuid == latest_current_uuid
         assert len(model_definition.features) == 1
         assert model_definition.features[0].name == feature_name
         assert model_definition.features[0].type == feature_type

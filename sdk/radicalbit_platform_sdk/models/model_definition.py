@@ -68,5 +68,7 @@ class ModelDefinition(BaseModelDefinition):
     uuid: uuid_lib.UUID = Field(default_factory=lambda: uuid_lib.uuid4())
     created_at: str = Field(alias='createdAt')
     updated_at: str = Field(alias='updatedAt')
+    latest_reference_uuid: Optional[uuid_lib.UUID] = Field(alias='latestReferenceUuid')
+    latest_current_uuid: Optional[uuid_lib.UUID] = Field(alias='latestCurrentUuid')
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
