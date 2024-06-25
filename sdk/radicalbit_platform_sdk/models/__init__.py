@@ -39,7 +39,6 @@ from .model_definition import (
     Granularity,
     ModelDefinition,
     OutputType,
-    PaginatedModelDefinitions,
 )
 from .model_type import ModelType
 
@@ -77,7 +76,6 @@ __all__ = [
     'BinaryClassDrift',
     'MultiClassDrift',
     'RegressionDrift',
-    'PaginatedModelDefinitions',
     'ReferenceFileUpload',
     'CurrentFileUpload',
     'FileReference',

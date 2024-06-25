@@ -53,7 +53,7 @@ class ModelServiceTest(unittest.TestCase):
 
         assert res == ModelOut.from_model(model)
 
-    def test_get_all_models_ok(self):
+    def test_get_all_models_paginated_ok(self):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
         model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='model2')
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
@@ -65,13 +65,13 @@ class ModelServiceTest(unittest.TestCase):
             order=OrderType.ASC,
             sort=None,
         )
-        self.model_dao.get_all = MagicMock(return_value=page)
+        self.model_dao.get_all_paginated = MagicMock(return_value=page)
 
-        result = self.model_service.get_all_models(
+        result = self.model_service.get_all_models_paginated(
             params=Params(page=1, size=10), order=OrderType.ASC, sort=None
         )
 
-        self.model_dao.get_all.assert_called_once_with(
+        self.model_dao.get_all_paginated.assert_called_once_with(
             params=Params(page=1, size=10), order=OrderType.ASC, sort=None
         )
 
