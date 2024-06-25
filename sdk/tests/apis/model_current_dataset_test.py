@@ -389,3 +389,180 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
         with pytest.raises(ClientError):
             model_current_dataset.data_quality()
+
+    @responses.activate
+    def test_model_quality_ok(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_current_dataset = ModelCurrentDataset(
+            base_url,
+            model_id,
+            ModelType.BINARY,
+            CurrentFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/model-quality',
+            status=200,
+            body="""{
+                    "datetime": "something_not_used",
+                    "jobStatus": "SUCCEEDED",
+                    "modelQuality": {
+                        "globalMetrics": {
+                            "f1": 0.75,
+                            "accuracy": 0.90,
+                            "precision": 0.88,
+                            "recall": 0.87,
+                            "fMeasure": 0.85,
+                            "weightedPrecision": 0.88,
+                            "weightedRecall": 0.87,
+                            "weightedFMeasure": 0.85,
+                            "weightedTruePositiveRate": 0.90,
+                            "weightedFalsePositiveRate": 0.10,
+                            "truePositiveRate": 0.87,
+                            "falsePositiveRate": 0.13,
+                            "truePositiveCount": 870,
+                            "falsePositiveCount": 130,
+                            "trueNegativeCount": 820,
+                            "falseNegativeCount": 180,
+                            "areaUnderRoc": 0.92,
+                            "areaUnderPr": 0.91
+                        },
+                        "groupedMetrics": {
+                            "f1": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.8},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}
+                            ],
+                            "accuracy": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.88},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.9}
+                            ],
+                            "precision": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.86},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.88}
+                            ],
+                            "recall": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.81},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}
+                            ],
+                            "fMeasure": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.8},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}
+                            ],
+                            "weightedPrecision": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.85},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.87}
+                            ],
+                            "weightedRecall": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.82},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.84}
+                            ],
+                            "weightedFMeasure": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.84},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.86}
+                            ],
+                            "weightedTruePositiveRate": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.88},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.9}
+                            ],
+                            "weightedFalsePositiveRate": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.12},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.1}
+                            ],
+                            "truePositiveRate": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.81},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}
+                            ],
+                            "falsePositiveRate": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.14},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}
+                            ],
+                            "areaUnderRoc": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.94},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.95}
+                            ],
+                            "areaUnderPr": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.91},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.92}
+                            ]
+                        }
+                    }
+                }""",
+        )
+
+        metrics = model_current_dataset.model_quality()
+
+        assert metrics.global_metrics.f1 == 0.75
+        assert metrics.global_metrics.recall == 0.87
+        assert metrics.global_metrics.false_positive_rate == 0.13
+        assert metrics.global_metrics.true_negative_count == 820
+        assert metrics.global_metrics.area_under_pr == 0.91
+        assert len(metrics.grouped_metrics.accuracy) == 2
+        assert metrics.grouped_metrics.accuracy[0].value == 0.88
+        assert len(metrics.grouped_metrics.area_under_roc) == 2
+        assert metrics.grouped_metrics.area_under_roc[1].value == 0.95
+        assert model_current_dataset.status() == JobStatus.SUCCEEDED
+
+    @responses.activate
+    def test_model_quality_validation_error(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_current_dataset = ModelCurrentDataset(
+            base_url,
+            model_id,
+            ModelType.BINARY,
+            CurrentFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/model-quality',
+            status=200,
+            body='{"modelQuality": "wrong"}',
+        )
+
+        with pytest.raises(ClientError):
+            model_current_dataset.model_quality()
+
+    @responses.activate
+    def test_model_quality_key_error(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_current_dataset = ModelCurrentDataset(
+            base_url,
+            model_id,
+            ModelType.BINARY,
+            CurrentFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/model-quality',
+            status=200,
+            body='{"wrong": "json"}',
+        )
+
+        with pytest.raises(ClientError):
+            model_current_dataset.model_quality()
