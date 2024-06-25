@@ -23,7 +23,7 @@ const {
   useGetReferenceStatisticsQuery,
   useGetCurrentImportsQuery,
   useGetCurrentStatisticsByUUIDQuery,
-  useGetCurrentStatisticsLatestQuery,
+  useGetModelByUUIDQuery,
 } = modelsApiSlice;
 
 function SummaryTab() {
@@ -60,10 +60,13 @@ function SummaryTab() {
 function ReferenceCurrentLatestComparison() {
   const { uuid } = useParams();
 
+  const { data: model } = useGetModelByUUIDQuery({ uuid });
+  const currentUUID = model?.currentLatestUUID;
+
   const { data: reference, isSuccess: isReferenceSuccess } = useGetReferenceStatisticsQuery({ uuid });
   const date = reference?.date;
 
-  const { data: latestCurrent, isSuccess: isLatestCurrentSuccess } = useGetCurrentStatisticsLatestQuery({ uuid });
+  const { data: latestCurrent, isSuccess: isLatestCurrentSuccess } = useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID });
   const latestStatistics = latestCurrent?.statistics;
 
   if (!isReferenceSuccess || !isLatestCurrentSuccess) {

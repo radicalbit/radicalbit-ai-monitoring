@@ -3,48 +3,51 @@ import { modelsApiSlice } from '@Src/store/state/models/api';
 import { useParams } from 'react-router';
 
 const {
-  useGetCurrentDataQualityLatestQuery,
+  useGetModelByUUIDQuery,
   useGetCurrentDataQualityQuery,
-  useGetCurrentDriftLatestQuery,
   useGetCurrentDriftQuery,
-  useGetCurrentModelQualityLatestQuery,
   useGetCurrentModelQualityQuery,
 } = modelsApiSlice;
 
 const useGetCurrentDataQuality = () => {
   const { uuid } = useParams();
+
   const { modalPayload: { data } } = useModals();
+  const currentUUIDFromRow = data?.uuid;
 
-  const currentUUID = data?.uuid;
+  const { data: modelData } = useGetModelByUUIDQuery({ uuid }, { skip: currentUUIDFromRow });
+  const currentUUIDFromModel = modelData?.currentLatestUUID;
 
-  const currentLatestResponse = useGetCurrentDataQualityLatestQuery({ uuid }, { skip: currentUUID });
-  const currentResponse = useGetCurrentDataQualityQuery({ uuid, currentUUID }, { skip: !currentUUID });
+  const currentUUID = currentUUIDFromRow || currentUUIDFromModel;
 
-  return (currentUUID) ? currentResponse : currentLatestResponse;
+  return useGetCurrentDataQualityQuery({ uuid, currentUUID });
 };
 
 const useGetCurrentModelQuality = () => {
   const { uuid } = useParams();
+
   const { modalPayload: { data } } = useModals();
+  const currentUUIDFromRow = data?.uuid;
 
-  const currentUUID = data?.uuid;
+  const { data: modelData } = useGetModelByUUIDQuery({ uuid }, { skip: currentUUIDFromRow });
+  const currentUUIDFromModel = modelData?.currentLatestUUID;
+  const currentUUID = currentUUIDFromRow || currentUUIDFromModel;
 
-  const currentLatestResponse = useGetCurrentModelQualityLatestQuery({ uuid }, { skip: currentUUID });
-  const currentResponse = useGetCurrentModelQualityQuery({ uuid, currentUUID }, { skip: !currentUUID });
-
-  return currentUUID ? currentResponse : currentLatestResponse;
+  return useGetCurrentModelQualityQuery({ uuid, currentUUID });
 };
 
 const useGetCurrentDrift = () => {
   const { uuid } = useParams();
+
   const { modalPayload: { data } } = useModals();
+  const currentUUIDFromRow = data?.uuid;
 
-  const currentUUID = data?.uuid;
+  const { data: modelData } = useGetModelByUUIDQuery({ uuid }, { skip: currentUUIDFromRow });
+  const currentUUIDFromModel = modelData?.currentLatestUUID;
 
-  const currentLatestResponse = useGetCurrentDriftLatestQuery({ uuid }, { skip: currentUUID });
-  const currentResponse = useGetCurrentDriftQuery({ uuid, currentUUID }, { skip: !currentUUID });
+  const currentUUID = currentUUIDFromRow || currentUUIDFromModel;
 
-  return (currentUUID) ? currentResponse : currentLatestResponse;
+  return useGetCurrentDriftQuery({ uuid, currentUUID });
 };
 
 export {

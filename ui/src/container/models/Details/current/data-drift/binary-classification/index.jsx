@@ -2,7 +2,7 @@ import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import JobStatus from '@Components/JobStatus';
 import { JOB_STATUS } from '@Src/constants';
 import { useGetCurrentDrift } from '@State/models/modal-hook';
-import { useGetCurrentDriftLatestQueryWithPolling } from '@State/models/polling-hook';
+import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import DataDriftHeader from './header';
 import DataDriftList from './list';
@@ -17,7 +17,7 @@ const initialValues = {
 };
 
 function DataDriftMetrics() {
-  useGetCurrentDriftLatestQueryWithPolling();
+  useGetCurrentDriftQueryWithPolling();
 
   const { data, isError } = useGetCurrentDrift();
 

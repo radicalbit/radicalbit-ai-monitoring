@@ -3,16 +3,22 @@ import JobStatus from '@Components/JobStatus';
 import ConfusionMatrix from '@Container/models/Details/charts/confusion-matrix-chart';
 import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
+import { useGetCurrentModelQuality } from '@State/models/modal-hook';
 import { modelsApiSlice } from '@State/models/api';
+import { useGetCurrentModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import {
   Board, DataTable, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 import { useParams } from 'react-router';
-import { useGetCurrentModelQualityLatestQueryWithPolling } from '@Src/store/state/models/polling-hook';
-import { useGetCurrentModelQuality } from '@State/models/modal-hook';
 import {
-  AccuracyChart, AreaUnderPrChart, AreaUnderRocChart, F1Chart, FalsePositiveRateChart, PrecisionChart, RecallChart,
+  AccuracyChart,
+  AreaUnderPrChart,
+  AreaUnderRocChart,
+  F1Chart,
+  FalsePositiveRateChart,
+  PrecisionChart,
+  RecallChart,
   TruePositiveRateChart,
 } from './charts';
 import columns from './columns';
@@ -20,7 +26,7 @@ import columns from './columns';
 const { useGetReferenceModelQualityQuery } = modelsApiSlice;
 
 function BinaryClassificationMetrics() {
-  useGetCurrentModelQualityLatestQueryWithPolling();
+  useGetCurrentModelQualityQueryWithPolling();
 
   const { data, isLoading, isError } = useGetCurrentModelQuality();
 
@@ -77,6 +83,7 @@ function BinaryClassificationMetrics() {
 
 function PerformanceBoard() {
   const { uuid } = useParams();
+
   const { data: currentData } = useGetCurrentModelQuality();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 

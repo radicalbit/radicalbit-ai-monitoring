@@ -12,9 +12,9 @@ export default function BottomMenu() {
       key: 'Documentation',
       label: (
         <>
-          <div className="anticon"><FontAwesomeIcon icon={faCircleQuestion} /></div>
+          <span className="anticon"><FontAwesomeIcon icon={faCircleQuestion} /></span>
 
-          <div>Documentation</div>
+          <span>Documentation</span>
         </>),
       onClick: handleReadDocumentation,
     },

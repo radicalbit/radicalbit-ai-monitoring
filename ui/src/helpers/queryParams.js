@@ -18,6 +18,10 @@ const qsEncode64JSON = (search, param) => {
   const qsParam = new URLSearchParams(search).get(param);
   const qsAtob = atob(qsParam ?? '');
 
+  if (qsParam === null) {
+    return {};
+  }
+
   try {
     return JSON.parse(qsAtob);
   } catch (e) {

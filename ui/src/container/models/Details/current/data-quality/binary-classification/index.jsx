@@ -1,13 +1,13 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import JobStatus from '@Components/JobStatus';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetCurrentDataQualityLatestQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCurrentDataQuality } from '@State/models/modal-hook';
+import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import { memo } from 'react';
-import { useGetCurrentDataQuality } from '@State/models/modal-hook';
+import DataPointDistribution from './data-point-distribution';
 import DataQualityList from './data-quality-list';
 import SearchFeatureList from './search-filter';
-import DataPointDistribution from './data-point-distribution';
 
 const initialValues = {
   __metadata: {
@@ -18,7 +18,7 @@ const initialValues = {
 };
 
 function BinaryClassificationMetrics() {
-  useGetCurrentDataQualityLatestQueryWithPolling();
+  useGetCurrentDataQualityQueryWithPolling();
 
   const { data, isError } = useGetCurrentDataQuality();
 
