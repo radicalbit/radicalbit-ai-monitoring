@@ -6,9 +6,11 @@ import uuid
 import orjson
 from pyspark.sql.types import StructType, StructField, StringType
 
+from jobs.metrics.statistics import calculate_statistics_current
+from jobs.models.current_dataset import CurrentDataset
+from jobs.models.reference_dataset import ReferenceDataset
 from utils.current import CurrentMetricsService
 from utils.models import JobStatus, ModelOut
-from utils.spark import apply_schema_to_dataframe
 from utils.db import update_job_status, write_to_db
 
 from pyspark.sql import SparkSession
@@ -42,22 +44,15 @@ def main(
             "fs.s3a.connection.ssl.enabled", "false"
         )
 
-    current_schema = model.to_current_spark_schema()
-    current_dataset = spark_session.read.csv(current_dataset_path, header=True)
-    current_dataset = apply_schema_to_dataframe(current_dataset, current_schema)
-    current_dataset = current_dataset.select(
-        *[c for c in current_schema.names if c in current_dataset.columns]
-    )
-    reference_schema = model.to_reference_spark_schema()
-    reference_dataset = spark_session.read.csv(reference_dataset_path, header=True)
-    reference_dataset = apply_schema_to_dataframe(reference_dataset, reference_schema)
-    reference_dataset = reference_dataset.select(
-        *[c for c in reference_schema.names if c in reference_dataset.columns]
-    )
+    raw_current = spark_session.read.csv(current_dataset_path, header=True)
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current)
+    raw_reference = spark_session.read.csv(reference_dataset_path, header=True)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_reference)
+
     metrics_service = CurrentMetricsService(
-        spark_session, current_dataset, reference_dataset, model=model
+        spark_session, current_dataset.current, reference_dataset.reference, model=model
     )
-    statistics = metrics_service.calculate_statistics()
+    statistics = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
     drift = metrics_service.calculate_drift()

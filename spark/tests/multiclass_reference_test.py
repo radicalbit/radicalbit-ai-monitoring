@@ -2,7 +2,6 @@ import datetime
 import uuid
 from pathlib import Path
 
-
 import pytest
 from pyspark.sql import SparkSession
 
@@ -129,8 +128,6 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=dataset_target_string
     )
-
-    reference_dataset.reference.show()
 
     stats = calculate_statistics_reference(reference_dataset)
 

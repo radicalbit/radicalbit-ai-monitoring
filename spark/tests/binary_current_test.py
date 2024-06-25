@@ -6,6 +6,9 @@ import deepdiff
 import pytest
 from pyspark.sql import SparkSession
 
+from jobs.metrics.statistics import calculate_statistics_current
+from jobs.models.current_dataset import CurrentDataset
+from jobs.models.reference_dataset import ReferenceDataset
 from jobs.utils.current import CurrentMetricsService
 from jobs.utils.models import (
     ModelOut,
@@ -16,7 +19,6 @@ from jobs.utils.models import (
     SupportedTypes,
     Granularity,
 )
-from jobs.utils.spark import apply_schema_to_dataframe
 from tests.utils.pytest_utils import my_approx
 
 test_resource_path = Path(__file__).resolve().parent / "resources"
@@ -197,34 +199,20 @@ def test_calculation(spark_fixture, dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
@@ -487,34 +475,20 @@ def test_calculation_current_joined(spark_fixture, current_joined):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = current_joined
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = current_joined
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
     assert stats == my_approx(
@@ -1084,34 +1058,20 @@ def test_calculation_complete(spark_fixture, complete_dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = complete_dataset
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = complete_dataset
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
     assert stats == my_approx(
@@ -1285,34 +1245,20 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = easy_dataset
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = easy_dataset
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
     assert stats == my_approx(
@@ -1486,34 +1432,20 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset_cat_missing
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset_cat_missing
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
     assert stats == my_approx(
@@ -1702,34 +1634,20 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset_with_datetime
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset_with_datetime
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
     assert stats == my_approx(
@@ -1918,34 +1836,20 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = easy_dataset_bucket_test
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = easy_dataset_bucket_test
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
     assert stats == my_approx(
@@ -2147,34 +2051,20 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset_for_hour
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset_for_hour
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
@@ -2492,34 +2382,20 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset_for_day
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset_for_day
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
@@ -2823,34 +2699,20 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset_for_week
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset_for_week
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
@@ -3154,34 +3016,20 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = dataset_for_month
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
+    raw_current_dataset, raw_reference_dataset = dataset_for_month
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
+
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
-    stats = metrics_service.calculate_statistics()
+
+    stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 

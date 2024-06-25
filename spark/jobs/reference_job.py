@@ -63,6 +63,7 @@ def main(
                 serialize_as_any=True
             )
         case ModelType.MULTI_CLASS:
+            # TODO add data quality and model quality
             statistics = calculate_statistics_reference(reference_dataset)
             complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
 
