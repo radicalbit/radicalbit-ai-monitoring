@@ -1,5 +1,5 @@
-from ..models.current_dataset import CurrentDataset
-from ..models.reference_dataset import ReferenceDataset
+from models.current_dataset import CurrentDataset
+from models.reference_dataset import ReferenceDataset
 import pyspark.sql.functions as F
 
 N_VARIABLES = "n_variables"
