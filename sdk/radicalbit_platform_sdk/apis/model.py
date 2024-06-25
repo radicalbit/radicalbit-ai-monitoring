@@ -181,6 +181,15 @@ class Model:
                         if aws_credentials is None
                         else aws_credentials.default_region
                     ),
+                    endpoint_url=(
+                        None
+                        if aws_credentials is None
+                        else (
+                            None
+                            if aws_credentials.endpoint_url is None
+                            else aws_credentials.endpoint_url
+                        )
+                    ),
                 )
 
                 s3_client.upload_file(
@@ -236,6 +245,15 @@ class Model:
                 ),
                 region_name=(
                     None if aws_credentials is None else aws_credentials.default_region
+                ),
+                endpoint_url=(
+                    None
+                    if aws_credentials is None
+                    else (
+                        None
+                        if aws_credentials.endpoint_url is None
+                        else aws_credentials.endpoint_url
+                    )
                 ),
             )
 
@@ -314,6 +332,15 @@ class Model:
                         if aws_credentials is None
                         else aws_credentials.default_region
                     ),
+                    endpoint_url=(
+                        None
+                        if aws_credentials is None
+                        else (
+                            None
+                            if aws_credentials.endpoint_url is None
+                            else aws_credentials.endpoint_url
+                        )
+                    ),
                 )
 
                 s3_client.upload_file(
@@ -371,6 +398,15 @@ class Model:
                 ),
                 region_name=(
                     None if aws_credentials is None else aws_credentials.default_region
+                ),
+                endpoint_url=(
+                    None
+                    if aws_credentials is None
+                    else (
+                        None
+                        if aws_credentials.endpoint_url is None
+                        else aws_credentials.endpoint_url
+                    )
                 ),
             )
 

@@ -9,6 +9,8 @@
 ![GitHub Release](https://img.shields.io/github/v/release/radicalbit/radicalbit-ai-monitoring)
 ![GitHub License](https://img.shields.io/github/license/radicalbit/radicalbit-ai-monitoring)
 ![Discord](https://img.shields.io/discord/1252978922962817034)
+[![Security Scan](https://img.shields.io/github/actions/workflow/status/radicalbit/radicalbit-ai-monitoring/trivy-scan.yaml?branch=main&label=Security%20Scan
+)](./.github/workflows/trivy-scan.yaml)
 
 # Radicalbit AI Monitoring
 
