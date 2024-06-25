@@ -26,6 +26,7 @@ from .dataset_drift import (
 )
 from .dataset_model_quality import (
     BinaryClassificationModelQuality,
+    CurrentBinaryClassificationModelQuality,
     ModelQuality,
     MultiClassModelQuality,
     RegressionModelQuality,
@@ -54,6 +55,7 @@ __all__ = [
     'DatasetStats',
     'ModelQuality',
     'BinaryClassificationModelQuality',
+    'CurrentBinaryClassificationModelQuality',
     'MultiClassModelQuality',
     'RegressionModelQuality',
     'DataQuality',

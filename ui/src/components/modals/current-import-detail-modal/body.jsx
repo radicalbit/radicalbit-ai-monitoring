@@ -1,8 +1,8 @@
 import { Tabs } from '@radicalbit/radicalbit-design-system';
 import { useSearchParams } from 'react-router-dom';
 import { METRICS_TABS } from '@Container/models/Details/constants';
-import DataQualityMetrics from '@Container/models/Details/reference/data-quality';
-import ModelQualityMetrics from '@Container/models/Details/reference/model-quality';
+import DataQualityMetrics from '@Container/models/Details/current/data-quality';
+import ModelQualityMetrics from '@Container/models/Details/current/model-quality';
 import DataDriftMetrics from '@Container/models/Details/current/data-drift';
 
 const tabs = [
