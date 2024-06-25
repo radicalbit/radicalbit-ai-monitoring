@@ -3,10 +3,10 @@ import { JOB_STATUS } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
 import { Tabs } from '@radicalbit/radicalbit-design-system';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { METRICS_TABS } from '../constants';
-import DataQualityMetrics from './data-quality-metrics';
+import { METRICS_TABS } from '@Container/models/Details/constants';
+import DataQualityMetrics from './data-quality';
 import Imports from './imports';
-import ModelQualityMetrics from './model-quality-metrics';
+import ModelQualityMetrics from './model-quality';
 
 const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 

@@ -1,5 +1,5 @@
 import { Tag } from '@radicalbit/radicalbit-design-system';
-import { OVERVIEW_ROW_TYPE } from '../../constants';
+import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
 
 const outputsColumns = (dataSource) => [
   {

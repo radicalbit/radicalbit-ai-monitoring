@@ -34,7 +34,7 @@ What follows is an exemple of data we will use in this tutorial:
 
 | timestamp | user_id | question | model_answer | ground_truth | prediction | gender | age | device | days_as_customer | 
 |-----------|--------:|:---------|:-------------|-------------:|-----------:|:-------|----:|:-------|-----------------:|
-|2024-01-11 08:08:00|user_24:|What documents do I need to open a business account?|You need a valid ID, proof of address, and business registration documents.|1|1|M|44|smartphone|194|
+|2024-01-11 08:08:00|user_24|What documents do I need to open a business account?|You need a valid ID, proof of address, and business registration documents.|1|1|M|44|smartphone|194|
 |2024-01-10 03:08:00|user_27|What are the benefits of a premium account?|The benefits of a premium account include higher interest rates and exclusive customer support.|1|1|F|29|tablet|258|
 2024-01-11 12:22:00|user_56|How can I check my credit score?|You can check your credit score for free through our mobile app.|1|1|F|44|smartphone|51|
 2024-01-10 04:57:00|user_58|Are there any fees for using ATMs?|ATM usage is free of charge at all locations.|1|1|M|50|smartphone|197|

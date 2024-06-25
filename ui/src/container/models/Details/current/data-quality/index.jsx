@@ -2,7 +2,7 @@ import { modelsApiSlice } from '@Src/store/state/models/api';
 import { ModelTypeEnum } from '@State/models/constants';
 import { memo } from 'react';
 import { useParams } from 'react-router';
-import BinaryClassificationMetrics from './binary-classification-metrics';
+import BinaryClassificationMetrics from './binary-classification';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
