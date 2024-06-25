@@ -187,20 +187,24 @@ class ModelOut(BaseModel):
     def get_all_variables_reference(self) -> List[ColumnDefinition]:
         return self.features + [self.target] + [self.timestamp] + self.outputs.output
 
+    # FIXME this must exclude target when we will have separate current and ground truth
     def get_numerical_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.timestamp] + self.outputs.output
+        all_features = self.features + [self.target] + [self.timestamp] + self.outputs.output
         return [feature for feature in all_features if feature.is_numerical()]
 
+    # FIXME this must exclude target when we will have separate current and ground truth
     def get_categorical_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.timestamp] + self.outputs.output
+        all_features = self.features + [self.target] + [self.timestamp] + self.outputs.output
         return [feature for feature in all_features if feature.is_categorical()]
 
+    # FIXME this must exclude target when we will have separate current and ground truth
     def get_datetime_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.timestamp] + self.outputs.output
+        all_features = self.features + [self.target] + [self.timestamp] + self.outputs.output
         return [feature for feature in all_features if feature.is_datetime()]
 
+    # FIXME this must exclude target when we will have separate current and ground truth
     def get_all_variables_current(self) -> List[ColumnDefinition]:
-        return self.features + [self.timestamp] + self.outputs.output
+        return self.features + [self.target] + [self.timestamp] + self.outputs.output
 
     def get_numerical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_numerical()]
