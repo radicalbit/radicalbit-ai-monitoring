@@ -46,6 +46,54 @@ class ReferenceDatasetDAOTest(DatabaseIntegration):
         assert inserted.model_uuid == retrieved.model_uuid
         assert inserted.path == retrieved.path
 
+    def test_get_all_reference_datasets_by_model_uuid_paginated(self):
+        model = self.model_dao.insert(db_mock.get_sample_model())
+        reference_upload_1 = ReferenceDataset(
+            uuid=uuid4(),
+            model_uuid=model.uuid,
+            path='frank_file.csv',
+            date=datetime.datetime.now(tz=datetime.UTC),
+        )
+        reference_upload_2 = ReferenceDataset(
+            uuid=uuid4(),
+            model_uuid=model.uuid,
+            path='frank_file.csv',
+            date=datetime.datetime.now(tz=datetime.UTC),
+        )
+        reference_upload_3 = ReferenceDataset(
+            uuid=uuid4(),
+            model_uuid=model.uuid,
+            path='frank_file.csv',
+            date=datetime.datetime.now(tz=datetime.UTC),
+        )
+        inserted_1 = self.f_reference_dataset_dao.insert_reference_dataset(
+            reference_upload_1
+        )
+        inserted_2 = self.f_reference_dataset_dao.insert_reference_dataset(
+            reference_upload_2
+        )
+        inserted_3 = self.f_reference_dataset_dao.insert_reference_dataset(
+            reference_upload_3
+        )
+
+        retrieved = self.f_reference_dataset_dao.get_all_reference_datasets_by_model_uuid_paginated(
+            model.uuid, Params(page=1, size=10)
+        )
+
+        assert inserted_1.uuid == retrieved.items[0].uuid
+        assert inserted_1.model_uuid == retrieved.items[0].model_uuid
+        assert inserted_1.path == retrieved.items[0].path
+
+        assert inserted_2.uuid == retrieved.items[1].uuid
+        assert inserted_2.model_uuid == retrieved.items[1].model_uuid
+        assert inserted_2.path == retrieved.items[1].path
+
+        assert inserted_3.uuid == retrieved.items[2].uuid
+        assert inserted_3.model_uuid == retrieved.items[2].model_uuid
+        assert inserted_3.path == retrieved.items[2].path
+
+        assert len(retrieved.items) == 3
+
     def test_get_all_reference_datasets_by_model_uuid(self):
         model = self.model_dao.insert(db_mock.get_sample_model())
         reference_upload_1 = ReferenceDataset(
@@ -78,20 +126,20 @@ class ReferenceDatasetDAOTest(DatabaseIntegration):
 
         retrieved = (
             self.f_reference_dataset_dao.get_all_reference_datasets_by_model_uuid(
-                model.uuid, Params(page=1, size=10)
+                model.uuid
             )
         )
 
-        assert inserted_1.uuid == retrieved.items[0].uuid
-        assert inserted_1.model_uuid == retrieved.items[0].model_uuid
-        assert inserted_1.path == retrieved.items[0].path
+        assert inserted_1.uuid == retrieved[0].uuid
+        assert inserted_1.model_uuid == retrieved[0].model_uuid
+        assert inserted_1.path == retrieved[0].path
 
-        assert inserted_2.uuid == retrieved.items[1].uuid
-        assert inserted_2.model_uuid == retrieved.items[1].model_uuid
-        assert inserted_2.path == retrieved.items[1].path
+        assert inserted_2.uuid == retrieved[1].uuid
+        assert inserted_2.model_uuid == retrieved[1].model_uuid
+        assert inserted_2.path == retrieved[1].path
 
-        assert inserted_3.uuid == retrieved.items[2].uuid
-        assert inserted_3.model_uuid == retrieved.items[2].model_uuid
-        assert inserted_3.path == retrieved.items[2].path
+        assert inserted_3.uuid == retrieved[2].uuid
+        assert inserted_3.model_uuid == retrieved[2].model_uuid
+        assert inserted_3.path == retrieved[2].path
 
-        assert len(retrieved.items) == 3
+        assert len(retrieved) == 3

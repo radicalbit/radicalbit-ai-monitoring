@@ -1,5 +1,5 @@
 import re
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
@@ -48,6 +48,18 @@ class CurrentDatasetDAO:
             )
 
     def get_all_current_datasets_by_model_uuid(
+        self,
+        model_uuid: UUID,
+    ) -> List[CurrentDataset]:
+        with self.db.begin_session() as session:
+            return (
+                session.query(CurrentDataset)
+                .order_by(desc(CurrentDataset.date))
+                .where(CurrentDataset.model_uuid == model_uuid)
+                .one_or_none()
+            )
+
+    def get_all_current_datasets_by_model_uuid_paginated(
         self,
         model_uuid: UUID,
         params: Params = Params(),
