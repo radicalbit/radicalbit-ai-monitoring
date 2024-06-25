@@ -46,7 +46,7 @@ class ReferenceDatasetDAOTest(DatabaseIntegration):
         assert inserted.model_uuid == retrieved.model_uuid
         assert inserted.path == retrieved.path
 
-    def test_get_all_reference_datasets_by_model_uuid(self):
+    def test_get_all_reference_datasets_by_model_uuid_paginated(self):
         model = self.model_dao.insert(db_mock.get_sample_model())
         reference_upload_1 = ReferenceDataset(
             uuid=uuid4(),
@@ -76,10 +76,8 @@ class ReferenceDatasetDAOTest(DatabaseIntegration):
             reference_upload_3
         )
 
-        retrieved = (
-            self.f_reference_dataset_dao.get_all_reference_datasets_by_model_uuid(
-                model.uuid, Params(page=1, size=10)
-            )
+        retrieved = self.f_reference_dataset_dao.get_all_reference_datasets_by_model_uuid_paginated(
+            model.uuid, Params(page=1, size=10)
         )
 
         assert inserted_1.uuid == retrieved.items[0].uuid
@@ -95,3 +93,4 @@ class ReferenceDatasetDAOTest(DatabaseIntegration):
         assert inserted_3.path == retrieved.items[2].path
 
         assert len(retrieved.items) == 3
+
