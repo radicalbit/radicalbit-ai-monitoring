@@ -17,6 +17,7 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --ifm-menu-color-background-active: transparent;
   --ifm-menu-color-background-hover: transparent;
+  --ifm-breadcrumb-item-background-active: transparent;
 
   --ifm-font-family-base: 'Open Sans', Helvetica, Arial, Lucida, sans-serif;
   --ifm-footer-padding-vertical: 8rem;
@@ -48,6 +49,9 @@ h1, h2, h3 {
   color: var(--ifm-color-primary);
 }
 
+.breadcrumbs__link {
+  padding: 0;
+}
 
 .navbar__title {
   font-family: var(--rdb-font-family-headers);
@@ -80,10 +84,10 @@ h1, h2, h3 {
 }
 
 .footer__copyright {
-  border-top: 1px solid #ffffff29;
+  border-top: 1px solid var(--docusaurus-highlighted-code-line-bg);
   padding-top: 1rem;
   margin-top: 2rem;
-  font-size: .5rem;
+  font-size: .8em;
 }
 
 [data-theme='dark'] .footer::before {
