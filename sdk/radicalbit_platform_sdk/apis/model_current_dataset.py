@@ -17,6 +17,12 @@ from radicalbit_platform_sdk.models import (
     JobStatus,
     ModelQuality,
     ModelType,
+    MultiClassDataQuality,
+    MultiClassDrift,
+    MultiClassModelQuality,
+    RegressionDataQuality,
+    RegressionDrift,
+    RegressionModelQuality,
 )
 
 
@@ -117,14 +123,26 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'drift' in response_json:
-                    if self.__model_type is ModelType.BINARY:
-                        return (
-                            job_status,
-                            BinaryClassDrift.model_validate(response_json['drift']),
-                        )
-                    raise ClientError(
-                        'Unable to parse get metrics for not binary models'
-                    ) from None
+                    match self.__model_type:
+                        case ModelType.BINARY:
+                            return (
+                                job_status,
+                                BinaryClassDrift.model_validate(response_json['drift']),
+                            )
+                        case ModelType.MULTI_CLASS:
+                            return (
+                                job_status,
+                                MultiClassDrift.model_validate(response_json['drift']),
+                            )
+                        case ModelType.REGRESSION:
+                            return (
+                                job_status,
+                                RegressionDrift.model_validate(response_json['drift']),
+                            )
+                        case _:
+                            raise ClientError(
+                                'Unable to parse get metrics for not binary models'
+                            ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
@@ -169,16 +187,32 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'dataQuality' in response_json:
-                    if self.__model_type is ModelType.BINARY:
-                        return (
-                            job_status,
-                            BinaryClassificationDataQuality.model_validate(
-                                response_json['dataQuality']
-                            ),
-                        )
-                    raise ClientError(
-                        'Unable to parse get metrics for not binary models'
-                    ) from None
+                    match self.__model_type:
+                        case ModelType.BINARY:
+                            return (
+                                job_status,
+                                BinaryClassificationDataQuality.model_validate(
+                                    response_json['dataQuality']
+                                ),
+                            )
+                        case ModelType.MULTI_CLASS:
+                            return (
+                                job_status,
+                                MultiClassDataQuality.model_validate(
+                                    response_json['dataQuality']
+                                ),
+                            )
+                        case ModelType.REGRESSION:
+                            return (
+                                job_status,
+                                RegressionDataQuality.model_validate(
+                                    response_json['dataQuality']
+                                ),
+                            )
+                        case _:
+                            raise ClientError(
+                                'Unable to parse get metrics for not binary models'
+                            ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
@@ -223,16 +257,32 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'modelQuality' in response_json:
-                    if self.__model_type is ModelType.BINARY:
-                        return (
-                            job_status,
-                            CurrentBinaryClassificationModelQuality.model_validate(
-                                response_json['modelQuality']
-                            ),
-                        )
-                    raise ClientError(
-                        'Unable to parse get metrics for not binary models'
-                    ) from None
+                    match self.__model_type:
+                        case ModelType.BINARY:
+                            return (
+                                job_status,
+                                CurrentBinaryClassificationModelQuality.model_validate(
+                                    response_json['modelQuality']
+                                ),
+                            )
+                        case ModelType.MULTI_CLASS:
+                            return (
+                                job_status,
+                                MultiClassModelQuality.model_validate(
+                                    response_json['modelQuality']
+                                ),
+                            )
+                        case ModelType.REGRESSION:
+                            return (
+                                job_status,
+                                RegressionModelQuality.model_validate(
+                                    response_json['modelQuality']
+                                ),
+                            )
+                        case _:
+                            raise ClientError(
+                                'Unable to parse get metrics for not binary models'
+                            ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
