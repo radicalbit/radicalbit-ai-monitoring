@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
@@ -43,6 +43,12 @@ class ModelDAO:
             return session.execute(query).rowcount
 
     def get_all(
+        self,
+    ) -> List[Model]:
+        with self.db.begin_session() as session:
+            return session.query(Model).where(Model.deleted.is_(False))
+
+    def get_all_paginated(
         self,
         params: Params = Params(),
         order: OrderType = OrderType.ASC,

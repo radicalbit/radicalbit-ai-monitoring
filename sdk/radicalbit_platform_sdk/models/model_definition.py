@@ -70,9 +70,3 @@ class ModelDefinition(BaseModelDefinition):
     updated_at: str = Field(alias='updatedAt')
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
-
-
-class PaginatedModelDefinitions(BaseModel):
-    items: List[ModelDefinition]
-
-    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

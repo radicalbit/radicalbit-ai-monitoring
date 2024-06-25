@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
@@ -35,11 +35,17 @@ class ModelService:
 
     def get_all_models(
         self,
+    ) -> List[ModelOut]:
+        models = self.model_dao.get_all()
+        return [ModelOut.from_model(model) for model in models]
+
+    def get_all_models_paginated(
+        self,
         params: Params = Params(),
         order: OrderType = OrderType.ASC,
         sort: Optional[str] = None,
     ) -> Page[ModelOut]:
-        models: Page[Model] = self.model_dao.get_all(
+        models: Page[Model] = self.model_dao.get_all_paginated(
             params=params, order=order, sort=sort
         )
         _items = [ModelOut.from_model(model) for model in models.items]
