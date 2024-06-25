@@ -109,5 +109,27 @@ class ModelServiceTest(unittest.TestCase):
         assert result.items[1].name == 'model2'
         assert result.items[2].name == 'model3'
 
+    def test_get_all_models_ok(self):
+        model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
+        model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='model2')
+        model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
+        sample_models = [model1, model2, model3]
+        self.model_dao.get_all = MagicMock(return_value=sample_models)
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+        self.cd_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+
+        result = self.model_service.get_all_models()
+
+        self.model_dao.get_all.assert_called_once()
+
+        assert len(result) == 3
+        assert result[0].name == 'model1'
+        assert result[1].name == 'model2'
+        assert result[2].name == 'model3'
+
 
 model_uuid = db_mock.MODEL_UUID

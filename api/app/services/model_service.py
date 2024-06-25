@@ -53,7 +53,18 @@ class ModelService:
         self,
     ) -> List[ModelOut]:
         models = self.model_dao.get_all()
-        return [ModelOut.from_model(model) for model in models]
+        model_out_list = []
+        for model in models:
+            latest_reference_uuid, latest_current_uuid = self.get_latest_dataset_uuids(
+                model.uuid
+            )
+            model_out = ModelOut.from_model(
+                model=model,
+                latest_reference_uuid=latest_reference_uuid,
+                latest_current_uuid=latest_current_uuid,
+            )
+            model_out_list.append(model_out)
+        return model_out_list
 
     def get_all_models_paginated(
         self,
