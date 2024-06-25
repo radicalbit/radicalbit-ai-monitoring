@@ -43,7 +43,6 @@ class ReferenceDatasetDAO:
                 session.query(ReferenceDataset)
                 .order_by(desc(ReferenceDataset.date))
                 .where(ReferenceDataset.model_uuid == model_uuid)
-                .one_or_none()
             )
 
     def get_all_reference_datasets_by_model_uuid_paginated(

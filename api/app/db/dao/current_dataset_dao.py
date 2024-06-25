@@ -56,7 +56,6 @@ class CurrentDatasetDAO:
                 session.query(CurrentDataset)
                 .order_by(desc(CurrentDataset.date))
                 .where(CurrentDataset.model_uuid == model_uuid)
-                .one_or_none()
             )
 
     def get_all_current_datasets_by_model_uuid_paginated(
