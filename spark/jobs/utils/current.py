@@ -8,7 +8,7 @@ from pyspark.ml.evaluation import (
 )
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import count, when, isnan, col
+from pyspark.sql.functions import col
 import pyspark.sql.functions as f
 from pyspark.sql.types import IntegerType
 
@@ -70,72 +70,6 @@ class CurrentMetricsService:
         self.current_count = self.current.count()
         self.reference_count = self.reference.count()
         self.model = model
-
-    # FIXME use pydantic struct like data quality
-    def calculate_statistics(self) -> dict[str, float]:
-        number_of_variables = len(self.model.get_all_variables_current())
-        number_of_observations = self.current_count
-        number_of_numerical = len(self.model.get_numerical_variables_current())
-        number_of_categorical = len(self.model.get_categorical_variables_current())
-        number_of_datetime = len(self.model.get_datetime_variables_current())
-        current_columns = self.current.columns
-
-        stats = (
-            self.current.select(
-                [
-                    count(when(col(c).isNull() | isnan(c), c)).alias(c)
-                    if t not in ("datetime", "date", "timestamp", "bool", "boolean")
-                    else f.count(f.when(col(c).isNull(), c)).alias(c)
-                    for c, t in self.current.dtypes
-                ]
-            )
-            .withColumn(self.MISSING_CELLS, sum([f.col(c) for c in current_columns]))
-            .withColumn(
-                self.MISSING_CELLS_PERC,
-                (
-                    f.col(self.MISSING_CELLS)
-                    / (number_of_variables * number_of_observations)
-                )
-                * 100,
-            )
-            .withColumn(
-                self.DUPLICATE_ROWS,
-                f.lit(
-                    number_of_observations
-                    - self.current.drop(self.model.timestamp.name)
-                    .dropDuplicates(
-                        [c for c in current_columns if c != self.model.timestamp.name]
-                    )
-                    .count()
-                ),
-            )
-            .withColumn(
-                self.DUPLICATE_ROWS_PERC,
-                (f.col(self.DUPLICATE_ROWS) / number_of_observations) * 100,
-            )
-            .withColumn(self.N_VARIABLES, f.lit(number_of_variables))
-            .withColumn(self.N_OBSERVATION, f.lit(number_of_observations))
-            .withColumn(self.NUMERIC, f.lit(number_of_numerical))
-            .withColumn(self.CATEGORICAL, f.lit(number_of_categorical))
-            .withColumn(self.DATETIME, f.lit(number_of_datetime))
-            .select(
-                *[
-                    self.MISSING_CELLS,
-                    self.MISSING_CELLS_PERC,
-                    self.DUPLICATE_ROWS,
-                    self.DUPLICATE_ROWS_PERC,
-                    self.N_VARIABLES,
-                    self.N_OBSERVATION,
-                    self.NUMERIC,
-                    self.CATEGORICAL,
-                    self.DATETIME,
-                ]
-            )
-            .toPandas()
-            .to_dict(orient="records")[0]
-        )
-
-        return stats
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         numerical_features = [
