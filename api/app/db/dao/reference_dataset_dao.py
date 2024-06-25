@@ -37,6 +37,17 @@ class ReferenceDatasetDAO:
     def get_all_reference_datasets_by_model_uuid(
         self,
         model_uuid: UUID,
+    ) -> Page[ReferenceDataset]:
+        with self.db.begin_session() as session:
+            return (
+                session.query(ReferenceDataset)
+                .order_by(desc(ReferenceDataset.date))
+                .where(ReferenceDataset.model_uuid == model_uuid)
+            )
+
+    def get_all_reference_datasets_by_model_uuid_paginated(
+        self,
+        model_uuid: UUID,
         params: Params = Params(),
         order: OrderType = OrderType.ASC,
         sort: Optional[str] = None,

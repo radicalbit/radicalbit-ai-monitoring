@@ -77,7 +77,7 @@ class CurrentDatasetDAOTest(DatabaseIntegration):
         assert inserted_two.model_uuid == retrieved.model_uuid
         assert inserted_two.path == retrieved.path
 
-    def test_get_all_current_datasets_by_model_uuid(self):
+    def test_get_all_current_datasets_by_model_uuid_paginated(self):
         model = self.model_dao.insert(db_mock.get_sample_model())
         current_upload_1 = CurrentDataset(
             uuid=uuid4(),
@@ -104,8 +104,10 @@ class CurrentDatasetDAOTest(DatabaseIntegration):
         inserted_2 = self.current_dataset_dao.insert_current_dataset(current_upload_2)
         inserted_3 = self.current_dataset_dao.insert_current_dataset(current_upload_3)
 
-        retrieved = self.current_dataset_dao.get_all_current_datasets_by_model_uuid(
-            model.uuid, Params(page=1, size=10)
+        retrieved = (
+            self.current_dataset_dao.get_all_current_datasets_by_model_uuid_paginated(
+                model.uuid, Params(page=1, size=10)
+            )
         )
 
         assert inserted_1.uuid == retrieved.items[0].uuid

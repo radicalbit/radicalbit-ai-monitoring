@@ -70,7 +70,7 @@ class ModelRouteTest(unittest.TestCase):
         assert jsonable_encoder(model_out) == res.json()
         self.model_service.delete_model.assert_called_once_with(model.uuid)
 
-    def test_get_all_models(self):
+    def test_get_all_models_paginated(self):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
         model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='model2')
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
@@ -83,12 +83,12 @@ class ModelRouteTest(unittest.TestCase):
         page = Page.create(
             items=sample_models_out, total=len(sample_models_out), params=Params()
         )
-        self.model_service.get_all_models = MagicMock(return_value=page)
+        self.model_service.get_all_models_paginated = MagicMock(return_value=page)
 
         res = self.client.get(f'{self.prefix}')
         assert res.status_code == 200
         assert jsonable_encoder(page) == res.json()
-        self.model_service.get_all_models.assert_called_once_with(
+        self.model_service.get_all_models_paginated.assert_called_once_with(
             params=Params(page=1, size=50), order=OrderType.ASC, sort=None
         )
 

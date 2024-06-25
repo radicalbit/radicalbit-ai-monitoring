@@ -73,7 +73,7 @@ class UploadDatasetRouteTest(unittest.TestCase):
         assert res.status_code == 200
         assert jsonable_encoder(upload_file_result) == res.json()
 
-    def test_get_all_reference_datasets_by_model_uuid(self):
+    def test_get_all_reference_datasets_by_model_uuid_paginated(self):
         test_model_uuid = uuid.uuid4()
         reference_upload_1 = db_mock.get_sample_reference_dataset(
             model_uuid=test_model_uuid, path='reference/test_1.csv'
@@ -93,21 +93,21 @@ class UploadDatasetRouteTest(unittest.TestCase):
         page = Page.create(
             items=sample_results, total=len(sample_results), params=Params()
         )
-        self.file_service.get_all_reference_datasets_by_model_uuid = MagicMock(
-            return_value=page
+        self.file_service.get_all_reference_datasets_by_model_uuid_paginated = (
+            MagicMock(return_value=page)
         )
 
         res = self.client.get(f'{self.prefix}/{test_model_uuid}/reference')
         assert res.status_code == 200
         assert jsonable_encoder(page) == res.json()
-        self.file_service.get_all_reference_datasets_by_model_uuid.assert_called_once_with(
+        self.file_service.get_all_reference_datasets_by_model_uuid_paginated.assert_called_once_with(
             test_model_uuid,
             params=Params(page=1, size=50),
             order=OrderType.ASC,
             sort=None,
         )
 
-    def test_get_all_current_datasets_by_model_uuid(self):
+    def test_get_all_current_datasets_by_model_uuid_paginated(self):
         test_model_uuid = uuid.uuid4()
         current_upload_1 = db_mock.get_sample_current_dataset(
             model_uuid=test_model_uuid, path='reference/test_1.csv'
@@ -127,16 +127,72 @@ class UploadDatasetRouteTest(unittest.TestCase):
         page = Page.create(
             items=sample_results, total=len(sample_results), params=Params()
         )
-        self.file_service.get_all_current_datasets_by_model_uuid = MagicMock(
+        self.file_service.get_all_current_datasets_by_model_uuid_paginated = MagicMock(
             return_value=page
         )
 
         res = self.client.get(f'{self.prefix}/{test_model_uuid}/current')
         assert res.status_code == 200
         assert jsonable_encoder(page) == res.json()
-        self.file_service.get_all_current_datasets_by_model_uuid.assert_called_once_with(
+        self.file_service.get_all_current_datasets_by_model_uuid_paginated.assert_called_once_with(
             test_model_uuid,
             params=Params(page=1, size=50),
             order=OrderType.ASC,
             sort=None,
+        )
+
+    def test_get_all_reference_datasets_by_model_uuid(self):
+        test_model_uuid = uuid.uuid4()
+        reference_upload_1 = db_mock.get_sample_reference_dataset(
+            model_uuid=test_model_uuid, path='reference/test_1.csv'
+        )
+        reference_upload_2 = db_mock.get_sample_reference_dataset(
+            model_uuid=test_model_uuid, path='reference/test_2.csv'
+        )
+        reference_upload_3 = db_mock.get_sample_reference_dataset(
+            model_uuid=test_model_uuid, path='reference/test_3.csv'
+        )
+
+        sample_results = [
+            ReferenceDatasetDTO.from_reference_dataset(reference_upload_1),
+            ReferenceDatasetDTO.from_reference_dataset(reference_upload_2),
+            ReferenceDatasetDTO.from_reference_dataset(reference_upload_3),
+        ]
+        self.file_service.get_all_reference_datasets_by_model_uuid = MagicMock(
+            return_value=sample_results
+        )
+
+        res = self.client.get(f'{self.prefix}/{test_model_uuid}/reference/all')
+        assert res.status_code == 200
+        assert jsonable_encoder(sample_results) == res.json()
+        self.file_service.get_all_reference_datasets_by_model_uuid.assert_called_once_with(
+            test_model_uuid,
+        )
+
+    def test_get_all_current_datasets_by_model_uuid(self):
+        test_model_uuid = uuid.uuid4()
+        current_upload_1 = db_mock.get_sample_current_dataset(
+            model_uuid=test_model_uuid, path='reference/test_1.csv'
+        )
+        current_upload_2 = db_mock.get_sample_current_dataset(
+            model_uuid=test_model_uuid, path='reference/test_2.csv'
+        )
+        current_upload_3 = db_mock.get_sample_current_dataset(
+            model_uuid=test_model_uuid, path='reference/test_3.csv'
+        )
+
+        sample_results = [
+            CurrentDatasetDTO.from_current_dataset(current_upload_1),
+            CurrentDatasetDTO.from_current_dataset(current_upload_2),
+            CurrentDatasetDTO.from_current_dataset(current_upload_3),
+        ]
+        self.file_service.get_all_current_datasets_by_model_uuid = MagicMock(
+            return_value=sample_results
+        )
+
+        res = self.client.get(f'{self.prefix}/{test_model_uuid}/current/all')
+        assert res.status_code == 200
+        assert jsonable_encoder(sample_results) == res.json()
+        self.file_service.get_all_current_datasets_by_model_uuid.assert_called_once_with(
+            test_model_uuid,
         )
