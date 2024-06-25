@@ -80,11 +80,10 @@ h1, h2, h3 {
 }
 
 .footer__copyright {
-
   border-top: 1px solid #ffffff29;
   padding-top: 1rem;
   margin-top: 2rem;
-  font-size: .8rem;
+  font-size: .5rem;
 }
 
 [data-theme='dark'] .footer::before {
