@@ -3,7 +3,7 @@ on:
   issue_comment:                                     
     types: [created, edited, deleted]
 env:
-  AVAILABLE_COMMANDS: '["/build-api","/build-spark","/build-ui","/build-migrations","build-all"]'
+  AVAILABLE_COMMANDS: '["/build-api","/build-spark","/build-ui","/build-migrations","/build-all"]'
 
 jobs:
   build-api:
