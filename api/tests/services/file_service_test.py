@@ -245,7 +245,7 @@ class FileServiceTest(unittest.TestCase):
             correlation_id_column,
         )
 
-    def test_get_all_reference_datasets_by_model_uuid(self):
+    def test_get_all_reference_datasets_by_model_uuid_paginated(self):
         reference_upload_1 = db_mock.get_sample_reference_dataset(
             model_uuid=model_uuid, path='reference/test_1.csv'
         )
@@ -260,11 +260,11 @@ class FileServiceTest(unittest.TestCase):
         page = Page.create(
             sample_results, total=len(sample_results), params=Params(page=1, size=10)
         )
-        self.rd_dao.get_all_reference_datasets_by_model_uuid = MagicMock(
+        self.rd_dao.get_all_reference_datasets_by_model_uuid_paginated = MagicMock(
             return_value=page
         )
 
-        result = self.files_service.get_all_reference_datasets_by_model_uuid(
+        result = self.files_service.get_all_reference_datasets_by_model_uuid_paginated(
             model_uuid, Params(page=1, size=10)
         )
 
@@ -274,7 +274,7 @@ class FileServiceTest(unittest.TestCase):
         assert result.items[1].model_uuid == model_uuid
         assert result.items[2].model_uuid == model_uuid
 
-    def test_get_all_current_datasets_by_model_uuid(self):
+    def test_get_all_current_datasets_by_model_uuid_paginated(self):
         current_upload_1 = db_mock.get_sample_current_dataset(
             model_uuid=model_uuid, path='reference/test_1.csv'
         )
@@ -289,11 +289,11 @@ class FileServiceTest(unittest.TestCase):
         page = Page.create(
             sample_results, total=len(sample_results), params=Params(page=1, size=10)
         )
-        self.cd_dao.get_all_current_datasets_by_model_uuid = MagicMock(
+        self.cd_dao.get_all_current_datasets_by_model_uuid_paginated = MagicMock(
             return_value=page
         )
 
-        result = self.files_service.get_all_current_datasets_by_model_uuid(
+        result = self.files_service.get_all_current_datasets_by_model_uuid_paginated(
             model_uuid, Params(page=1, size=10)
         )
 
@@ -302,6 +302,52 @@ class FileServiceTest(unittest.TestCase):
         assert result.items[0].model_uuid == model_uuid
         assert result.items[1].model_uuid == model_uuid
         assert result.items[2].model_uuid == model_uuid
+
+    def test_get_all_reference_datasets_by_model_uuid(self):
+        reference_upload_1 = db_mock.get_sample_reference_dataset(
+            model_uuid=model_uuid, path='reference/test_1.csv'
+        )
+        reference_upload_2 = db_mock.get_sample_reference_dataset(
+            model_uuid=model_uuid, path='reference/test_2.csv'
+        )
+        reference_upload_3 = db_mock.get_sample_reference_dataset(
+            model_uuid=model_uuid, path='reference/test_3.csv'
+        )
+
+        sample_results = [reference_upload_1, reference_upload_2, reference_upload_3]
+        self.rd_dao.get_all_reference_datasets_by_model_uuid = MagicMock(
+            return_value=sample_results
+        )
+
+        result = self.files_service.get_all_reference_datasets_by_model_uuid(model_uuid)
+
+        assert len(result) == 3
+        assert result[0].model_uuid == model_uuid
+        assert result[1].model_uuid == model_uuid
+        assert result[2].model_uuid == model_uuid
+
+    def test_get_all_current_datasets_by_model_uuid(self):
+        current_upload_1 = db_mock.get_sample_current_dataset(
+            model_uuid=model_uuid, path='reference/test_1.csv'
+        )
+        current_upload_2 = db_mock.get_sample_current_dataset(
+            model_uuid=model_uuid, path='reference/test_2.csv'
+        )
+        current_upload_3 = db_mock.get_sample_current_dataset(
+            model_uuid=model_uuid, path='reference/test_3.csv'
+        )
+
+        sample_results = [current_upload_1, current_upload_2, current_upload_3]
+        self.cd_dao.get_all_current_datasets_by_model_uuid = MagicMock(
+            return_value=sample_results
+        )
+
+        result = self.files_service.get_all_current_datasets_by_model_uuid(model_uuid)
+
+        assert len(result) == 3
+        assert result[0].model_uuid == model_uuid
+        assert result[1].model_uuid == model_uuid
+        assert result[2].model_uuid == model_uuid
 
 
 model_uuid = db_mock.MODEL_UUID

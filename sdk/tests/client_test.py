@@ -15,7 +15,6 @@ from radicalbit_platform_sdk.models import (
     ModelDefinition,
     ModelType,
     OutputType,
-    PaginatedModelDefinitions,
 )
 
 
@@ -180,30 +179,26 @@ class ClientTest(unittest.TestCase):
     def test_search_models(self):
         base_url = 'http://api:9000'
 
-        paginated_response = PaginatedModelDefinitions(
-            items=[
-                ModelDefinition(
-                    name='My Model',
-                    model_type=ModelType.BINARY,
-                    data_type=DataType.TABULAR,
-                    granularity=Granularity.DAY,
-                    features=[ColumnDefinition(name='feature_column', type='string')],
-                    outputs=OutputType(
-                        prediction=ColumnDefinition(name='result_column', type='int'),
-                        output=[ColumnDefinition(name='result_column', type='int')],
-                    ),
-                    target=ColumnDefinition(name='target_column', type='string'),
-                    timestamp=ColumnDefinition(name='tst_column', type='string'),
-                    created_at=str(time.time()),
-                    updated_at=str(time.time()),
-                )
-            ]
+        model_definition = ModelDefinition(
+            name='My Model',
+            model_type=ModelType.BINARY,
+            data_type=DataType.TABULAR,
+            granularity=Granularity.DAY,
+            features=[ColumnDefinition(name='feature_column', type='string')],
+            outputs=OutputType(
+                prediction=ColumnDefinition(name='result_column', type='int'),
+                output=[ColumnDefinition(name='result_column', type='int')],
+            ),
+            target=ColumnDefinition(name='target_column', type='string'),
+            timestamp=ColumnDefinition(name='tst_column', type='string'),
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
         )
 
         responses.add(
             method=responses.GET,
-            url=f'{base_url}/api/models',
-            body=paginated_response.model_dump_json(),
+            url=f'{base_url}/api/models/all',
+            body=f'[{model_definition.model_dump_json()}]',
             status=200,
             content_type='application/json',
         )
@@ -211,14 +206,14 @@ class ClientTest(unittest.TestCase):
         client = Client(base_url)
         models = client.search_models()
         assert len(models) == 1
-        assert models[0].name() == paginated_response.items[0].name
-        assert models[0].model_type() == paginated_response.items[0].model_type
-        assert models[0].data_type() == paginated_response.items[0].data_type
-        assert models[0].granularity() == paginated_response.items[0].granularity
-        assert models[0].features() == paginated_response.items[0].features
-        assert models[0].outputs() == paginated_response.items[0].outputs
-        assert models[0].target() == paginated_response.items[0].target
-        assert models[0].timestamp() == paginated_response.items[0].timestamp
+        assert models[0].name() == model_definition.name
+        assert models[0].model_type() == model_definition.model_type
+        assert models[0].data_type() == model_definition.data_type
+        assert models[0].granularity() == model_definition.granularity
+        assert models[0].features() == model_definition.features
+        assert models[0].outputs() == model_definition.outputs
+        assert models[0].target() == model_definition.target
+        assert models[0].timestamp() == model_definition.timestamp
         assert models[0].description() is None
         assert models[0].algorithm() is None
         assert models[0].frameworks() is None
