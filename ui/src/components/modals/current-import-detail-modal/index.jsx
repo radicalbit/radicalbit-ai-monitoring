@@ -53,7 +53,7 @@ function Header() {
   const dataType = model?.dataType ? DataTypeEnumLabel[model.dataType] : '--';
   const granularity = model?.granularity ? GranularityEnumLabel[model.granularity] : '--';
 
-  const fileName = data?.fileName ?? '';
+  const fileName = data?.path.split('current/')[1] ?? '';
 
   const updateTime = data?.date ?? '';
   const subtitle = `updated at ${moment(updateTime).format('DD MMM YYYY HH:mm:ss').toString()}`;
