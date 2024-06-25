@@ -75,7 +75,7 @@ const useGetCurrentDataQualityQueryWithPolling = () => {
   const { uuid } = useParams();
 
   const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.currentLatestUUID;
+  const currentUUID = model?.latestCurrentUUID;
 
   const { data } = useGetCurrentDataQualityQuery({ uuid, currentUUID }, { skip: isModal });
   const status = data?.jobStatus;
@@ -91,7 +91,7 @@ const useGetCurrentModelQualityQueryWithPolling = () => {
   const { uuid } = useParams();
 
   const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.currentLatestUUID;
+  const currentUUID = model?.latestCurrentUUID;
 
   const { data } = useGetCurrentModelQualityQuery({ uuid, currentUUID }, { skip: isModal });
   const status = data?.jobStatus;
@@ -104,7 +104,7 @@ const useGetCurrentStatisticsQueryWithPolling = () => {
   const { uuid } = useParams();
 
   const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.currentLatestUUID;
+  const currentUUID = model?.latestCurrentUUID;
 
   const { data } = useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID });
   const status = data?.jobStatus;
@@ -120,7 +120,7 @@ const useGetCurrentDriftQueryWithPolling = () => {
   const { uuid } = useParams();
 
   const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.currentLatestUUID;
+  const currentUUID = model?.latestCurrentUUID;
 
   const { data } = useGetCurrentDriftQuery({ uuid, currentUUID }, { skip: isModal });
   const status = data?.jobStatus;

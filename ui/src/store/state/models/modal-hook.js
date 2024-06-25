@@ -16,7 +16,7 @@ const useGetCurrentDataQuality = () => {
   const currentUUIDFromRow = data?.uuid;
 
   const { data: modelData } = useGetModelByUUIDQuery({ uuid }, { skip: currentUUIDFromRow });
-  const currentUUIDFromModel = modelData?.currentLatestUUID;
+  const currentUUIDFromModel = modelData?.latestCurrentUUID;
 
   const currentUUID = currentUUIDFromRow || currentUUIDFromModel;
 
@@ -30,7 +30,7 @@ const useGetCurrentModelQuality = () => {
   const currentUUIDFromRow = data?.uuid;
 
   const { data: modelData } = useGetModelByUUIDQuery({ uuid }, { skip: currentUUIDFromRow });
-  const currentUUIDFromModel = modelData?.currentLatestUUID;
+  const currentUUIDFromModel = modelData?.latestCurrentUUID;
   const currentUUID = currentUUIDFromRow || currentUUIDFromModel;
 
   return useGetCurrentModelQualityQuery({ uuid, currentUUID });
@@ -43,7 +43,7 @@ const useGetCurrentDrift = () => {
   const currentUUIDFromRow = data?.uuid;
 
   const { data: modelData } = useGetModelByUUIDQuery({ uuid }, { skip: currentUUIDFromRow });
-  const currentUUIDFromModel = modelData?.currentLatestUUID;
+  const currentUUIDFromModel = modelData?.latestCurrentUUID;
 
   const currentUUID = currentUUIDFromRow || currentUUIDFromModel;
 
