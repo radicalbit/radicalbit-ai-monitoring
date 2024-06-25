@@ -15,6 +15,11 @@
   --ifm-color-primary-lightest: #fff;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+
+  --ifm-font-family-base: 'Open Sans', Helvetica, Arial, Lucida, sans-serif;
+  --ifm-footer-padding-vertical: 8rem;
+
+  --rdb-font-family-headers: 'Montserrat', Helvetica, Arial, Lucida, sans-serif;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -27,4 +32,58 @@
   --ifm-color-primary-lighter: #73B2E0;
   --ifm-color-primary-lightest: #73B2E0;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+
+/* Radicalbit corporate elements */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--rdb-font-family-headers);
+  font-weight: normal;
+}
+
+h1, h2, h3 {
+  color: var(--ifm-color-primary);
+}
+
+.footer {
+  background-image: linear-gradient(191deg, rgba(115, 177, 222, 1) 0%, #3a92d0 24%, #1171c2 46%, #095bbf 69%, #053189 100%) !important;
+  position: relative;
+  font-size: .8rem;
+}
+
+.footer::before {
+  background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMTFweCIgdmlld0JveD0iMCAwIDEyODAgMTQwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiNGRkZGRkYiPjxwYXRoIGQ9Ik0wIDUxLjc2YzM2LjIxLTIuMjUgNzcuNTctMy41OCAxMjYuNDItMy41OCAzMjAgMCAzMjAgNTcgNjQwIDU3IDI3MS4xNSAwIDMxMi41OC00MC45MSA1MTMuNTgtNTMuNFYwSDB6IiBmaWxsLW9wYWNpdHk9Ii4zIi8+PHBhdGggZD0iTTAgMjQuMzFjNDMuNDYtNS42OSA5NC41Ni05LjI1IDE1OC40Mi05LjI1IDMyMCAwIDMyMCA4OS4yNCA2NDAgODkuMjQgMjU2LjEzIDAgMzA3LjI4LTU3LjE2IDQ4MS41OC04MFYwSDB6IiBmaWxsLW9wYWNpdHk9Ii41Ii8+PHBhdGggZD0iTTAgMHYzLjRDMjguMiAxLjYgNTkuNC41OSA5NC40Mi41OWMzMjAgMCAzMjAgODQuMyA2NDAgODQuMyAyODUgMCAzMTYuMTctNjYuODUgNTQ1LjU4LTgxLjQ5VjB6Ii8+PC9nPjwvc3ZnPg==);
+    background-size: 100%;
+    top: 0;
+    left: 0;
+    height: 111px;
+    width: 100%;
+    z-index: 1;
+    content: ' ';
+    position: absolute;
+}
+
+.pagination-nav__link {
+  border: 0;
+}
+
+.theme-doc-sidebar-container {
+  background-image: linear-gradient(180deg, rgb(234 246 255) 0%, transparent 100%) !important;
+}
+
+.footer__copyright {
+  overflow: hidden;
+}
+.footer__copyright:after { 
+  content:''; 
+  display:block; 
+  margin:-25px auto 0;
+  width:100%; 
+  height:25px;  
+  border-radius:125px / 12px;
+  box-shadow:-5px 0 8px #eeeff0;
 }
