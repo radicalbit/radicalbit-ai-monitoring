@@ -1527,7 +1527,9 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_with_datetime)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset_with_datetime
+    )
     metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
 
     stats = calculate_statistics_reference(reference_dataset)
@@ -2476,7 +2478,9 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_bool_missing)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset_bool_missing
+    )
     metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
 
     stats = calculate_statistics_reference(reference_dataset)

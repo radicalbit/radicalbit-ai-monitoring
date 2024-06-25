@@ -13,12 +13,14 @@ DATETIME = "datetime"
 
 
 # FIXME use pydantic struct like data quality
-def calculate_statistics_reference(reference_dataset: ReferenceDataset) -> dict[str, float]:
-    number_of_variables = len(reference_dataset.model.get_all_variables_reference())
+def calculate_statistics_reference(
+    reference_dataset: ReferenceDataset,
+) -> dict[str, float]:
+    number_of_variables = len(reference_dataset.get_all_variables())
     number_of_observations = reference_dataset.reference_count
-    number_of_numerical = len(reference_dataset.model.get_numerical_variables_reference())
-    number_of_categorical = len(reference_dataset.model.get_categorical_variables_reference())
-    number_of_datetime = len(reference_dataset.model.get_datetime_variables_reference())
+    number_of_numerical = len(reference_dataset.get_numerical_variables())
+    number_of_categorical = len(reference_dataset.get_categorical_variables())
+    number_of_datetime = len(reference_dataset.get_datetime_variables())
     reference_columns = reference_dataset.reference.columns
 
     stats = (
@@ -33,10 +35,7 @@ def calculate_statistics_reference(reference_dataset: ReferenceDataset) -> dict[
         .withColumn(MISSING_CELLS, sum([F.col(c) for c in reference_columns]))
         .withColumn(
             MISSING_CELLS_PERC,
-            (
-                F.col(MISSING_CELLS)
-                / (number_of_variables * number_of_observations)
-            )
+            (F.col(MISSING_CELLS) / (number_of_variables * number_of_observations))
             * 100,
         )
         .withColumn(
@@ -44,7 +43,11 @@ def calculate_statistics_reference(reference_dataset: ReferenceDataset) -> dict[
             F.lit(
                 number_of_observations
                 - reference_dataset.reference.dropDuplicates(
-                    [c for c in reference_columns if c != reference_dataset.model.timestamp.name]
+                    [
+                        c
+                        for c in reference_columns
+                        if c != reference_dataset.model.timestamp.name
+                    ]
                 ).count()
             ),
         )

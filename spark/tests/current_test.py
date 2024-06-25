@@ -235,10 +235,10 @@ def test_calculation(spark_fixture, dataset):
             "duplicate_rows": 3,
             "duplicate_rows_perc": 30.0,
             "missing_cells": 3,
-            "missing_cells_perc": 4.285714285714286,
+            "missing_cells_perc": 3.75,
             "n_observations": 10,
-            "n_variables": 7,
-            "numeric": 4,
+            "n_variables": 8,
+            "numeric": 5,
         }
     )
 
@@ -526,8 +526,8 @@ def test_calculation_current_joined(spark_fixture, current_joined):
             "missing_cells": 0,
             "missing_cells_perc": 0.0,
             "n_observations": 238,
-            "n_variables": 14,
-            "numeric": 12,
+            "n_variables": 15,
+            "numeric": 13,
         }
     )
 
@@ -1120,10 +1120,10 @@ def test_calculation_complete(spark_fixture, complete_dataset):
             "missing_cells_perc": 0.0,
             "duplicate_rows": 0,
             "duplicate_rows_perc": 0.0,
-            "n_variables": 7,
+            "n_variables": 8,
             "n_observations": 7,
             "numeric": 4,
-            "categorical": 2,
+            "categorical": 3,
             "datetime": 1,
         },
     )
@@ -1321,9 +1321,9 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
             "missing_cells_perc": 0.0,
             "duplicate_rows": 0,
             "duplicate_rows_perc": 0.0,
-            "n_variables": 7,
+            "n_variables": 8,
             "n_observations": 7,
-            "numeric": 4,
+            "numeric": 5,
             "categorical": 2,
             "datetime": 1,
         },
@@ -1519,12 +1519,12 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
     assert stats == my_approx(
         {
             "missing_cells": 5,
-            "missing_cells_perc": 7.142857142857142,
+            "missing_cells_perc": 6.25,
             "duplicate_rows": 2,
             "duplicate_rows_perc": 20.0,
-            "n_variables": 7,
+            "n_variables": 8,
             "n_observations": 10,
-            "numeric": 4,
+            "numeric": 5,
             "categorical": 2,
             "datetime": 1,
         }
@@ -1739,10 +1739,10 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
             "duplicate_rows": 3,
             "duplicate_rows_perc": 30.0,
             "missing_cells": 3,
-            "missing_cells_perc": 4.285714285714286,
+            "missing_cells_perc": 3.75,
             "n_observations": 10,
-            "n_variables": 7,
-            "numeric": 4,
+            "n_variables": 8,
+            "numeric": 5,
         }
     )
 
@@ -1954,9 +1954,9 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
             "missing_cells_perc": 0.0,
             "duplicate_rows": 0,
             "duplicate_rows_perc": 0.0,
-            "n_variables": 7,
+            "n_variables": 8,
             "n_observations": 7,
-            "numeric": 4,
+            "numeric": 5,
             "categorical": 2,
             "datetime": 1,
         },
@@ -2185,10 +2185,10 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
             "duplicate_rows": 3,
             "duplicate_rows_perc": 30.0,
             "missing_cells": 3,
-            "missing_cells_perc": 4.285714285714286,
+            "missing_cells_perc": 3.75,
             "n_observations": 10,
-            "n_variables": 7,
-            "numeric": 4,
+            "n_variables": 8,
+            "numeric": 5,
         }
     )
 
@@ -2530,10 +2530,10 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
             "duplicate_rows": 3,
             "duplicate_rows_perc": 30.0,
             "missing_cells": 3,
-            "missing_cells_perc": 4.285714285714286,
+            "missing_cells_perc": 3.75,
             "n_observations": 10,
-            "n_variables": 7,
-            "numeric": 4,
+            "n_variables": 8,
+            "numeric": 5,
         }
     )
 
@@ -2861,10 +2861,10 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
             "duplicate_rows": 3,
             "duplicate_rows_perc": 30.0,
             "missing_cells": 3,
-            "missing_cells_perc": 4.285714285714286,
+            "missing_cells_perc": 3.75,
             "n_observations": 10,
-            "n_variables": 7,
-            "numeric": 4,
+            "n_variables": 8,
+            "numeric": 5,
         }
     )
 
@@ -3192,10 +3192,10 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
             "duplicate_rows": 3,
             "duplicate_rows_perc": 30.0,
             "missing_cells": 3,
-            "missing_cells_perc": 4.285714285714286,
+            "missing_cells_perc": 3.75,
             "n_observations": 10,
-            "n_variables": 7,
-            "numeric": 4,
+            "n_variables": 8,
+            "numeric": 5,
         }
     )
 

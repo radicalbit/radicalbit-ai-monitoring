@@ -5,7 +5,7 @@ from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
-from pyspark.sql.functions import count, when, isnan, col
+from pyspark.sql.functions import col
 import pyspark.sql.functions as f
 
 from .data_quality import (

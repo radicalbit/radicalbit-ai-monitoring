@@ -8,8 +8,7 @@ from pyspark.sql.types import StructField, StructType, StringType
 from metrics.statistics import calculate_statistics_reference
 from models.reference_dataset import ReferenceDataset
 from utils.reference import ReferenceMetricsService
-from utils.models import JobStatus, ModelOut
-from utils.spark import apply_schema_to_dataframe
+from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 
 from pyspark.sql import SparkSession
@@ -48,18 +47,24 @@ def main(
     reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_dataframe)
 
     metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
-    model_quality = metrics_service.calculate_model_quality()
-    statistics = calculate_statistics_reference(reference_dataset)
-    data_quality = metrics_service.calculate_data_quality()
 
-    # TODO put needed fields here
-    complete_record = {
-        "UUID": str(uuid.uuid4()),
-        "REFERENCE_UUID": reference_uuid,
-        "MODEL_QUALITY": orjson.dumps(model_quality).decode("utf-8"),
-        "STATISTICS": orjson.dumps(statistics).decode("utf-8"),
-        "DATA_QUALITY": data_quality.model_dump_json(serialize_as_any=True),
-    }
+    complete_record = {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
+
+    match model.model_type:
+        case ModelType.BINARY:
+            model_quality = metrics_service.calculate_model_quality()
+            statistics = calculate_statistics_reference(reference_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+        case ModelType.MULTI_CLASS:
+            statistics = calculate_statistics_reference(reference_dataset)
+            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
 
     schema = StructType(
         [

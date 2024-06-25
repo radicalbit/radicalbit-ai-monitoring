@@ -99,21 +99,23 @@ class ModelOut(BaseModel):
 
     def to_reference_spark_schema(self):
         """
-        This will enforce float for target, prediction and prediction_proba
+        This will enforce float for target, prediction and prediction_proba if binary classification
         :return: the spark scheme of the reference dataset
         """
 
         all_features = (
             self.features + [self.target] + [self.timestamp] + self.outputs.output
         )
-        if self.outputs.prediction_proba:
+        if self.outputs.prediction_proba and self.model_type == ModelType.BINARY:
             enforce_float = [
                 self.target.name,
                 self.outputs.prediction.name,
                 self.outputs.prediction_proba.name,
             ]
-        else:
+        elif self.model_type == ModelType.BINARY:
             enforce_float = [self.target.name, self.outputs.prediction.name]
+        else:
+            enforce_float = []
         return StructType(
             [
                 StructField(
@@ -141,14 +143,16 @@ class ModelOut(BaseModel):
         all_features = (
             self.features + [self.target] + [self.timestamp] + self.outputs.output
         )
-        if self.outputs.prediction_proba:
+        if self.outputs.prediction_proba and self.model_type == ModelType.BINARY:
             enforce_float = [
                 self.target.name,
                 self.outputs.prediction.name,
                 self.outputs.prediction_proba.name,
             ]
-        else:
+        elif self.model_type == ModelType.BINARY:
             enforce_float = [self.target.name, self.outputs.prediction.name]
+        else:
+            enforce_float = []
         return StructType(
             [
                 StructField(
@@ -189,17 +193,23 @@ class ModelOut(BaseModel):
 
     # FIXME this must exclude target when we will have separate current and ground truth
     def get_numerical_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.target] + [self.timestamp] + self.outputs.output
+        all_features = (
+            self.features + [self.target] + [self.timestamp] + self.outputs.output
+        )
         return [feature for feature in all_features if feature.is_numerical()]
 
     # FIXME this must exclude target when we will have separate current and ground truth
     def get_categorical_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.target] + [self.timestamp] + self.outputs.output
+        all_features = (
+            self.features + [self.target] + [self.timestamp] + self.outputs.output
+        )
         return [feature for feature in all_features if feature.is_categorical()]
 
     # FIXME this must exclude target when we will have separate current and ground truth
     def get_datetime_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.target] + [self.timestamp] + self.outputs.output
+        all_features = (
+            self.features + [self.target] + [self.timestamp] + self.outputs.output
+        )
         return [feature for feature in all_features if feature.is_datetime()]
 
     # FIXME this must exclude target when we will have separate current and ground truth
