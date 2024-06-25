@@ -141,7 +141,7 @@ class ModelCurrentDataset:
                             )
                         case _:
                             raise ClientError(
-                                'Unable to parse get metrics for not binary models'
+                                'Unable to parse metrics because of not managed model type'
                             ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
@@ -211,7 +211,7 @@ class ModelCurrentDataset:
                             )
                         case _:
                             raise ClientError(
-                                'Unable to parse get metrics for not binary models'
+                                'Unable to parse metrics because of not managed model type'
                             ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
@@ -281,7 +281,7 @@ class ModelCurrentDataset:
                             )
                         case _:
                             raise ClientError(
-                                'Unable to parse get metrics for not binary models'
+                                'Unable to parse metrics because of not managed model type'
                             ) from None
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
