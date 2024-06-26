@@ -107,3 +107,4 @@ ui/*.sw?
 #####################
 
 docker/k3s_data/kubeconfig/
+docker/k3s_data/images/

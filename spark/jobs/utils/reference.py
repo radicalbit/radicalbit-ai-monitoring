@@ -5,7 +5,7 @@ from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
-from pyspark.sql.functions import count, when, isnan, col
+from pyspark.sql.functions import col
 import pyspark.sql.functions as f
 
 from .data_quality import (
@@ -19,17 +19,6 @@ from .models import ModelOut
 
 
 class ReferenceMetricsService:
-    # Statistics
-    N_VARIABLES = "n_variables"
-    N_OBSERVATION = "n_observations"
-    MISSING_CELLS = "missing_cells"
-    MISSING_CELLS_PERC = "missing_cells_perc"
-    DUPLICATE_ROWS = "duplicate_rows"
-    DUPLICATE_ROWS_PERC = "duplicate_rows_perc"
-    NUMERIC = "numeric"
-    CATEGORICAL = "categorical"
-    DATETIME = "datetime"
-
     # Model Quality
     model_quality_binary_classificator = {
         "areaUnderROC": "area_under_roc",
@@ -96,70 +85,6 @@ class ReferenceMetricsService:
             label: self.__evaluate_multi_class_classification(self.reference, name)
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
-
-    # FIXME use pydantic struct like data quality
-    def calculate_statistics(self) -> dict[str, float]:
-        number_of_variables = len(self.model.get_all_variables_reference())
-        number_of_observations = self.reference_count
-        number_of_numerical = len(self.model.get_numerical_variables_reference())
-        number_of_categorical = len(self.model.get_categorical_variables_reference())
-        number_of_datetime = len(self.model.get_datetime_variables_reference())
-        reference_columns = self.reference.columns
-
-        stats = (
-            self.reference.select(
-                [
-                    count(when(isnan(c) | col(c).isNull(), c)).alias(c)
-                    if t not in ("datetime", "date", "timestamp", "bool", "boolean")
-                    else f.count(f.when(col(c).isNull(), c)).alias(c)
-                    for c, t in self.reference.dtypes
-                ]
-            )
-            .withColumn(self.MISSING_CELLS, sum([f.col(c) for c in reference_columns]))
-            .withColumn(
-                self.MISSING_CELLS_PERC,
-                (
-                    f.col(self.MISSING_CELLS)
-                    / (number_of_variables * number_of_observations)
-                )
-                * 100,
-            )
-            .withColumn(
-                self.DUPLICATE_ROWS,
-                f.lit(
-                    number_of_observations
-                    - self.reference.dropDuplicates(
-                        [c for c in reference_columns if c != self.model.timestamp.name]
-                    ).count()
-                ),
-            )
-            .withColumn(
-                self.DUPLICATE_ROWS_PERC,
-                (f.col(self.DUPLICATE_ROWS) / number_of_observations) * 100,
-            )
-            .withColumn(self.N_VARIABLES, f.lit(number_of_variables))
-            .withColumn(self.N_OBSERVATION, f.lit(number_of_observations))
-            .withColumn(self.NUMERIC, f.lit(number_of_numerical))
-            .withColumn(self.CATEGORICAL, f.lit(number_of_categorical))
-            .withColumn(self.DATETIME, f.lit(number_of_datetime))
-            .select(
-                *[
-                    self.MISSING_CELLS,
-                    self.MISSING_CELLS_PERC,
-                    self.DUPLICATE_ROWS,
-                    self.DUPLICATE_ROWS_PERC,
-                    self.N_VARIABLES,
-                    self.N_OBSERVATION,
-                    self.NUMERIC,
-                    self.CATEGORICAL,
-                    self.DATETIME,
-                ]
-            )
-            .toPandas()
-            .to_dict(orient="records")[0]
-        )
-
-        return stats
 
     # FIXME use pydantic struct like data quality
     def calculate_model_quality(self) -> dict[str, float]:

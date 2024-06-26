@@ -4,8 +4,6 @@ from uuid import UUID
 
 from pydantic import BaseModel
 from pyspark.sql.types import (
-    StructType,
-    StructField,
     StringType,
     DoubleType,
     IntegerType,
@@ -96,111 +94,6 @@ class ModelOut(BaseModel):
             # TODO maybe we want to discriminate between DateType (only the date without the time) and Timestamp
             case SupportedTypes.datetime:
                 return TimestampType()
-
-    def to_reference_spark_schema(self):
-        """
-        This will enforce float for target, prediction and prediction_proba
-        :return: the spark scheme of the reference dataset
-        """
-
-        all_features = (
-            self.features + [self.target] + [self.timestamp] + self.outputs.output
-        )
-        if self.outputs.prediction_proba:
-            enforce_float = [
-                self.target.name,
-                self.outputs.prediction.name,
-                self.outputs.prediction_proba.name,
-            ]
-        else:
-            enforce_float = [self.target.name, self.outputs.prediction.name]
-        return StructType(
-            [
-                StructField(
-                    name=feature.name,
-                    dataType=self.convert_types(feature.type),
-                    nullable=False,
-                )
-                if feature.name not in enforce_float
-                else StructField(
-                    name=feature.name,
-                    dataType=DoubleType(),
-                    nullable=False,
-                )
-                for feature in all_features
-            ]
-        )
-
-    # FIXME this must exclude target when we will have separate current and ground truth
-    def to_current_spark_schema(self):
-        """
-        This will enforce float for target, prediction and prediction_proba
-        :return: the spark scheme of the current dataset (in the future without target)
-        """
-
-        all_features = (
-            self.features + [self.target] + [self.timestamp] + self.outputs.output
-        )
-        if self.outputs.prediction_proba:
-            enforce_float = [
-                self.target.name,
-                self.outputs.prediction.name,
-                self.outputs.prediction_proba.name,
-            ]
-        else:
-            enforce_float = [self.target.name, self.outputs.prediction.name]
-        return StructType(
-            [
-                StructField(
-                    name=feature.name,
-                    dataType=self.convert_types(feature.type),
-                    nullable=False,
-                )
-                if feature.name not in enforce_float
-                else StructField(
-                    name=feature.name,
-                    dataType=DoubleType(),
-                    nullable=False,
-                )
-                for feature in all_features
-            ]
-        )
-
-    def get_numerical_variables_reference(self) -> List[ColumnDefinition]:
-        all_features = (
-            self.features + [self.target] + [self.timestamp] + self.outputs.output
-        )
-        return [feature for feature in all_features if feature.is_numerical()]
-
-    def get_categorical_variables_reference(self) -> List[ColumnDefinition]:
-        all_features = (
-            self.features + [self.target] + [self.timestamp] + self.outputs.output
-        )
-        return [feature for feature in all_features if feature.is_categorical()]
-
-    def get_datetime_variables_reference(self) -> List[ColumnDefinition]:
-        all_features = (
-            self.features + [self.target] + [self.timestamp] + self.outputs.output
-        )
-        return [feature for feature in all_features if feature.is_datetime()]
-
-    def get_all_variables_reference(self) -> List[ColumnDefinition]:
-        return self.features + [self.target] + [self.timestamp] + self.outputs.output
-
-    def get_numerical_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.timestamp] + self.outputs.output
-        return [feature for feature in all_features if feature.is_numerical()]
-
-    def get_categorical_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.timestamp] + self.outputs.output
-        return [feature for feature in all_features if feature.is_categorical()]
-
-    def get_datetime_variables_current(self) -> List[ColumnDefinition]:
-        all_features = self.features + [self.timestamp] + self.outputs.output
-        return [feature for feature in all_features if feature.is_datetime()]
-
-    def get_all_variables_current(self) -> List[ColumnDefinition]:
-        return self.features + [self.timestamp] + self.outputs.output
 
     def get_numerical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_numerical()]

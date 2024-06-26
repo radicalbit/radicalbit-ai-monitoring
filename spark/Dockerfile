@@ -1,4 +1,15 @@
+FROM python:3.10.14-slim AS build
+
+WORKDIR /build
+COPY poetry.lock pyproject.toml ./
+RUN pip install --no-cache-dir poetry==1.8.3 && \
+    poetry export -f requirements.txt -o requirements.txt
+
+
 FROM spark:3.5.1-scala2.12-java17-python3-ubuntu
+
+# Requirements from previous step
+COPY --from=build /build/requirements.txt .
 
 # Adding needed jar
 RUN curl -o /opt/spark/jars/bcprov-jdk15on-1.70.jar https://repo1.maven.org/maven2/org/bouncycastle/bcprov-jdk15on/1.70/bcprov-jdk15on-1.70.jar && \
@@ -9,8 +20,11 @@ RUN curl -o /opt/spark/jars/bcprov-jdk15on-1.70.jar https://repo1.maven.org/mave
 
 USER root
 
-# Adding needed python libs that will be used by pyspark jobs
-RUN pip install numpy pydantic pandas psycopg2-binary orjson scipy
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc libpq-dev python3-dev
+
+# Install requirements coming from pyproject
+RUN pip install --no-cache-dir -r requirements.txt
 
 USER spark
 

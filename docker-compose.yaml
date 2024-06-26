@@ -150,6 +150,8 @@ services:
       - ./docker/k3s_data/manifests/spark-init.yaml:/var/lib/rancher/k3s/server/manifests/spark-init.yaml
       # Mount entrypoint
       - ./docker/k3s_data/init/entrypoint.sh:/opt/entrypoint/entrypoint.sh
+      # Preload docker images
+      - ./docker/k3s_data/images:/var/lib/rancher/k3s/agent/images
     expose:
       - "6443"  # Kubernetes API Server
       - "80"    # Ingress controller port 80

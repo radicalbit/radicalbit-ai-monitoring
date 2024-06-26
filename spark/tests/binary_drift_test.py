@@ -6,6 +6,8 @@ import deepdiff
 import pytest
 from pyspark.sql import SparkSession
 
+from jobs.models.current_dataset import CurrentDataset
+from jobs.models.reference_dataset import ReferenceDataset
 from jobs.utils.current import CurrentMetricsService
 from jobs.utils.models import (
     ModelOut,
@@ -16,7 +18,6 @@ from jobs.utils.models import (
     SupportedTypes,
     Granularity,
 )
-from jobs.utils.spark import apply_schema_to_dataframe
 
 test_resource_path = Path(__file__).resolve().parent / "resources"
 
@@ -112,31 +113,15 @@ def test_drift(spark_fixture, drift_dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = drift_dataset
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
-    )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
+    raw_current_dataset, raw_reference_dataset = drift_dataset
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
 
@@ -214,35 +199,20 @@ def test_drift_small(spark_fixture, drift_small_dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = drift_small_dataset
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
-    )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
+    raw_current_dataset, raw_reference_dataset = drift_small_dataset
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
 
     drift = metrics_service.calculate_drift()
+
     assert not deepdiff.DeepDiff(
         drift,
         {
@@ -307,37 +277,19 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = drift_dataset_bool
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
-    )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
+    raw_current_dataset, raw_reference_dataset = drift_dataset_bool
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
 
     drift = metrics_service.calculate_drift()
-
-    print(drift)
 
     assert not deepdiff.DeepDiff(
         drift,
@@ -411,31 +363,15 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
         updated_at=str(datetime.datetime.now()),
     )
 
-    current_dataset, reference_dataset = drift_dataset_bigger_file
-    current_dataset = apply_schema_to_dataframe(
-        current_dataset, model.to_current_spark_schema()
-    )
-    current_dataset = current_dataset.select(
-        *[
-            c
-            for c in model.to_current_spark_schema().names
-            if c in current_dataset.columns
-        ]
-    )
-    reference_dataset = apply_schema_to_dataframe(
-        reference_dataset, model.to_reference_spark_schema()
-    )
-    reference_dataset = reference_dataset.select(
-        *[
-            c
-            for c in model.to_reference_spark_schema().names
-            if c in current_dataset.columns
-        ]
+    raw_current_dataset, raw_reference_dataset = drift_dataset_bigger_file
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
     )
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
+        current=current_dataset.current,
+        reference=reference_dataset.reference,
         model=model,
     )
 
