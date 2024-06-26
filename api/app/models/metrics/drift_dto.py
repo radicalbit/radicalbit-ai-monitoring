@@ -59,9 +59,7 @@ class DriftDTO(BaseModel):
         job_status: JobStatus,
         drift_data: Optional[Dict],
     ) -> 'DriftDTO':
-        """
-        Create a DriftDTO from a dictionary of data.
-        """
+        """Create a DriftDTO from a dictionary of data."""
         if not drift_data:
             return DriftDTO(
                 job_status=job_status,
@@ -83,14 +81,11 @@ class DriftDTO(BaseModel):
         model_type: ModelType,
         drift_data: Dict,
     ) -> BinaryClassDrift | MultiClassDrift | RegressionDrift:
-        """
-        Create a specific drift instance based on the model type.
-        """
+        """Create a specific drift instance based on the model type."""
         if model_type == ModelType.BINARY:
             return BinaryClassDrift(**drift_data)
-        elif model_type == ModelType.MULTI_CLASS:
+        if model_type == ModelType.MULTI_CLASS:
             return MultiClassDrift(**drift_data)
-        elif model_type == ModelType.REGRESSION:
+        if model_type == ModelType.REGRESSION:
             return RegressionDrift(**drift_data)
-        else:
-            raise MetricsInternalError(f'Invalid model type {model_type}')
+        raise MetricsInternalError(f'Invalid model type {model_type}')

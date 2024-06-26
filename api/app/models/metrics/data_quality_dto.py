@@ -136,9 +136,7 @@ class DataQualityDTO(BaseModel):
         job_status: JobStatus,
         data_quality_data: Optional[Dict],
     ) -> 'DataQualityDTO':
-        """
-        Create a DataQualityDTO from a dictionary of data.
-        """
+        """Create a DataQualityDTO from a dictionary of data."""
         if not data_quality_data:
             return DataQualityDTO(
                 job_status=job_status,
@@ -160,12 +158,9 @@ class DataQualityDTO(BaseModel):
         model_type: ModelType,
         data_quality_data: Dict,
     ) -> ClassificationDataQuality | RegressionDataQuality:
-        """
-        Create a specific data quality instance based on the model type.
-        """
+        """Create a specific data quality instance based on the model type."""
         if model_type in {ModelType.BINARY, ModelType.MULTI_CLASS}:
             return ClassificationDataQuality(**data_quality_data)
-        elif model_type == ModelType.REGRESSION:
+        if model_type == ModelType.REGRESSION:
             return RegressionDataQuality(**data_quality_data)
-        else:
-            raise MetricsInternalError(f'Invalid model type {model_type}')
+        raise MetricsInternalError(f'Invalid model type {model_type}')

@@ -97,9 +97,7 @@ class ModelQualityDTO(BaseModel):
         job_status: JobStatus,
         model_quality_data: Optional[Dict],
     ) -> 'ModelQualityDTO':
-        """
-        Create a ModelQualityDTO from a dictionary of data.
-        """
+        """Create a ModelQualityDTO from a dictionary of data."""
         if not model_quality_data:
             return ModelQualityDTO(
                 job_status=job_status,
@@ -128,32 +126,26 @@ class ModelQualityDTO(BaseModel):
         | MultiClassModelQuality
         | RegressionModelQuality
     ):
-        """
-        Create a specific model quality instance based on model type and dataset type.
-        """
+        """Create a specific model quality instance based on model type and dataset type."""
         if model_type == ModelType.BINARY:
             return ModelQualityDTO._create_binary_model_quality(
                 dataset_type=dataset_type,
                 model_quality_data=model_quality_data,
             )
-        elif model_type == ModelType.MULTI_CLASS:
+        if model_type == ModelType.MULTI_CLASS:
             return MultiClassModelQuality(**model_quality_data)
-        elif model_type == ModelType.REGRESSION:
+        if model_type == ModelType.REGRESSION:
             return RegressionModelQuality(**model_quality_data)
-        else:
-            raise MetricsInternalError(f'Invalid model type {model_type}')
+        raise MetricsInternalError(f'Invalid model type {model_type}')
 
     @staticmethod
     def _create_binary_model_quality(
         dataset_type: DatasetType,
         model_quality_data: Dict,
     ) -> BinaryClassModelQuality | CurrentBinaryClassModelQuality:
-        """
-        Create a binary model quality instance based on dataset type.
-        """
+        """Create a binary model quality instance based on dataset type."""
         if dataset_type == DatasetType.REFERENCE:
             return BinaryClassModelQuality(**model_quality_data)
-        elif dataset_type == DatasetType.CURRENT:
+        if dataset_type == DatasetType.CURRENT:
             return CurrentBinaryClassModelQuality(**model_quality_data)
-        else:
-            raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
+        raise MetricsInternalError(f'Invalid dataset type {dataset_type}')

@@ -11,13 +11,13 @@ from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.dataset_type import DatasetType
-from app.models.model_dto import ModelType
 from app.models.exceptions import MetricsBadRequestError, MetricsInternalError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
+from app.models.model_dto import ModelType
 from app.services.model_service import ModelService
 
 
@@ -39,9 +39,7 @@ class MetricsService:
     def get_reference_statistics_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> StatisticsDTO:
-        """
-        Retrieve reference statistics for a model by its UUID.
-        """
+        """Retrieve reference statistics for a model by its UUID."""
         return self._get_statistics_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_metrics,
@@ -51,9 +49,7 @@ class MetricsService:
     def get_current_statistics_by_model_by_uuid(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> StatisticsDTO:
-        """
-        Retrieve current statistics for a model by its UUID and an optional current dataset UUID.
-        """
+        """Retrieve current statistics for a model by its UUID and an optional current dataset UUID."""
         return self._get_statistics_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
@@ -65,9 +61,7 @@ class MetricsService:
     def get_reference_model_quality_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> ModelQualityDTO:
-        """
-        Retrieve reference model quality for a model by its UUID.
-        """
+        """Retrieve reference model quality for a model by its UUID."""
         return self._get_model_quality_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_metrics,
@@ -78,9 +72,7 @@ class MetricsService:
     def get_current_model_quality_by_model_by_uuid(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> ModelQualityDTO:
-        """
-        Retrieve current model quality for a model by its UUID and an optional current dataset UUID.
-        """
+        """Retrieve current model quality for a model by its UUID and an optional current dataset UUID."""
         return self._get_model_quality_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
@@ -93,9 +85,7 @@ class MetricsService:
     def get_reference_data_quality_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> DataQualityDTO:
-        """
-        Retrieve reference data quality for a model by its UUID.
-        """
+        """Retrieve reference data quality for a model by its UUID."""
         return self._get_data_quality_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_metrics,
@@ -105,9 +95,7 @@ class MetricsService:
     def get_current_data_quality_by_model_by_uuid(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> DataQualityDTO:
-        """
-        Retrieve current data quality for a model by its UUID and an optional current dataset UUID.
-        """
+        """Retrieve current data quality for a model by its UUID and an optional current dataset UUID."""
         return self._get_data_quality_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
@@ -119,9 +107,7 @@ class MetricsService:
     def get_current_drift(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> DriftDTO:
-        """
-        Retrieve current drift for a model by its UUID and an optional current dataset UUID.
-        """
+        """Retrieve current drift for a model by its UUID and an optional current dataset UUID."""
         return self._get_drift_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
@@ -131,9 +117,7 @@ class MetricsService:
         )
 
     def get_latest_current_uuid(self, model_uuid: UUID) -> Optional[UUID]:
-        """
-        Retrieve the latest current dataset UUID for a model by its UUID.
-        """
+        """Retrieve the latest current dataset UUID for a model by its UUID."""
         latest_current = (
             self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
                 model_uuid
@@ -144,9 +128,7 @@ class MetricsService:
     def check_and_get_reference_dataset_and_metrics(
         self, model_uuid: UUID
     ) -> tuple[Optional[ReferenceDataset], Optional[ReferenceDatasetMetrics]]:
-        """
-        Check and retrieve the reference dataset and its metrics for a model by its UUID.
-        """
+        """Check and retrieve the reference dataset and its metrics for a model by its UUID."""
         return self._check_and_get_dataset_and_metrics(
             model_uuid=model_uuid,
             dataset_getter=self.reference_dataset_dao.get_reference_dataset_by_model_uuid,
@@ -156,9 +138,7 @@ class MetricsService:
     def check_and_get_current_dataset_and_metrics(
         self, model_uuid: UUID, current_uuid: UUID
     ) -> tuple[Optional[CurrentDataset], Optional[CurrentDatasetMetrics]]:
-        """
-        Check and retrieve the current dataset and its metrics for a model by its UUID and a current dataset UUID.
-        """
+        """Check and retrieve the current dataset and its metrics for a model by its UUID and a current dataset UUID."""
         return self._check_and_get_dataset_and_metrics(
             model_uuid=model_uuid,
             dataset_getter=lambda uuid: self.current_dataset_dao.get_current_dataset_by_model_uuid(
@@ -176,9 +156,7 @@ class MetricsService:
         Optional[ReferenceDataset | CurrentDataset],
         Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
     ]:
-        """
-        Check and retrieve the dataset and its metrics using the provided getters.
-        """
+        """Check and retrieve the dataset and its metrics using the provided getters."""
         dataset = dataset_getter(model_uuid)
         if not dataset:
             return None, None
@@ -202,9 +180,7 @@ class MetricsService:
         dataset_and_metrics_getter,
         missing_status,
     ) -> StatisticsDTO:
-        """
-        Retrieve statistics for a model by its UUID.
-        """
+        """Retrieve statistics for a model by its UUID."""
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_statistics_dto(
             dataset=dataset,
@@ -219,9 +195,7 @@ class MetricsService:
         dataset_type: DatasetType,
         missing_status,
     ) -> ModelQualityDTO:
-        """
-        Retrieve model quality for a model by its UUID.
-        """
+        """Retrieve model quality for a model by its UUID."""
         model = self.model_service.get_model_by_uuid(model_uuid)
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_model_quality_dto(
@@ -238,9 +212,7 @@ class MetricsService:
         dataset_and_metrics_getter,
         missing_status,
     ) -> DataQualityDTO:
-        """
-        Retrieve data quality for a model by its UUID.
-        """
+        """Retrieve data quality for a model by its UUID."""
         model = self.model_service.get_model_by_uuid(model_uuid)
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_data_quality_dto(
@@ -256,9 +228,7 @@ class MetricsService:
         dataset_and_metrics_getter,
         missing_status,
     ) -> DriftDTO:
-        """
-        Retrieve drift for a model by its UUID.
-        """
+        """Retrieve drift for a model by its UUID."""
         model = self.model_service.get_model_by_uuid(model_uuid)
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_drift_dto(
@@ -274,9 +244,7 @@ class MetricsService:
         metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
         missing_status,
     ) -> StatisticsDTO:
-        """
-        Create a StatisticsDTO from the provided dataset and metrics.
-        """
+        """Create a StatisticsDTO from the provided dataset and metrics."""
         if not dataset:
             return StatisticsDTO.from_dict(
                 job_status=missing_status,
@@ -303,9 +271,7 @@ class MetricsService:
         metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
         missing_status,
     ) -> ModelQualityDTO:
-        """
-        Create a ModelQualityDTO from the provided dataset and metrics.
-        """
+        """Create a ModelQualityDTO from the provided dataset and metrics."""
         if not dataset:
             return ModelQualityDTO.from_dict(
                 dataset_type=dataset_type,
@@ -334,9 +300,7 @@ class MetricsService:
         metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
         missing_status,
     ) -> DataQualityDTO:
-        """
-        Create a DataQualityDTO from the provided dataset and metrics.
-        """
+        """Create a DataQualityDTO from the provided dataset and metrics."""
         if not dataset:
             return DataQualityDTO.from_dict(
                 model_type=model_type,
@@ -362,9 +326,7 @@ class MetricsService:
         metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
         missing_status,
     ) -> DriftDTO:
-        """
-        Create a DriftDTO from the provided dataset and metrics.
-        """
+        """Create a DriftDTO from the provided dataset and metrics."""
         if not dataset:
             return DriftDTO.from_dict(
                 model_type=model_type,
