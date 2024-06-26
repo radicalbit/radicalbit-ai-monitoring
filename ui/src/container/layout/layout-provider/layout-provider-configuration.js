@@ -9,8 +9,8 @@ export const MAIN_LAYOUT_CONFIGURATION = [
 
 export const DETAIL_LAYOUT_CONFIGURATION = [
   layoutActions.showSecondaryColumn,
-  layoutActions.lightenMainContent,
-  layoutActions.lightenMainHeader,
+  layoutActions.darkenMainContent,
+  layoutActions.darkenMainHeader,
   layoutActions.showHeader,
 ];
 

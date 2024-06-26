@@ -1,9 +1,35 @@
 html {
-    font-size: 13px;
+    font-size: 14px;
 
     body {
         height: 100%;
         overflow: hidden !important;
         margin: 0;
+
+
+
+    .ant-tabs-top > .ant-tabs-nav::before, .ant-tabs-bottom > .ant-tabs-nav::before, .ant-tabs-top > div > .ant-tabs-nav::before, .ant-tabs-bottom > div > .ant-tabs-nav::before {
+     border-color: var(--coo-secondary-03);
     }
+
+    .c-collapse.ant-collapse { background: transparent;}
+
+    .c-collapse--primary-light.ant-collapse .ant-collapse-item .ant-collapse-header {
+        background-color: rgba(var(--coo-rgb-primary), 0.15);
+    }
+
+    .c-collapse--primary-light.ant-collapse .ant-collapse-item .ant-collapse-content {
+        background-color: rgba(var(--coo-rgb-primary), 0.15);
+    }
+
+    .ant-collapse-icon-position-end > .ant-collapse-item > .ant-collapse-header {
+        padding: 1rem;
+    }
+
+    .c-collapse.ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box {
+        padding:0 1rem  1rem  1rem;
+    }
+
+}
+    
 }
