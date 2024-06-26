@@ -1,11 +1,9 @@
 import { JOB_STATUS } from '@Src/constants';
+import { useGetReferenceDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { Pin, Spinner } from '@radicalbit/radicalbit-design-system';
-import { modelsApiSlice } from '@Src/store/state/models/api';
 
-const { useGetReferenceDataQualityQuery } = modelsApiSlice;
-
-function JobStatusPin({ uuid }) {
-  const { data } = useGetReferenceDataQualityQuery({ uuid });
+function JobStatusPin() {
+  const { data } = useGetReferenceDataQualityQueryWithPolling();
   const jobStatus = data?.jobStatus;
 
   switch (jobStatus) {

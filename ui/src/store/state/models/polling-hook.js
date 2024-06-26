@@ -31,21 +31,25 @@ const useGetReferenceImportsQueryWithPolling = () => {
 const useGetReferenceDataQualityQueryWithPolling = () => {
   const { uuid } = useParams();
 
-  const { data } = useGetReferenceDataQualityQuery({ uuid });
-  const status = data?.jobStatus;
+  const result = useGetReferenceDataQualityQuery({ uuid });
+  const status = result.data?.jobStatus;
   const isReferenceImporting = status === JOB_STATUS.IMPORTING;
 
   useGetReferenceDataQualityQuery({ uuid }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isReferenceImporting });
+
+  return result;
 };
 
 const useGetReferenceModelQualityQueryWithPolling = () => {
   const { uuid } = useParams();
 
-  const { data } = useGetReferenceModelQualityQuery({ uuid });
-  const status = data?.jobStatus;
+  const result = useGetReferenceModelQualityQuery({ uuid });
+  const status = result.data?.jobStatus;
   const isReferenceImporting = status === JOB_STATUS.IMPORTING;
 
   useGetReferenceModelQualityQuery({ uuid }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isReferenceImporting });
+
+  return result;
 };
 
 const useGetReferenceStatisticsQueryWithPolling = () => {

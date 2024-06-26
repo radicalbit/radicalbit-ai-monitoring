@@ -40,7 +40,7 @@ export default function SecondaryColumnModelsContent() {
         <div className="flex gap-2 items-center">
           <div>{name}</div>
 
-          <JobStatusPin uuid={modelUUID} />
+          <JobStatusPin />
         </div>),
       key: modelUUID,
       children: commonChildrenMenu,

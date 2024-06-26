@@ -2,22 +2,16 @@ import JobStatus from '@Components/JobStatus';
 import ConfusionMatrix from '@Container/models/Details/charts/confusion-matrix-chart';
 import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
-import { modelsApiSlice } from '@State/models/api';
 import { useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import {
   Board, DataTable, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
-import { useParams } from 'react-router';
 import columns from './columns';
 
-const { useGetReferenceModelQualityQuery } = modelsApiSlice;
-
 function BinaryClassificationMetrics() {
-  useGetReferenceModelQualityQueryWithPolling();
+  const { data, isLoading } = useGetReferenceModelQualityQueryWithPolling();
 
-  const { uuid } = useParams();
-  const { data, isLoading } = useGetReferenceModelQualityQuery({ uuid });
   const jobStatus = data?.jobStatus;
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
