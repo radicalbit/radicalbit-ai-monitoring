@@ -1,9 +1,7 @@
 import datetime
 import uuid
-from pathlib import Path
 
 import pytest
-from pyspark.sql import SparkSession
 
 from jobs.metrics.statistics import calculate_statistics_reference
 from jobs.models.reference_dataset import ReferenceDataset
@@ -17,27 +15,20 @@ from jobs.utils.models import (
     Granularity,
 )
 from tests.utils.pytest_utils import my_approx
-
-test_resource_path = Path(__file__).resolve().parent / "resources"
-
-
-@pytest.fixture()
-def spark_fixture():
-    spark = SparkSession.builder.appName("Reference Multiclass PyTest").getOrCreate()
-    yield spark
+from utils.reference_multiclass import ReferenceMetricsMulticlassService
 
 
 @pytest.fixture()
-def dataset_target_int(spark_fixture):
+def dataset_target_int(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/multiclass/dataset_target_int.csv", header=True
+        f"{test_data_dir}/reference/multiclass/dataset_target_int.csv", header=True
     )
 
 
 @pytest.fixture()
-def dataset_target_string(spark_fixture):
+def dataset_target_string(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/multiclass/dataset_target_string.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_target_string.csv",
         header=True,
     )
 
@@ -128,6 +119,10 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=dataset_target_string
     )
+
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset)
+
+    print(multiclass_service.calculate_data_quality().model_dump_json(serialize_as_any=True))
 
     stats = calculate_statistics_reference(reference_dataset)
 

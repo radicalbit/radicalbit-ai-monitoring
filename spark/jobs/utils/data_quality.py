@@ -61,6 +61,32 @@ class NumericalFeatureMetrics(FeatureMetrics):
         false_feature_dict: Dict,
         histogram: Histogram,
     ) -> "NumericalFeatureMetrics":
+        class_median_metrics = []
+        if true_feature_dict:
+            class_median_metrics.append(
+                ClassMedianMetrics(
+                    name="true",
+                    mean=true_feature_dict.get("mean"),
+                    median_metrics=MedianMetrics(
+                        median=true_feature_dict.get("median"),
+                        perc_25=true_feature_dict.get("perc_25"),
+                        perc_75=true_feature_dict.get("perc_75"),
+                    ),
+                )
+            )
+        if false_feature_dict:
+            class_median_metrics.append(
+                ClassMedianMetrics(
+                    name="false",
+                    mean=false_feature_dict.get("mean"),
+                    median_metrics=MedianMetrics(
+                        median=false_feature_dict.get("median"),
+                        perc_25=false_feature_dict.get("perc_25"),
+                        perc_75=false_feature_dict.get("perc_75"),
+                    ),
+                )
+            )
+
         return NumericalFeatureMetrics(
             feature_name=feature_name,
             missing_value=MissingValue(
@@ -76,26 +102,7 @@ class NumericalFeatureMetrics(FeatureMetrics):
                 perc_25=global_dict.get("perc_25"),
                 perc_75=global_dict.get("perc_75"),
             ),
-            class_median_metrics=[
-                ClassMedianMetrics(
-                    name="true",
-                    mean=true_feature_dict.get("mean"),
-                    median_metrics=MedianMetrics(
-                        median=true_feature_dict.get("median"),
-                        perc_25=true_feature_dict.get("perc_25"),
-                        perc_75=true_feature_dict.get("perc_75"),
-                    ),
-                ),
-                ClassMedianMetrics(
-                    name="false",
-                    mean=false_feature_dict.get("mean"),
-                    median_metrics=MedianMetrics(
-                        median=false_feature_dict.get("median"),
-                        perc_25=false_feature_dict.get("perc_25"),
-                        perc_75=false_feature_dict.get("perc_75"),
-                    ),
-                ),
-            ],
+            class_median_metrics=class_median_metrics,
             histogram=histogram,
         )
 
@@ -147,6 +154,12 @@ class ClassMetrics(BaseModel):
 
 
 class BinaryClassDataQuality(BaseModel):
+    n_observations: int
+    class_metrics: List[ClassMetrics]
+    feature_metrics: List[FeatureMetrics]
+
+
+class MultiClassDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
     feature_metrics: List[FeatureMetrics]

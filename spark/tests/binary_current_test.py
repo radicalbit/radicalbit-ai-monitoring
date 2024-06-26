@@ -1,10 +1,8 @@
 import datetime
 import uuid
-from pathlib import Path
 
 import deepdiff
 import pytest
-from pyspark.sql import SparkSession
 
 from jobs.metrics.statistics import calculate_statistics_current
 from jobs.models.current_dataset import CurrentDataset
@@ -21,144 +19,124 @@ from jobs.utils.models import (
 )
 from tests.utils.pytest_utils import my_approx
 
-test_resource_path = Path(__file__).resolve().parent / "resources"
+
+@pytest.fixture()
+def dataset(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(f"{test_data_dir}/current/dataset.csv", header=True),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+    )
 
 
 @pytest.fixture()
-def spark_fixture():
-    spark = SparkSession.builder.appName("Current PyTest").getOrCreate()
-    yield spark
-
-
-@pytest.fixture()
-def dataset(spark_fixture):
+def complete_dataset(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset.csv", header=True
+            f"{test_data_dir}/current/complete_dataset.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
+            f"{test_data_dir}/reference/complete_dataset.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def complete_dataset(spark_fixture):
+def current_joined(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/complete_dataset.csv", header=True
+            f"{test_data_dir}/current/current_joined.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/complete_dataset.csv", header=True
+            f"{test_data_dir}/reference/reference_joined.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def current_joined(spark_fixture):
+def easy_dataset(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/current_joined.csv", header=True
+            f"{test_data_dir}/current/easy_dataset.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/reference_joined.csv", header=True
+            f"{test_data_dir}/reference/easy_dataset.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def easy_dataset(spark_fixture):
+def dataset_cat_missing(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/easy_dataset.csv", header=True
+            f"{test_data_dir}/current/dataset_cat_missing.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/easy_dataset.csv", header=True
+            f"{test_data_dir}/reference/dataset_cat_missing.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def dataset_cat_missing(spark_fixture):
+def dataset_with_datetime(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_cat_missing.csv", header=True
+            f"{test_data_dir}/current/dataset_with_datetime.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset_cat_missing.csv", header=True
+            f"{test_data_dir}/reference/dataset_with_datetime.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def dataset_with_datetime(spark_fixture):
+def easy_dataset_bucket_test(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_with_datetime.csv", header=True
+            f"{test_data_dir}/current/easy_dataset_bucket_test.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset_with_datetime.csv", header=True
+            f"{test_data_dir}/reference/easy_dataset.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def easy_dataset_bucket_test(spark_fixture):
+def dataset_for_hour(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/easy_dataset_bucket_test.csv", header=True
+            f"{test_data_dir}/current/dataset_for_hour.csv", header=True
         ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/easy_dataset.csv", header=True
-        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
     )
 
 
 @pytest.fixture()
-def dataset_for_hour(spark_fixture):
+def dataset_for_day(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_for_hour.csv", header=True
+            f"{test_data_dir}/current/dataset_for_day.csv", header=True
         ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
-        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
     )
 
 
 @pytest.fixture()
-def dataset_for_day(spark_fixture):
+def dataset_for_week(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_for_day.csv", header=True
+            f"{test_data_dir}/current/dataset_for_week.csv", header=True
         ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
-        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
     )
 
 
 @pytest.fixture()
-def dataset_for_week(spark_fixture):
+def dataset_for_month(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_for_week.csv", header=True
+            f"{test_data_dir}/current/dataset_for_month.csv", header=True
         ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
-        ),
-    )
-
-
-@pytest.fixture()
-def dataset_for_month(spark_fixture):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_for_month.csv", header=True
-        ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
-        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
     )
 
 

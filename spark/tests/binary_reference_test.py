@@ -1,11 +1,9 @@
 import datetime
 import uuid
-from pathlib import Path
 
 import deepdiff
 
 import pytest
-from pyspark.sql import SparkSession
 
 from jobs.metrics.statistics import calculate_statistics_reference
 from jobs.models.reference_dataset import ReferenceDataset
@@ -21,68 +19,58 @@ from jobs.utils.models import (
 from jobs.utils.reference import ReferenceMetricsService
 from tests.utils.pytest_utils import my_approx
 
-test_resource_path = Path(__file__).resolve().parent / "resources"
+
+@pytest.fixture()
+def dataset(spark_fixture, test_data_dir):
+    yield spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True)
 
 
 @pytest.fixture()
-def spark_fixture():
-    spark = SparkSession.builder.appName("Reference PyTest").getOrCreate()
-    yield spark
-
-
-@pytest.fixture()
-def dataset(spark_fixture):
+def complete_dataset(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/dataset.csv", header=True
+        f"{test_data_dir}/reference/complete_dataset.csv", header=True
     )
 
 
 @pytest.fixture()
-def complete_dataset(spark_fixture):
+def reference_joined(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/complete_dataset.csv", header=True
+        f"{test_data_dir}/reference/reference_joined.csv", header=True
     )
 
 
 @pytest.fixture()
-def reference_joined(spark_fixture):
+def easy_dataset(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/reference_joined.csv", header=True
+        f"{test_data_dir}/reference/easy_dataset.csv", header=True
     )
 
 
 @pytest.fixture()
-def easy_dataset(spark_fixture):
+def dataset_cat_missing(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/easy_dataset.csv", header=True
+        f"{test_data_dir}/reference/dataset_cat_missing.csv", header=True
     )
 
 
 @pytest.fixture()
-def dataset_cat_missing(spark_fixture):
+def dataset_with_datetime(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/dataset_cat_missing.csv", header=True
+        f"{test_data_dir}/reference/dataset_with_datetime.csv", header=True
     )
 
 
 @pytest.fixture()
-def dataset_with_datetime(spark_fixture):
+def enhanced_data(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/dataset_with_datetime.csv", header=True
+        f"{test_data_dir}/reference/enhanced_data.csv", header=True
     )
 
 
 @pytest.fixture()
-def enhanced_data(spark_fixture):
+def dataset_bool_missing(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/enhanced_data.csv", header=True
-    )
-
-
-@pytest.fixture()
-def dataset_bool_missing(spark_fixture):
-    yield spark_fixture.read.csv(
-        f"{test_resource_path}/reference/dataset_bool_missing.csv", header=True
+        f"{test_data_dir}/reference/dataset_bool_missing.csv", header=True
     )
 
 
