@@ -20,10 +20,7 @@ import {
 
 const { Panel } = Collapse;
 
-const {
-  useGetReferenceStatisticsQuery,
-  useGetCurrentStatisticsByUUIDQuery,
-} = modelsApiSlice;
+const { useGetCurrentStatisticsByUUIDQuery } = modelsApiSlice;
 
 function SummaryTab() {
   const { data, isLoading } = useGetReferenceStatisticsQueryWithPolling();
@@ -35,11 +32,11 @@ function SummaryTab() {
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
     return (
-      <Spinner>
+      <>
         <ReferenceCurrentLatestComparison />
 
         <CurrentList />
-      </Spinner>
+      </>
     );
   }
 
@@ -66,9 +63,7 @@ function CurrentList() {
 }
 
 function ReferenceCurrentLatestComparison() {
-  const { uuid } = useParams();
-
-  const { data: reference, isSuccess: isReferenceSuccess } = useGetReferenceStatisticsQuery({ uuid });
+  const { data: reference, isSuccess: isReferenceSuccess } = useGetReferenceStatisticsQueryWithPolling();
   const date = reference?.date;
 
   const { data: latestCurrent } = useGetCurrentStatisticsQueryWithPolling();

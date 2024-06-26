@@ -28,8 +28,10 @@ const useGetReferenceImportsQueryWithPolling = () => {
   useGetReferenceImportsQuery({ uuid }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isReferenceImporting });
 };
 
-const useGetReferenceDataQualityQueryWithPolling = () => {
-  const { uuid } = useParams();
+const useGetReferenceDataQualityQueryWithPolling = (modelUUID) => {
+  const { uuid: uuidFromUrl } = useParams();
+
+  const uuid = modelUUID !== undefined ? modelUUID : uuidFromUrl;
 
   const result = useGetReferenceDataQualityQuery({ uuid });
   const status = result.data?.jobStatus;
@@ -77,8 +79,10 @@ const useGetCurrentImportsQueryWithPolling = () => {
   return result;
 };
 
-const useGetCurrentDataQualityQueryWithPolling = () => {
-  const { uuid } = useParams();
+const useGetCurrentDataQualityQueryWithPolling = (modelUUID) => {
+  const { uuid: uuidFromUrl } = useParams();
+
+  const uuid = modelUUID !== undefined ? modelUUID : uuidFromUrl;
 
   const { modalPayload: { data: modalData } } = useModals();
 

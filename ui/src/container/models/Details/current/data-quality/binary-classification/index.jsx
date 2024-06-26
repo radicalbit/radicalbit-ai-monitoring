@@ -3,8 +3,8 @@ import JobStatus from '@Components/JobStatus';
 import { JOB_STATUS } from '@Src/constants';
 import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
-import { memo } from 'react';
 import { Spinner } from '@radicalbit/radicalbit-design-system';
+import { memo } from 'react';
 import DataPointDistribution from './data-point-distribution';
 import DataQualityList from './data-quality-list';
 import SearchFeatureList from './search-filter';
@@ -19,7 +19,6 @@ const initialValues = {
 
 function BinaryClassificationMetrics() {
   const { data, isError, isLoading } = useGetCurrentDataQualityQueryWithPolling();
-
   const jobStatus = data?.jobStatus;
 
   if (isLoading) {
