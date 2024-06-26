@@ -5,7 +5,7 @@ from uuid import UUID
 import boto3
 from botocore.exceptions import ClientError as BotoClientError
 import pandas as pd
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 import requests
 
 from radicalbit_platform_sdk.apis import ModelCurrentDataset, ModelReferenceDataset
@@ -89,6 +89,50 @@ class Model:
             func=lambda _: None,
         )
 
+    def get_reference_datasets(self) -> List[ModelReferenceDataset]:
+        def __callback(response: requests.Response) -> List[ModelReferenceDataset]:
+            try:
+                adapter = TypeAdapter(List[ReferenceFileUpload])
+                references = adapter.validate_python(response.json())
+
+                return [
+                    ModelReferenceDataset(
+                        self.__base_url, self.__uuid, self.__model_type, ref
+                    )
+                    for ref in references
+                ]
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/reference/all',
+            valid_response_code=200,
+            func=__callback,
+        )
+
+    def get_current_datasets(self) -> List[ModelCurrentDataset]:
+        def __callback(response: requests.Response) -> List[ModelCurrentDataset]:
+            try:
+                adapter = TypeAdapter(List[CurrentFileUpload])
+                references = adapter.validate_python(response.json())
+
+                return [
+                    ModelCurrentDataset(
+                        self.__base_url, self.__uuid, self.__model_type, ref
+                    )
+                    for ref in references
+                ]
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/current/all',
+            valid_response_code=200,
+            func=__callback,
+        )
+
     def load_reference_dataset(
         self,
         file_name: str,
@@ -136,6 +180,15 @@ class Model:
                         None
                         if aws_credentials is None
                         else aws_credentials.default_region
+                    ),
+                    endpoint_url=(
+                        None
+                        if aws_credentials is None
+                        else (
+                            None
+                            if aws_credentials.endpoint_url is None
+                            else aws_credentials.endpoint_url
+                        )
                     ),
                 )
 
@@ -192,6 +245,15 @@ class Model:
                 ),
                 region_name=(
                     None if aws_credentials is None else aws_credentials.default_region
+                ),
+                endpoint_url=(
+                    None
+                    if aws_credentials is None
+                    else (
+                        None
+                        if aws_credentials.endpoint_url is None
+                        else aws_credentials.endpoint_url
+                    )
                 ),
             )
 
@@ -270,6 +332,15 @@ class Model:
                         if aws_credentials is None
                         else aws_credentials.default_region
                     ),
+                    endpoint_url=(
+                        None
+                        if aws_credentials is None
+                        else (
+                            None
+                            if aws_credentials.endpoint_url is None
+                            else aws_credentials.endpoint_url
+                        )
+                    ),
                 )
 
                 s3_client.upload_file(
@@ -327,6 +398,15 @@ class Model:
                 ),
                 region_name=(
                     None if aws_credentials is None else aws_credentials.default_region
+                ),
+                endpoint_url=(
+                    None
+                    if aws_credentials is None
+                    else (
+                        None
+                        if aws_credentials.endpoint_url is None
+                        else aws_credentials.endpoint_url
+                    )
                 ),
             )
 

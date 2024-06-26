@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, File, Form, UploadFile, status
@@ -69,7 +69,7 @@ class UploadDatasetRoute:
             status_code=200,
             response_model=Page[ReferenceDatasetDTO],
         )
-        def get_all_reference_datasets_by_model_uuid(
+        def get_all_reference_datasets_by_model_uuid_paginated(
             model_uuid: UUID,
             _page: Annotated[int, Query()] = 1,
             _limit: Annotated[int, Query()] = 50,
@@ -77,16 +77,26 @@ class UploadDatasetRoute:
             _sort: Annotated[Optional[str], Query()] = None,
         ):
             params = Params(page=_page, size=_limit)
-            return file_service.get_all_reference_datasets_by_model_uuid(
+            return file_service.get_all_reference_datasets_by_model_uuid_paginated(
                 model_uuid, params=params, order=_order, sort=_sort
             )
+
+        @router.get(
+            '/{model_uuid}/reference/all',
+            status_code=200,
+            response_model=List[ReferenceDatasetDTO],
+        )
+        def get_all_reference_datasets_by_model_uuid(
+            model_uuid: UUID,
+        ):
+            return file_service.get_all_reference_datasets_by_model_uuid(model_uuid)
 
         @router.get(
             '/{model_uuid}/current',
             status_code=200,
             response_model=Page[CurrentDatasetDTO],
         )
-        def get_all_current_datasets_by_model_uuid(
+        def get_all_current_datasets_by_model_uuid_paginated(
             model_uuid: UUID,
             _page: Annotated[int, Query()] = 1,
             _limit: Annotated[int, Query()] = 50,
@@ -94,8 +104,18 @@ class UploadDatasetRoute:
             _sort: Annotated[Optional[str], Query()] = None,
         ):
             params = Params(page=_page, size=_limit)
-            return file_service.get_all_current_datasets_by_model_uuid(
+            return file_service.get_all_current_datasets_by_model_uuid_paginated(
                 model_uuid, params=params, order=_order, sort=_sort
             )
+
+        @router.get(
+            '/{model_uuid}/current/all',
+            status_code=200,
+            response_model=List[CurrentDatasetDTO],
+        )
+        def get_all_current_datasets_by_model_uuid(
+            model_uuid: UUID,
+        ):
+            return file_service.get_all_current_datasets_by_model_uuid(model_uuid)
 
         return router

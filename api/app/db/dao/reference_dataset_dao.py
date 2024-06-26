@@ -25,16 +25,39 @@ class ReferenceDatasetDAO:
             return reference_dataset
 
     def get_reference_dataset_by_model_uuid(
-        self, uuid: UUID
+        self, model_uuid: UUID
     ) -> Optional[ReferenceDataset]:
         with self.db.begin_session() as session:
             return (
                 session.query(ReferenceDataset)
-                .where(ReferenceDataset.model_uuid == uuid)
+                .where(ReferenceDataset.model_uuid == model_uuid)
+                .one_or_none()
+            )
+
+    def get_latest_reference_dataset_by_model_uuid(
+        self, model_uuid: UUID
+    ) -> Optional[ReferenceDataset]:
+        with self.db.begin_session() as session:
+            return (
+                session.query(ReferenceDataset)
+                .order_by(desc(ReferenceDataset.date))
+                .where(ReferenceDataset.model_uuid == model_uuid)
+                .limit(1)
                 .one_or_none()
             )
 
     def get_all_reference_datasets_by_model_uuid(
+        self,
+        model_uuid: UUID,
+    ) -> Page[ReferenceDataset]:
+        with self.db.begin_session() as session:
+            return (
+                session.query(ReferenceDataset)
+                .order_by(desc(ReferenceDataset.date))
+                .where(ReferenceDataset.model_uuid == model_uuid)
+            )
+
+    def get_all_reference_datasets_by_model_uuid_paginated(
         self,
         model_uuid: UUID,
         params: Params = Params(),

@@ -52,7 +52,11 @@ reference_dataset_metrics_dao = ReferenceDatasetMetricsDAO(database)
 current_dataset_dao = CurrentDatasetDAO(database)
 current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
 
-model_service = ModelService(model_dao)
+model_service = ModelService(
+    model_dao=model_dao,
+    reference_dataset_dao=reference_dataset_dao,
+    current_dataset_dao=current_dataset_dao,
+)
 s3_config = get_config().s3_config
 
 if s3_config.s3_endpoint_url is not None:

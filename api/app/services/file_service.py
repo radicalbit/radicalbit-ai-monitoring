@@ -343,7 +343,7 @@ class FileService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
 
-    def get_all_reference_datasets_by_model_uuid(
+    def get_all_reference_datasets_by_model_uuid_paginated(
         self,
         model_uuid: UUID,
         params: Params = Params(),
@@ -351,7 +351,7 @@ class FileService:
         sort: Optional[str] = None,
     ) -> Page[ReferenceDatasetDTO]:
         results: Page[ReferenceDatasetDTO] = (
-            self.rd_dao.get_all_reference_datasets_by_model_uuid(
+            self.rd_dao.get_all_reference_datasets_by_model_uuid_paginated(
                 model_uuid, params=params, order=order, sort=sort
             )
         )
@@ -363,7 +363,18 @@ class FileService:
 
         return Page.create(items=_items, params=params, total=results.total)
 
-    def get_all_current_datasets_by_model_uuid(
+    def get_all_reference_datasets_by_model_uuid(
+        self,
+        model_uuid: UUID,
+    ) -> List[ReferenceDatasetDTO]:
+        references = self.rd_dao.get_all_reference_datasets_by_model_uuid(model_uuid)
+
+        return [
+            ReferenceDatasetDTO.from_reference_dataset(reference)
+            for reference in references
+        ]
+
+    def get_all_current_datasets_by_model_uuid_paginated(
         self,
         model_uuid: UUID,
         params: Params = Params(),
@@ -371,7 +382,7 @@ class FileService:
         sort: Optional[str] = None,
     ) -> Page[CurrentDatasetDTO]:
         results: Page[CurrentDatasetDTO] = (
-            self.cd_dao.get_all_current_datasets_by_model_uuid(
+            self.cd_dao.get_all_current_datasets_by_model_uuid_paginated(
                 model_uuid, params=params, order=order, sort=sort
             )
         )
@@ -382,6 +393,16 @@ class FileService:
         ]
 
         return Page.create(items=_items, params=params, total=results.total)
+
+    def get_all_current_datasets_by_model_uuid(
+        self,
+        model_uuid: UUID,
+    ) -> List[CurrentDatasetDTO]:
+        currents = self.cd_dao.get_all_current_datasets_by_model_uuid(model_uuid)
+        return [
+            CurrentDatasetDTO.from_current_dataset(current_dataset)
+            for current_dataset in currents
+        ]
 
     @staticmethod
     def infer_schema(csv_file: UploadFile, sep: str = ',') -> InferredSchemaDTO:

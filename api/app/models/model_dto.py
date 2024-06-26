@@ -98,13 +98,19 @@ class ModelOut(BaseModel):
     algorithm: Optional[str]
     created_at: str
     updated_at: str
+    latest_reference_uuid: Optional[UUID]
+    latest_current_uuid: Optional[UUID]
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
     )
 
     @staticmethod
-    def from_model(model: Model):
+    def from_model(
+        model: Model,
+        latest_reference_uuid: Optional[UUID] = None,
+        latest_current_uuid: Optional[UUID] = None,
+    ):
         return ModelOut(
             uuid=model.uuid,
             name=model.name,
@@ -120,4 +126,6 @@ class ModelOut(BaseModel):
             algorithm=model.algorithm,
             created_at=str(model.created_at),
             updated_at=str(model.updated_at),
+            latest_reference_uuid=latest_reference_uuid,
+            latest_current_uuid=latest_current_uuid,
         )

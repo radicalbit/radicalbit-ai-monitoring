@@ -35,24 +35,24 @@ class ModelDAOTest(DatabaseIntegration):
         assert rows == 1
         assert retrieved is None
 
-    def test_get_all(self):
+    def test_get_all_paginated(self):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
         model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='model2')
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
         self.model_dao.insert(model1)
         self.model_dao.insert(model2)
         self.model_dao.insert(model3)
-        models = self.model_dao.get_all()
+        models = self.model_dao.get_all_paginated()
         assert models.items[0].uuid == model1.uuid
         assert len(models.items) == 3
 
-    def test_get_all_ordered(self):
+    def test_get_all_paginated_ordered(self):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='first_model')
         model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='second_model')
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='third_model')
         self.model_dao.insert(model1)
         self.model_dao.insert(model2)
         self.model_dao.insert(model3)
-        models = self.model_dao.get_all(order=OrderType.DESC, sort='name')
+        models = self.model_dao.get_all_paginated(order=OrderType.DESC, sort='name')
         assert models.items[0].name == model3.name
         assert len(models.items) == 3
