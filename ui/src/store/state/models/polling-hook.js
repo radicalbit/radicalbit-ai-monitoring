@@ -51,53 +51,64 @@ const useGetReferenceModelQualityQueryWithPolling = () => {
 const useGetReferenceStatisticsQueryWithPolling = () => {
   const { uuid } = useParams();
 
-  const { data } = useGetReferenceStatisticsQuery({ uuid });
-  const status = data?.jobStatus;
+  const result = useGetReferenceStatisticsQuery({ uuid });
+
+  const status = result.data?.jobStatus;
   const isReferenceImporting = status === JOB_STATUS.IMPORTING;
 
   useGetReferenceStatisticsQuery({ uuid }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isReferenceImporting });
+
+  return result;
 };
 
 const useGetCurrentImportsQueryWithPolling = () => {
   const { uuid } = useParams();
   const queryParams = useSelector((state) => contextConfigurationSelectors.selectQueryParamsSelector(state, NamespaceEnum.CURRENT_IMPORT));
 
-  const { data } = useGetCurrentImportsQuery({ uuid, queryParams });
-  const currentActiveImport = data?.items.filter((i) => i.status === JOB_STATUS.IMPORTING).length ?? 0;
+  const result = useGetCurrentImportsQuery({ uuid, queryParams });
+  const currentActiveImport = result.data?.items.filter((i) => i.status === JOB_STATUS.IMPORTING).length ?? 0;
 
   useGetCurrentImportsQuery({ uuid, queryParams }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: currentActiveImport === 0 });
+
+  return result;
 };
 
 const useGetCurrentDataQualityQueryWithPolling = () => {
-  const { modalPayload: { data: modalData } } = useModals();
-  const isModal = modalData?.uuid !== undefined;
-
   const { uuid } = useParams();
 
-  const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.latestCurrentUuid;
+  const { modalPayload: { data: modalData } } = useModals();
 
-  const { data } = useGetCurrentDataQualityQuery({ uuid, currentUUID }, { skip: isModal });
-  const status = data?.jobStatus;
+  const { data: model } = useGetModelByUUIDQuery({ uuid }, { skip: modalData?.uuid });
+  const latestCurrentUuid = model?.latestCurrentUuid;
+
+  const currentUUID = modalData?.uuid !== undefined ? modalData.uuid : latestCurrentUuid;
+
+  const result = useGetCurrentDataQualityQuery({ uuid, currentUUID }, { skip: !currentUUID });
+  const status = result.data?.jobStatus;
   const isCurrentImporting = status === JOB_STATUS.IMPORTING;
 
   useGetCurrentDataQualityQuery({ uuid, currentUUID }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isCurrentImporting });
+
+  return result;
 };
 
 const useGetCurrentModelQualityQueryWithPolling = () => {
-  const { modalPayload: { data: modalData } } = useModals();
-  const isModal = modalData?.uuid !== undefined;
-
   const { uuid } = useParams();
 
-  const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.latestCurrentUuid;
+  const { modalPayload: { data: modalData } } = useModals();
 
-  const { data } = useGetCurrentModelQualityQuery({ uuid, currentUUID }, { skip: isModal });
-  const status = data?.jobStatus;
+  const { data: model } = useGetModelByUUIDQuery({ uuid }, { skip: modalData?.uuid });
+  const latestCurrentUuid = model?.latestCurrentUuid;
+
+  const currentUUID = modalData?.uuid !== undefined ? modalData.uuid : latestCurrentUuid;
+
+  const result = useGetCurrentModelQualityQuery({ uuid, currentUUID }, { skip: !currentUUID });
+  const status = result.data?.jobStatus;
   const isCurrentImporting = status === JOB_STATUS.IMPORTING;
 
   useGetCurrentModelQualityQuery({ uuid, currentUUID }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isCurrentImporting });
+
+  return result;
 };
 
 const useGetCurrentStatisticsQueryWithPolling = () => {
@@ -106,27 +117,32 @@ const useGetCurrentStatisticsQueryWithPolling = () => {
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const currentUUID = model?.latestCurrentUuid;
 
-  const { data } = useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID });
-  const status = data?.jobStatus;
+  const result = useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID });
+  const status = result.data?.jobStatus;
   const isCurrentImporting = status === JOB_STATUS.IMPORTING;
 
   useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isCurrentImporting });
+
+  return result;
 };
 
 const useGetCurrentDriftQueryWithPolling = () => {
-  const { modalPayload: { data: modalData } } = useModals();
-  const isModal = modalData?.uuid !== undefined;
-
   const { uuid } = useParams();
 
-  const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.latestCurrentUuid;
+  const { modalPayload: { data: modalData } } = useModals();
 
-  const { data } = useGetCurrentDriftQuery({ uuid, currentUUID }, { skip: isModal });
-  const status = data?.jobStatus;
+  const { data: model } = useGetModelByUUIDQuery({ uuid }, { skip: modalData?.uuid });
+  const latestCurrentUuid = model?.latestCurrentUuid;
+
+  const currentUUID = modalData?.uuid !== undefined ? modalData.uuid : latestCurrentUuid;
+
+  const result = useGetCurrentDriftQuery({ uuid, currentUUID }, { skip: !currentUUID });
+  const status = result.data?.jobStatus;
   const isCurrentImporting = status === JOB_STATUS.IMPORTING;
 
   useGetCurrentDriftQuery({ uuid, currentUUID }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isCurrentImporting });
+
+  return result;
 };
 
 export {

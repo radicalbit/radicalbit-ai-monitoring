@@ -1,10 +1,10 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import JobStatus from '@Components/JobStatus';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetCurrentDataQuality } from '@State/models/modal-hook';
 import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import { memo } from 'react';
+import { Spinner } from '@radicalbit/radicalbit-design-system';
 import DataPointDistribution from './data-point-distribution';
 import DataQualityList from './data-quality-list';
 import SearchFeatureList from './search-filter';
@@ -18,14 +18,20 @@ const initialValues = {
 };
 
 function BinaryClassificationMetrics() {
-  useGetCurrentDataQualityQueryWithPolling();
-
-  const { data, isError } = useGetCurrentDataQuality();
+  const { data, isError, isLoading } = useGetCurrentDataQualityQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
 
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
+
   if (isError) {
     return <SomethingWentWrong />;
+  }
+
+  if (!data) {
+    return <JobStatus jobStatus={JOB_STATUS.MISSING_CURRENT} />;
   }
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {

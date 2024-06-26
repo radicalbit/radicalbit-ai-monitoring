@@ -177,6 +177,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
         if (result) {
           return [
             { type: API_TAGS.CURRENT_IMPORT, id: modelUUID },
+            { type: API_TAGS.MODEL, id: modelUUID },
           ];
         }
         return [];

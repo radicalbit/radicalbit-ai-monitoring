@@ -1,9 +1,9 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import JobStatus from '@Components/JobStatus';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetCurrentDrift } from '@State/models/modal-hook';
 import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
+import { Spinner } from '@radicalbit/radicalbit-design-system';
 import DataDriftHeader from './header';
 import DataDriftList from './list';
 import SearchFeatureList from './search-filter';
@@ -17,14 +17,20 @@ const initialValues = {
 };
 
 function DataDriftMetrics() {
-  useGetCurrentDriftQueryWithPolling();
-
-  const { data, isError } = useGetCurrentDrift();
+  const { data, isError, isLoading } = useGetCurrentDriftQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
 
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
+
   if (isError) {
     return <SomethingWentWrong />;
+  }
+
+  if (!data) {
+    return <JobStatus jobStatus={JOB_STATUS.MISSING_CURRENT} />;
   }
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {

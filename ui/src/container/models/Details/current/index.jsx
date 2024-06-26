@@ -44,13 +44,9 @@ export default function CurrentDashboard() {
 
   const activeTab = searchParams.get('tab-metrics') || METRICS_TABS.METRICS;
 
-  const setTab = (value) => {
+  const onChangeTab = (value) => {
     searchParams.set('tab-metrics', value);
     setSearchParams(searchParams);
-  };
-
-  const onChangeTab = (e) => {
-    setTab(e);
   };
 
   if (jobStatus === JOB_STATUS.MISSING_REFERENCE) {
@@ -58,7 +54,6 @@ export default function CurrentDashboard() {
   }
 
   return (
-
     <div className="px-4 pt-4 h-full">
       <Tabs
         activeKey={activeTab}
