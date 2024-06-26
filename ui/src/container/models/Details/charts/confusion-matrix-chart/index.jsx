@@ -31,10 +31,9 @@ function ConfusionMatrix({ dataset, labelClass, colors }) {
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={confusionMatrixOptions(dataset, labelClass, colors)}
-          style={{ height: '100%' }}
+          style={{ height: '20rem' }}
         />
       )}
-      modifier="min-h-[25rem] h-[25rem]"
       size="small"
     />
   );

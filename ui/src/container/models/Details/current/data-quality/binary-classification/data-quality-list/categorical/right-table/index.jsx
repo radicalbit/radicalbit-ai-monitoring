@@ -14,7 +14,7 @@ function CategoricalRightTable({ data }) {
       pagination={false}
       rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
       rowKey={({ name }) => name}
-      scroll={{ y: '16rem' }}
+      scroll={{ y: '12rem' }}
       size="small"
     />
   );

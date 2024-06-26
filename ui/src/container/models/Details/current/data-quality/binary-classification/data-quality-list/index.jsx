@@ -22,7 +22,7 @@ function DataQualityList() {
   const items = useGetFilteredFeatures();
 
   return (
-    <Spinner fullHeight fullWidth>
+    <Spinner className="mb-16" fullHeight fullWidth>
       <CountLabel />
 
       <Virtuoso

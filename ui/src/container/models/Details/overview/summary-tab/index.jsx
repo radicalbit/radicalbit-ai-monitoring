@@ -61,7 +61,7 @@ function ReferenceCurrentLatestComparison() {
   const { uuid } = useParams();
 
   const { data: model } = useGetModelByUUIDQuery({ uuid });
-  const currentUUID = model?.currentLatestUUID;
+  const currentUUID = model?.latestCurrentUuid;
 
   const { data: reference, isSuccess: isReferenceSuccess } = useGetReferenceStatisticsQuery({ uuid });
   const date = reference?.date;
