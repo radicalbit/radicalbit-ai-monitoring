@@ -63,6 +63,7 @@ class MetricsRouteTest(unittest.TestCase):
         model_uuid = uuid.uuid4()
         reference_metrics = db_mock.get_sample_reference_metrics()
         model_quality = ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.REFERENCE,
             model_type=ModelType.BINARY,
             job_status=JobStatus.SUCCEEDED,
             model_quality_data=reference_metrics.model_quality,
