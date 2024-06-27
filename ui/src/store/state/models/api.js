@@ -177,6 +177,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
         if (result) {
           return [
             { type: API_TAGS.CURRENT_IMPORT, id: modelUUID },
+            { type: API_TAGS.MODEL, id: modelUUID },
           ];
         }
         return [];
@@ -188,42 +189,6 @@ export const modelsApiSlice = apiService.injectEndpoints({
       query: ({ uuid, currentUUID }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/models/${uuid}/current/${currentUUID}/drift`,
-        method: 'get',
-      }),
-    }),
-
-    getCurrentDataQualityLatest: builder.query({
-      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-      query: ({ uuid }) => ({
-        baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}/current/latest/data-quality`,
-        method: 'get',
-      }),
-    }),
-
-    getCurrentModelQualityLatest: builder.query({
-      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-      query: ({ uuid }) => ({
-        baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}/current/latest/model-quality`,
-        method: 'get',
-      }),
-    }),
-
-    getCurrentDriftLatest: builder.query({
-      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-      query: ({ uuid }) => ({
-        baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}/current/latest/drift`,
-        method: 'get',
-      }),
-    }),
-
-    getCurrentStatisticsLatest: builder.query({
-      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-      query: ({ uuid }) => ({
-        baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}/current/latest/statistics`,
         method: 'get',
       }),
     }),

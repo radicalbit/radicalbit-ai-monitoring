@@ -1,5 +1,5 @@
 import { DRIFT_TEST_ENUM } from '@Src/constants';
-import { useGetCurrentDrift } from '@State/models/modal-hook';
+import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 
 function DataDriftHeader() {
@@ -21,7 +21,7 @@ function DataDriftHeader() {
 }
 
 function TotalFeaturesCounter() {
-  const { data } = useGetCurrentDrift();
+  const { data } = useGetCurrentDriftQueryWithPolling();
   const featureMetrics = data?.drift.featureMetrics.filter((feature) => feature.driftCalc.hasDrift) ?? [];
   const featuresWithDriftCounter = featureMetrics.length;
   const featuresCounter = data?.drift.featureMetrics.length;
@@ -71,7 +71,7 @@ function TotalFeaturesCounter() {
 }
 
 function CategoricalFeaturesCounter() {
-  const { data } = useGetCurrentDrift();
+  const { data } = useGetCurrentDriftQueryWithPolling();
 
   const featureMetrics = data?.drift.featureMetrics ?? [];
   const categoricalWithDriftCounter = featureMetrics.filter((feature) => feature.driftCalc.type === DRIFT_TEST_ENUM.CHI2 && feature.driftCalc.hasDrift).length;
@@ -124,7 +124,7 @@ function CategoricalFeaturesCounter() {
 }
 
 function NumericalFeaturesCounter() {
-  const { data } = useGetCurrentDrift();
+  const { data } = useGetCurrentDriftQueryWithPolling();
 
   const featureMetrics = data?.drift.featureMetrics ?? [];
 

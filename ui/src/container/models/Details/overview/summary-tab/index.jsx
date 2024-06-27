@@ -1,13 +1,13 @@
 import JobStatus from '@Components/JobStatus';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetReferenceStatisticsQueryWithPolling } from '@State/models/polling-hook';
+import { useGetCurrentImportsQueryWithPolling, useGetCurrentStatisticsQueryWithPolling, useGetReferenceStatisticsQueryWithPolling } from '@State/models/polling-hook';
 import { modelsApiSlice } from '@Store/state/models/api';
-import moment from 'moment';
 import {
   Collapse,
   DataTable,
   Spinner,
 } from '@radicalbit/radicalbit-design-system';
+import moment from 'moment';
 import { useParams } from 'react-router';
 import { Virtuoso } from 'react-virtuoso';
 import {
@@ -19,54 +19,57 @@ import {
 } from './columns';
 
 const { Panel } = Collapse;
-const {
-  useGetReferenceStatisticsQuery,
-  useGetCurrentImportsQuery,
-  useGetCurrentStatisticsByUUIDQuery,
-  useGetCurrentStatisticsLatestQuery,
-} = modelsApiSlice;
+
+const { useGetCurrentStatisticsByUUIDQuery } = modelsApiSlice;
 
 function SummaryTab() {
-  const { uuid } = useParams();
-
-  useGetReferenceStatisticsQueryWithPolling();
-
-  const { data } = useGetReferenceStatisticsQuery({ uuid });
-
-  const { data: currents } = useGetCurrentImportsQuery({ uuid });
-
-  const [, ...rest] = currents?.items || [];
-
+  const { data, isLoading } = useGetReferenceStatisticsQueryWithPolling();
   const jobStatus = data?.jobStatus;
+
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
     return (
-      <Spinner>
+      <>
         <ReferenceCurrentLatestComparison />
 
-        <Virtuoso
-          className="mt-4"
-          data={rest}
-          itemContent={(_, { uuid: currentUUID }) => (<Currents currentUUID={currentUUID} />)}
-          totalCount={rest.length}
-        />
-      </Spinner>
+        <CurrentList />
+      </>
     );
   }
 
   return (<JobStatus jobStatus={jobStatus} />);
 }
 
-function ReferenceCurrentLatestComparison() {
-  const { uuid } = useParams();
+function CurrentList() {
+  const { data: currents } = useGetCurrentImportsQueryWithPolling();
 
-  const { data: reference, isSuccess: isReferenceSuccess } = useGetReferenceStatisticsQuery({ uuid });
+  const [, ...rest] = currents?.items || [];
+
+  if (rest.length === 0) {
+    return false;
+  }
+
+  return (
+    <Virtuoso
+      className="mt-4"
+      data={rest}
+      itemContent={(_, { uuid: currentUUID }) => (<Currents currentUUID={currentUUID} />)}
+      totalCount={rest.length}
+    />
+  );
+}
+
+function ReferenceCurrentLatestComparison() {
+  const { data: reference, isSuccess: isReferenceSuccess } = useGetReferenceStatisticsQueryWithPolling();
   const date = reference?.date;
 
-  const { data: latestCurrent, isSuccess: isLatestCurrentSuccess } = useGetCurrentStatisticsLatestQuery({ uuid });
+  const { data: latestCurrent } = useGetCurrentStatisticsQueryWithPolling();
   const latestStatistics = latestCurrent?.statistics;
 
-  if (!isReferenceSuccess || !isLatestCurrentSuccess) {
+  if (!isReferenceSuccess) {
     return false;
   }
 

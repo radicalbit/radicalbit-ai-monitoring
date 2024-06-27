@@ -1,7 +1,7 @@
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
-import { useFormbitContext } from '@radicalbit/formbit';
-import { useGetCurrentDataQuality } from '@State/models/modal-hook';
 import { modelsApiSlice } from '@Src/store/state/models/api';
+import { useGetCurrentDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useFormbitContext } from '@radicalbit/formbit';
 import { useParams } from 'react-router';
 
 const { useGetReferenceDataQualityQuery } = modelsApiSlice;
@@ -9,7 +9,7 @@ const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 export default () => {
   const { uuid } = useParams();
 
-  const { data: currentData } = useGetCurrentDataQuality();
+  const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
   const items = currentData?.dataQuality?.featureMetrics ?? [];
 
   const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });

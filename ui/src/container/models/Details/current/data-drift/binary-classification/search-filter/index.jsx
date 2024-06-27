@@ -1,4 +1,4 @@
-import { useGetCurrentDrift } from '@State/models/modal-hook';
+import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { fa1, faC, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {
@@ -10,7 +10,7 @@ function SearchFeatureList() {
   const { write, form } = useFormbitContext();
   const { __metadata: { isNumericalSelected, isCategoricalSelected } } = form;
 
-  const { data } = useGetCurrentDrift();
+  const { data } = useGetCurrentDriftQueryWithPolling();
   const items = data?.drift.featureMetrics ?? [];
   const options = items
     .filter((i) => {

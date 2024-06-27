@@ -1,6 +1,6 @@
 import LineChart from '@Container/models/Details/charts/line-chart';
 import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
-import { useGetCurrentModelQuality } from '@State/models/modal-hook';
+import { useGetCurrentModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { modelsApiSlice } from '@State/models/api';
 import { useParams } from 'react-router';
 
@@ -8,7 +8,7 @@ const { useGetReferenceModelQualityQuery } = modelsApiSlice;
 
 function AccuracyChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceAccuracy = referenceData?.modelQuality?.accuracy;
@@ -32,7 +32,7 @@ function AccuracyChart() {
 
 function PrecisionChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referencePrecision = referenceData?.modelQuality?.precision;
@@ -55,7 +55,7 @@ function PrecisionChart() {
 
 function RecallChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceRecall = referenceData?.modelQuality?.recall;
@@ -78,7 +78,7 @@ function RecallChart() {
 
 function F1Chart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceF1 = referenceData?.modelQuality?.f1;
@@ -101,7 +101,7 @@ function F1Chart() {
 
 function FalsePositiveRateChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceFalsePositiveRate = referenceData?.modelQuality?.falsePositiveRate;
@@ -125,7 +125,7 @@ function FalsePositiveRateChart() {
 
 function TruePositiveRateChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceTruePositiveRate = referenceData?.modelQuality?.truePositiveRate;
@@ -149,7 +149,7 @@ function TruePositiveRateChart() {
 
 function AreaUnderRocChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceAreaUnderRoc = referenceData?.modelQuality?.areaUnderRoc;
@@ -171,7 +171,7 @@ function AreaUnderRocChart() {
 }
 function AreaUnderPrChart() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceAreaUnderPr = referenceData?.modelQuality?.areaUnderPr;
@@ -193,12 +193,7 @@ function AreaUnderPrChart() {
 }
 
 export {
-  AccuracyChart,
-  PrecisionChart,
-  RecallChart,
-  F1Chart,
-  FalsePositiveRateChart,
-  TruePositiveRateChart,
-  AreaUnderRocChart,
-  AreaUnderPrChart,
+  AccuracyChart, AreaUnderPrChart, AreaUnderRocChart, F1Chart,
+  FalsePositiveRateChart, PrecisionChart,
+  RecallChart, TruePositiveRateChart,
 };

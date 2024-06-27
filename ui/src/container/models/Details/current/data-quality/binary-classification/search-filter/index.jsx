@@ -1,17 +1,15 @@
-import { useGetCurrentDataQuality } from '@State/models/modal-hook';
+import { useGetCurrentDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { fa1, faC, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {
   Button, FontAwesomeIcon, FormField, Select, Toggle,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
 
 function SearchFeatureList() {
-  const { uuid } = useParams();
   const { write } = useFormbitContext();
 
-  const { data } = useGetCurrentDataQuality({ uuid });
+  const { data } = useGetCurrentDataQualityQueryWithPolling();
   const items = data?.dataQuality?.featureMetrics ?? [];
   const options = items.map((i) => ({ label: i.featureName, value: i.featureName }));
 

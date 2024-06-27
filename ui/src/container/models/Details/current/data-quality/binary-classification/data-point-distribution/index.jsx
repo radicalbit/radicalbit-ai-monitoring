@@ -1,4 +1,9 @@
 import { modelsApiSlice } from '@Src/store/state/models/api';
+import { useGetCurrentDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import {
+  Board,
+  SectionTitle,
+} from '@radicalbit/radicalbit-design-system';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import { BarChart } from 'echarts/charts';
 import {
@@ -8,12 +13,7 @@ import {
   MarkPointComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/lib/echarts';
-import {
-  Board,
-  SectionTitle,
-} from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router';
-import { useGetCurrentDataQuality } from '@State/models/modal-hook';
 import chartOptions from './options';
 
 echarts.use([
@@ -51,7 +51,7 @@ function DataPointDistribution() {
 }
 
 function DataPointDistributionCounter() {
-  const { data } = useGetCurrentDataQuality();
+  const { data } = useGetCurrentDataQualityQueryWithPolling();
   const nObservations = data?.dataQuality.nObservations ?? 0;
 
   const { figures, letter } = numberCompactFormatter(nObservations);
@@ -88,7 +88,7 @@ function DataPointDistributionChart() {
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const title = model?.target.name;
 
-  const { data: currentData } = useGetCurrentDataQuality();
+  const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
 
   const currentClassMetrics = currentData?.dataQuality.classMetrics ?? [];
 

@@ -44,7 +44,7 @@ function LineChart({
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={lineChartOptions(title, color, currentData, referenceData)}
-          scroll={{ y: '16rem' }}
+          style={{ height: '14rem' }}
         />
       )}
       size="small"

@@ -54,7 +54,7 @@ jobs:
   scan-spark:
     needs: [changes]
     if: ${{ github.event_name == 'push' || ( github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'spark/poetry.lock') ) }}
-    uses: radicalbit/radicalbit-github-workflows/.github/workflows/trivy-fs-scan.yaml@main
+    uses: radicalbit/radicalbit-github-workflows/.github/workflows/trivy-fs-scan.yaml@v1
     with:
       directory: ./spark
       prcomment: ${{ github.event_name == 'pull_request' && contains(needs.changes.outputs.changed_files, 'spark/poetry.lock') }}

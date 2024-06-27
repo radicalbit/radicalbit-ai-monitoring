@@ -1,15 +1,13 @@
 import JobStatus from '@Components/JobStatus';
-import { JOB_STATUS } from '@Src/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { Tabs } from '@radicalbit/radicalbit-design-system';
-import { useParams, useSearchParams } from 'react-router-dom';
 import { METRICS_TABS } from '@Container/models/Details/constants';
+import { JOB_STATUS } from '@Src/constants';
+import { useGetReferenceDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { Tabs } from '@radicalbit/radicalbit-design-system';
+import { useSearchParams } from 'react-router-dom';
 import DataDriftMetrics from './data-drift/binary-classification';
 import DataQualityMetrics from './data-quality';
 import Imports from './imports';
 import ModelQualityMetrics from './model-quality';
-
-const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 
 const tabs = [
   {
@@ -36,24 +34,19 @@ const tabs = [
 ];
 
 export default function CurrentDashboard() {
-  const { uuid } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data } = useGetReferenceDataQualityQuery({ uuid });
+  const { data } = useGetReferenceDataQualityQueryWithPolling();
   const jobStatus = data?.jobStatus;
 
   const activeTab = searchParams.get('tab-metrics') || METRICS_TABS.METRICS;
 
-  const setTab = (value) => {
+  const onChangeTab = (value) => {
     searchParams.set('tab-metrics', value);
     setSearchParams(searchParams);
   };
 
-  const onChangeTab = (e) => {
-    setTab(e);
-  };
-
-  if (jobStatus === JOB_STATUS.MISSING_REFERENCE) {
+  if (jobStatus !== JOB_STATUS.SUCCEEDED) {
     return <JobStatus jobStatus={jobStatus} />;
   }
 

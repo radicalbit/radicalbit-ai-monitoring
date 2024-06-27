@@ -47,7 +47,7 @@ export default function ReferenceDashboard() {
     setTab(e);
   };
 
-  if (jobStatus === JOB_STATUS.MISSING_REFERENCE) {
+  if (jobStatus !== JOB_STATUS.SUCCEEDED) {
     return <JobStatus jobStatus={jobStatus} />;
   }
 
