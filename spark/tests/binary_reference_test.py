@@ -159,8 +159,8 @@ def test_calculation(spark_fixture, dataset):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -341,8 +341,8 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
         {
             "n_observations": 238,
             "class_metrics": [
-                {"name": "1.0", "count": 133, "percentage": 55.88235294117647},
-                {"name": "0.0", "count": 105, "percentage": 44.11764705882353},
+                {"name": "1.0", "count": 131, "percentage": 55.04201680672269},
+                {"name": "0.0", "count": 107, "percentage": 44.957983193277315},
             ],
             "feature_metrics": [
                 {
@@ -1046,8 +1046,8 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -1223,8 +1223,8 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -1406,8 +1406,8 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
         {
             "n_observations": 30000,
             "class_metrics": [
-                {"name": "1.0", "count": 29967, "percentage": 99.89},
-                {"name": "0.0", "count": 33, "percentage": 0.11},
+                {"name": "1.0", "count": 14962, "percentage": 49.87333333333333},
+                {"name": "0.0", "count": 15038, "percentage": 50.126666666666665},
             ],
             "feature_metrics": [
                 {
@@ -1941,15 +1941,13 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
         },
     )
 
-    print(data_quality.model_dump_json(serialize_as_any=True, exclude_none=True))
-
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {

@@ -281,8 +281,8 @@ def test_calculation(spark_fixture, dataset):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -452,8 +452,8 @@ def test_calculation_current_joined(spark_fixture, current_joined):
         {
             "n_observations": 238,
             "class_metrics": [
-                {"name": "1.0", "count": 133, "percentage": 55.88235294117647},
-                {"name": "0.0", "count": 105, "percentage": 44.11764705882353},
+                {"name": "1.0", "count": 131, "percentage": 55.04201680672269},
+                {"name": "0.0", "count": 107, "percentage": 44.957983193277315},
             ],
             "feature_metrics": [
                 {
@@ -1143,8 +1143,8 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -1307,8 +1307,8 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -1777,8 +1777,8 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -2056,8 +2056,8 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -2335,8 +2335,8 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {
@@ -2600,8 +2600,8 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 5, "percentage": 50.0},
-                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+                {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
             "feature_metrics": [
                 {

@@ -174,21 +174,19 @@ class DataQualityCalculator:
 
     @staticmethod
     def class_metrics(
-        model: ModelOut, dataframe: DataFrame, dataframe_count: int
+        class_column: str, dataframe: DataFrame, dataframe_count: int
     ) -> List[ClassMetrics]:
         class_metrics_dict = (
-            dataframe.select(model.outputs.prediction.name)
-            .filter(F.isnotnull(model.outputs.prediction.name))
-            .groupBy(model.outputs.prediction.name)
-            .agg(
-                *[F.count(check_not_null(model.outputs.prediction.name)).alias("count")]
-            )
+            dataframe.select(class_column)
+            .filter(F.isnotnull(class_column))
+            .groupBy(class_column)
+            .agg(*[F.count(check_not_null(class_column)).alias("count")])
             .withColumn(
                 "percentage",
                 (F.col("count") / dataframe_count) * 100,
             )
             .toPandas()
-            .set_index(model.outputs.prediction.name)
+            .set_index(class_column)
             .to_dict(orient="index")
         )
 

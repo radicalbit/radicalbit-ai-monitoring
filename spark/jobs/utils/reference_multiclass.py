@@ -33,7 +33,7 @@ class ReferenceMetricsMulticlassService:
 
     def calculate_class_metrics(self) -> List[ClassMetrics]:
         return DataQualityCalculator.class_metrics(
-            model=self.reference.model,
+            class_column=self.reference.model.target.name,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
         )

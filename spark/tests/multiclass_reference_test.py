@@ -92,10 +92,10 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1", "count": 4, "percentage": 40.0},
-                {"name": "3", "count": 2, "percentage": 20.0},
-                {"name": "2", "count": 2, "percentage": 20.0},
-                {"name": "0", "count": 2, "percentage": 20.0},
+                {"name": "1", "count": 3, "percentage": 30.0},
+                {"name": "3", "count": 1, "percentage": 10.0},
+                {"name": "2", "count": 3, "percentage": 30.0},
+                {"name": "0", "count": 3, "percentage": 30.0},
             ],
             "feature_metrics": [
                 {
@@ -244,10 +244,10 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "ORPHAN", "count": 2, "percentage": 20.0},
-                {"name": "UNHEALTHY", "count": 2, "percentage": 20.0},
-                {"name": "HEALTY", "count": 4, "percentage": 40.0},
-                {"name": "UNKNOWN", "count": 2, "percentage": 20.0},
+                {"name": "UNHEALTHY", "count": 3, "percentage": 30.0},
+                {"name": "ORPHAN", "count": 1, "percentage": 10.0},
+                {"name": "HEALTY", "count": 3, "percentage": 30.0},
+                {"name": "UNKNOWN", "count": 3, "percentage": 30.0},
             ],
             "feature_metrics": [
                 {

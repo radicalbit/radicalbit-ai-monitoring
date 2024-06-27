@@ -145,7 +145,7 @@ class ReferenceMetricsService:
 
     def calculate_class_metrics(self) -> List[ClassMetrics]:
         metrics = DataQualityCalculator.class_metrics(
-            model=self.model,
+            class_column=self.model.target.name,
             dataframe=self.reference,
             dataframe_count=self.reference_count,
         )

@@ -174,7 +174,9 @@ class CurrentMetricsService:
 
     def calculate_class_metrics(self) -> List[ClassMetrics]:
         metrics = DataQualityCalculator.class_metrics(
-            model=self.model, dataframe=self.current, dataframe_count=self.current_count
+            class_column=self.model.target.name,
+            dataframe=self.current,
+            dataframe_count=self.current_count,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
