@@ -1,12 +1,20 @@
-FROM node:20.10.0-bullseye AS build
+FROM node:20.10.0-bullseye AS dev
 
 WORKDIR /app
 
 COPY . .
 
 RUN npm install --global --force yarn@1.22.21 && \
-    yarn install && \
-    yarn build:prod
+    yarn install
+
+FROM node:20.10.0-bullseye AS build
+
+WORKDIR /app
+
+COPY . .
+COPY --from=dev /app/node_modules /app/node_modules
+
+RUN yarn build:prod
 
 FROM nginx:alpine3.19
 
