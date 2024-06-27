@@ -28,6 +28,11 @@ export default function chartOptions(dataset, referenceColor, currentColor) {
     },
     yAxis: {
       type: 'value',
+      axisLine: {
+        lineStyle: {
+          color: 'rgba(208, 156, 156, 0.22)',
+        },
+      },
       axisLabel: {
         fontSize: 9,
         color: '#9b99a1',

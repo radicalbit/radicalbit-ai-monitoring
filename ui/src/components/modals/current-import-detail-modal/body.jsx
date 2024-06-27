@@ -38,7 +38,7 @@ function Body() {
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-4 p-4 h-full">
       <div className="px-4 pt-4 h-[99%]">
         <Tabs
           activeKey={activeTab}

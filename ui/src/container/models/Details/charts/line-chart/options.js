@@ -43,6 +43,11 @@ export default function lineChartOptions(title, color, currentDataset, reference
     yAxis: [{
       type: 'value',
       boundaryGap: true,
+      axisLine: {
+        lineStyle: {
+          color: 'red)',
+        },
+      },
       axisLabel: {
         fontSize: 9,
         color: '#9b99a1',

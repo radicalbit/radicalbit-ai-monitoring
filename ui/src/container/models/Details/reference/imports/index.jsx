@@ -50,7 +50,7 @@ function FeedbackTable() {
     <SmartTable
       columns={getColumns}
       dataSource={items}
-      modifier="w-full pt-4"
+      modifier="w-full"
       namespace={NamespaceEnum.REFERENCE_IMPORT}
       recordCount={recordCount}
       rowKey={({ uuid }) => `${uuid}`}

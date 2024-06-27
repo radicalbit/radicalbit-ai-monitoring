@@ -50,7 +50,7 @@ function BinaryClassificationMetrics() {
 
     return (
       <Spinner spinning={isLoading}>
-        <div className="flex flex-col gap-4 py-4">
+        <div className="flex flex-col gap-4 p-4">
           <Board
             header={<SectionTitle size="small" title="Performance metrics" />}
             main={(
