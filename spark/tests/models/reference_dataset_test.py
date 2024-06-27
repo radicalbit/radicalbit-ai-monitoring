@@ -61,4 +61,9 @@ def test_indexer(spark_fixture, dataset_target_string):
 
     index_label_map, indexed_dataset = reference_dataset.get_string_indexed_dataframe()
 
-    assert index_label_map == {'0.0': 'HEALTY', '1.0': 'UNHEALTHY', '2.0': 'UNKNOWN', '3.0': 'ORPHAN'}
+    assert index_label_map == {
+        "0.0": "HEALTY",
+        "1.0": "UNHEALTHY",
+        "2.0": "UNKNOWN",
+        "3.0": "ORPHAN",
+    }

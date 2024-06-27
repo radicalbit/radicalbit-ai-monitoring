@@ -7,7 +7,7 @@ from pyspark.sql.types import StructField, StructType, StringType
 
 from metrics.statistics import calculate_statistics_reference
 from models.reference_dataset import ReferenceDataset
-from utils.reference import ReferenceMetricsService
+from utils.reference_binary import ReferenceMetricsService
 from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 

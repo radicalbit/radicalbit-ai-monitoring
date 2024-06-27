@@ -6,7 +6,7 @@ import pytest
 
 from jobs.models.current_dataset import CurrentDataset
 from jobs.models.reference_dataset import ReferenceDataset
-from jobs.utils.current import CurrentMetricsService
+from jobs.utils.current_binary import CurrentMetricsService
 from jobs.utils.models import (
     ModelOut,
     ModelType,

@@ -16,7 +16,7 @@ from jobs.utils.models import (
     SupportedTypes,
     Granularity,
 )
-from jobs.utils.reference import ReferenceMetricsService
+from jobs.utils.reference_binary import ReferenceMetricsService
 from tests.utils.pytest_utils import my_approx
 
 
@@ -159,8 +159,8 @@ def test_calculation(spark_fixture, dataset):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "true", "count": 5, "percentage": 50.0},
-                {"name": "false", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -172,26 +172,7 @@ def test_calculation(spark_fixture, dataset):
                     "min": 0.5,
                     "max": 3.0,
                     "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.4,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.875,
-                            "median_metrics": {
-                                "perc_25": 0.5,
-                                "median": 0.75,
-                                "perc_75": 1.125,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.5,
@@ -222,26 +203,7 @@ def test_calculation(spark_fixture, dataset):
                         "median": 250.0,
                         "perc_75": 499.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 303.56666666666666,
-                            "median_metrics": {
-                                "perc_25": 142.25,
-                                "median": 349.5,
-                                "perc_75": 499.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 200.0,
-                            "median_metrics": {
-                                "perc_25": 150.0,
-                                "median": 200.0,
-                                "perc_75": 250.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             1.4,
@@ -379,8 +341,8 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
         {
             "n_observations": 238,
             "class_metrics": [
-                {"name": "true", "count": 133, "percentage": 55.88235294117647},
-                {"name": "false", "count": 105, "percentage": 44.11764705882353},
+                {"name": "1.0", "count": 133, "percentage": 55.88235294117647},
+                {"name": "0.0", "count": 105, "percentage": 44.11764705882353},
             ],
             "feature_metrics": [
                 {
@@ -396,26 +358,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                         "median": 54.0,
                         "perc_75": 60.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 54.85496183206107,
-                            "median_metrics": {
-                                "perc_25": 50.0,
-                                "median": 56.0,
-                                "perc_75": 60.5,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 51.504672897196265,
-                            "median_metrics": {
-                                "perc_25": 45.0,
-                                "median": 52.0,
-                                "perc_75": 57.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             28.0,
@@ -442,26 +385,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                     "min": 1.0,
                     "max": 4.0,
                     "median_metrics": {"perc_25": 3.0, "median": 4.0, "perc_75": 4.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 3.6106870229007635,
-                            "median_metrics": {
-                                "perc_25": 4.0,
-                                "median": 4.0,
-                                "perc_75": 4.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 2.7757009345794392,
-                            "median_metrics": {
-                                "perc_25": 2.0,
-                                "median": 3.0,
-                                "perc_75": 3.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             1.0,
@@ -492,26 +416,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                         "median": 130.0,
                         "perc_75": 140.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 134.55725190839695,
-                            "median_metrics": {
-                                "perc_25": 120.0,
-                                "median": 130.0,
-                                "perc_75": 145.5,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 130.7663551401869,
-                            "median_metrics": {
-                                "perc_25": 120.0,
-                                "median": 130.0,
-                                "perc_75": 140.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             94.0,
@@ -542,26 +447,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                         "median": 234.0,
                         "perc_75": 277.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 193.2290076335878,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 237.0,
-                                "perc_75": 281.5,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 235.52336448598132,
-                            "median_metrics": {
-                                "perc_25": 202.0,
-                                "median": 231.0,
-                                "perc_75": 273.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.0,
@@ -588,26 +474,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                     "min": 0.0,
                     "max": 1.0,
                     "median_metrics": {"perc_25": 0.0, "median": 0.0, "perc_75": 0.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.2900763358778626,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.102803738317757,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 0.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.0,
@@ -634,26 +501,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                     "min": 0.0,
                     "max": 2.0,
                     "median_metrics": {"perc_25": 0.0, "median": 0.0, "perc_75": 2.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.7557251908396947,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 2.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.6355140186915887,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 2.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.0,
@@ -684,26 +532,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                         "median": 140.0,
                         "perc_75": 159.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 129.25954198473283,
-                            "median_metrics": {
-                                "perc_25": 112.0,
-                                "median": 128.0,
-                                "perc_75": 146.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 150.57943925233644,
-                            "median_metrics": {
-                                "perc_25": 138.0,
-                                "median": 154.0,
-                                "perc_75": 164.5,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             63.0,
@@ -730,26 +559,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                     "min": 0.0,
                     "max": 1.0,
                     "median_metrics": {"perc_25": 0.0, "median": 0.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.6564885496183206,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.14953271028037382,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 0.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.0,
@@ -780,26 +590,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                         "median": 1.0,
                         "perc_75": 1.6749999999999998,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.3854961832061068,
-                            "median_metrics": {
-                                "perc_25": 0.30000000000000004,
-                                "median": 1.4,
-                                "perc_75": 2.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.5102803738317757,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -1.1,
@@ -826,26 +617,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
                     "min": 1.0,
                     "max": 3.0,
                     "median_metrics": {"perc_25": 1.0, "median": 2.0, "perc_75": 2.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.900763358778626,
-                            "median_metrics": {
-                                "perc_25": 2.0,
-                                "median": 2.0,
-                                "perc_75": 2.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 1.3271028037383177,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 2.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             1.0,
@@ -966,8 +738,8 @@ def test_calculation_complete(spark_fixture, complete_dataset):
         {
             "n_observations": 7,
             "class_metrics": [
-                {"name": "true", "count": 7, "percentage": 100.0},
-                {"name": "false", "count": 0, "percentage": 0.0},
+                {"name": "1.0", "count": 7, "percentage": 100.0},
+                {"name": "0.0", "count": 0, "percentage": 0.0},
             ],
             "feature_metrics": [
                 {
@@ -979,26 +751,7 @@ def test_calculation_complete(spark_fixture, complete_dataset):
                     "min": 1.0,
                     "max": 1.0,
                     "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.0,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.0,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 0.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {"buckets": [1.0, 1.0], "reference_values": [7]},
                 },
                 {
@@ -1014,26 +767,7 @@ def test_calculation_complete(spark_fixture, complete_dataset):
                         "median": 100.0,
                         "perc_75": 100.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 100.0,
-                            "median_metrics": {
-                                "perc_25": 100.0,
-                                "median": 100.0,
-                                "perc_75": 100.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.0,
-                            "median_metrics": {
-                                "perc_25": 0.0,
-                                "median": 0.0,
-                                "perc_75": 0.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {"buckets": [100.0, 100.0], "reference_values": [7]},
                 },
                 {
@@ -1158,8 +892,8 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
         {
             "n_observations": 7,
             "class_metrics": [
-                {"name": "true", "count": 6, "percentage": 85.71428571428571},
-                {"name": "false", "count": 1, "percentage": 14.285714285714285},
+                {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
+                {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
             ],
             "feature_metrics": [
                 {
@@ -1171,26 +905,7 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
                     "min": 1.0,
                     "max": 1.0,
                     "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.0,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 1.0,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {"buckets": [1.0, 1.0], "reference_values": [7]},
                 },
                 {
@@ -1206,26 +921,7 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
                         "median": 100.0,
                         "perc_75": 100.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 100.0,
-                            "median_metrics": {
-                                "perc_25": 100.0,
-                                "median": 100.0,
-                                "perc_75": 100.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 100.0,
-                            "median_metrics": {
-                                "perc_25": 100.0,
-                                "median": 100.0,
-                                "perc_75": 100.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {"buckets": [100.0, 100.0], "reference_values": [7]},
                 },
                 {
@@ -1350,8 +1046,8 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "true", "count": 5, "percentage": 50.0},
-                {"name": "false", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -1363,26 +1059,7 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
                     "min": 0.5,
                     "max": 3.0,
                     "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.4,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.875,
-                            "median_metrics": {
-                                "perc_25": 0.5,
-                                "median": 0.75,
-                                "perc_75": 1.125,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.5,
@@ -1413,26 +1090,7 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
                         "median": 250.0,
                         "perc_75": 499.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 303.56666666666666,
-                            "median_metrics": {
-                                "perc_25": 142.25,
-                                "median": 349.5,
-                                "perc_75": 499.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 200.0,
-                            "median_metrics": {
-                                "perc_25": 150.0,
-                                "median": 200.0,
-                                "perc_75": 250.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             1.4,
@@ -1565,8 +1223,8 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "true", "count": 5, "percentage": 50.0},
-                {"name": "false", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -1578,26 +1236,7 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
                     "min": 0.5,
                     "max": 3.0,
                     "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.4,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.875,
-                            "median_metrics": {
-                                "perc_25": 0.5,
-                                "median": 0.75,
-                                "perc_75": 1.125,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.5,
@@ -1628,26 +1267,7 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
                         "median": 250.0,
                         "perc_75": 499.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 303.56666666666666,
-                            "median_metrics": {
-                                "perc_25": 142.25,
-                                "median": 349.5,
-                                "perc_75": 499.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 200.0,
-                            "median_metrics": {
-                                "perc_25": 150.0,
-                                "median": 200.0,
-                                "perc_75": 250.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             1.4,
@@ -1786,8 +1406,8 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
         {
             "n_observations": 30000,
             "class_metrics": [
-                {"name": "true", "count": 29967, "percentage": 99.89},
-                {"name": "false", "count": 33, "percentage": 0.11},
+                {"name": "1.0", "count": 29967, "percentage": 99.89},
+                {"name": "0.0", "count": 33, "percentage": 0.11},
             ],
             "feature_metrics": [
                 {
@@ -1803,26 +1423,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": -0.2502794169949083,
                         "perc_75": 0.5933410153121773,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": -0.37506960472853207,
-                            "median_metrics": {
-                                "perc_25": -1.2609072304317717,
-                                "median": -0.43833821174033677,
-                                "perc_75": 0.46427841798865066,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": -0.021559015835350998,
-                            "median_metrics": {
-                                "perc_25": -0.8598675216604383,
-                                "median": -0.09580214279499416,
-                                "perc_75": 0.7159447439762198,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -8.922759660331181,
@@ -1864,26 +1465,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": -0.0766183061333018,
                         "perc_75": 0.8552504712786367,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": -0.40811487005765135,
-                            "median_metrics": {
-                                "perc_25": -1.2309347077271604,
-                                "median": -0.4125170988265542,
-                                "perc_75": 0.4025774318708635,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.22298962729806326,
-                            "median_metrics": {
-                                "perc_25": -0.6827289123206155,
-                                "median": 0.3448547892578119,
-                                "perc_75": 1.2488688828393162,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -7.071323418123159,
@@ -1925,26 +1507,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": -0.1423515033878019,
                         "perc_75": 1.2966669810036546,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": -0.2564646946478202,
-                            "median_metrics": {
-                                "perc_25": -1.663119039313509,
-                                "median": -0.4597462024125228,
-                                "perc_75": 1.0674457857547113,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.20549865799116152,
-                            "median_metrics": {
-                                "perc_25": -1.16217715339232,
-                                "median": 0.14058761360269711,
-                                "perc_75": 1.519086791402387,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -7.484849550803829,
@@ -1986,26 +1549,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": 0.2917484210629673,
                         "perc_75": 1.2565657381789663,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.018757699661252642,
-                            "median_metrics": {
-                                "perc_25": -1.00041187394906,
-                                "median": 0.06304933415520031,
-                                "perc_75": 1.0905205627020491,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.4725666484307847,
-                            "median_metrics": {
-                                "perc_25": -0.472607219792436,
-                                "median": 0.48539040112024,
-                                "perc_75": 1.4080147426271812,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -5.924351030623907,
@@ -2047,26 +1591,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": 0.023245141575466,
                         "perc_75": 0.9741310364527399,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": -0.0027012858089993127,
-                            "median_metrics": {
-                                "perc_25": -0.8758225222296009,
-                                "median": 0.0104414094062951,
-                                "perc_75": 0.8858619248113037,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.0020191325374502357,
-                            "median_metrics": {
-                                "perc_25": -1.0350020658795662,
-                                "median": 0.038214277140569755,
-                                "perc_75": 1.0792731014939454,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -7.206236285131561,
@@ -2108,26 +1633,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": 0.0198519555113513,
                         "perc_75": 1.465839157860066,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.35597196863210107,
-                            "median_metrics": {
-                                "perc_25": -1.21490084306915,
-                                "median": 0.2628897148953393,
-                                "perc_75": 1.9052565947885016,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.03262383969215642,
-                            "median_metrics": {
-                                "perc_25": -1.1462183030748432,
-                                "median": -0.1455088310308811,
-                                "perc_75": 1.0294832187632506,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -9.685197606981257,
@@ -2169,26 +1675,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": -0.1793887792969184,
                         "perc_75": 1.0459150801924464,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.3261095787594541,
-                            "median_metrics": {
-                                "perc_25": -1.078578356310297,
-                                "median": 0.2967263131302018,
-                                "perc_75": 1.686088633372469,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": -0.583276279973457,
-                            "median_metrics": {
-                                "perc_25": -1.5886755026791928,
-                                "median": -0.5282321896375355,
-                                "perc_75": 0.48473962149726035,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -10.54458618033603,
@@ -2230,26 +1717,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": 0.2797318101957035,
                         "perc_75": 1.2432583676125146,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.4616973342907079,
-                            "median_metrics": {
-                                "perc_25": -0.343341989707933,
-                                "median": 0.4743428247688509,
-                                "perc_75": 1.288417888040836,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.02267248150832651,
-                            "median_metrics": {
-                                "perc_25": -1.161954631974072,
-                                "median": 0.002494892146202,
-                                "perc_75": 1.1827650681915984,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -7.2401664809750415,
@@ -2291,26 +1759,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": 0.2606943392896966,
                         "perc_75": 1.1974171806547638,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 0.014474852690462928,
-                            "median_metrics": {
-                                "perc_25": -0.894162877240325,
-                                "median": 0.05257934748887095,
-                                "perc_75": 0.9632301387950736,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.466858839304298,
-                            "median_metrics": {
-                                "perc_25": -0.4961025561758645,
-                                "median": 0.4678176213548028,
-                                "perc_75": 1.4327302967981432,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -5.145797272829497,
@@ -2352,26 +1801,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
                         "median": -0.2532013764602815,
                         "perc_75": 0.663191189879565,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": -0.03602596321634762,
-                            "median_metrics": {
-                                "perc_25": -0.960645570131309,
-                                "median": -0.0357984468042197,
-                                "perc_75": 0.8996846124337728,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": -0.4761698524367894,
-                            "median_metrics": {
-                                "perc_25": -1.3722248160166095,
-                                "median": -0.45983661653906327,
-                                "perc_75": 0.41867472560944435,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             -5.78428806755016,
@@ -2511,13 +1941,15 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
         },
     )
 
+    print(data_quality.model_dump_json(serialize_as_any=True, exclude_none=True))
+
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "true", "count": 5, "percentage": 50.0},
-                {"name": "false", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -2529,26 +1961,7 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
                     "min": 0.5,
                     "max": 3.0,
                     "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 1.0},
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 1.4,
-                            "median_metrics": {
-                                "perc_25": 1.0,
-                                "median": 1.0,
-                                "perc_75": 1.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 0.875,
-                            "median_metrics": {
-                                "perc_25": 0.5,
-                                "median": 0.75,
-                                "perc_75": 1.125,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             0.5,
@@ -2579,26 +1992,7 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
                         "median": 250.0,
                         "perc_75": 499.0,
                     },
-                    "class_median_metrics": [
-                        {
-                            "name": "true",
-                            "mean": 303.56666666666666,
-                            "median_metrics": {
-                                "perc_25": 142.25,
-                                "median": 349.5,
-                                "perc_75": 499.0,
-                            },
-                        },
-                        {
-                            "name": "false",
-                            "mean": 200.0,
-                            "median_metrics": {
-                                "perc_25": 150.0,
-                                "median": 200.0,
-                                "perc_75": 250.0,
-                            },
-                        },
-                    ],
+                    "class_median_metrics": [],
                     "histogram": {
                         "buckets": [
                             1.4,

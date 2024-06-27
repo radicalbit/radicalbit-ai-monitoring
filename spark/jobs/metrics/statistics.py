@@ -14,6 +14,7 @@ DATETIME = "datetime"
 
 
 # FIXME use pydantic struct like data quality
+# FIXME generalize to one method
 def calculate_statistics_reference(
     reference_dataset: ReferenceDataset,
 ) -> dict[str, float]:
