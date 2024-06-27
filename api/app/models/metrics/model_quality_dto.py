@@ -9,7 +9,7 @@ from app.models.job_status import JobStatus
 from app.models.model_dto import ModelType
 
 
-class BinaryClassModelQuality(BaseModel):
+class MetricsBase(BaseModel):
     f1: Optional[float] = None
     accuracy: Optional[float] = None
     precision: Optional[float] = None
@@ -22,10 +22,6 @@ class BinaryClassModelQuality(BaseModel):
     weighted_false_positive_rate: Optional[float] = None
     true_positive_rate: Optional[float] = None
     false_positive_rate: Optional[float] = None
-    true_positive_count: int
-    false_positive_count: int
-    true_negative_count: int
-    false_negative_count: int
     area_under_roc: Optional[float] = None
     area_under_pr: Optional[float] = None
 
@@ -34,12 +30,19 @@ class BinaryClassModelQuality(BaseModel):
     )
 
 
+class BinaryClassModelQuality(MetricsBase):
+    true_positive_count: int
+    false_positive_count: int
+    true_negative_count: int
+    false_negative_count: int
+
+
 class Distribution(BaseModel):
     timestamp: str
     value: Optional[float] = None
 
 
-class GroupedBinaryClassModelQuality(BaseModel):
+class GroupedMetricsBase(BaseModel):
     f1: List[Distribution]
     accuracy: List[Distribution]
     precision: List[Distribution]
@@ -62,7 +65,16 @@ class GroupedBinaryClassModelQuality(BaseModel):
 
 class CurrentBinaryClassModelQuality(BaseModel):
     global_metrics: BinaryClassModelQuality
-    grouped_metrics: GroupedBinaryClassModelQuality
+    grouped_metrics: GroupedMetricsBase
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
+class ClassMetrics(BaseModel):
+    class_name: str
+    metrics: MetricsBase
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
@@ -70,6 +82,14 @@ class CurrentBinaryClassModelQuality(BaseModel):
 
 
 class MultiClassModelQuality(BaseModel):
+    class_metrics: List[ClassMetrics]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
+class CurrentMultiClassModelQuality(BaseModel):
     pass
 
 
@@ -83,6 +103,7 @@ class ModelQualityDTO(BaseModel):
         BinaryClassModelQuality
         | CurrentBinaryClassModelQuality
         | MultiClassModelQuality
+        | CurrentMultiClassModelQuality
         | RegressionModelQuality
     ]
 
@@ -133,7 +154,10 @@ class ModelQualityDTO(BaseModel):
                 model_quality_data=model_quality_data,
             )
         if model_type == ModelType.MULTI_CLASS:
-            return MultiClassModelQuality(**model_quality_data)
+            return ModelQualityDTO._create_multiclass_model_quality(
+                dataset_type=dataset_type,
+                model_quality_data=model_quality_data,
+            )
         if model_type == ModelType.REGRESSION:
             return RegressionModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid model type {model_type}')
@@ -148,4 +172,16 @@ class ModelQualityDTO(BaseModel):
             return BinaryClassModelQuality(**model_quality_data)
         if dataset_type == DatasetType.CURRENT:
             return CurrentBinaryClassModelQuality(**model_quality_data)
+        raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
+
+    @staticmethod
+    def _create_multiclass_model_quality(
+        dataset_type: DatasetType,
+        model_quality_data: Dict,
+    ) -> MultiClassModelQuality | CurrentMultiClassModelQuality:
+        """Create a multiclass model quality instance based on dataset type."""
+        if dataset_type == DatasetType.REFERENCE:
+            return MultiClassModelQuality(**model_quality_data)
+        if dataset_type == DatasetType.CURRENT:
+            return CurrentMultiClassModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid dataset type {dataset_type}')

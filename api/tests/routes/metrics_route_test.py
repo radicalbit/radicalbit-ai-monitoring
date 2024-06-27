@@ -159,7 +159,7 @@ class MetricsRouteTest(unittest.TestCase):
         model_uuid = uuid.uuid4()
         current_uuid = uuid.uuid4()
         current_metrics = db_mock.get_sample_current_metrics(
-            model_quality=db_mock.current_model_quality_dict
+            model_quality=db_mock.binary_current_model_quality_dict
         )
         model_quality = ModelQualityDTO.from_dict(
             dataset_type=DatasetType.CURRENT,

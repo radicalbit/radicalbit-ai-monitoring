@@ -128,7 +128,7 @@ statistics_dict = {
     'datetime': 1,
 }
 
-model_quality_dict = {
+model_quality_base_dict = {
     'f1': None,
     'accuracy': 0.90,
     'precision': 0.88,
@@ -141,16 +141,20 @@ model_quality_dict = {
     'weightedFalsePositiveRate': 0.10,
     'truePositiveRate': 0.87,
     'falsePositiveRate': 0.13,
-    'truePositiveCount': 870,
-    'falsePositiveCount': 130,
-    'trueNegativeCount': 820,
-    'falseNegativeCount': 180,
     'areaUnderRoc': 0.92,
     'areaUnderPr': 0.91,
 }
 
-current_model_quality_dict = {
-    'globalMetrics': model_quality_dict,
+binary_model_quality_dict = {
+    'truePositiveCount': 870,
+    'falsePositiveCount': 130,
+    'trueNegativeCount': 820,
+    'falseNegativeCount': 180,
+    **model_quality_base_dict,
+}
+
+binary_current_model_quality_dict = {
+    'globalMetrics': binary_model_quality_dict,
     'groupedMetrics': {
         'f1': [
             {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
@@ -209,6 +213,23 @@ current_model_quality_dict = {
             {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.92},
         ],
     },
+}
+
+multiclass_model_quality_dict = {
+    'class_metrics': [
+        {
+            'class_name': 'classA',
+            'metrics': model_quality_base_dict,
+        },
+        {
+            'class_name': 'classB',
+            'metrics': model_quality_base_dict,
+        },
+        {
+            'class_name': 'classC',
+            'metrics': model_quality_base_dict,
+        },
+    ]
 }
 
 data_quality_dict = {
@@ -278,7 +299,7 @@ drift_dict = {
 
 def get_sample_reference_metrics(
     reference_uuid: uuid.UUID = REFERENCE_UUID,
-    model_quality: Dict = model_quality_dict,
+    model_quality: Dict = binary_model_quality_dict,
     data_quality: Dict = data_quality_dict,
     statistics: Dict = statistics_dict,
 ) -> ReferenceDatasetMetrics:
@@ -292,7 +313,7 @@ def get_sample_reference_metrics(
 
 def get_sample_current_metrics(
     current_uuid: uuid.UUID = CURRENT_UUID,
-    model_quality: Dict = model_quality_dict,
+    model_quality: Dict = binary_current_model_quality_dict,
     data_quality: Dict = data_quality_dict,
     statistics: Dict = statistics_dict,
     drift: Dict = drift_dict,
