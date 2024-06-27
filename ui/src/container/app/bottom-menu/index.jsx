@@ -10,11 +10,12 @@ export default function BottomMenu() {
   const items = [
     {
       key: 'Documentation',
+      title: 'Documentation',
       label: (
         <>
-          <div className="anticon"><FontAwesomeIcon icon={faCircleQuestion} /></div>
+          <span className="anticon"><FontAwesomeIcon icon={faCircleQuestion} /></span>
 
-          <div>Documentation</div>
+          <span>Documentation</span>
         </>),
       onClick: handleReadDocumentation,
     },

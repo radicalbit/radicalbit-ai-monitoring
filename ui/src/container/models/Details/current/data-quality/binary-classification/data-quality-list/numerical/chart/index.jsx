@@ -34,7 +34,7 @@ function NumericalBarChart({ dataset }) {
         echarts={echarts}
         onChartReady={handleOnChartReady}
         option={chartOptions(dataset, CHART_COLOR.REFERENCE, CHART_COLOR.CURRENT)}
-        scroll={{ y: '16rem' }}
+        style={{ height: '14rem' }}
       />
     </div>
   );

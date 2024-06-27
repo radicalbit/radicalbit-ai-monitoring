@@ -4,15 +4,20 @@ import ConfusionMatrix from '@Container/models/Details/charts/confusion-matrix-c
 import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
+import { useGetCurrentModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import {
   Board, DataTable, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 import { useParams } from 'react-router';
-import { useGetCurrentModelQualityLatestQueryWithPolling } from '@Src/store/state/models/polling-hook';
-import { useGetCurrentModelQuality } from '@State/models/modal-hook';
 import {
-  AccuracyChart, AreaUnderPrChart, AreaUnderRocChart, F1Chart, FalsePositiveRateChart, PrecisionChart, RecallChart,
+  AccuracyChart,
+  AreaUnderPrChart,
+  AreaUnderRocChart,
+  F1Chart,
+  FalsePositiveRateChart,
+  PrecisionChart,
+  RecallChart,
   TruePositiveRateChart,
 } from './charts';
 import columns from './columns';
@@ -20,14 +25,20 @@ import columns from './columns';
 const { useGetReferenceModelQualityQuery } = modelsApiSlice;
 
 function BinaryClassificationMetrics() {
-  useGetCurrentModelQualityLatestQueryWithPolling();
-
-  const { data, isLoading, isError } = useGetCurrentModelQuality();
+  const { data, isLoading, isError } = useGetCurrentModelQualityQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
 
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
+
   if (isError) {
     return <SomethingWentWrong />;
+  }
+
+  if (!data) {
+    return <JobStatus jobStatus={JOB_STATUS.MISSING_CURRENT} />;
   }
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
@@ -77,7 +88,8 @@ function BinaryClassificationMetrics() {
 
 function PerformanceBoard() {
   const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQuality();
+
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
   const referenceAccuracy = referenceData?.modelQuality?.accuracy;

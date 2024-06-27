@@ -110,6 +110,7 @@ function UploadButton() {
         accept=".csv"
         beforeUpload={beforeUpload}
         behavior="hide-button"
+        customRequest={() => {}}
         fileList={fileList}
         onChange={handleOnChange}
         onRemove={handleOnRemove}

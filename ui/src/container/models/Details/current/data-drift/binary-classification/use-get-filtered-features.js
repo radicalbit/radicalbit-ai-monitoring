@@ -1,9 +1,9 @@
 import { DRIFT_TEST_ENUM } from '@Src/constants';
-import { useGetCurrentDrift } from '@State/models/modal-hook';
+import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { useFormbitContext } from '@radicalbit/formbit';
 
 export default () => {
-  const { data } = useGetCurrentDrift();
+  const { data } = useGetCurrentDriftQueryWithPolling();
   const items = data?.drift?.featureMetrics ?? [];
 
   const { form: { __metadata: { isNumericalSelected, isCategoricalSelected, selectedFeatures } } } = useFormbitContext();
