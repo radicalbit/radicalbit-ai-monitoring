@@ -148,6 +148,7 @@ class MetricsServiceTest(unittest.TestCase):
         )
 
         assert res == ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.REFERENCE,
             model_type=model.model_type,
             job_status=reference_dataset.status,
             model_quality_data=reference_metrics.model_quality,
@@ -169,6 +170,7 @@ class MetricsServiceTest(unittest.TestCase):
         )
 
         assert res == ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.REFERENCE,
             model_type=model.model_type,
             job_status=reference_dataset.status,
             model_quality_data=None,
