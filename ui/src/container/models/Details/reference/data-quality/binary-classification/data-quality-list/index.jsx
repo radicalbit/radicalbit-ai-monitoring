@@ -70,7 +70,7 @@ function NumericalFeature({ item }) {
               <Button
                 shape="circle"
                 size="small"
-                type="secondary-light"
+                type="primary"
               >
                 <FontAwesomeIcon icon={fa1} />
               </Button>
@@ -117,7 +117,7 @@ function CategoricalFeature({ item }) {
               <Button
                 shape="circle"
                 size="small"
-                type="secondary-light"
+                type="primary"
               >
                 <FontAwesomeIcon icon={faC} />
               </Button>
