@@ -12,7 +12,8 @@ from pyspark.sql.functions import col
 import pyspark.sql.functions as f
 from pyspark.sql.types import IntegerType
 
-from .data_quality import (
+from metrics.data_quality_calculator import DataQualityCalculator
+from models.data_quality import (
     NumericalFeatureMetrics,
     CategoricalFeatureMetrics,
     ClassMetrics,
@@ -135,21 +136,6 @@ class CurrentMetricsService:
             for x in numerical_features
         ]
 
-        count_agg = [
-            (f.count(f.when(f.col(x).isNotNull() & ~f.isnan(x), True))).alias(
-                f"{x}-count"
-            )
-            for x in numerical_features
-        ]
-
-        freq_agg = [
-            (
-                f.count(f.when(f.col(x).isNotNull() & ~f.isnan(x), True))
-                / self.current_count
-            ).alias(f"{x}-frequency")
-            for x in numerical_features
-        ]
-
         # Global
         global_stat = self.current.select(numerical_features).agg(
             *(
@@ -168,74 +154,12 @@ class CurrentMetricsService:
         global_dict = global_stat.toPandas().iloc[0].to_dict()
         global_data_quality = split_dict(global_dict)
 
-        # TODO here we don't have target, for now we put prediction, we need to understand
-        # By Target
-        by_target = (
-            self.current.select(
-                numerical_features + [self.model.outputs.prediction.name]
-            )
-            .groupby(self.model.outputs.prediction.name)
-            .agg(
-                *(
-                    mean_agg
-                    + max_agg
-                    + min_agg
-                    + median_agg
-                    + perc_25_agg
-                    + perc_75_agg
-                    + count_agg
-                    + freq_agg
-                )
-            )
-        )
-
-        # TODO must refactor everything below
-        target_true = (
-            by_target.filter(col(self.model.outputs.prediction.name) == 1.0)
-            .drop(self.model.outputs.prediction.name)
-            .toPandas()
-        )
-
-        if not target_true.empty:
-            target_true_data_quality = split_dict(target_true.iloc[0].to_dict())
-        else:
-            target_true_data_quality = {
-                feature_name: {
-                    "mean": 0.0,
-                    "median": 0.0,
-                    "perc_25": 0.0,
-                    "perc_75": 0.0,
-                }
-                for feature_name, metrics in global_data_quality.items()
-            }
-
-        target_false = (
-            by_target.filter(col(self.model.outputs.prediction.name) == 0.0)
-            .drop(self.model.outputs.prediction.name)
-            .toPandas()
-        )
-
-        if not target_false.empty:
-            target_false_data_quality = split_dict(target_false.iloc[0].to_dict())
-        else:
-            target_false_data_quality = {
-                feature_name: {
-                    "mean": 0.0,
-                    "median": 0.0,
-                    "perc_25": 0.0,
-                    "perc_75": 0.0,
-                }
-                for feature_name, metrics in global_data_quality.items()
-            }
-
         numerical_features_histogram = self.calculate_combined_histogram()
 
         numerical_features_metrics = [
             NumericalFeatureMetrics.from_dict(
                 feature_name,
                 metrics,
-                true_feature_dict=target_true_data_quality.get(feature_name),
-                false_feature_dict=target_false_data_quality.get(feature_name),
                 histogram=numerical_features_histogram.get(feature_name),
             )
             for feature_name, metrics in global_data_quality.items()
@@ -244,101 +168,38 @@ class CurrentMetricsService:
         return numerical_features_metrics
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
-        categorical_features = [
-            categorical.name for categorical in self.model.get_categorical_features()
-        ]
-
-        def check_not_null(x):
-            return f.when(f.col(x).isNotNull(), f.col(x))
-
-        def split_dict(dictionary):
-            cleaned_dict = dict()
-            for k, v in dictionary.items():
-                feature, metric = tuple(k.rsplit("-", 1))
-                cleaned_dict.setdefault(feature, dict())[metric] = v
-            return cleaned_dict
-
-        missing_values_agg = [
-            (f.count(f.when(f.col(x).isNull(), x))).alias(f"{x}-missing_values")
-            for x in categorical_features
-        ]
-
-        missing_values_perc_agg = [
-            ((f.count(f.when(f.col(x).isNull(), x)) / self.current_count) * 100).alias(
-                f"{x}-missing_values_perc"
-            )
-            for x in categorical_features
-        ]
-
-        distinct_values = [
-            (f.countDistinct(check_not_null(x))).alias(f"{x}-distinct_values")
-            for x in categorical_features
-        ]
-
-        global_stat = self.current.select(categorical_features).agg(
-            *(missing_values_agg + missing_values_perc_agg + distinct_values)
+        return DataQualityCalculator.categorical_metrics(
+            model=self.model, dataframe=self.current, dataframe_count=self.current_count
         )
-
-        global_dict = global_stat.toPandas().iloc[0].to_dict()
-        global_data_quality = split_dict(global_dict)
-
-        # FIXME by design this is not efficient
-        # FIXME understand if we want to divide by whole or by number of not null
-
-        count_distinct_categories = {
-            column: dict(
-                self.current.select(column)
-                .filter(f.isnotnull(column))
-                .groupBy(column)
-                .agg(*[f.count(check_not_null(column)).alias("count")])
-                .withColumn(
-                    "freq",
-                    f.col("count") / self.current_count,
-                )
-                .toPandas()
-                .set_index(column)
-                .to_dict()
-            )
-            for column in categorical_features
-        }
-
-        categorical_features_metrics = [
-            CategoricalFeatureMetrics.from_dict(
-                feature_name=feature_name,
-                global_metrics=metrics,
-                categories_metrics=count_distinct_categories.get(feature_name),
-            )
-            for feature_name, metrics in global_data_quality.items()
-        ]
-
-        return categorical_features_metrics
 
     def calculate_class_metrics(self) -> List[ClassMetrics]:
-        predictions = self.current.select([self.model.outputs.prediction.name]).orderBy(
-            self.model.outputs.prediction.name
+        metrics = DataQualityCalculator.class_metrics(
+            class_column=self.model.target.name,
+            dataframe=self.current,
+            dataframe_count=self.current_count,
         )
 
-        rdd = predictions.rdd.map(tuple)
-        number_true_and_false = (
-            rdd.map(lambda x: (x[0], 1)).reduceByKey(lambda x, y: x + y).collectAsMap()
-        )
-        number_of_true = number_true_and_false.get(1.0, 0)
-        number_of_false = number_true_and_false.get(0.0, 0)
+        # FIXME this should be avoided if we are sure that we have all classes in the file
 
-        number_of_observations = self.current_count
-
-        return [
-            ClassMetrics(
-                name="true",
-                count=number_of_true,
-                percentage=(number_of_true / number_of_observations) * 100,
-            ),
-            ClassMetrics(
-                name="false",
-                count=number_of_false,
-                percentage=(number_of_false / number_of_observations) * 100,
-            ),
-        ]
+        if len(metrics) == 1:
+            if metrics[0].name == "1.0":
+                return metrics + [
+                    ClassMetrics(
+                        name="0.0",
+                        count=0,
+                        percentage=0.0,
+                    )
+                ]
+            else:
+                return metrics + [
+                    ClassMetrics(
+                        name="1.0",
+                        count=0,
+                        percentage=0.0,
+                    )
+                ]
+        else:
+            return metrics
 
     def calculate_data_quality(self) -> BinaryClassDataQuality:
         feature_metrics = []

@@ -1,5 +1,6 @@
 from typing import List
 
+from pyspark.ml.feature import StringIndexer
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DoubleType, StructField, StructType
 
@@ -90,3 +91,31 @@ class ReferenceDataset:
             + [self.model.timestamp]
             + self.model.outputs.output
         )
+
+    def get_string_indexed_dataframe(self):
+        """
+        Source: https://stackoverflow.com/questions/65911146/how-to-transform-multiple-categorical-columns-to-integers-maintaining-shared-val
+        """
+        predictions_df = self.reference.select(
+            self.model.outputs.prediction.name
+        ).withColumnRenamed(self.model.outputs.prediction.name, "classes")
+        target_df = self.reference.select(self.model.target.name).withColumnRenamed(
+            self.model.target.name, "classes"
+        )
+        prediction_target_df = predictions_df.union(target_df)
+        indexer = StringIndexer(inputCol="classes", outputCol="classes_index")
+        indexer_model = indexer.fit(prediction_target_df)
+        indexer_prediction = indexer_model.setInputCol(
+            self.model.outputs.prediction.name
+        ).setOutputCol(f"{self.model.outputs.prediction.name}-idx")
+        indexed_prediction_df = indexer_prediction.transform(self.reference)
+        indexer_target = indexer_model.setInputCol(self.model.target.name).setOutputCol(
+            f"{self.model.target.name}-idx"
+        )
+        indexed_target_df = indexer_target.transform(indexed_prediction_df)
+
+        index_label_map = {
+            str(float(index)): label
+            for index, label in enumerate(indexer_model.labelsArray[0])
+        }
+        return index_label_map, indexed_target_df

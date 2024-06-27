@@ -6,10 +6,10 @@ import uuid
 import orjson
 from pyspark.sql.types import StructType, StructField, StringType
 
-from jobs.metrics.statistics import calculate_statistics_current
-from jobs.models.current_dataset import CurrentDataset
-from jobs.models.reference_dataset import ReferenceDataset
-from utils.current import CurrentMetricsService
+from metrics.statistics import calculate_statistics_current
+from models.current_dataset import CurrentDataset
+from models.reference_dataset import ReferenceDataset
+from utils.current_binary import CurrentMetricsService
 from utils.models import JobStatus, ModelOut
 from utils.db import update_job_status, write_to_db
 

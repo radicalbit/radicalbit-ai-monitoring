@@ -1,14 +1,12 @@
 import datetime
 import uuid
-from pathlib import Path
 
 import deepdiff
 import pytest
-from pyspark.sql import SparkSession
 
 from jobs.models.current_dataset import CurrentDataset
 from jobs.models.reference_dataset import ReferenceDataset
-from jobs.utils.current import CurrentMetricsService
+from jobs.utils.current_binary import CurrentMetricsService
 from jobs.utils.models import (
     ModelOut,
     ModelType,
@@ -19,60 +17,46 @@ from jobs.utils.models import (
     Granularity,
 )
 
-test_resource_path = Path(__file__).resolve().parent / "resources"
-
 
 @pytest.fixture()
-def spark_fixture():
-    spark = SparkSession.builder.appName("Drift PyTest").getOrCreate()
-    yield spark
-
-
-@pytest.fixture()
-def drift_dataset(spark_fixture):
+def drift_dataset(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/drift_dataset.csv", header=True
+            f"{test_data_dir}/current/drift_dataset.csv", header=True
+        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+    )
+
+
+@pytest.fixture()
+def drift_small_dataset(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/drift_small_dataset.csv", header=True
+        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+    )
+
+
+@pytest.fixture()
+def drift_dataset_bool(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/dataset_bool_missing.csv", header=True
         ),
         spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
+            f"{test_data_dir}/reference/dataset_bool_missing.csv", header=True
         ),
     )
 
 
 @pytest.fixture()
-def drift_small_dataset(spark_fixture):
+def drift_dataset_bigger_file(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_resource_path}/current/drift_small_dataset.csv", header=True
+            f"{test_data_dir}/current/drift_dataset_bigger_file.csv", header=True
         ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
-        ),
-    )
-
-
-@pytest.fixture()
-def drift_dataset_bool(spark_fixture):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_resource_path}/current/dataset_bool_missing.csv", header=True
-        ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset_bool_missing.csv", header=True
-        ),
-    )
-
-
-@pytest.fixture()
-def drift_dataset_bigger_file(spark_fixture):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_resource_path}/current/drift_dataset_bigger_file.csv", header=True
-        ),
-        spark_fixture.read.csv(
-            f"{test_resource_path}/reference/dataset.csv", header=True
-        ),
+        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
     )
 
 
