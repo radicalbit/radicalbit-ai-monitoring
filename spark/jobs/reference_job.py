@@ -15,6 +15,8 @@ from pyspark.sql import SparkSession
 
 import logging
 
+from utils.reference_multiclass import ReferenceMetricsMulticlassService
+
 
 def main(
     spark_session: SparkSession,
@@ -46,12 +48,13 @@ def main(
     raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
     reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_dataframe)
 
-    metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
-
     complete_record = {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
 
     match model.model_type:
         case ModelType.BINARY:
+            metrics_service = ReferenceMetricsService(
+                reference_dataset.reference, model=model
+            )
             model_quality = metrics_service.calculate_model_quality()
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -64,8 +67,15 @@ def main(
             )
         case ModelType.MULTI_CLASS:
             # TODO add data quality and model quality
+            metrics_service = ReferenceMetricsMulticlassService(
+                reference=reference_dataset
+            )
             statistics = calculate_statistics_reference(reference_dataset)
+            data_quality = metrics_service.calculate_data_quality()
             complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
 
     schema = StructType(
         [
