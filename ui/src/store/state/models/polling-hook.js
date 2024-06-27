@@ -125,7 +125,7 @@ const useGetCurrentStatisticsQueryWithPolling = () => {
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const currentUUID = model?.latestCurrentUuid;
 
-  const result = useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID });
+  const result = useGetCurrentStatisticsByUUIDQuery({ uuid, currentUUID }, { skip: !currentUUID });
   const status = result.data?.jobStatus;
   const isCurrentImporting = status === JOB_STATUS.IMPORTING;
 
