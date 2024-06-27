@@ -4,6 +4,9 @@ import { METRICS_TABS } from '@Container/models/Details/constants';
 import BinaryClassificationDataQualityMetrics from '@Container/models/Details/binary-classification/current/data-quality';
 import BinaryClassificationModelQualityMetrics from '@Container/models/Details/binary-classification/current/model-quality';
 import BinaryClassificationDataDriftMetrics from '@Container/models/Details/binary-classification/current/data-drift';
+import MultiClassificationDataQualityMetrics from '@Container/models/Details/multi-classification/current/data-quality';
+import MultiClassificationModelQualityMetrics from '@Container/models/Details/multi-classification/current/model-quality';
+import MultiClassificationDataDriftMetrics from '@Container/models/Details/multi-classification/current/data-drift';
 import { modelsApiSlice } from '@Src/store/state/models/api';
 import { ModelTypeEnum } from '@Src/store/state/models/constants';
 
@@ -62,6 +65,25 @@ function useGetTabs() {
           label: METRICS_TABS.DATA_DRIFT,
           key: METRICS_TABS.DATA_DRIFT,
           children: <BinaryClassificationDataDriftMetrics />,
+        },
+      ];
+
+    case ModelTypeEnum.MULTI_CLASSIFICATION:
+      return [
+        {
+          label: METRICS_TABS.DATA_QUALITIY,
+          key: METRICS_TABS.DATA_QUALITIY,
+          children: <MultiClassificationDataQualityMetrics />,
+        },
+        {
+          label: METRICS_TABS.MODEL_QUALITY,
+          key: METRICS_TABS.MODEL_QUALITY,
+          children: <MultiClassificationModelQualityMetrics />,
+        },
+        {
+          label: METRICS_TABS.DATA_DRIFT,
+          key: METRICS_TABS.DATA_DRIFT,
+          children: <MultiClassificationDataDriftMetrics />,
         },
       ];
 
