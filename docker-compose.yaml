@@ -3,7 +3,7 @@ services:
     profiles: ["ui"]
     build:
       context: ./ui
-      target: build
+      target: dev
     command: yarn start:local
     develop:
       watch:
