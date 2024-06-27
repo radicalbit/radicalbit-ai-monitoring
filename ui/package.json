@@ -8,6 +8,7 @@
     "start:dev": "NODE_ENV=development && vite --host 0.0.0.0",
     "build:local": "NODE_ENV=local && vite build",
     "build:dev": "NODE_ENV=development && vite build",
+    "build:prod": "vite build --mode production",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "lint:fix": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0 --fix",
     "preview": "vite preview"
