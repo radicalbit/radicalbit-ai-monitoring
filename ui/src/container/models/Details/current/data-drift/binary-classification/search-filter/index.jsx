@@ -7,24 +7,11 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 
 function SearchFeatureList() {
-  const { write, form } = useFormbitContext();
-  const { __metadata: { isNumericalSelected, isCategoricalSelected } } = form;
+  const { write } = useFormbitContext();
 
   const { data } = useGetCurrentDriftQueryWithPolling();
   const items = data?.drift.featureMetrics ?? [];
-  const options = items
-    .filter((i) => {
-      if (isNumericalSelected && i.type === 'categorical') {
-        return false;
-      }
-
-      if (isCategoricalSelected && i.type === 'numerical') {
-        return false;
-      }
-
-      return true;
-    })
-    .map((i) => ({ label: i.featureName, value: i.featureName }));
+  const options = items.map((i) => ({ label: i.featureName, value: i.featureName }));
 
   const handleOnSelect = (value) => {
     write('__metadata.selectedFeatures', value);

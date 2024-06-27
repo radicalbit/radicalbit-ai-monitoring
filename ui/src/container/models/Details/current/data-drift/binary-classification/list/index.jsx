@@ -73,7 +73,7 @@ function FeatureRow({ item }) {
               <Button
                 shape="circle"
                 size="small"
-                type="secondary-light"
+                type="primary"
               >
                 <FontAwesomeIcon icon={buttonIcon} />
               </Button>
