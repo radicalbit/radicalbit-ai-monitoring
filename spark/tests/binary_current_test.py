@@ -274,8 +274,6 @@ def test_calculation(spark_fixture, dataset):
         significant_digits=6,
     )
 
-    print(data_quality.model_dump_json(serialize_as_any=True, exclude_none=True))
-
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
         {
