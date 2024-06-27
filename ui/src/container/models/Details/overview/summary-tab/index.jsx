@@ -54,7 +54,6 @@ function CurrentList() {
 
   return (
     <Virtuoso
-      className="mt-4"
       data={rest}
       itemContent={(_, { uuid: currentUUID }) => (<Currents currentUUID={currentUUID} />)}
       totalCount={rest.length}
@@ -156,7 +155,6 @@ function Currents({ currentUUID }) {
     <Collapse
       collapsible="header"
       expandIconPosition="end"
-      modifier="p-4"
     >
       <Panel key={date} header={`Current - ${moment(date).format('YYYY.MM.DD HH.mm')}`}>
         <div className="flex flex-row gap-4">
