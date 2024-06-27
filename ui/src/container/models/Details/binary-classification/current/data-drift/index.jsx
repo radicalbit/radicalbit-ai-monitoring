@@ -1,24 +1,54 @@
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { ModelTypeEnum } from '@State/models/constants';
-import { memo } from 'react';
-import { useParams } from 'react-router';
-import BinaryClassificationMetrics from './binary-classification';
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import JobStatus from '@Components/JobStatus';
+import { JOB_STATUS } from '@Src/constants';
+import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
+import { FormbitContextProvider } from '@radicalbit/formbit';
+import { Spinner } from '@radicalbit/radicalbit-design-system';
 
-const { useGetModelByUUIDQuery } = modelsApiSlice;
+import DataDriftList from './list';
+import DataDriftHeader from './header';
+import SearchFeatureList from './search-filter';
+
+const initialValues = {
+  __metadata: {
+    selectedFeatures: [],
+    isNumericalSelected: true,
+    isCategoricalSelected: true,
+  },
+};
 
 function BinaryClassificationDataDriftMetrics() {
-  const { uuid } = useParams();
-  const { data } = useGetModelByUUIDQuery({ uuid });
+  const { data, isError, isLoading } = useGetCurrentDriftQueryWithPolling();
 
-  const modelType = data?.modelType;
+  const jobStatus = data?.jobStatus;
 
-  switch (modelType) {
-    case ModelTypeEnum.BINARY_CLASSIFICATION:
-      return <BinaryClassificationMetrics />;
-
-    default:
-      return false;
+  if (isLoading) {
+    return <Spinner spinning />;
   }
+
+  if (isError) {
+    return <SomethingWentWrong />;
+  }
+
+  if (!data) {
+    return <JobStatus jobStatus={JOB_STATUS.MISSING_CURRENT} />;
+  }
+
+  if (jobStatus === JOB_STATUS.SUCCEEDED) {
+    return (
+      <FormbitContextProvider initialValues={initialValues}>
+        <div className="flex flex-col gap-4 h-full">
+          <DataDriftHeader />
+
+          <SearchFeatureList />
+
+          <DataDriftList />
+        </div>
+      </FormbitContextProvider>
+    );
+  }
+
+  return (<JobStatus jobStatus={jobStatus} />);
 }
 
-export default memo(BinaryClassificationDataDriftMetrics);
+export default BinaryClassificationDataDriftMetrics;

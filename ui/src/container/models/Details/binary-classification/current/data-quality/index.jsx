@@ -1,24 +1,55 @@
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { ModelTypeEnum } from '@State/models/constants';
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import JobStatus from '@Components/JobStatus';
+import { JOB_STATUS } from '@Src/constants';
+import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
+import { FormbitContextProvider } from '@radicalbit/formbit';
+import { Spinner } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
-import { useParams } from 'react-router';
-import BinaryClassificationMetrics from './binary-classification';
+import DataPointDistribution from './data-point-distribution';
+import SearchFeatureList from './search-filter';
+import DataQualityList from './data-quality-list';
 
-const { useGetModelByUUIDQuery } = modelsApiSlice;
+const initialValues = {
+  __metadata: {
+    selectedFeatures: [],
+    isNumericalSelected: true,
+    isCategoricalSelected: true,
+  },
+};
 
 function BinaryClassificationDataQualityMetrics() {
-  const { uuid } = useParams();
-  const { data } = useGetModelByUUIDQuery({ uuid });
+  const { data, isError, isLoading } = useGetCurrentDataQualityQueryWithPolling();
+  const jobStatus = data?.jobStatus;
 
-  const modelType = data?.modelType;
-
-  switch (modelType) {
-    case ModelTypeEnum.BINARY_CLASSIFICATION:
-      return <BinaryClassificationMetrics />;
-
-    default:
-      return false;
+  if (isLoading) {
+    return <Spinner spinning />;
   }
+
+  if (isError) {
+    return <SomethingWentWrong />;
+  }
+
+  if (!data) {
+    return <JobStatus jobStatus={JOB_STATUS.MISSING_CURRENT} />;
+  }
+
+  if (jobStatus === JOB_STATUS.SUCCEEDED) {
+    return (
+      <FormbitContextProvider initialValues={initialValues}>
+
+        <div className="flex flex-col gap-4 py-4 h-full">
+          <DataPointDistribution />
+
+          <SearchFeatureList />
+
+          <DataQualityList />
+        </div>
+
+      </FormbitContextProvider>
+    );
+  }
+
+  return (<JobStatus jobStatus={jobStatus} />);
 }
 
 export default memo(BinaryClassificationDataQualityMetrics);
