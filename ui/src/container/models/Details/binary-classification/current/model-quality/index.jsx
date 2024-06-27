@@ -6,10 +6,10 @@ import BinaryClassificationMetrics from './binary-classification';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
-function DataQualityMetrics() {
+function BinaryClassificationModelQualityMetrics() {
   const { uuid } = useParams();
-  const { data } = useGetModelByUUIDQuery({ uuid });
 
+  const { data } = useGetModelByUUIDQuery({ uuid });
   const modelType = data?.modelType;
 
   switch (modelType) {
@@ -21,4 +21,4 @@ function DataQualityMetrics() {
   }
 }
 
-export default memo(DataQualityMetrics);
+export default memo(BinaryClassificationModelQualityMetrics);

@@ -6,7 +6,7 @@ import BinaryClassificationMetrics from './binary-classification';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
-function DataDriftMetrics() {
+function BinaryClassificationDataDriftMetrics() {
   const { uuid } = useParams();
   const { data } = useGetModelByUUIDQuery({ uuid });
 
@@ -21,4 +21,4 @@ function DataDriftMetrics() {
   }
 }
 
-export default memo(DataDriftMetrics);
+export default memo(BinaryClassificationDataDriftMetrics);
