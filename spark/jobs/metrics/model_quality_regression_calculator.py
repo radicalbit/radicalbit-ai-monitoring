@@ -33,7 +33,7 @@ class ModelQualityRegressionCalculator:
                 case RegressionMetricType.MAPE:
                     # Source: https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
                     # mape = 100 * (abs(actual - predicted) / actual) / n
-                    dataframe = dataframe.withColumn(
+                    _dataframe = dataframe.withColumn(
                         "mape",
                         pyspark_abs(
                             (
@@ -43,7 +43,7 @@ class ModelQualityRegressionCalculator:
                             / col(model.target.name)
                         ),
                     )
-                    return dataframe.agg({"mape": "avg"}).collect()[0][0] * 100
+                    return _dataframe.agg({"mape": "avg"}).collect()[0][0] * 100
                 case (
                     RegressionMetricType.MAE
                     | RegressionMetricType.MSE
