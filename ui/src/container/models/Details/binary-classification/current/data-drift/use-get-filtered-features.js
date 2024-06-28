@@ -28,8 +28,6 @@ export default () => {
       const isNumerical = isNumericalSelected && type === DRIFT_TEST_ENUM.KS;
       const isCategorical = isCategoricalSelected && type === DRIFT_TEST_ENUM.CHI2;
 
-      console.debug(type, isNumerical, isCategorical);
-
       return isNumerical || isCategorical;
     });
 };

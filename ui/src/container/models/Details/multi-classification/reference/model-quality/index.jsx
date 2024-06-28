@@ -1,12 +1,13 @@
 import JobStatus from '@Components/JobStatus';
-import ConfusionMatrix from '@Container/models/Details/charts/confusion-matrix-chart';
-import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
+import ConfusionMatrix from '@Components/charts/confusion-matrix-chart';
+import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
 import { useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import {
   Board, DataTable, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import columns from './columns';
 
 function MultiClassificationModelQualityMetrics() {
