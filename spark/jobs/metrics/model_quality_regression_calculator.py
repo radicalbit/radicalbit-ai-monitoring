@@ -54,7 +54,7 @@ class ModelQualityRegressionCalculator:
                     return RegressionEvaluator(
                         metricName=metric_name.value,
                         labelCol=model.target.name,
-                        predictionCol=model.outputs.prediction.name
+                        predictionCol=model.outputs.prediction.name,
                     ).evaluate(dataframe)
         except Exception:
             return float("nan")
