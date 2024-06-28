@@ -1,6 +1,6 @@
 import { numberFormatter } from '@Src/constants';
-import { CHART_COLOR } from '@Container/models/Details/charts/common-chart-options';
-import * as commonChartOptions from '@Container/models/Details/charts/common-chart-options';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
+import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function lineChartOptions(title, color, currentDataset, referenceDataset) {
   const currentDatasetFormatted = currentDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);

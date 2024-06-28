@@ -1,4 +1,4 @@
-import * as commonChartOptions from '@Container/models/Details/charts/common-chart-options';
+import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function confusionMatrixOptions(dataset, labelClass, colors) {
   let dataMax = 0;

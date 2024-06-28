@@ -196,8 +196,6 @@ const heatmapSeriesOptions = (data) => {
     options.data = data;
   }
 
-  console.debug('🚀 ~ heatmapSeriesOptions ~ options:', options);
-
   return options;
 };
 
