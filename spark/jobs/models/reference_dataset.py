@@ -103,7 +103,12 @@ class ReferenceDataset:
             self.model.target.name, "classes"
         )
         prediction_target_df = predictions_df.union(target_df)
-        indexer = StringIndexer(inputCol="classes", outputCol="classes_index")
+        indexer = StringIndexer(
+            inputCol="classes",
+            outputCol="classes_index",
+            stringOrderType="alphabetAsc",
+            handleInvalid="skip",
+        )
         indexer_model = indexer.fit(prediction_target_df)
         indexer_prediction = indexer_model.setInputCol(
             self.model.outputs.prediction.name
@@ -115,7 +120,7 @@ class ReferenceDataset:
         indexed_target_df = indexer_target.transform(indexed_prediction_df)
 
         index_label_map = {
-            str(float(index)): label
+            str(float(index)): str(label)
             for index, label in enumerate(indexer_model.labelsArray[0])
         }
         return index_label_map, indexed_target_df
