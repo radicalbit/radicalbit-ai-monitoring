@@ -11,6 +11,7 @@ from radicalbit_platform_sdk.models import (
     BinaryClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
+    CurrentMultiClassificationModelQuality,
     DataQuality,
     DatasetStats,
     Drift,
@@ -22,9 +23,6 @@ from radicalbit_platform_sdk.models import (
     RegressionDataQuality,
     RegressionDrift,
     RegressionModelQuality,
-)
-from radicalbit_platform_sdk.models.dataset_model_quality import (
-    CurrentMultiClassificationModelQuality,
 )
 
 
