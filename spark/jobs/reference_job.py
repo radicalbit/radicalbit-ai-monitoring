@@ -66,15 +66,18 @@ def main(
                 serialize_as_any=True
             )
         case ModelType.MULTI_CLASS:
-            # TODO add data quality and model quality
             metrics_service = ReferenceMetricsMulticlassService(
                 reference=reference_dataset
             )
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
+            model_quality = metrics_service.calculate_model_quality()
             complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
             )
 
     schema = StructType(
