@@ -35,14 +35,20 @@ class StatisticsDTO(BaseModel):
     @staticmethod
     def from_dict(
         job_status: JobStatus, date: datetime, statistics_data: Optional[Dict]
-    ):
-        if not statistics_data:
-            return StatisticsDTO(
-                job_status=job_status, statistics=None, date=date.isoformat()
-            )
-        statistics = Statistics(**statistics_data)
+    ) -> 'StatisticsDTO':
+        """Create a StatisticsDTO from a dictionary of data."""
+        statistics = StatisticsDTO._create_statistics(statistics_data)
         return StatisticsDTO(
             job_status=job_status,
             statistics=statistics,
             date=date.isoformat(),
         )
+
+    @staticmethod
+    def _create_statistics(
+        statistics_data: Optional[Dict],
+    ) -> Optional[Statistics]:
+        """Create a Statistics instance from a dictionary of data."""
+        if not statistics_data:
+            return None
+        return Statistics(**statistics_data)

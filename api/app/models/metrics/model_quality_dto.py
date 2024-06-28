@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -80,12 +80,10 @@ class RegressionModelQuality(BaseModel):
 class ModelQualityDTO(BaseModel):
     job_status: JobStatus
     model_quality: Optional[
-        Union[
-            BinaryClassModelQuality,
-            CurrentBinaryClassModelQuality,
-            MultiClassModelQuality,
-            RegressionModelQuality,
-        ]
+        BinaryClassModelQuality
+        | CurrentBinaryClassModelQuality
+        | MultiClassModelQuality
+        | RegressionModelQuality
     ]
 
     model_config = ConfigDict(
@@ -94,46 +92,60 @@ class ModelQualityDTO(BaseModel):
 
     @staticmethod
     def from_dict(
-        dataset_type: DatasetType = DatasetType.REFERENCE,
-        model_type: ModelType = ModelType.BINARY,
-        job_status: JobStatus = JobStatus.SUCCEEDED,
-        model_quality_data: Optional[Dict] = None,
-    ):
+        dataset_type: DatasetType,
+        model_type: ModelType,
+        job_status: JobStatus,
+        model_quality_data: Optional[Dict],
+    ) -> 'ModelQualityDTO':
+        """Create a ModelQualityDTO from a dictionary of data."""
         if not model_quality_data:
             return ModelQualityDTO(
                 job_status=job_status,
                 model_quality=None,
             )
-        match model_type:
-            case ModelType.BINARY:
-                match dataset_type:
-                    case DatasetType.REFERENCE:
-                        binary_class_model_quality = BinaryClassModelQuality(
-                            **model_quality_data
-                        )
-                        return ModelQualityDTO(
-                            job_status=job_status,
-                            model_quality=binary_class_model_quality,
-                        )
-                    case DatasetType.CURRENT:
-                        current_binary_class_model_quality = (
-                            CurrentBinaryClassModelQuality(**model_quality_data)
-                        )
-                        return ModelQualityDTO(
-                            job_status=job_status,
-                            model_quality=current_binary_class_model_quality,
-                        )
-            case ModelType.MULTI_CLASS:
-                multi_class_model_quality = MultiClassModelQuality(**model_quality_data)
-                return ModelQualityDTO(
-                    job_status=job_status,
-                    model_quality=multi_class_model_quality,
-                )
-            case ModelType.REGRESSION:
-                regression_model_quality = RegressionModelQuality(**model_quality_data)
-                return ModelQualityDTO(
-                    job_status=job_status,
-                    model_quality=regression_model_quality,
-                )
-            case _:
-                raise MetricsInternalError(f'Invalid model type {model_type}')
+
+        model_quality = ModelQualityDTO._create_model_quality(
+            model_type=model_type,
+            dataset_type=dataset_type,
+            model_quality_data=model_quality_data,
+        )
+
+        return ModelQualityDTO(
+            job_status=job_status,
+            model_quality=model_quality,
+        )
+
+    @staticmethod
+    def _create_model_quality(
+        model_type: ModelType,
+        dataset_type: DatasetType,
+        model_quality_data: Dict,
+    ) -> (
+        BinaryClassModelQuality
+        | CurrentBinaryClassModelQuality
+        | MultiClassModelQuality
+        | RegressionModelQuality
+    ):
+        """Create a specific model quality instance based on model type and dataset type."""
+        if model_type == ModelType.BINARY:
+            return ModelQualityDTO._create_binary_model_quality(
+                dataset_type=dataset_type,
+                model_quality_data=model_quality_data,
+            )
+        if model_type == ModelType.MULTI_CLASS:
+            return MultiClassModelQuality(**model_quality_data)
+        if model_type == ModelType.REGRESSION:
+            return RegressionModelQuality(**model_quality_data)
+        raise MetricsInternalError(f'Invalid model type {model_type}')
+
+    @staticmethod
+    def _create_binary_model_quality(
+        dataset_type: DatasetType,
+        model_quality_data: Dict,
+    ) -> BinaryClassModelQuality | CurrentBinaryClassModelQuality:
+        """Create a binary model quality instance based on dataset type."""
+        if dataset_type == DatasetType.REFERENCE:
+            return BinaryClassModelQuality(**model_quality_data)
+        if dataset_type == DatasetType.CURRENT:
+            return CurrentBinaryClassModelQuality(**model_quality_data)
+        raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
