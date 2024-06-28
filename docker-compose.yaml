@@ -165,6 +165,8 @@ services:
     stdin_open: true
     tty: true
     command: -A
+    ports:
+      - 4040:4040 # Spark UI port if forwarded from k9s
     volumes:
       - ./docker/k3s_data/kubeconfig/kubeconfig.yaml:/root/.kube/config
 
