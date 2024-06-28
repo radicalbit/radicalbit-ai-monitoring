@@ -7,8 +7,8 @@ import requests
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    ClassificationDataQuality,
     BinaryClassificationModelQuality,
+    ClassificationDataQuality,
     DataQuality,
     DatasetStats,
     JobStatus,

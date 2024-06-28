@@ -7,8 +7,8 @@ import responses
 from radicalbit_platform_sdk.apis import ModelReferenceDataset
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    ClassificationDataQuality,
     BinaryClassificationModelQuality,
+    ClassificationDataQuality,
     JobStatus,
     ModelType,
     MultiClassificationModelQuality,
