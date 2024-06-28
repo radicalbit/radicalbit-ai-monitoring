@@ -1,4 +1,4 @@
-import { DataTypeEnum } from '@State/models/constants';
+import { DataTypeEnum, ModelTypeEnum } from '@State/models/constants';
 import useFormbit from '@radicalbit/formbit';
 import {
   createContext,
@@ -18,7 +18,7 @@ function ModalContextProvider({ children }) {
   const [isMaximize, setIsMaximize] = useState(false);
 
   const useFormbitStepOne = useFormbit({
-    initialValues: { dataType: DataTypeEnum.TABULAR },
+    initialValues: { modelType: ModelTypeEnum.BINARY_CLASSIFICATION, dataType: DataTypeEnum.TABULAR },
     yup: schemaStepOne,
   });
 
