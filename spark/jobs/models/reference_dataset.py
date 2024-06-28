@@ -104,14 +104,16 @@ class ReferenceDataset:
         )
         prediction_target_df = predictions_df.union(target_df)
         indexer = StringIndexer(
-            inputCol="classes", outputCol="classes_index", stringOrderType="alphabetAsc"
+            inputCol="classes",
+            outputCol="classes_index",
+            stringOrderType="alphabetAsc",
+            handleInvalid="skip",
         )
         indexer_model = indexer.fit(prediction_target_df)
         indexer_prediction = indexer_model.setInputCol(
             self.model.outputs.prediction.name
         ).setOutputCol(f"{self.model.outputs.prediction.name}-idx")
         indexed_prediction_df = indexer_prediction.transform(self.reference)
-        indexed_prediction_df.show()
         indexer_target = indexer_model.setInputCol(self.model.target.name).setOutputCol(
             f"{self.model.target.name}-idx"
         )

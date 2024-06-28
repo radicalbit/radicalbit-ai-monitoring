@@ -47,8 +47,7 @@ class ReferenceMetricsMulticlassService:
                 labelCol=f"{self.reference.model.target.name}-idx",
                 metricLabel=class_index,
             ).evaluate(dataset)
-        except Exception as e:
-            print(e)
+        except Exception:
             return float("nan")
 
     # FIXME use pydantic struct like data quality
