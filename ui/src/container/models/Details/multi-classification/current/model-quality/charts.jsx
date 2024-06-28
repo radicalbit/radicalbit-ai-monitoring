@@ -1,5 +1,6 @@
+import { CHART_COLOR } from '@Container/models/Details/charts/common-chart-options';
 import LineChart from '@Container/models/Details/charts/line-chart';
-import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
+import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { useGetCurrentModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { modelsApiSlice } from '@State/models/api';
 import { useParams } from 'react-router';

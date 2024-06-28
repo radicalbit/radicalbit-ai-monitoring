@@ -1,7 +1,7 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import JobStatus from '@Components/JobStatus';
 import ConfusionMatrix from '@Container/models/Details/charts/confusion-matrix-chart';
-import { CHART_COLOR, MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
+import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { useGetCurrentModelQualityQueryWithPolling } from '@State/models/polling-hook';
@@ -10,6 +10,7 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 import { useParams } from 'react-router';
+import { CHART_COLOR } from '@Container/models/Details/charts/common-chart-options';
 import {
   AccuracyChart,
   AreaUnderPrChart,

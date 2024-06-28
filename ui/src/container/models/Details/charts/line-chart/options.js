@@ -1,75 +1,37 @@
 import { numberFormatter } from '@Src/constants';
-import moment from 'moment';
-import { CHART_COLOR } from '@Container/models/Details/constants';
+import { CHART_COLOR } from '@Container/models/Details/charts/common-chart-options';
+import * as commonChartOptions from '@Container/models/Details/charts/common-chart-options';
 
 export default function lineChartOptions(title, color, currentDataset, referenceDataset) {
+  const currentDatasetFormatted = currentDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);
+
   const series = [
-    {
-      name: title,
-      type: 'line',
-      lineStyle: {
-        width: 2,
-        color: '#73B2E0',
-      },
-      data: currentDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]),
-      symbol: 'none',
-    },
+    commonChartOptions.seriesOptions.lineChart(title, CHART_COLOR.LINE_CHART_COLOR, currentDatasetFormatted),
   ];
+
   if (referenceDataset) {
-    series.push({
-      name: 'Reference',
-      type: 'line',
+    const referenceDatasetFormatted = referenceDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);
+
+    const referenceLine = {
+      ...commonChartOptions.seriesOptions.lineChart('Reference', CHART_COLOR.REFERENCE, referenceDatasetFormatted),
       endLabel: {
         show: true,
         color: CHART_COLOR.REFERENCE,
         formatter: ({ value }) => `Reference\n${value[1]}`,
       },
       color: CHART_COLOR.REFERENCE,
-      lineStyle: {
-        width: 2,
-        type: 'dotted',
-        color: CHART_COLOR.REFERENCE,
-      },
-      data: referenceDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]),
-      symbol: 'none',
-    });
+    };
+
+    referenceLine.lineStyle.type = 'dotted';
+    series.push(referenceLine);
   }
 
   return {
     color: [color],
-    tooltip: {
-      trigger: 'axis',
-    },
-    yAxis: [{
-      type: 'value',
-      boundaryGap: true,
-      axisLabel: {
-        fontSize: 9,
-        color: '#9b99a1',
-      },
-    }],
-    xAxis: [
-      {
-        type: 'time',
-        axisLabel: {
-          formatter: (value) => moment(+value).format('DD MMM HH.mm'),
-          fontSize: 10,
-          color: '#9b99a1',
-        },
-        axisTick: { show: false },
-        axisLine: { show: false },
-        splitLine: { show: false },
-
-      },
-    ],
-    grid: {
-      bottom: 0,
-      top: 16,
-      left: 0,
-      right: 64,
-      containLabel: true,
-    },
-
+    ...commonChartOptions.tooltipOptions(),
+    ...commonChartOptions.yAxisOptions.valueType(),
+    ...commonChartOptions.xAxisOptions.timeType(),
+    ...commonChartOptions.gridOptions.lineChart(),
     series,
   };
 }
