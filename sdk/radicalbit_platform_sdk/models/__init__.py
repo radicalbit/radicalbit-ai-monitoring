@@ -2,7 +2,7 @@ from .aws_credentials import AwsCredentials
 from .column_definition import ColumnDefinition
 from .data_type import DataType
 from .dataset_data_quality import (
-    BinaryClassificationDataQuality,
+    ClassificationDataQuality,
     CategoricalFeatureMetrics,
     CategoryFrequency,
     ClassMedianMetrics,
@@ -11,7 +11,6 @@ from .dataset_data_quality import (
     FeatureMetrics,
     MedianMetrics,
     MissingValue,
-    MultiClassDataQuality,
     NumericalFeatureMetrics,
     RegressionDataQuality,
 )
@@ -28,7 +27,8 @@ from .dataset_model_quality import (
     BinaryClassificationModelQuality,
     CurrentBinaryClassificationModelQuality,
     ModelQuality,
-    MultiClassModelQuality,
+    MultiClassificationModelQuality,
+    CurrentMultiClassificationModelQuality,
     RegressionModelQuality,
 )
 from .dataset_stats import DatasetStats
@@ -55,11 +55,11 @@ __all__ = [
     'ModelQuality',
     'BinaryClassificationModelQuality',
     'CurrentBinaryClassificationModelQuality',
-    'MultiClassModelQuality',
+    'MultiClassificationModelQuality',
+    'CurrentMultiClassificationModelQuality',
     'RegressionModelQuality',
     'DataQuality',
-    'BinaryClassificationDataQuality',
-    'MultiClassDataQuality',
+    'ClassificationDataQuality',
     'RegressionDataQuality',
     'ClassMetrics',
     'MedianMetrics',
