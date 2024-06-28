@@ -30,7 +30,7 @@ class MetricsBase(BaseModel):
     )
 
 
-class BinaryClassModelQuality(MetricsBase):
+class BinaryClassificationModelQuality(MetricsBase):
     true_positive_count: int
     false_positive_count: int
     true_negative_count: int
@@ -58,48 +58,38 @@ class GroupedMetricsBase(BaseModel):
     area_under_roc: Optional[List[Distribution]] = None
     area_under_pr: Optional[List[Distribution]] = None
 
-    model_config = ConfigDict(
-        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
-    )
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class CurrentBinaryClassModelQuality(BaseModel):
-    global_metrics: BinaryClassModelQuality
+class CurrentBinaryClassificationModelQuality(BaseModel):
+    global_metrics: BinaryClassificationModelQuality
     grouped_metrics: GroupedMetricsBase
 
-    model_config = ConfigDict(
-        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
-    )
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
 class ClassMetrics(BaseModel):
     class_name: str
     metrics: MetricsBase
 
-    model_config = ConfigDict(
-        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
-    )
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
 class GlobalMetrics(MetricsBase):
     confusion_matrix: List[List[int]]
 
-    model_config = ConfigDict(
-        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
-    )
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class MultiClassModelQuality(BaseModel):
-    labels: List[str]
+class MultiClassificationModelQuality(BaseModel):
+    classes: List[str]
     class_metrics: List[ClassMetrics]
     global_metrics: GlobalMetrics
 
-    model_config = ConfigDict(
-        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
-    )
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class CurrentMultiClassModelQuality(BaseModel):
+class CurrentMultiClassificationModelQuality(BaseModel):
     pass
 
 
@@ -110,16 +100,14 @@ class RegressionModelQuality(BaseModel):
 class ModelQualityDTO(BaseModel):
     job_status: JobStatus
     model_quality: Optional[
-        BinaryClassModelQuality
-        | CurrentBinaryClassModelQuality
-        | MultiClassModelQuality
-        | CurrentMultiClassModelQuality
+        BinaryClassificationModelQuality
+        | CurrentBinaryClassificationModelQuality
+        | MultiClassificationModelQuality
+        | CurrentMultiClassificationModelQuality
         | RegressionModelQuality
     ]
 
-    model_config = ConfigDict(
-        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
-    )
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
     @staticmethod
     def from_dict(
@@ -152,9 +140,9 @@ class ModelQualityDTO(BaseModel):
         dataset_type: DatasetType,
         model_quality_data: Dict,
     ) -> (
-        BinaryClassModelQuality
-        | CurrentBinaryClassModelQuality
-        | MultiClassModelQuality
+        BinaryClassificationModelQuality
+        | CurrentBinaryClassificationModelQuality
+        | MultiClassificationModelQuality
         | RegressionModelQuality
     ):
         """Create a specific model quality instance based on model type and dataset type."""
@@ -176,22 +164,22 @@ class ModelQualityDTO(BaseModel):
     def _create_binary_model_quality(
         dataset_type: DatasetType,
         model_quality_data: Dict,
-    ) -> BinaryClassModelQuality | CurrentBinaryClassModelQuality:
+    ) -> BinaryClassificationModelQuality | CurrentBinaryClassificationModelQuality:
         """Create a binary model quality instance based on dataset type."""
         if dataset_type == DatasetType.REFERENCE:
-            return BinaryClassModelQuality(**model_quality_data)
+            return BinaryClassificationModelQuality(**model_quality_data)
         if dataset_type == DatasetType.CURRENT:
-            return CurrentBinaryClassModelQuality(**model_quality_data)
+            return CurrentBinaryClassificationModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
 
     @staticmethod
     def _create_multiclass_model_quality(
         dataset_type: DatasetType,
         model_quality_data: Dict,
-    ) -> MultiClassModelQuality | CurrentMultiClassModelQuality:
+    ) -> MultiClassificationModelQuality | CurrentMultiClassificationModelQuality:
         """Create a multiclass model quality instance based on dataset type."""
         if dataset_type == DatasetType.REFERENCE:
-            return MultiClassModelQuality(**model_quality_data)
+            return MultiClassificationModelQuality(**model_quality_data)
         if dataset_type == DatasetType.CURRENT:
-            return CurrentMultiClassModelQuality(**model_quality_data)
+            return CurrentMultiClassificationModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid dataset type {dataset_type}')

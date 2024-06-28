@@ -16,10 +16,12 @@ from radicalbit_platform_sdk.models import (
     ModelType,
     MultiClassDataQuality,
     MultiClassDrift,
-    MultiClassModelQuality,
     RegressionDataQuality,
     RegressionDrift,
     RegressionModelQuality,
+)
+from radicalbit_platform_sdk.models.dataset_model_quality import (
+    CurrentMultiClassificationModelQuality,
 )
 
 
@@ -695,7 +697,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
         metrics = model_current_dataset.model_quality()
 
-        assert isinstance(metrics, MultiClassModelQuality)
+        assert isinstance(metrics, CurrentMultiClassificationModelQuality)
         # TODO: add asserts to properties
         assert model_current_dataset.status() == JobStatus.SUCCEEDED
 

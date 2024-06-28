@@ -28,7 +28,7 @@ from .dataset_model_quality import (
     BinaryClassificationModelQuality,
     CurrentBinaryClassificationModelQuality,
     ModelQuality,
-    MultiClassModelQuality,
+    MultiClassificationModelQuality,
     RegressionModelQuality,
 )
 from .dataset_stats import DatasetStats
@@ -55,7 +55,7 @@ __all__ = [
     'ModelQuality',
     'BinaryClassificationModelQuality',
     'CurrentBinaryClassificationModelQuality',
-    'MultiClassModelQuality',
+    'MultiClassificationModelQuality',
     'RegressionModelQuality',
     'DataQuality',
     'BinaryClassificationDataQuality',

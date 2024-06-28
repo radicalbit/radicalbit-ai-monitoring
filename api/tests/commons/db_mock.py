@@ -216,7 +216,7 @@ binary_current_model_quality_dict = {
 }
 
 multiclass_model_quality_dict = {
-    'labels': [
+    'classes': [
         'classA',
         'classB',
         'classC',
