@@ -216,6 +216,11 @@ binary_current_model_quality_dict = {
 }
 
 multiclass_model_quality_dict = {
+    'labels': [
+        'classA',
+        'classB',
+        'classC',
+    ],
     'class_metrics': [
         {
             'class_name': 'classA',
@@ -229,7 +234,16 @@ multiclass_model_quality_dict = {
             'class_name': 'classC',
             'metrics': model_quality_base_dict,
         },
-    ]
+    ],
+    'global_metrics': {
+        'confusion_matrix': [
+            [3.0, 0.0, 0.0, 0.0],
+            [0.0, 2.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0, 2.0],
+            [1.0, 0.0, 0.0, 0.0],
+        ],
+        **model_quality_base_dict,
+    },
 }
 
 data_quality_dict = {

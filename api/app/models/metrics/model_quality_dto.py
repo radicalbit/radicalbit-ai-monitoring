@@ -81,8 +81,18 @@ class ClassMetrics(BaseModel):
     )
 
 
+class GlobalMetrics(MetricsBase):
+    confusion_matrix: List[List[int]]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
 class MultiClassModelQuality(BaseModel):
+    labels: List[str]
     class_metrics: List[ClassMetrics]
+    global_metrics: GlobalMetrics
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
