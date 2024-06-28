@@ -1,4 +1,5 @@
 import datetime
+import json
 import uuid
 
 import deepdiff
@@ -72,6 +73,9 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
 
     stats = calculate_statistics_reference(reference_dataset)
     data_quality = multiclass_service.calculate_data_quality()
+    model_quality = multiclass_service.calculate_model_quality()
+
+    print(json.dumps(model_quality))
 
     assert stats == my_approx(
         {
@@ -224,6 +228,9 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
 
     stats = calculate_statistics_reference(reference_dataset)
     data_quality = multiclass_service.calculate_data_quality()
+    model_quality = multiclass_service.calculate_model_quality()
+
+    print(json.dumps(model_quality))
 
     assert stats == my_approx(
         {

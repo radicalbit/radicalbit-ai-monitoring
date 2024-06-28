@@ -114,8 +114,9 @@ class ReferenceDataset:
         )
         indexed_target_df = indexer_target.transform(indexed_prediction_df)
 
+        index_with_labels = sorted(enumerate(indexer_model.labelsArray[0]), key=lambda x: x[1])
         index_label_map = {
-            str(float(index)): label
-            for index, label in enumerate(indexer_model.labelsArray[0])
+            str(float(index)): str(label)
+            for index, label in index_with_labels
         }
         return index_label_map, indexed_target_df
