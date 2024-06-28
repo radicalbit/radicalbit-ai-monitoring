@@ -17,6 +17,7 @@ from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
+from app.models.model_dto import ModelType
 from app.services.model_service import ModelService
 
 
@@ -38,292 +39,308 @@ class MetricsService:
     def get_reference_statistics_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> StatisticsDTO:
-        reference_dataset, reference_metrics = (
-            self.check_and_get_reference_dataset_and_metrics(model_uuid)
+        """Retrieve reference statistics for a model by its UUID."""
+        return self._get_statistics_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_metrics,
+            missing_status=JobStatus.MISSING_REFERENCE,
         )
-        if not reference_dataset:
-            return StatisticsDTO.from_dict(
-                job_status=JobStatus.MISSING_REFERENCE,
-                date=datetime.datetime.now(tz=datetime.UTC),
-                statistics_data=None,
-            )
-        if not reference_metrics:
-            return StatisticsDTO.from_dict(
-                job_status=reference_dataset.status,
-                date=reference_dataset.date,
-                statistics_data=None,
-            )
-        return StatisticsDTO.from_dict(
-            job_status=reference_dataset.status,
-            date=reference_dataset.date,
-            statistics_data=reference_metrics.statistics,
+
+    def get_current_statistics_by_model_by_uuid(
+        self, model_uuid: UUID, current_uuid: Optional[UUID]
+    ) -> StatisticsDTO:
+        """Retrieve current statistics for a model by its UUID and an optional current dataset UUID."""
+        return self._get_statistics_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
+                uuid, current_uuid
+            ),
+            missing_status=JobStatus.MISSING_CURRENT,
         )
 
     def get_reference_model_quality_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> ModelQualityDTO:
-        model = self.model_service.get_model_by_uuid(model_uuid)
-        reference_dataset, reference_metrics = (
-            self.check_and_get_reference_dataset_and_metrics(model_uuid)
+        """Retrieve reference model quality for a model by its UUID."""
+        return self._get_model_quality_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_metrics,
+            dataset_type=DatasetType.REFERENCE,
+            missing_status=JobStatus.MISSING_REFERENCE,
         )
-        if not reference_dataset:
-            return ModelQualityDTO.from_dict(
-                model_type=model.model_type,
-                job_status=JobStatus.MISSING_REFERENCE,
-                model_quality_data=None,
-            )
-        if not reference_metrics:
-            return ModelQualityDTO.from_dict(
-                model_type=model.model_type,
-                job_status=reference_dataset.status,
-                model_quality_data=None,
-            )
-        return ModelQualityDTO.from_dict(
-            model_type=model.model_type,
-            job_status=reference_dataset.status,
-            model_quality_data=reference_metrics.model_quality,
+
+    def get_current_model_quality_by_model_by_uuid(
+        self, model_uuid: UUID, current_uuid: Optional[UUID]
+    ) -> ModelQualityDTO:
+        """Retrieve current model quality for a model by its UUID and an optional current dataset UUID."""
+        return self._get_model_quality_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
+                uuid, current_uuid
+            ),
+            dataset_type=DatasetType.CURRENT,
+            missing_status=JobStatus.MISSING_CURRENT,
         )
 
     def get_reference_data_quality_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> DataQualityDTO:
-        model = self.model_service.get_model_by_uuid(model_uuid)
-        reference_dataset, reference_metrics = (
-            self.check_and_get_reference_dataset_and_metrics(model_uuid)
-        )
-        if not reference_dataset:
-            return DataQualityDTO.from_dict(
-                model_type=model.model_type,
-                job_status=JobStatus.MISSING_REFERENCE,
-                data_quality_data=None,
-            )
-        if not reference_metrics:
-            return DataQualityDTO.from_dict(
-                model_type=model.model_type,
-                job_status=reference_dataset.status,
-                data_quality_data=None,
-            )
-        return DataQualityDTO.from_dict(
-            model_type=model.model_type,
-            job_status=reference_dataset.status,
-            data_quality_data=reference_metrics.data_quality,
-        )
-
-    def get_current_drift(
-        self, model_uuid: UUID, current_uuid: Optional[UUID]
-    ) -> DriftDTO:
-        model = self.model_service.get_model_by_uuid(model_uuid)
-        if current_uuid is None:
-            latest_current = (
-                self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
-                    model_uuid
-                )
-            )
-            if latest_current is None:
-                return DriftDTO.from_dict(
-                    model_type=model.model_type,
-                    job_status=JobStatus.MISSING_CURRENT,
-                    drift_data=None,
-                )
-
-            current_uuid = latest_current.uuid
-
-        current_dataset, current_metrics = (
-            self.check_and_get_current_dataset_and_metrics(model_uuid, current_uuid)
-        )
-        if not current_dataset:
-            return DriftDTO.from_dict(
-                model_type=model.model_type,
-                job_status=JobStatus.MISSING_CURRENT,
-                drift_data=None,
-            )
-        if not current_metrics:
-            return DriftDTO.from_dict(
-                model_type=model.model_type,
-                job_status=current_dataset.status,
-                drift_data=None,
-            )
-        return DriftDTO.from_dict(
-            model_type=model.model_type,
-            job_status=current_dataset.status,
-            drift_data=current_metrics.drift,
-        )
-
-    def check_and_get_reference_dataset_and_metrics(
-        self, model_uuid: UUID
-    ) -> tuple[Optional[ReferenceDataset], Optional[ReferenceDatasetMetrics]]:
-        reference_dataset = (
-            self.reference_dataset_dao.get_reference_dataset_by_model_uuid(model_uuid)
-        )
-        if not reference_dataset:
-            return None, None
-        match reference_dataset.status:
-            case JobStatus.IMPORTING:
-                return reference_dataset, None
-            case JobStatus.SUCCEEDED:
-                reference_metrics = self.reference_dataset_metrics_dao.get_reference_metrics_by_model_uuid(
-                    model_uuid
-                )
-                if not reference_metrics:
-                    raise MetricsBadRequestError(
-                        f'Reference dataset metrics could not be retrieved for model {model_uuid}'
-                    )
-                return reference_dataset, reference_metrics
-            case JobStatus.ERROR:
-                return reference_dataset, None
-            case _:
-                raise MetricsInternalError(
-                    f'Invalid reference dataset status {reference_dataset.status}'
-                )
-
-    def get_current_statistics_by_model_by_uuid(
-        self, model_uuid: UUID, current_uuid: Optional[UUID]
-    ) -> StatisticsDTO:
-        if current_uuid is None:
-            latest_current = (
-                self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
-                    model_uuid
-                )
-            )
-            if latest_current is None:
-                return StatisticsDTO.from_dict(
-                    job_status=JobStatus.MISSING_CURRENT,
-                    date=datetime.datetime.now(tz=datetime.UTC),
-                    statistics_data=None,
-                )
-
-            current_uuid = latest_current.uuid
-        current_dataset, current_metrics = (
-            self.check_and_get_current_dataset_and_metrics(model_uuid, current_uuid)
-        )
-
-        if not current_dataset:
-            return StatisticsDTO.from_dict(
-                job_status=JobStatus.MISSING_CURRENT,
-                date=datetime.datetime.now(tz=datetime.UTC),
-                statistics_data=None,
-            )
-        if not current_metrics:
-            return StatisticsDTO.from_dict(
-                job_status=current_dataset.status,
-                date=current_dataset.date,
-                statistics_data=None,
-            )
-        return StatisticsDTO.from_dict(
-            job_status=current_dataset.status,
-            date=current_dataset.date,
-            statistics_data=current_metrics.statistics,
-        )
-
-    def get_current_model_quality_by_model_by_uuid(
-        self, model_uuid: UUID, current_uuid: Optional[UUID]
-    ) -> DataQualityDTO:
-        model = self.model_service.get_model_by_uuid(model_uuid)
-        if current_uuid is None:
-            latest_current = (
-                self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
-                    model_uuid
-                )
-            )
-            if latest_current is None:
-                return ModelQualityDTO.from_dict(
-                    dataset_type=DatasetType.CURRENT,
-                    model_type=model.model_type,
-                    job_status=JobStatus.MISSING_CURRENT,
-                    model_quality_data=None,
-                )
-
-            current_uuid = latest_current.uuid
-        current_dataset, current_metrics = (
-            self.check_and_get_current_dataset_and_metrics(model_uuid, current_uuid)
-        )
-        if not current_dataset:
-            return ModelQualityDTO.from_dict(
-                dataset_type=DatasetType.CURRENT,
-                model_type=model.model_type,
-                job_status=JobStatus.MISSING_CURRENT,
-                model_quality_data=None,
-            )
-        if not current_metrics:
-            return ModelQualityDTO.from_dict(
-                dataset_type=DatasetType.CURRENT,
-                model_type=model.model_type,
-                job_status=current_dataset.status,
-                model_quality_data=None,
-            )
-        return ModelQualityDTO.from_dict(
-            dataset_type=DatasetType.CURRENT,
-            model_type=model.model_type,
-            job_status=current_dataset.status,
-            model_quality_data=current_metrics.model_quality,
+        """Retrieve reference data quality for a model by its UUID."""
+        return self._get_data_quality_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_metrics,
+            missing_status=JobStatus.MISSING_REFERENCE,
         )
 
     def get_current_data_quality_by_model_by_uuid(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> DataQualityDTO:
-        model = self.model_service.get_model_by_uuid(model_uuid)
-        if current_uuid is None:
-            latest_current = (
-                self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
-                    model_uuid
-                )
-            )
-            if latest_current is None:
-                return DataQualityDTO.from_dict(
-                    model_type=model.model_type,
-                    job_status=JobStatus.MISSING_CURRENT,
-                    data_quality_data=None,
-                )
-
-            current_uuid = latest_current.uuid
-
-        current_dataset, current_metrics = (
-            self.check_and_get_current_dataset_and_metrics(model_uuid, current_uuid)
+        """Retrieve current data quality for a model by its UUID and an optional current dataset UUID."""
+        return self._get_data_quality_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
+                uuid, current_uuid
+            ),
+            missing_status=JobStatus.MISSING_CURRENT,
         )
 
-        if not current_dataset:
-            return DataQualityDTO.from_dict(
-                model_type=model.model_type,
-                job_status=JobStatus.MISSING_CURRENT,
-                data_quality_data=None,
+    def get_current_drift(
+        self, model_uuid: UUID, current_uuid: Optional[UUID]
+    ) -> DriftDTO:
+        """Retrieve current drift for a model by its UUID and an optional current dataset UUID."""
+        return self._get_drift_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
+                uuid, current_uuid
+            ),
+            missing_status=JobStatus.MISSING_CURRENT,
+        )
+
+    def get_latest_current_uuid(self, model_uuid: UUID) -> Optional[UUID]:
+        """Retrieve the latest current dataset UUID for a model by its UUID."""
+        latest_current = (
+            self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
+                model_uuid
             )
-        if not current_metrics:
-            return DataQualityDTO.from_dict(
-                model_type=model.model_type,
-                job_status=current_dataset.status,
-                data_quality_data=None,
-            )
-        return DataQualityDTO.from_dict(
-            model_type=model.model_type,
-            job_status=current_dataset.status,
-            data_quality_data=current_metrics.data_quality,
+        )
+        return latest_current.uuid if latest_current else None
+
+    def check_and_get_reference_dataset_and_metrics(
+        self, model_uuid: UUID
+    ) -> tuple[Optional[ReferenceDataset], Optional[ReferenceDatasetMetrics]]:
+        """Check and retrieve the reference dataset and its metrics for a model by its UUID."""
+        return self._check_and_get_dataset_and_metrics(
+            model_uuid=model_uuid,
+            dataset_getter=self.reference_dataset_dao.get_reference_dataset_by_model_uuid,
+            metrics_getter=self.reference_dataset_metrics_dao.get_reference_metrics_by_model_uuid,
         )
 
     def check_and_get_current_dataset_and_metrics(
         self, model_uuid: UUID, current_uuid: UUID
     ) -> tuple[Optional[CurrentDataset], Optional[CurrentDatasetMetrics]]:
-        current_dataset = self.current_dataset_dao.get_current_dataset_by_model_uuid(
-            model_uuid, current_uuid
+        """Check and retrieve the current dataset and its metrics for a model by its UUID and a current dataset UUID."""
+        return self._check_and_get_dataset_and_metrics(
+            model_uuid=model_uuid,
+            dataset_getter=lambda uuid: self.current_dataset_dao.get_current_dataset_by_model_uuid(
+                uuid, current_uuid
+            ),
+            metrics_getter=lambda uuid: self.current_dataset_metrics_dao.get_current_metrics_by_model_uuid(
+                uuid, current_uuid
+            ),
         )
-        if not current_dataset:
+
+    @staticmethod
+    def _check_and_get_dataset_and_metrics(
+        model_uuid: UUID, dataset_getter, metrics_getter
+    ) -> tuple[
+        Optional[ReferenceDataset | CurrentDataset],
+        Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+    ]:
+        """Check and retrieve the dataset and its metrics using the provided getters."""
+        dataset = dataset_getter(model_uuid)
+        if not dataset:
             return None, None
-        match current_dataset.status:
-            case JobStatus.IMPORTING:
-                return current_dataset, None
-            case JobStatus.SUCCEEDED:
-                current_metrics = (
-                    self.current_dataset_metrics_dao.get_current_metrics_by_model_uuid(
-                        model_uuid, current_uuid
-                    )
+
+        if dataset.status == JobStatus.SUCCEEDED:
+            metrics = metrics_getter(model_uuid)
+            if not metrics:
+                raise MetricsBadRequestError(
+                    f'Dataset metrics could not be retrieved for model {model_uuid}'
                 )
-                if not current_metrics:
-                    raise MetricsBadRequestError(
-                        f'Current dataset metrics could not be retrieved for model {model_uuid}'
-                    )
-                return current_dataset, current_metrics
-            case JobStatus.ERROR:
-                return current_dataset, None
-            case _:
-                raise MetricsInternalError(
-                    f'Invalid current dataset status {current_dataset.status}'
-                )
+            return dataset, metrics
+
+        if dataset.status in [JobStatus.IMPORTING, JobStatus.ERROR]:
+            return dataset, None
+
+        raise MetricsInternalError(f'Invalid dataset status {dataset.status}')
+
+    def _get_statistics_by_model_uuid(
+        self,
+        model_uuid: UUID,
+        dataset_and_metrics_getter,
+        missing_status,
+    ) -> StatisticsDTO:
+        """Retrieve statistics for a model by its UUID."""
+        dataset, metrics = dataset_and_metrics_getter(model_uuid)
+        return self._create_statistics_dto(
+            dataset=dataset,
+            metrics=metrics,
+            missing_status=missing_status,
+        )
+
+    def _get_model_quality_by_model_uuid(
+        self,
+        model_uuid: UUID,
+        dataset_and_metrics_getter,
+        dataset_type: DatasetType,
+        missing_status,
+    ) -> ModelQualityDTO:
+        """Retrieve model quality for a model by its UUID."""
+        model = self.model_service.get_model_by_uuid(model_uuid)
+        dataset, metrics = dataset_and_metrics_getter(model_uuid)
+        return self._create_model_quality_dto(
+            dataset_type=dataset_type,
+            model_type=model.model_type,
+            dataset=dataset,
+            metrics=metrics,
+            missing_status=missing_status,
+        )
+
+    def _get_data_quality_by_model_uuid(
+        self,
+        model_uuid: UUID,
+        dataset_and_metrics_getter,
+        missing_status,
+    ) -> DataQualityDTO:
+        """Retrieve data quality for a model by its UUID."""
+        model = self.model_service.get_model_by_uuid(model_uuid)
+        dataset, metrics = dataset_and_metrics_getter(model_uuid)
+        return self._create_data_quality_dto(
+            model_type=model.model_type,
+            dataset=dataset,
+            metrics=metrics,
+            missing_status=missing_status,
+        )
+
+    def _get_drift_by_model_uuid(
+        self,
+        model_uuid: UUID,
+        dataset_and_metrics_getter,
+        missing_status,
+    ) -> DriftDTO:
+        """Retrieve drift for a model by its UUID."""
+        model = self.model_service.get_model_by_uuid(model_uuid)
+        dataset, metrics = dataset_and_metrics_getter(model_uuid)
+        return self._create_drift_dto(
+            model_type=model.model_type,
+            dataset=dataset,
+            metrics=metrics,
+            missing_status=missing_status,
+        )
+
+    @staticmethod
+    def _create_statistics_dto(
+        dataset: Optional[ReferenceDataset | CurrentDataset],
+        metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        missing_status,
+    ) -> StatisticsDTO:
+        """Create a StatisticsDTO from the provided dataset and metrics."""
+        if not dataset:
+            return StatisticsDTO.from_dict(
+                job_status=missing_status,
+                date=datetime.datetime.now(tz=datetime.UTC),
+                statistics_data=None,
+            )
+        if not metrics:
+            return StatisticsDTO.from_dict(
+                job_status=dataset.status,
+                date=dataset.date,
+                statistics_data=None,
+            )
+        return StatisticsDTO.from_dict(
+            job_status=dataset.status,
+            date=dataset.date,
+            statistics_data=metrics.statistics,
+        )
+
+    @staticmethod
+    def _create_model_quality_dto(
+        dataset_type: DatasetType,
+        model_type: ModelType,
+        dataset: Optional[ReferenceDataset | CurrentDataset],
+        metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        missing_status,
+    ) -> ModelQualityDTO:
+        """Create a ModelQualityDTO from the provided dataset and metrics."""
+        if not dataset:
+            return ModelQualityDTO.from_dict(
+                dataset_type=dataset_type,
+                model_type=model_type,
+                job_status=missing_status,
+                model_quality_data=None,
+            )
+        if not metrics:
+            return ModelQualityDTO.from_dict(
+                dataset_type=dataset_type,
+                model_type=model_type,
+                job_status=dataset.status,
+                model_quality_data=None,
+            )
+        return ModelQualityDTO.from_dict(
+            dataset_type=dataset_type,
+            model_type=model_type,
+            job_status=dataset.status,
+            model_quality_data=metrics.model_quality,
+        )
+
+    @staticmethod
+    def _create_data_quality_dto(
+        model_type: ModelType,
+        dataset: Optional[ReferenceDataset | CurrentDataset],
+        metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        missing_status,
+    ) -> DataQualityDTO:
+        """Create a DataQualityDTO from the provided dataset and metrics."""
+        if not dataset:
+            return DataQualityDTO.from_dict(
+                model_type=model_type,
+                job_status=missing_status,
+                data_quality_data=None,
+            )
+        if not metrics:
+            return DataQualityDTO.from_dict(
+                model_type=model_type,
+                job_status=dataset.status,
+                data_quality_data=None,
+            )
+        return DataQualityDTO.from_dict(
+            model_type=model_type,
+            job_status=dataset.status,
+            data_quality_data=metrics.data_quality,
+        )
+
+    @staticmethod
+    def _create_drift_dto(
+        model_type: ModelType,
+        dataset: Optional[ReferenceDataset | CurrentDataset],
+        metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        missing_status,
+    ) -> DriftDTO:
+        """Create a DriftDTO from the provided dataset and metrics."""
+        if not dataset:
+            return DriftDTO.from_dict(
+                model_type=model_type,
+                job_status=missing_status,
+                drift_data=None,
+            )
+        if not metrics:
+            return DriftDTO.from_dict(
+                model_type=model_type,
+                job_status=dataset.status,
+                drift_data=None,
+            )
+        return DriftDTO.from_dict(
+            model_type=model_type,
+            job_status=dataset.status,
+            drift_data=metrics.drift,
+        )

@@ -269,12 +269,19 @@ const useGetTargets = () => {
   return form.features.filter(({ type }) => targetValidTypes.includes(type));
 };
 
-const predictionValidTypes = ['int', 'float', 'double'];
+const predictionValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double', 'string'],
+  [ModelTypeEnum.REGRESSION]: ['int', 'float', 'double'],
+};
 const useGetPredictions = () => {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
 
-  return form.outputs.filter(({ type }) => predictionValidTypes.includes(type));
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
+
+  return form.outputs.filter(({ type }) => predictionValidTypes[modelType].includes(type));
 };
 
 const binaryClassificationProbabilityValidTypes = ['float', 'double'];
