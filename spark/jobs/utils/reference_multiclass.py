@@ -27,7 +27,7 @@ class ReferenceMetricsMulticlassService:
             "weightedRecall": "weighted_recall",
             "weightedTruePositiveRate": "weighted_true_positive_rate",
             "weightedFalsePositiveRate": "weighted_false_positive_rate",
-            "weightedFMeasure": "weighted_f_measure"
+            "weightedFMeasure": "weighted_f_measure",
         }
         self.model_quality_multiclass_classificator_by_label = {
             "truePositiveRateByLabel": "true_positive_rate",
@@ -53,23 +53,40 @@ class ReferenceMetricsMulticlassService:
 
     # FIXME use pydantic struct like data quality
     def __calc_multiclass_by_label_metrics(self) -> List[Dict]:
-        return [{
-            "class_name": label,
-            "metrics": {
-                metric_label: self.__evaluate_multi_class_classification(self.indexed_reference, metric_name,
-                                                                         float(index))
-                for (metric_name, metric_label) in self.model_quality_multiclass_classificator_by_label.items()
-            }} for index, label in self.index_label_map.items()]
+        return [
+            {
+                "class_name": label,
+                "metrics": {
+                    metric_label: self.__evaluate_multi_class_classification(
+                        self.indexed_reference, metric_name, float(index)
+                    )
+                    for (
+                        metric_name,
+                        metric_label,
+                    ) in self.model_quality_multiclass_classificator_by_label.items()
+                },
+            }
+            for index, label in self.index_label_map.items()
+        ]
 
     def __calc_multiclass_global_metrics(self) -> Dict:
         return {
-            metric_label: self.__evaluate_multi_class_classification(self.indexed_reference, metric_name, 0.0)
-            for (metric_name, metric_label) in self.model_quality_multiclass_classificator_global.items()
+            metric_label: self.__evaluate_multi_class_classification(
+                self.indexed_reference, metric_name, 0.0
+            )
+            for (
+                metric_name,
+                metric_label,
+            ) in self.model_quality_multiclass_classificator_global.items()
         }
 
     def __calc_confusion_matrix(self):
         prediction_and_labels = self.indexed_reference.select(
-            *[f"{self.reference.model.outputs.prediction.name}-idx", f"{self.reference.model.target.name}-idx"]).rdd
+            *[
+                f"{self.reference.model.outputs.prediction.name}-idx",
+                f"{self.reference.model.target.name}-idx",
+            ]
+        ).rdd
         multiclass_metrics_calculator = MulticlassMetrics(prediction_and_labels)
         return multiclass_metrics_calculator.confusionMatrix().toArray().tolist()
 
@@ -78,9 +95,9 @@ class ReferenceMetricsMulticlassService:
         global_metrics = self.__calc_multiclass_global_metrics()
         global_metrics["confusion_matrix"] = self.__calc_confusion_matrix()
         metrics = {
-            "labels": list(self.index_label_map.values()),
+            "classes": list(self.index_label_map.values()),
             "class_metrics": metrics_by_label,
-            "global_metrics": global_metrics
+            "global_metrics": global_metrics,
         }
 
         return metrics
