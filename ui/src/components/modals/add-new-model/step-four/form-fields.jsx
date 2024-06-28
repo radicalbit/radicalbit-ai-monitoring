@@ -1,4 +1,8 @@
-import { FormField, Select, Tooltip } from '@radicalbit/radicalbit-design-system';
+import {
+  FormField,
+  Select,
+  Tooltip,
+} from '@radicalbit/radicalbit-design-system';
 import { ModelTypeEnum } from '@Src/store/state/models/constants';
 import { useModalContext } from '../modal-context-provider';
 
@@ -261,46 +265,64 @@ function Probability() {
   );
 }
 
-const targetValidTypes = ['int', 'float', 'double'];
+const targetValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.REGRESSION]: ['int', 'float', 'double'],
+};
 const useGetTargets = () => {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
 
-  return form.features.filter(({ type }) => targetValidTypes.includes(type));
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
+
+  return form.features.filter(({ type }) => targetValidTypes[modelType].includes(type));
 };
 
-const predictionValidTypes = ['int', 'float', 'double'];
+const predictionValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double', 'string'],
+  [ModelTypeEnum.REGRESSION]: ['int', 'float', 'double'],
+};
 const useGetPredictions = () => {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
 
-  return form.outputs.filter(({ type }) => predictionValidTypes.includes(type));
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
+
+  return form.outputs.filter(({ type }) => predictionValidTypes[modelType].includes(type));
 };
 
-const binaryClassificationProbabilityValidTypes = ['float', 'double'];
+const binaryClassificationProbabilityValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['float', 'double'],
+  [ModelTypeEnum.REGRESSION]: ['float', 'double'],
+};
 const useGetProbabilities = () => {
   const { useFormbitStepOne, useFormbit } = useModalContext();
   const { form } = useFormbit;
+
   const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
 
-  if (formStepOne.modelType === ModelTypeEnum.BINARY_CLASSIFICATION) {
-    return form.outputs.filter(({ type }) => binaryClassificationProbabilityValidTypes.includes(type));
-  }
-
-  return form.outputs;
+  return form.outputs.filter(({ type }) => binaryClassificationProbabilityValidTypes[modelType].includes(type));
 };
 
-const timestampValidTypes = ['datetime'];
+const timestampValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['datetime'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['datetime'],
+  [ModelTypeEnum.REGRESSION]: ['datetime'],
+};
 const useGetTimestapValidFeatures = () => {
   const { useFormbitStepOne, useFormbit } = useModalContext();
   const { form } = useFormbit;
+
   const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
 
-  if (formStepOne.modelType === ModelTypeEnum.BINARY_CLASSIFICATION) {
-    return form?.features.filter(({ type }) => timestampValidTypes.includes(type));
-  }
-
-  return form.outputs;
+  return form?.features.filter(({ type }) => timestampValidTypes[modelType].includes(type));
 };
 
 export {

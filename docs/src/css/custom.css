@@ -8,23 +8,88 @@
 :root {
   --ifm-color-primary: #3695D9;
   --ifm-color-primary-dark: #0A71BB;
-  --ifm-color-primary-darker: #182336;
-  --ifm-color-primary-darkest: #182336;
+  --ifm-color-primary-darker: #252329;
+  --ifm-color-primary-darkest: #252329;
   --ifm-color-primary-light: #fff;
   --ifm-color-primary-lighter: #fff;
   --ifm-color-primary-lightest: #fff;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-menu-color-background-active: transparent;
+  --ifm-menu-color-background-hover: transparent;
+  --ifm-breadcrumb-item-background-active: transparent;
+
+  --ifm-font-family-base: 'Open Sans', Helvetica, Arial, Lucida, sans-serif;
+  --ifm-footer-padding-vertical: 8rem;
+
+  --rdb-font-family-headers: 'Montserrat', Helvetica, Arial, Lucida, sans-serif;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
   --ifm-color-primary: #fff;
-  --ifm-color-primary-dark: #182336;
-  --ifm-color-primary-darker: #182336;
-  --ifm-color-primary-darkest: #182336;
+  --ifm-color-primary-dark: #3E3E3E;
+  --ifm-color-primary-darker: #252329;
+  --ifm-color-primary-darkest: #252329;
   --ifm-color-primary-light: #73B2E0;
   --ifm-color-primary-lighter: #73B2E0;
   --ifm-color-primary-lightest: #73B2E0;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+
+/* Radicalbit corporate elements */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+h1, h2, h3 {
+  font-family: var(--rdb-font-family-headers);
+  font-weight: normal;
+  color: var(--ifm-color-primary);
+}
+
+.breadcrumbs__link {
+  padding: 0;
+}
+
+.navbar__title {
+  font-family: var(--rdb-font-family-headers);
+}
+
+.pagination-nav__link {
+  border: 0;
+}
+
+.theme-doc-sidebar-container {
+  background-image: linear-gradient(180deg, rgba(54, 149, 217, 0.18) 0%, transparent 80%) !important;
+}
+
+.footer {
+  background-image: linear-gradient(191deg, rgba(115, 177, 222, 1) 0%, #3a92d0 24%, #1171c2 46%, #095bbf 69%, #053189 100%) !important;
+  position: relative;
+  font-size: .8rem;
+}
+
+.footer::before {
+  background-image: url(img/rdb-page-divisor--light.svg);
+    background-size: cover;
+    top: 0;
+    left: 0;
+    height: 94px;
+    width: 100%;
+    z-index: 1;
+    content: ' ';
+    position: absolute;
+}
+
+.footer__copyright {
+  border-top: 1px solid var(--docusaurus-highlighted-code-line-bg);
+  padding-top: 1rem;
+  margin-top: 2rem;
+  font-size: .8em;
+}
+
+[data-theme='dark'] .footer::before {
+  background-image: url(img/rdb-page-divisor--dark.svg);
 }
