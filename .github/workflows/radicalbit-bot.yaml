@@ -20,7 +20,7 @@ jobs:
       ORGANIZATION: ${{ secrets.DOCKER_HUB_ORG }}
   
   build-ui:
-    if: ${{ false && github.event.comment.body == '/build-ui' || github.event.comment.body == '/build-all' }}
+    if: ${{ github.event.comment.body == '/build-ui' || github.event.comment.body == '/build-all' }}
     uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
     with:
       push: false
