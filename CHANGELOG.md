@@ -1,9 +1,14 @@
 # Changelog
 
-## [0.9.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.8.1...v0.9.0) (2024-06-28)
+## [0.8.2](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.8.1...v0.8.2) (2024-06-28)
 
+### Bug Fixes
 
-### Features
+* dockerfile ui environment variables ([#40](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/40)) ([15f8bbe](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/15f8bbe157a0d2ffe77ebdf1f6cc4075fe473da3))
+* manage types for all the fiels ([#47](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/47)) ([64218fa](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/64218fa618d626b5ed2acbc9b6a695c969203a65))
+* **ui:** Improve polling and other fixies ([#36](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/36)) ([951905f](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/951905fe008651f9afa6f57eeb5462470d764cff))
+
+### Chores
 
 * add latest reference and current uuids to modelOut dto ([#32](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/32)) ([f8fdb5a](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/f8fdb5afcd94ffbf2e2e83d46d9f10b7403b352e))
 * add statistics for multiclassification + refactoring and improvements ([#35](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/35)) ([18588ea](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/18588eab6894275c2e29e20a9ea7d5b74b34d142))
@@ -18,12 +23,6 @@
 * **sdk:** get all reference and current datasets ([#31](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/31)) ([5b1832d](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/5b1832d1b7558cc94ae29d58f0a93cb62f0949bb))
 * **ui:** add multi-classification folder structure and refactoring binary folder structure ([#45](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/45)) ([7285847](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/7285847458d5b292b1d15c463720a809b73d46b9))
 
-
-### Bug Fixes
-
-* dockerfile ui environment variables ([#40](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/40)) ([15f8bbe](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/15f8bbe157a0d2ffe77ebdf1f6cc4075fe473da3))
-* manage types for all the fiels ([#47](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/47)) ([64218fa](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/64218fa618d626b5ed2acbc9b6a695c969203a65))
-* **ui:** Improve polling and other fixies ([#36](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/36)) ([951905f](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/951905fe008651f9afa6f57eeb5462470d764cff))
 
 ## [0.8.1](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.8.0...v0.8.1) (2024-06-25)
 
