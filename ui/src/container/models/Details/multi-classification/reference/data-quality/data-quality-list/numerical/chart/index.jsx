@@ -1,4 +1,4 @@
-import { CHART_COLOR } from '@Container/models/Details/constants';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import { BarChart } from 'echarts/charts';
 import {

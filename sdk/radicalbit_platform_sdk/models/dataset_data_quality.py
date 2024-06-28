@@ -84,7 +84,7 @@ class DataQuality(BaseModel):
     pass
 
 
-class BinaryClassificationDataQuality(DataQuality):
+class ClassificationDataQuality(DataQuality):
     n_observations: int
     class_metrics: List[ClassMetrics]
     feature_metrics: List[Union[NumericalFeatureMetrics, CategoricalFeatureMetrics]]
@@ -94,10 +94,6 @@ class BinaryClassificationDataQuality(DataQuality):
         populate_by_name=True,
         alias_generator=to_camel,
     )
-
-
-class MultiClassDataQuality(DataQuality):
-    pass
 
 
 class RegressionDataQuality(DataQuality):

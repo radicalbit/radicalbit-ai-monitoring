@@ -7,15 +7,14 @@ import requests
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    BinaryClassificationDataQuality,
     BinaryClassificationModelQuality,
+    ClassificationDataQuality,
     DataQuality,
     DatasetStats,
     JobStatus,
     ModelQuality,
     ModelType,
-    MultiClassDataQuality,
-    MultiClassModelQuality,
+    MultiClassificationModelQuality,
     ReferenceFileUpload,
     RegressionDataQuality,
     RegressionModelQuality,
@@ -114,17 +113,10 @@ class ModelReferenceDataset:
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'dataQuality' in response_json:
                     match self.__model_type:
-                        case ModelType.BINARY:
+                        case ModelType.BINARY | ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                BinaryClassificationDataQuality.model_validate(
-                                    response_json['dataQuality']
-                                ),
-                            )
-                        case ModelType.MULTI_CLASS:
-                            return (
-                                job_status,
-                                MultiClassDataQuality.model_validate(
+                                ClassificationDataQuality.model_validate(
                                     response_json['dataQuality']
                                 ),
                             )
@@ -194,7 +186,7 @@ class ModelReferenceDataset:
                         case ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                MultiClassModelQuality.model_validate(
+                                MultiClassificationModelQuality.model_validate(
                                     response_json['modelQuality']
                                 ),
                             )

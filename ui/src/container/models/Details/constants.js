@@ -28,16 +28,6 @@ export const FEATURE_TYPE = {
   CATEGORICAL: 'categorical',
 };
 
-export const CHART_COLOR = {
-  REFERENCE: '#9B99A1',
-  REFERENCE_LIGHT: '#DBDBDB',
-  REFERENCE_DARK: '#667',
-  CURRENT: '#3695d9',
-  CURRENT_LIGHT: '#C8E4F9',
-  CURRENT_DARK: '#0A71BB',
-  WHITE: '#FFFFFF',
-};
-
 export const MODEL_QUALITY_FIELD = {
   ACCURACY: 'Accuracy',
   PRECISION: 'Precision',

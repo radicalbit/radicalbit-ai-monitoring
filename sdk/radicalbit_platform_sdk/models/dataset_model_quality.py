@@ -8,7 +8,7 @@ class ModelQuality(BaseModel):
     pass
 
 
-class BinaryClassificationModelQuality(ModelQuality):
+class MetricsBase(BaseModel):
     f1: Optional[float] = None
     accuracy: Optional[float] = None
     precision: Optional[float] = None
@@ -21,10 +21,6 @@ class BinaryClassificationModelQuality(ModelQuality):
     weighted_false_positive_rate: Optional[float] = None
     true_positive_rate: Optional[float] = None
     false_positive_rate: Optional[float] = None
-    true_positive_count: int
-    false_positive_count: int
-    true_negative_count: int
-    false_negative_count: int
     area_under_roc: Optional[float] = None
     area_under_pr: Optional[float] = None
 
@@ -33,12 +29,19 @@ class BinaryClassificationModelQuality(ModelQuality):
     )
 
 
+class BinaryClassificationModelQuality(ModelQuality, MetricsBase):
+    true_positive_count: int
+    false_positive_count: int
+    true_negative_count: int
+    false_negative_count: int
+
+
 class Distribution(BaseModel):
     timestamp: str
     value: Optional[float] = None
 
 
-class GroupedBinaryClassModelQuality(BaseModel):
+class GroupedMetricsBase(BaseModel):
     f1: List[Distribution]
     accuracy: List[Distribution]
     precision: List[Distribution]
@@ -57,14 +60,35 @@ class GroupedBinaryClassModelQuality(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class CurrentBinaryClassificationModelQuality(BaseModel):
+class CurrentBinaryClassificationModelQuality(ModelQuality):
     global_metrics: BinaryClassificationModelQuality
-    grouped_metrics: GroupedBinaryClassModelQuality
+    grouped_metrics: GroupedMetricsBase
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class MultiClassModelQuality(ModelQuality):
+class ClassMetrics(BaseModel):
+    class_name: str
+    metrics: MetricsBase
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class GlobalMetrics(MetricsBase):
+    confusion_matrix: List[List[int]]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class MultiClassificationModelQuality(ModelQuality):
+    classes: List[str]
+    class_metrics: List[ClassMetrics]
+    global_metrics: GlobalMetrics
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class CurrentMultiClassificationModelQuality(ModelQuality):
     pass
 
 
