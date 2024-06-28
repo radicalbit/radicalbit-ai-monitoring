@@ -39,22 +39,9 @@ function Name() {
 }
 
 function ModelType() {
-  const { useFormbit } = useModalContext();
-  const { form, write } = useFormbit;
-
-  const handleOnChange = (value) => {
-    write('modelType', value);
-  };
-
   return (
     <FormField label="Model type" modifier="w-full" required>
-      <Select onChange={handleOnChange} value={form.modelType}>
-        {Object.values(ModelTypeEnum).map((value) => (
-          <Select.Option key={value}>
-            {ModelTypeEnumLabel[value]}
-          </Select.Option>
-        ))}
-      </Select>
+      {ModelTypeEnumLabel[ModelTypeEnum.BINARY_CLASSIFICATION]}
     </FormField>
   );
 }
