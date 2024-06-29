@@ -37,7 +37,7 @@ function BinaryClassificationMetrics() {
     return (
       <FormbitContextProvider initialValues={initialValues}>
 
-        <div className="flex flex-col gap-4 p-4 h-full">
+        <div className="flex flex-col gap-4 p-4 h-full background--gradient">
           <DataPointDistribution />
 
           <SearchFeatureList />
