@@ -228,6 +228,7 @@ function Probability() {
       </FormField>
     );
   }
+
   return (
     <FormField
       label="Probability"
@@ -308,7 +309,7 @@ const useGetPredictions = () => {
 const probabilityValidTypes = {
   [ModelTypeEnum.BINARY_CLASSIFICATION]: ['float', 'double'],
   [ModelTypeEnum.MULTI_CLASSIFICATION]: ['float', 'double'],
-  [ModelTypeEnum.REGRESSION]: ['float', 'double'],
+  [ModelTypeEnum.REGRESSION]: [],
 };
 const useGetProbabilities = () => {
   const { useFormbitStepOne, useFormbit } = useModalContext();
