@@ -22,7 +22,7 @@ from utils.reference_multiclass import ReferenceMetricsMulticlassService
 @pytest.fixture()
 def dataset_target_int(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_target_int.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_target_int.csv",
         header=True,
     )
 
@@ -30,7 +30,7 @@ def dataset_target_int(spark_fixture, test_data_dir):
 @pytest.fixture()
 def dataset_target_string(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_target_string.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_target_string.csv",
         header=True,
     )
 
@@ -38,7 +38,7 @@ def dataset_target_string(spark_fixture, test_data_dir):
 @pytest.fixture()
 def dataset_perfect_classes(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_perfect_classes.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_perfect_classes.csv",
         header=True,
     )
 
