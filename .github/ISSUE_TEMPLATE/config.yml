@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a bug with the UI, Frontend or Dashboards
+    url: https://github.com/radicalbit/radicalbit-ai-monitoring/issues
+    about: This is the issue tracker for our backend. Please report issues with the UI in the frontend repository.
+  - name: Feature Request
+    url: https://github.com/radicalbit/radicalbit-ai-monitoring/issues?q=is%3Aissue+label%3A%22Feature+Request%22+
+    about: Please create a feature request for making feature requests.
+  - name: I have a question or need support
+    url: https://discord.com/channels/1252978922962817034/1256290297718116393
+    about: Please use our Discord channel.
