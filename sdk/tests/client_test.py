@@ -12,7 +12,6 @@ from radicalbit_platform_sdk.models import (
     CreateModel,
     DataType,
     Granularity,
-    JobStatusWithMissingDatasetStatus,
     ModelDefinition,
     ModelType,
     OutputType,
@@ -40,12 +39,6 @@ class ClientTest(unittest.TestCase):
         timestamp_name = 'when'
         timestamp_type = 'str'
         ts = str(time.time())
-        latest_reference_uuid = uuid.uuid4()
-        latest_current_uuid = uuid.uuid4()
-        latest_reference_job_status = (
-            JobStatusWithMissingDatasetStatus.MISSING_REFERENCE
-        )
-        latest_current_job_status = JobStatusWithMissingDatasetStatus.MISSING_CURRENT
         json_string = f"""{{
                 "uuid": "{str(model_id)}",
                 "name": "{name}",
@@ -82,11 +75,7 @@ class ClientTest(unittest.TestCase):
                 "algorithm": "{algorithm}",
                 "frameworks": "{frameworks}",
                 "createdAt": "{ts}",
-                "updatedAt": "{ts}",
-                "latestReferenceUuid": "{str(latest_reference_uuid)}",
-                "latestCurrentUuid": "{str(latest_current_uuid)}",
-                "latestReferenceJobStatus": "{latest_reference_job_status.value}",
-                "latestCurrentJobStatus": "{latest_current_job_status.value}"
+                "updatedAt": "{ts}"
             }}"""
         responses.add(
             method=responses.GET,
@@ -163,10 +152,6 @@ class ClientTest(unittest.TestCase):
             timestamp=model.timestamp,
             created_at=str(time.time()),
             updated_at=str(time.time()),
-            latest_reference_uuid=None,
-            latest_current_uuid=None,
-            latest_reference_job_status=JobStatusWithMissingDatasetStatus.MISSING_REFERENCE,
-            latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
         )
         responses.add(
             method=responses.POST,
@@ -208,10 +193,6 @@ class ClientTest(unittest.TestCase):
             timestamp=ColumnDefinition(name='tst_column', type='string'),
             created_at=str(time.time()),
             updated_at=str(time.time()),
-            latest_reference_uuid=None,
-            latest_current_uuid=None,
-            latest_reference_job_status=JobStatusWithMissingDatasetStatus.MISSING_REFERENCE,
-            latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
         )
 
         responses.add(

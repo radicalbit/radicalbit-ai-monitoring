@@ -15,7 +15,6 @@ from radicalbit_platform_sdk.models import (
     DataType,
     Granularity,
     JobStatus,
-    JobStatusWithMissingDatasetStatus,
     ModelDefinition,
     ModelType,
     OutputType,
@@ -44,10 +43,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=column_def,
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.MISSING_REFERENCE,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
             ),
         )
         responses.add(
@@ -85,10 +80,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.IMPORTING,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
             ),
         )
         response = ReferenceFileUpload(
@@ -134,10 +125,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.IMPORTING,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
             ),
         )
         response = ReferenceFileUpload(
@@ -183,10 +170,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.IMPORTING,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
             ),
         )
         response = ReferenceFileUpload(
@@ -223,10 +206,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=None,
-                latest_current_uuid=None,
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.MISSING_REFERENCE,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
             ),
         )
         with pytest.raises(ClientError):
@@ -260,10 +239,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.SUCCEEDED,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.IMPORTING,
             ),
         )
         response = CurrentFileUpload(
@@ -315,10 +290,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.SUCCEEDED,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.IMPORTING,
             ),
         )
         response = CurrentFileUpload(
@@ -361,10 +332,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=None,
-                latest_current_uuid=None,
-                latest_reference_job_status=JobStatusWithMissingDatasetStatus.SUCCEEDED,
-                latest_current_job_status=JobStatusWithMissingDatasetStatus.MISSING_CURRENT,
             ),
         )
         with pytest.raises(ClientError):
