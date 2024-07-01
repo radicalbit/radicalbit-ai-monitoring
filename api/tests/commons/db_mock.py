@@ -76,7 +76,7 @@ def get_sample_model_in(
         output=[ColumnDefinition(name='output1', type=SupportedTypes.string)],
     ),
     target: ColumnDefinition = ColumnDefinition(
-        name='target1', type=SupportedTypes.string
+        name='target1', type=SupportedTypes.int
     ),
     timestamp: ColumnDefinition = ColumnDefinition(
         name='timestamp', type=SupportedTypes.datetime
