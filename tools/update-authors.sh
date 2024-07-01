@@ -1,15 +1,24 @@
 #!/bin/sh
-#Update AUTHORS.md based on git history.
+# Update AUTHORS.md based on git history.
 
 git log --reverse --format='%aN (<%aE>)' | perl -we '
 BEGIN {
-  %seen = (), @authors = ();
+  %seen_emails = ();
 }
 while (<>) {
-  next if $seen{$_};
+  my $line = $_;
   next if /(dependabot\[bot\])/;
   next if /(devops\@radicalbit.ai)/;
-  $seen{$_} = push @authors, "- ", $_;
+  next if /(devops\@users.noreply.github.com)/;
+
+  # Extract the email
+  if ($line =~ /<(.+?)>/) {
+    my $email = $1;
+    # Skip if the email has been seen
+    next if $seen_emails{$email}++;
+  }
+
+  push @authors, "- ", $line;
 }
 END {
   print "<!--\n";
@@ -20,9 +29,9 @@ END {
   print "============================\n";
   print "radicalbit-ai-monitoring is developed and maintained by a community of people interested in providing a comprehensive solution for monitoring your Machine Learning and Large Language Models in production.\n\n\n";
   print "<p align=\"center\">\n";
-  print "<img src=\"https://contributors-img.web.app/image?repo=radicalbit/radicalbit-ai-monitoring\" width = \"500\"/>\n";
+  print "<img src=\"https://contributors-img.web.app/image?repo=radicalbit/radicalbit-ai-monitoring\" width=\"500\"/>\n";
   print "</p>\n\n\n";
-  print "Contributors  (ordered by first contribution.)\n";
+  print "Contributors (ordered by first contribution.)\n";
   print "-------------------------------------\n";
   print "[Full List of Contributors](https://github.com/radicalbit/radicalbit-ai-monitoring/graphs/contributors)\n\n";
   print @authors, "\n";
