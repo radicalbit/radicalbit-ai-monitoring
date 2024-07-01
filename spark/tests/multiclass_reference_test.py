@@ -83,7 +83,7 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
     data_quality = multiclass_service.calculate_data_quality()
     model_quality = multiclass_service.calculate_model_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -302,7 +302,7 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
     data_quality = multiclass_service.calculate_data_quality()
     model_quality = multiclass_service.calculate_model_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 4,
             "datetime": 1,
@@ -521,7 +521,7 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
     data_quality = multiclass_service.calculate_data_quality()
     model_quality = multiclass_service.calculate_model_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 4,
             "datetime": 1,

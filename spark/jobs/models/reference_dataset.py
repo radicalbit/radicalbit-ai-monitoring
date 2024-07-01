@@ -2,7 +2,11 @@ from typing import List
 
 from pyspark.ml.feature import StringIndexer
 from pyspark.sql import DataFrame
-from pyspark.sql.types import DoubleType, StructField, StructType
+from pyspark.sql.types import (
+    DoubleType,
+    StructField,
+    StructType,
+)
 
 from utils.models import ModelOut, ModelType, ColumnDefinition
 from utils.spark import apply_schema_to_dataframe

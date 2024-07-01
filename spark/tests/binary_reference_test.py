@@ -118,7 +118,7 @@ def test_calculation(spark_fixture, dataset):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -300,7 +300,7 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 1,
             "datetime": 1,
@@ -696,7 +696,7 @@ def test_calculation_complete(spark_fixture, complete_dataset):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 0,
             "missing_cells_perc": 0.0,
@@ -851,7 +851,7 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 0,
             "missing_cells_perc": 0.0,
@@ -1005,7 +1005,7 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 5,
             "missing_cells_perc": 6.25,
@@ -1182,7 +1182,7 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -1365,7 +1365,7 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 2996,
             "missing_cells_perc": 0.6241666666666668,
@@ -1905,7 +1905,7 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
     model_quality = metrics_service.calculate_model_quality()
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 5,
             "missing_cells_perc": 6.25,

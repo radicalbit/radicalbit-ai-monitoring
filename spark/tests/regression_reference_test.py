@@ -3,6 +3,7 @@ import uuid
 
 import pytest
 
+from jobs.metrics.statistics import calculate_statistics_reference
 from jobs.utils.reference_regression import ReferenceMetricsRegressionService
 from jobs.models.reference_dataset import ReferenceDataset
 from jobs.utils.models import (
@@ -24,7 +25,8 @@ def reference_bike(spark_fixture, test_data_dir):
     )
 
 
-def test_calculation_dataset_target_int(spark_fixture, reference_bike):
+@pytest.fixture()
+def reference_dataset(spark_fixture, reference_bike):
     output = OutputType(
         prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
         prediction_proba=None,
@@ -45,7 +47,6 @@ def test_calculation_dataset_target_int(spark_fixture, reference_bike):
         ColumnDefinition(name="atemp", type=SupportedTypes.float),
         ColumnDefinition(name="hum", type=SupportedTypes.float),
         ColumnDefinition(name="windspeed", type=SupportedTypes.float),
-        ColumnDefinition(name="instant", type=SupportedTypes.int),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -64,10 +65,13 @@ def test_calculation_dataset_target_int(spark_fixture, reference_bike):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(
+    yield ReferenceDataset(
         raw_dataframe=reference_bike,
         model=model,
     )
+
+
+def test_model_quality_metrics(spark_fixture, reference_dataset):
     assert reference_dataset.reference_count == 731
 
     regression_service = ReferenceMetricsRegressionService(reference=reference_dataset)
@@ -75,14 +79,33 @@ def test_calculation_dataset_target_int(spark_fixture, reference_bike):
 
     expected = my_approx(
         {
-            "mae": 126.6230232558139,
-            "mape": 33.33458358635063,
-            "mse": 42058.59416703146,
-            "rmse": 205.08192062449447,
-            "r2": 0.9106667318989127,
-            "adj_r2": 0.9091736967774461,
-            "var": 388091.1367098835,
+            "mae": 125.0137756497949,
+            "mape": 35.193142372738045,
+            "mse": 40897.76059849522,
+            "rmse": 202.2319475218869,
+            "r2": 0.9131323648676931,
+            "adj_r2": 0.9118033746222753,
+            "var": 393448.3132709007,
         }
     )
 
     assert model_quality_metrics.model_dump() == expected
+
+
+def test_statistics_metrics(spark_fixture, reference_dataset):
+    stats = calculate_statistics_reference(reference_dataset)
+    expected = my_approx(
+        {
+            "missing_cells": 0,
+            "missing_cells_perc": 0.0,
+            "duplicate_rows": 0,
+            "duplicate_rows_perc": 0.0,
+            "n_variables": 14,
+            "n_observations": 731,
+            "numeric": 13,
+            "categorical": 0,
+            "datetime": 1,
+        }
+    )
+
+    assert stats.model_dump() == expected

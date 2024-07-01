@@ -194,7 +194,7 @@ def test_calculation(spark_fixture, dataset):
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -431,7 +431,7 @@ def test_calculation_current_joined(spark_fixture, current_joined):
     stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 1,
             "datetime": 1,
@@ -824,7 +824,7 @@ def test_calculation_complete(spark_fixture, complete_dataset):
     stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 0,
             "missing_cells_perc": 0.0,
@@ -973,7 +973,7 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
     stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 0,
             "missing_cells_perc": 0.0,
@@ -1122,7 +1122,7 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
     stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 5,
             "missing_cells_perc": 6.25,
@@ -1286,7 +1286,7 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
     stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -1450,7 +1450,7 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
     stats = calculate_statistics_current(current_dataset)
     data_quality = metrics_service.calculate_data_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "missing_cells": 0,
             "missing_cells_perc": 0.0,
@@ -1628,7 +1628,7 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -1921,7 +1921,7 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -2200,7 +2200,7 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -2479,7 +2479,7 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
     data_quality = metrics_service.calculate_data_quality()
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
 
-    assert stats == my_approx(
+    assert stats.model_dump() == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
