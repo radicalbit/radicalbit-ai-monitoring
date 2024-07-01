@@ -22,7 +22,7 @@ from utils.reference_multiclass import ReferenceMetricsMulticlassService
 @pytest.fixture()
 def dataset_target_int(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_target_int.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_target_int.csv",
         header=True,
     )
 
@@ -30,7 +30,7 @@ def dataset_target_int(spark_fixture, test_data_dir):
 @pytest.fixture()
 def dataset_target_string(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_target_string.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_target_string.csv",
         header=True,
     )
 
@@ -38,7 +38,7 @@ def dataset_target_string(spark_fixture, test_data_dir):
 @pytest.fixture()
 def dataset_perfect_classes(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_perfect_classes.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_perfect_classes.csv",
         header=True,
     )
 
@@ -83,7 +83,7 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
     data_quality = multiclass_service.calculate_data_quality()
     model_quality = multiclass_service.calculate_model_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -302,7 +302,7 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
     data_quality = multiclass_service.calculate_data_quality()
     model_quality = multiclass_service.calculate_model_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
         {
             "categorical": 4,
             "datetime": 1,
@@ -521,7 +521,7 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
     data_quality = multiclass_service.calculate_data_quality()
     model_quality = multiclass_service.calculate_model_quality()
 
-    assert stats == my_approx(
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
         {
             "categorical": 4,
             "datetime": 1,

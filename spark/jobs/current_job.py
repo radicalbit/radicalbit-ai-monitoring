@@ -10,6 +10,7 @@ from metrics.statistics import calculate_statistics_current
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
 from utils.current_binary import CurrentMetricsService
+from utils.current_multiclass import CurrentMetricsMulticlassService
 from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 
@@ -54,9 +55,9 @@ def main(
     match model.model_type:
         case ModelType.BINARY:
             metrics_service = CurrentMetricsService(
-                spark_session,
-                current_dataset.current,
-                reference_dataset.reference,
+                spark_session=spark_session,
+                current=current_dataset.current,
+                reference=reference_dataset.reference,
                 model=model,
             )
             statistics = calculate_statistics_current(current_dataset)
@@ -68,14 +69,28 @@ def main(
             complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
                 "utf-8"
             )
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
         case ModelType.MULTI_CLASS:
+            metrics_service = CurrentMetricsMulticlassService(
+                spark_session=spark_session,
+                current=current_dataset.current,
+                reference=reference_dataset.reference,
+                model=model,
+            )
             statistics = calculate_statistics_current(current_dataset)
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            data_quality = metrics_service.calculate_data_quality()
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
 
     schema = StructType(
         [
