@@ -16,6 +16,9 @@ jobs:
     - name: Commit changes
       uses: stefanzweifel/git-auto-commit-action@v5
       with:
+        commit_user_name: devops-radicalbit 
+        commit_user_email: devops@radicalbit.ai
+        commit_author: devops-radicalbit  <devops@radicalbit.ai> 
         commit_message: Update AUTHORS.md file
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
