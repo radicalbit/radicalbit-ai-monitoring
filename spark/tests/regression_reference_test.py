@@ -108,4 +108,4 @@ def test_statistics_metrics(spark_fixture, reference_dataset):
         }
     )
 
-    assert stats.model_dump() == expected
+    assert stats.model_dump(serialize_as_any=True) == expected
