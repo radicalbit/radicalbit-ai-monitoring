@@ -99,7 +99,9 @@ class ModelIn(BaseModel, validate_assignment=True):
                     raise ValueError(
                         f'prediction must be a number for a ModelType.BINARY, has been provided [{self.outputs.prediction}]'
                     )
-                if not is_optional_float(self.outputs.prediction_proba.type):
+                if not is_none(self.outputs.prediction_proba) and not is_optional_float(
+                    self.outputs.prediction_proba.type
+                ):
                     raise ValueError(
                         f'prediction_proba must be an optional float for a ModelType.BINARY, has been provided [{self.outputs.prediction_proba}]'
                     )
@@ -109,7 +111,9 @@ class ModelIn(BaseModel, validate_assignment=True):
                     raise ValueError(
                         f'prediction must be a number or string for a ModelType.MULTI_CLASS, has been provided [{self.outputs.prediction}]'
                     )
-                if not is_optional_float(self.outputs.prediction_proba.type):
+                if not is_none(self.outputs.prediction_proba) and not is_optional_float(
+                    self.outputs.prediction_proba.type
+                ):
                     raise ValueError(
                         f'prediction_proba must be an optional float for a ModelType.MULTI_CLASS, has been provided [{self.outputs.prediction_proba}]'
                     )
@@ -119,7 +123,7 @@ class ModelIn(BaseModel, validate_assignment=True):
                     raise ValueError(
                         f'prediction must be a number for a ModelType.REGRESSION, has been provided [{self.outputs.prediction}]'
                     )
-                if not is_none(self.outputs.prediction_proba.type):
+                if not is_none(self.outputs.prediction_proba) and not is_none(self.outputs.prediction_proba.type):
                     raise ValueError(
                         f'prediction_proba must be None for a ModelType.REGRESSION, has been provided [{self.outputs.prediction_proba}]'
                     )
