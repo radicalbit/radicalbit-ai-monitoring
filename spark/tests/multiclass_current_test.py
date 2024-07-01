@@ -109,7 +109,7 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
 
     stats = calculate_statistics_current(current_dataset)
 
-    assert stats == my_approx(
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
         {
             "categorical": 2,
             "datetime": 1,
@@ -269,7 +269,7 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
 
     stats = calculate_statistics_current(current_dataset)
 
-    assert stats == my_approx(
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
         {
             "categorical": 4,
             "datetime": 1,
@@ -429,7 +429,7 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
 
     stats = calculate_statistics_current(current_dataset)
 
-    assert stats == my_approx(
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
         {
             "categorical": 4,
             "datetime": 1,

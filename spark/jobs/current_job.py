@@ -69,7 +69,9 @@ def main(
             complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
                 "utf-8"
             )
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
@@ -83,7 +85,9 @@ def main(
             )
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality()
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
