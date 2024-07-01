@@ -33,6 +33,18 @@ to check.
 
 ## Test
 
+Please install a PostgreSQL database locally. For example, on a macOS platform, execute:
+
+```bash
+brew install postgresql
+```
+
+Note: If any errors occur during pytest runs, please stop the local database service by executing:
+
+```bash
+brew services stop postgresql
+```
+
 Tests are done with `pytest`
 
 Run
