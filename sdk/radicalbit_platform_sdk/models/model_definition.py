@@ -5,6 +5,7 @@ import uuid as uuid_lib
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
+from radicalbit_platform_sdk.models import JobStatusWithMissingDatasetStatus
 from radicalbit_platform_sdk.models.column_definition import ColumnDefinition
 from radicalbit_platform_sdk.models.data_type import DataType
 from radicalbit_platform_sdk.models.model_type import ModelType
@@ -70,5 +71,11 @@ class ModelDefinition(BaseModelDefinition):
     updated_at: str = Field(alias='updatedAt')
     latest_reference_uuid: Optional[uuid_lib.UUID] = Field(alias='latestReferenceUuid')
     latest_current_uuid: Optional[uuid_lib.UUID] = Field(alias='latestCurrentUuid')
+    latest_reference_job_status: JobStatusWithMissingDatasetStatus = Field(
+        alias='latestReferenceJobStatus'
+    )
+    latest_current_job_status: JobStatusWithMissingDatasetStatus = Field(
+        alias='latestCurrentJobStatus'
+    )
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

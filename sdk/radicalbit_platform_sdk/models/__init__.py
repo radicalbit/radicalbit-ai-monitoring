@@ -33,7 +33,7 @@ from .dataset_model_quality import (
 )
 from .dataset_stats import DatasetStats
 from .file_upload_result import CurrentFileUpload, FileReference, ReferenceFileUpload
-from .job_status import JobStatus
+from .job_status import JobStatus, JobStatusWithMissingDatasetStatus
 from .model_definition import (
     CreateModel,
     Granularity,
@@ -49,6 +49,7 @@ __all__ = [
     'ModelDefinition',
     'ColumnDefinition',
     'JobStatus',
+    'JobStatusWithMissingDatasetStatus',
     'DataType',
     'ModelType',
     'DatasetStats',

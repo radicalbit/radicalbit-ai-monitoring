@@ -6,6 +6,7 @@ import uuid
 from radicalbit_platform_sdk.models import (
     DataType,
     Granularity,
+    JobStatusWithMissingDatasetStatus,
     ModelDefinition,
     ModelType,
 )
@@ -32,6 +33,10 @@ class ModelDefinitionTest(unittest.TestCase):
         ts = str(time.time())
         latest_reference_uuid = uuid.uuid4()
         latest_current_uuid = uuid.uuid4()
+        latest_reference_job_status = (
+            JobStatusWithMissingDatasetStatus.MISSING_REFERENCE
+        )
+        latest_current_job_status = JobStatusWithMissingDatasetStatus.MISSING_CURRENT
         json_string = f"""{{
                 "uuid": "{str(id)}",
                 "name": "{name}",
@@ -70,7 +75,9 @@ class ModelDefinitionTest(unittest.TestCase):
                 "createdAt": "{ts}",
                 "updatedAt": "{ts}",
                 "latestReferenceUuid": "{str(latest_reference_uuid)}",
-                "latestCurrentUuid": "{str(latest_current_uuid)}"
+                "latestCurrentUuid": "{str(latest_current_uuid)}",
+                "latestReferenceJobStatus": "{latest_reference_job_status.value}",
+                "latestCurrentJobStatus": "{latest_current_job_status.value}"
             }}"""
         model_definition = ModelDefinition.model_validate(json.loads(json_string))
         assert model_definition.uuid == id
@@ -85,6 +92,10 @@ class ModelDefinitionTest(unittest.TestCase):
         assert model_definition.updated_at == ts
         assert model_definition.latest_reference_uuid == latest_reference_uuid
         assert model_definition.latest_current_uuid == latest_current_uuid
+        assert (
+            model_definition.latest_reference_job_status == latest_reference_job_status
+        )
+        assert model_definition.latest_current_job_status == latest_current_job_status
         assert len(model_definition.features) == 1
         assert model_definition.features[0].name == feature_name
         assert model_definition.features[0].type == feature_type
