@@ -6,12 +6,12 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, model_validator
 from pydantic.alias_generators import to_camel
 
-from app.db.dao.model_dao import Model
-from app.models.inferred_schema_dto import SupportedTypes
-from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
-from app.db.dao.reference_dataset_dao import ReferenceDataset
 from app.db.dao.current_dataset_dao import CurrentDataset
+from app.db.dao.model_dao import Model
+from app.db.dao.reference_dataset_dao import ReferenceDataset
+from app.models.inferred_schema_dto import SupportedTypes
 from app.models.job_status import JobStatus
+from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
 
 
 class ModelType(str, Enum):
