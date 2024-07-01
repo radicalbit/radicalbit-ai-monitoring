@@ -7,6 +7,7 @@ from pyspark.sql.types import StructField, StructType, StringType
 
 from metrics.statistics import calculate_statistics_reference
 from models.reference_dataset import ReferenceDataset
+from utils.reference_regression import ReferenceMetricsRegressionService
 from utils.reference_binary import ReferenceMetricsService
 from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
@@ -66,14 +67,25 @@ def main(
                 serialize_as_any=True
             )
         case ModelType.MULTI_CLASS:
-            # TODO add data quality and model quality
             metrics_service = ReferenceMetricsMulticlassService(
                 reference=reference_dataset
             )
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
+            model_quality = metrics_service.calculate_model_quality()
             complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+        case ModelType.REGRESSION:
+            metrics_service = ReferenceMetricsRegressionService(
+                reference=reference_dataset
+            )
+            model_quality = metrics_service.calculate_model_quality()
+            complete_record["MODEL_QUALITY"] = model_quality.model_dump_json(
                 serialize_as_any=True
             )
 
