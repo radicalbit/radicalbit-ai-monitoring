@@ -10,7 +10,7 @@ from metrics.statistics import calculate_statistics_current
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
 from utils.current_binary import CurrentMetricsService
-from utils.models import JobStatus, ModelOut
+from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 
 from pyspark.sql import SparkSession
@@ -49,23 +49,33 @@ def main(
     raw_reference = spark_session.read.csv(reference_dataset_path, header=True)
     reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_reference)
 
-    metrics_service = CurrentMetricsService(
-        spark_session, current_dataset.current, reference_dataset.reference, model=model
-    )
-    statistics = calculate_statistics_current(current_dataset)
-    data_quality = metrics_service.calculate_data_quality()
-    model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
-    drift = metrics_service.calculate_drift()
+    complete_record = {"UUID": str(uuid.uuid4()), "CURRENT_UUID": current_uuid}
 
-    # TODO put needed fields here
-    complete_record = {
-        "UUID": str(uuid.uuid4()),
-        "CURRENT_UUID": current_uuid,
-        "STATISTICS": orjson.dumps(statistics).decode("utf-8"),
-        "DATA_QUALITY": data_quality.model_dump_json(serialize_as_any=True),
-        "MODEL_QUALITY": orjson.dumps(model_quality).decode("utf-8"),
-        "DRIFT": orjson.dumps(drift).decode("utf-8"),
-    }
+    match model.model_type:
+        case ModelType.BINARY:
+            metrics_service = CurrentMetricsService(
+                spark_session,
+                current_dataset.current,
+                reference_dataset.reference,
+                model=model,
+            )
+            statistics = calculate_statistics_current(current_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            model_quality = (
+                metrics_service.calculate_model_quality_with_group_by_timestamp()
+            )
+            drift = metrics_service.calculate_drift()
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DRIFT"] = (orjson.dumps(drift).decode("utf-8"),)
+        case ModelType.MULTI_CLASS:
+            statistics = calculate_statistics_current(current_dataset)
+            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
 
     schema = StructType(
         [
