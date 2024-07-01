@@ -1,16 +1,12 @@
-from typing import List, Dict
+from typing import List
 
-import numpy as np
-from numpy import inf
 from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
-from pyspark.ml.feature import Bucketizer
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.functions import col
 import pyspark.sql.functions as f
-from pyspark.sql.types import IntegerType
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from models.data_quality import (
@@ -18,7 +14,6 @@ from models.data_quality import (
     CategoricalFeatureMetrics,
     ClassMetrics,
     BinaryClassDataQuality,
-    Histogram,
 )
 from .models import ModelOut, Granularity
 from .ks import KolmogorovSmirnovTest
@@ -73,99 +68,13 @@ class CurrentMetricsService:
         self.model = model
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
-        numerical_features = [
-            numerical.name for numerical in self.model.get_numerical_features()
-        ]
-
-        def check_not_null(x):
-            return f.when(f.col(x).isNotNull() & ~f.isnan(x), f.col(x))
-
-        def split_dict(dictionary):
-            cleaned_dict = dict()
-            for k, v in dictionary.items():
-                feature, metric = tuple(k.rsplit("-", 1))
-                cleaned_dict.setdefault(feature, dict())[metric] = v
-            return cleaned_dict
-
-        mean_agg = [
-            (f.mean(check_not_null(x))).alias(f"{x}-mean") for x in numerical_features
-        ]
-
-        max_agg = [
-            (f.max(check_not_null(x))).alias(f"{x}-max") for x in numerical_features
-        ]
-
-        min_agg = [
-            (f.min(check_not_null(x))).alias(f"{x}-min") for x in numerical_features
-        ]
-
-        median_agg = [
-            (f.median(check_not_null(x))).alias(f"{x}-median")
-            for x in numerical_features
-        ]
-
-        perc_25_agg = [
-            (f.percentile(check_not_null(x), 0.25)).alias(f"{x}-perc_25")
-            for x in numerical_features
-        ]
-
-        perc_75_agg = [
-            (f.percentile(check_not_null(x), 0.75)).alias(f"{x}-perc_75")
-            for x in numerical_features
-        ]
-
-        std_agg = [
-            (f.std(check_not_null(x))).alias(f"{x}-std") for x in numerical_features
-        ]
-
-        missing_values_agg = [
-            (f.count(f.when(f.col(x).isNull() | f.isnan(x), x))).alias(
-                f"{x}-missing_values"
-            )
-            for x in numerical_features
-        ]
-
-        missing_values_perc_agg = [
-            (
-                (
-                    f.count(f.when(f.col(x).isNull() | f.isnan(x), x))
-                    / self.current_count
-                )
-                * 100
-            ).alias(f"{x}-missing_values_perc")
-            for x in numerical_features
-        ]
-
-        # Global
-        global_stat = self.current.select(numerical_features).agg(
-            *(
-                mean_agg
-                + max_agg
-                + min_agg
-                + median_agg
-                + perc_25_agg
-                + perc_75_agg
-                + std_agg
-                + missing_values_agg
-                + missing_values_perc_agg
-            )
+        return DataQualityCalculator.calculate_combined_data_quality_numerical(
+            model=self.model,
+            current_dataframe=self.current,
+            current_count=self.current_count,
+            reference_dataframe=self.reference,
+            spark_session=self.spark_session,
         )
-
-        global_dict = global_stat.toPandas().iloc[0].to_dict()
-        global_data_quality = split_dict(global_dict)
-
-        numerical_features_histogram = self.calculate_combined_histogram()
-
-        numerical_features_metrics = [
-            NumericalFeatureMetrics.from_dict(
-                feature_name,
-                metrics,
-                histogram=numerical_features_histogram.get(feature_name),
-            )
-            for feature_name, metrics in global_data_quality.items()
-        ]
-
-        return numerical_features_metrics
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
         return DataQualityCalculator.categorical_metrics(
@@ -212,84 +121,6 @@ class CurrentMetricsService:
             class_metrics=self.calculate_class_metrics(),
             feature_metrics=feature_metrics,
         )
-
-    def calculate_combined_histogram(self) -> Dict[str, Histogram]:
-        numerical_features = [
-            numerical.name for numerical in self.model.get_numerical_features()
-        ]
-        current = self.current.withColumn("type", f.lit("current"))
-        reference = self.reference.withColumn("type", f.lit("reference"))
-
-        def create_histogram(feature: str):
-            reference_and_current = current.select([feature, "type"]).unionByName(
-                reference.select([feature, "type"])
-            )
-
-            max_value = reference_and_current.agg(
-                f.max(
-                    f.when(
-                        f.col(feature).isNotNull() & ~f.isnan(feature), f.col(feature)
-                    )
-                )
-            ).collect()[0][0]
-            min_value = reference_and_current.agg(
-                f.min(
-                    f.when(
-                        f.col(feature).isNotNull() & ~f.isnan(feature), f.col(feature)
-                    )
-                )
-            ).collect()[0][0]
-
-            buckets_spacing = np.linspace(min_value, max_value, 11).tolist()
-            lookup = set()
-            generated_buckets = [
-                x for x in buckets_spacing if x not in lookup and lookup.add(x) is None
-            ]
-            # workaround if all values are the same to not have errors
-            if len(generated_buckets) == 1:
-                buckets_spacing = [generated_buckets[0], generated_buckets[0]]
-                buckets = [-float(inf), generated_buckets[0], float(inf)]
-            else:
-                buckets = generated_buckets
-
-            bucketizer = Bucketizer(
-                splits=buckets, inputCol=feature, outputCol="bucket"
-            )
-            result = bucketizer.setHandleInvalid("keep").transform(
-                reference_and_current
-            )
-
-            current_df = (
-                result.filter(f.col("type") == "current")
-                .groupBy("bucket")
-                .agg(f.count(f.col(feature)).alias("curr_count"))
-            )
-            reference_df = (
-                result.filter(f.col("type") == "reference")
-                .groupBy("bucket")
-                .agg(f.count(f.col(feature)).alias("ref_count"))
-            )
-
-            buckets_number = list(range(10))
-            bucket_df = self.spark_session.createDataFrame(
-                buckets_number, IntegerType()
-            ).withColumnRenamed("value", "bucket")
-            tot_df = (
-                bucket_df.join(current_df, on=["bucket"], how="left")
-                .join(reference_df, on=["bucket"], how="left")
-                .fillna(0)
-                .orderBy("bucket")
-            )
-            # workaround if all values are the same to not have errors
-            if len(generated_buckets) == 1:
-                tot_df = tot_df.filter(f.col("bucket") == 1)
-            cur = tot_df.select("curr_count").rdd.flatMap(lambda x: x).collect()
-            ref = tot_df.select("ref_count").rdd.flatMap(lambda x: x).collect()
-            return Histogram(
-                buckets=buckets_spacing, reference_values=ref, current_values=cur
-            )
-
-        return {feature: create_histogram(feature) for feature in numerical_features}
 
     # FIXME use pydantic struct like data quality
     def __calc_bc_metrics(self) -> dict[str, float]:
@@ -557,7 +388,7 @@ class CurrentMetricsService:
                     result_tmp["pValue"]
                 )
                 feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                    result_tmp["pValue"] >= 0.05
+                    result_tmp["pValue"] <= 0.05
                 )
             else:
                 feature_dict_to_append["drift_calc"]["value"] = None
@@ -571,7 +402,7 @@ class CurrentMetricsService:
             reference_data=self.reference,
             current_data=self.current,
             alpha=0.05,
-            beta=0.000001,
+            phi=0.004,
         )
 
         for column in numerical_features:
@@ -583,10 +414,10 @@ class CurrentMetricsService:
             }
             result_tmp = ks.test(column, column)
             feature_dict_to_append["drift_calc"]["value"] = float(
-                result_tmp["ks_Statistic"]
+                result_tmp["ks_statistic"]
             )
             feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                result_tmp["ks_Statistic"] > result_tmp["critical_value"]
+                result_tmp["ks_statistic"] > result_tmp["critical_value"]
             )
             drift_result["feature_metrics"].append(feature_dict_to_append)
 
