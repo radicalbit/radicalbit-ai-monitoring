@@ -104,7 +104,9 @@ class Chi2Test:
 
         return concatenated_data
 
-    def __numeric_casting(self, concatenated_data) -> pyspark.sql.DataFrame:
+    def __numeric_casting(
+        self, concatenated_data, reference_column, current_column
+    ) -> pyspark.sql.DataFrame:
         """
         Performs numeric casting on the concatenated data.
 
@@ -118,18 +120,20 @@ class Chi2Test:
             StringIndexer(inputCol=column, outputCol=column + "_index").fit(
                 concatenated_data
             )
-            for column in [self.reference_column, self.current_column]
+            for column in [reference_column, current_column]
         ]
         pipeline = Pipeline(stages=indexers)
         return (
             pipeline.fit(concatenated_data)
             .transform(concatenated_data)
-            .drop(self.reference_column, self.current_column)
-            .withColumnRenamed(self.reference_column + "_index", self.reference_column)
-            .withColumnRenamed(self.current_column + "_index", self.current_column)
+            .drop(reference_column, current_column)
+            .withColumnRenamed(reference_column + "_index", reference_column)
+            .withColumnRenamed(current_column + "_index", current_column)
         )
 
-    def __current_column_to_vector(self, data) -> pyspark.sql.DataFrame:
+    def __current_column_to_vector(
+        self, data, reference_column, current_column
+    ) -> pyspark.sql.DataFrame:
         """
         Converts the current column data to a vector using VectorAssembler.
 
@@ -140,13 +144,15 @@ class Chi2Test:
         - pyspark.sql.DataFrame: The DataFrame with the current column data converted to a vector.
         """
         vector_assembler = VectorAssembler(
-            inputCols=[self.current_column], outputCol=f"{self.current_column}_vector"
+            inputCols=[current_column], outputCol=f"{current_column}_vector"
         )
         return vector_assembler.transform(data).select(
-            self.reference_column, f"{self.current_column}_vector"
+            reference_column, f"{current_column}_vector"
         )
 
-    def __prepare_data_for_test(self) -> pyspark.sql.DataFrame:
+    def __prepare_data_for_test(
+        self, reference_column, current_column
+    ) -> pyspark.sql.DataFrame:
         """
         Prepares the data for the chi-square test by concatenating columns, performing numeric casting, and converting
         the current column data to a vector.
@@ -156,12 +162,16 @@ class Chi2Test:
         """
         concatenated_data = self.__concatenate_columns()
         numeric_concatenated_data = self.__numeric_casting(
-            concatenated_data=concatenated_data
+            concatenated_data=concatenated_data,
+            reference_column=reference_column,
+            current_column=current_column,
         )
-        vector_data = self.__current_column_to_vector(data=numeric_concatenated_data)
-        return vector_data.select(
-            self.reference_column, f"{self.current_column}_vector"
+        vector_data = self.__current_column_to_vector(
+            data=numeric_concatenated_data,
+            reference_column=reference_column,
+            current_column=current_column,
         )
+        return vector_data.select(reference_column, f"{current_column}_vector")
 
     def test(self, reference_column, current_column) -> Dict:
         """
@@ -186,14 +196,14 @@ class Chi2Test:
             .drop(*[current_column])
             .na.drop()
         )
-        self.reference_column = f"{reference_column}_reference"
-        self.current_column = f"{current_column}_current"
+        reference_column = f"{reference_column}_reference"
+        current_column = f"{current_column}_current"
         self.reference_size = self.reference.count()
         self.current_size = self.current.count()
         result = ChiSquareTest.test(
-            self.__prepare_data_for_test(),
-            f"{self.current_column}_vector",
-            self.reference_column,
+            self.__prepare_data_for_test(reference_column, current_column),
+            f"{current_column}_vector",
+            reference_column,
             True,
         )
 
