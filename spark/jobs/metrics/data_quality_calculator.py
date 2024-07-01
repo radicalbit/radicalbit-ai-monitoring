@@ -384,6 +384,7 @@ class DataQualityCalculator:
         ]
 
         return numerical_features_metrics
+
     def regression_target_metrics(
         target_column: str, dataframe: DataFrame, dataframe_count: int
     ) -> NumericalTargetMetrics:
@@ -399,7 +400,7 @@ class DataQualityCalculator:
                 F.percentile_approx(target_column, 0.25).alias("perc_25"),
                 F.percentile_approx(target_column, 0.75).alias("perc_75"),
                 F.count(F.when(F.col(target_column).isNull(), target_column)).alias(
-                    f"missing_values"
+                    "missing_values"
                 ),
                 (
                     (
@@ -412,7 +413,7 @@ class DataQualityCalculator:
                         / dataframe_count
                     )
                     * 100
-                ).alias(f"missing_values_perc"),
+                ).alias("missing_values_perc"),
             )
             .toPandas()
             .iloc[0]
