@@ -7,9 +7,15 @@ jobs:
   update-authors:
     runs-on: ubuntu-22.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Run update-authors.sh script file
       run: |
          chmod +x ./tools/update-authors.sh
          ./tools/update-authors.sh
       shell: bash
+    - name: Commit changes
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: Update AUTHORS.md file
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOCKEN }}
