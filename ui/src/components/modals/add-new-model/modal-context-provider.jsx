@@ -18,7 +18,7 @@ function ModalContextProvider({ children }) {
   const [isMaximize, setIsMaximize] = useState(false);
 
   const useFormbitStepOne = useFormbit({
-    initialValues: { modelType: ModelTypeEnum.BINARY_CLASSIFICATION, dataType: DataTypeEnum.TABULAR },
+    initialValues: { dataType: DataTypeEnum.TABULAR },
     yup: schemaStepOne,
   });
 
