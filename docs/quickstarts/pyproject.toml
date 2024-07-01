@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "radicalbit-platform-sdk-examples"
+# x-release-please-start-version
+version = "0.0.1"
+# x-release-please-end
+description = ""
+authors = ["dev.team <devs@radicalbit.io>"]
+readme = "README.md"
+package-mode = true
+
+[tool.poetry.dependencies]
+python = "^3.11"
+radicalbit-platform-sdk = {path = "../../sdk", develop = true}
+jupyter = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
