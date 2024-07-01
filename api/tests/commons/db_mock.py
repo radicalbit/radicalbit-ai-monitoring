@@ -8,7 +8,15 @@ from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.job_status import JobStatus
-from app.models.model_dto import DataType, Granularity, ModelIn, ModelType
+from app.models.model_dto import (
+    ColumnDefinition,
+    DataType,
+    Granularity,
+    ModelIn,
+    ModelType,
+    OutputType,
+    SupportedTypes,
+)
 
 MODEL_UUID = uuid.uuid4()
 REFERENCE_UUID = uuid.uuid4()
@@ -26,7 +34,7 @@ def get_sample_model(
     features: List[Dict] = [{'name': 'feature1', 'type': 'string'}],
     outputs: Dict = {
         'prediction': {'name': 'pred1', 'type': 'int'},
-        'prediction_proba': {'name': 'prob1', 'type': 'double'},
+        'prediction_proba': {'name': 'prob1', 'type': 'float'},
         'output': [{'name': 'output1', 'type': 'string'}],
     },
     target: Dict = {'name': 'target1', 'type': 'string'},
@@ -59,14 +67,20 @@ def get_sample_model_in(
     model_type: str = ModelType.BINARY.value,
     data_type: str = DataType.TEXT.value,
     granularity: str = Granularity.DAY.value,
-    features: List[Dict] = [{'name': 'feature1', 'type': 'string'}],
-    outputs: Dict = {
-        'prediction': {'name': 'pred1', 'type': 'int'},
-        'prediction_proba': {'name': 'prob1', 'type': 'double'},
-        'output': [{'name': 'output1', 'type': 'string'}],
-    },
-    target: Dict = {'name': 'target1', 'type': 'string'},
-    timestamp: Dict = {'name': 'timestamp', 'type': 'datetime'},
+    features: List[ColumnDefinition] = [
+        ColumnDefinition(name='feature1', type=SupportedTypes.string)
+    ],
+    outputs: OutputType = OutputType(
+        prediction=ColumnDefinition(name='pred1', type=SupportedTypes.int),
+        prediction_proba=ColumnDefinition(name='prob1', type=SupportedTypes.float),
+        output=[ColumnDefinition(name='output1', type=SupportedTypes.string)],
+    ),
+    target: ColumnDefinition = ColumnDefinition(
+        name='target1', type=SupportedTypes.int
+    ),
+    timestamp: ColumnDefinition = ColumnDefinition(
+        name='timestamp', type=SupportedTypes.datetime
+    ),
     frameworks: Optional[str] = None,
     algorithm: Optional[str] = None,
 ):
