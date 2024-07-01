@@ -3,6 +3,7 @@
 
 git log --reverse --format='%aN (<%aE>)' | perl -we '
 BEGIN {
+  %seen_names = ();
   %seen_emails = ();
 }
 while (<>) {
@@ -11,10 +12,12 @@ while (<>) {
   next if /(devops\@radicalbit.ai)/;
   next if /(devops\@users.noreply.github.com)/;
 
-  # Extract the email
-  if ($line =~ /<(.+?)>/) {
-    my $email = $1;
-    # Skip if the email has been seen
+  # Extract the name before the email and convert to lowercase
+  if ($line =~ /^(.+?) \((.+)\)$/) {
+    my $name = lc($1);
+    my $email = $2;
+    # Skip if the name or email has been seen (case insensitive for name)
+    next if $seen_names{$name}++;
     next if $seen_emails{$email}++;
   }
 
