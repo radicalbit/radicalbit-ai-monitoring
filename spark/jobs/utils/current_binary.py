@@ -557,7 +557,7 @@ class CurrentMetricsService:
                     result_tmp["pValue"]
                 )
                 feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                    result_tmp["pValue"] >= 0.05
+                    result_tmp["pValue"] <= 0.05
                 )
             else:
                 feature_dict_to_append["drift_calc"]["value"] = None
@@ -571,7 +571,7 @@ class CurrentMetricsService:
             reference_data=self.reference,
             current_data=self.current,
             alpha=0.05,
-            beta=0.000001,
+            phi=0.004,
         )
 
         for column in numerical_features:
@@ -583,10 +583,10 @@ class CurrentMetricsService:
             }
             result_tmp = ks.test(column, column)
             feature_dict_to_append["drift_calc"]["value"] = float(
-                result_tmp["ks_Statistic"]
+                result_tmp["ks_statistic"]
             )
             feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                result_tmp["ks_Statistic"] > result_tmp["critical_value"]
+                result_tmp["ks_statistic"] > result_tmp["critical_value"]
             )
             drift_result["feature_metrics"].append(feature_dict_to_append)
 
