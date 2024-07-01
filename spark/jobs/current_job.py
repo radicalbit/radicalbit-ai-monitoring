@@ -68,14 +68,18 @@ def main(
             complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
                 "utf-8"
             )
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
         case ModelType.MULTI_CLASS:
             statistics = calculate_statistics_current(current_dataset)
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
 
     schema = StructType(
         [
