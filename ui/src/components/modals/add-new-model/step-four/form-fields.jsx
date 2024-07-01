@@ -1,9 +1,9 @@
+import { ModelTypeEnum } from '@Src/store/state/models/constants';
 import {
   FormField,
   Select,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
 import { useModalContext } from '../modal-context-provider';
 
 function Target() {
@@ -196,14 +196,17 @@ function Prediction() {
 }
 
 function Probability() {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
+
   const {
     form, error, write, remove,
   } = useFormbit;
-
   const probabilities = useGetProbabilities();
   const predictionName = form?.prediction?.name;
   const value = form?.predictionProba?.name;
+
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
 
   const handleOnChange = (val) => {
     if (val === undefined) {
@@ -218,6 +221,13 @@ function Probability() {
     }
   };
 
+  if (modelType === ModelTypeEnum.REGRESSION) {
+    return (
+      <FormField label="Probability" modifier="w-full">
+        <Select disabled readOnly value="Not available for Regression" />
+      </FormField>
+    );
+  }
   return (
     <FormField
       label="Probability"
@@ -267,7 +277,7 @@ function Probability() {
 
 const targetValidTypes = {
   [ModelTypeEnum.BINARY_CLASSIFICATION]: ['int', 'float', 'double'],
-  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double', 'string'],
   [ModelTypeEnum.REGRESSION]: ['int', 'float', 'double'],
 };
 const useGetTargets = () => {
@@ -295,7 +305,7 @@ const useGetPredictions = () => {
   return form.outputs.filter(({ type }) => predictionValidTypes[modelType].includes(type));
 };
 
-const binaryClassificationProbabilityValidTypes = {
+const probabilityValidTypes = {
   [ModelTypeEnum.BINARY_CLASSIFICATION]: ['float', 'double'],
   [ModelTypeEnum.MULTI_CLASSIFICATION]: ['float', 'double'],
   [ModelTypeEnum.REGRESSION]: ['float', 'double'],
@@ -307,7 +317,7 @@ const useGetProbabilities = () => {
   const { form: formStepOne } = useFormbitStepOne;
   const { modelType } = formStepOne;
 
-  return form.outputs.filter(({ type }) => binaryClassificationProbabilityValidTypes[modelType].includes(type));
+  return form.outputs.filter(({ type }) => probabilityValidTypes[modelType].includes(type));
 };
 
 const timestampValidTypes = {
