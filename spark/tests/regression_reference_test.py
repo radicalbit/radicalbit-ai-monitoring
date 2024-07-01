@@ -1,7 +1,9 @@
 import datetime
 import uuid
+import json
 
 import pytest
+import deepdiff
 
 from jobs.metrics.statistics import calculate_statistics_reference
 from jobs.utils.reference_regression import ReferenceMetricsRegressionService
@@ -23,6 +25,11 @@ def reference_bike(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
         f"{test_data_dir}/reference/regression/reference_bike.csv", header=True
     )
+
+
+@pytest.fixture()
+def expected_data_quality_json(test_data_dir):
+    yield json.load(open(f"{test_data_dir}/reference/regression/data_quality.json"))
 
 
 @pytest.fixture()
@@ -71,7 +78,7 @@ def reference_dataset(spark_fixture, reference_bike):
     )
 
 
-def test_model_quality_metrics(spark_fixture, reference_dataset):
+def test_model_quality_metrics(reference_dataset):
     assert reference_dataset.reference_count == 731
 
     regression_service = ReferenceMetricsRegressionService(reference=reference_dataset)
@@ -92,7 +99,7 @@ def test_model_quality_metrics(spark_fixture, reference_dataset):
     assert model_quality_metrics.model_dump() == expected
 
 
-def test_statistics_metrics(spark_fixture, reference_dataset):
+def test_statistics_metrics(reference_dataset):
     stats = calculate_statistics_reference(reference_dataset)
     expected = my_approx(
         {
@@ -109,3 +116,30 @@ def test_statistics_metrics(spark_fixture, reference_dataset):
     )
 
     assert stats.model_dump(serialize_as_any=True) == expected
+
+
+def test_data_quality_metrics(reference_dataset, expected_data_quality_json):
+    regression_service = ReferenceMetricsRegressionService(reference=reference_dataset)
+    data_quality = regression_service.calculate_data_quality()
+
+    features = expected_data_quality_json["feature_metrics"]
+    target = expected_data_quality_json["target_metrics"]
+
+    computed = data_quality.model_dump(serialize_as_any=True, exclude_none=True)
+    print(computed)
+    computed_features = computed["feature_metrics"]
+    computed_target = computed["target_metrics"]
+
+    assert not deepdiff.DeepDiff(
+        computed_features,
+        features,
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )
+
+    assert not deepdiff.DeepDiff(
+        computed_target,
+        target,
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )
