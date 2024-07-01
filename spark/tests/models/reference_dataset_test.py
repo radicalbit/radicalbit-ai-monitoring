@@ -18,7 +18,7 @@ from utils.models import (
 @pytest.fixture()
 def dataset_target_string(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/multiclass/reference/dataset_target_string.csv",
+        f"{test_data_dir}/reference/multiclass/dataset_target_string.csv",
         header=True,
     )
 
