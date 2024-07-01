@@ -18,4 +18,4 @@ jobs:
       with:
         commit_message: Update AUTHORS.md file
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOCKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
