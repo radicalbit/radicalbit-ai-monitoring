@@ -95,6 +95,11 @@ def main(
                 "utf-8"
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+        case ModelType.REGRESSION:
+            statistics = calculate_statistics_current(current_dataset)
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
 
     schema = StructType(
         [
