@@ -10,7 +10,6 @@ from radicalbit_platform_sdk.models import (
     ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
-    CurrentMultiClassificationModelQuality,
     Drift,
     DriftAlgorithm,
     JobStatus,
