@@ -89,6 +89,7 @@ function DataPointDistributionChart() {
 
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const title = model?.target.name;
+  const modelType = model?.modelType;
 
   const { data } = useGetReferenceDataQualityQuery({ uuid });
 
@@ -108,8 +109,9 @@ function DataPointDistributionChart() {
           <ReactEchartsCore
             echarts={echarts}
             onChartReady={handleOnChartReady}
-            option={chartOptions(title, classMetrics)}
+            option={chartOptions(title, classMetrics, modelType)}
             style={{ height: '100%' }}
+
           />
         </div>
       )}
