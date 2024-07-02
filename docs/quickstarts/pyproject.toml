@@ -10,7 +10,8 @@ package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.11"
-radicalbit-platform-sdk = {path = "../../sdk", develop = true}
+
+radicalbit-platform-sdk = {path = "../../sdk", develop = false}
 jupyter = "^1.0.0"
 
 [build-system]
