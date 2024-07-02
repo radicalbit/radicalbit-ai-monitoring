@@ -15,7 +15,7 @@ from models.data_quality import (
     ClassMetrics,
     BinaryClassDataQuality,
 )
-from .models import ModelOut
+from models.reference_dataset import ReferenceDataset
 
 
 class ReferenceMetricsService:
@@ -40,10 +40,8 @@ class ReferenceMetricsService:
         "fMeasureByLabel": "f_measure",
     }
 
-    def __init__(self, reference: DataFrame, model: ModelOut):
-        self.model = model
+    def __init__(self, reference: ReferenceDataset):
         self.reference = reference
-        self.reference_count = self.reference.count()
 
     def __evaluate_binary_classification(
         self, dataset: DataFrame, metric_name: str
@@ -51,8 +49,8 @@ class ReferenceMetricsService:
         try:
             return BinaryClassificationEvaluator(
                 metricName=metric_name,
-                labelCol=self.model.target.name,
-                rawPredictionCol=self.model.outputs.prediction_proba.name,
+                labelCol=self.reference.model.target.name,
+                rawPredictionCol=self.reference.model.outputs.prediction_proba.name,
             ).evaluate(dataset)
         except Exception:
             return float("nan")
@@ -65,8 +63,8 @@ class ReferenceMetricsService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=self.model.outputs.prediction.name,
-                labelCol=self.model.target.name,
+                predictionCol=self.reference.model.outputs.prediction.name,
+                labelCol=self.reference.model.target.name,
                 metricLabel=1,
             ).evaluate(dataset)
         except Exception:
@@ -75,14 +73,16 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def __calc_bc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_binary_classification(self.reference, name)
+            label: self.__evaluate_binary_classification(self.reference.reference, name)
             for (name, label) in self.model_quality_binary_classificator.items()
         }
 
     # FIXME use pydantic struct like data quality
     def __calc_mc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_multi_class_classification(self.reference, name)
+            label: self.__evaluate_multi_class_classification(
+                self.reference.reference, name
+            )
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
 
@@ -90,7 +90,7 @@ class ReferenceMetricsService:
     def calculate_model_quality(self) -> dict[str, float]:
         metrics = self.__calc_mc_metrics()
         metrics.update(self.calculate_confusion_matrix())
-        if self.model.outputs.prediction_proba is not None:
+        if self.reference.model.outputs.prediction_proba is not None:
             metrics.update(self.__calc_bc_metrics())
 
         return metrics
@@ -98,28 +98,34 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
-            self.reference.select(
-                [self.model.outputs.prediction.name, self.model.target.name]
+            self.reference.reference.select(
+                [
+                    self.reference.model.outputs.prediction.name,
+                    self.reference.model.target.name,
+                ]
             )
-            .withColumn(self.model.target.name, f.col(self.model.target.name))
-            .orderBy(self.model.target.name)
+            .withColumn(
+                self.reference.model.target.name,
+                f.col(self.reference.model.target.name),
+            )
+            .orderBy(self.reference.model.target.name)
         )
 
         tp = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 1)
-            & (col(self.model.target.name) == 1)
+            (col(self.reference.model.outputs.prediction.name) == 1)
+            & (col(self.reference.model.target.name) == 1)
         ).count()
         tn = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 0)
-            & (col(self.model.target.name) == 0)
+            (col(self.reference.model.outputs.prediction.name) == 0)
+            & (col(self.reference.model.target.name) == 0)
         ).count()
         fp = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 1)
-            & (col(self.model.target.name) == 0)
+            (col(self.reference.model.outputs.prediction.name) == 1)
+            & (col(self.reference.model.target.name) == 0)
         ).count()
         fn = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 0)
-            & (col(self.model.target.name) == 1)
+            (col(self.reference.model.outputs.prediction.name) == 0)
+            & (col(self.reference.model.target.name) == 1)
         ).count()
 
         return {
@@ -131,23 +137,23 @@ class ReferenceMetricsService:
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.numerical_metrics(
-            model=self.model,
-            dataframe=self.reference,
-            dataframe_count=self.reference_count,
+            model=self.reference.model,
+            dataframe=self.reference.reference,
+            dataframe_count=self.reference.reference_count,
         )
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
         return DataQualityCalculator.categorical_metrics(
-            model=self.model,
-            dataframe=self.reference,
-            dataframe_count=self.reference_count,
+            model=self.reference.model,
+            dataframe=self.reference.reference,
+            dataframe_count=self.reference.reference_count,
         )
 
     def calculate_class_metrics(self) -> List[ClassMetrics]:
         metrics = DataQualityCalculator.class_metrics(
-            class_column=self.model.target.name,
-            dataframe=self.reference,
-            dataframe_count=self.reference_count,
+            class_column=self.reference.model.target.name,
+            dataframe=self.reference.reference,
+            dataframe_count=self.reference.reference_count,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
@@ -174,12 +180,12 @@ class ReferenceMetricsService:
 
     def calculate_data_quality(self) -> BinaryClassDataQuality:
         feature_metrics = []
-        if self.model.get_numerical_features():
+        if self.reference.model.get_numerical_features():
             feature_metrics.extend(self.calculate_data_quality_numerical())
-        if self.model.get_categorical_features():
+        if self.reference.model.get_categorical_features():
             feature_metrics.extend(self.calculate_data_quality_categorical())
         return BinaryClassDataQuality(
-            n_observations=self.reference_count,
+            n_observations=self.reference.reference_count,
             class_metrics=self.calculate_class_metrics(),
             feature_metrics=feature_metrics,
         )

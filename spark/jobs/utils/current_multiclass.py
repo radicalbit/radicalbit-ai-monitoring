@@ -7,6 +7,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
+from metrics.drift_calculator import DriftCalculator
 from models.current_dataset import CurrentDataset
 from models.data_quality import (
     NumericalFeatureMetrics,
@@ -218,4 +219,11 @@ class CurrentMetricsMulticlassService:
             n_observations=self.current.current_count,
             class_metrics=self.calculate_class_metrics(),
             feature_metrics=feature_metrics,
+        )
+
+    def calculate_drift(self):
+        return DriftCalculator.calculate_drift(
+            spark_session=self.spark_session,
+            reference_dataset=self.reference,
+            current_dataset=self.current,
         )

@@ -56,9 +56,8 @@ def main(
         case ModelType.BINARY:
             metrics_service = CurrentMetricsService(
                 spark_session=spark_session,
-                current=current_dataset.current,
-                reference=reference_dataset.reference,
-                model=model,
+                current=current_dataset,
+                reference=reference_dataset,
             )
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -85,6 +84,7 @@ def main(
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality()
             model_quality = metrics_service.calculate_model_quality()
+            drift = metrics_service.calculate_drift()
             complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
@@ -94,6 +94,7 @@ def main(
             complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
                 "utf-8"
             )
+            complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
 
     schema = StructType(
         [
