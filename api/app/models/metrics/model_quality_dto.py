@@ -71,6 +71,7 @@ class CurrentBinaryClassificationModelQuality(BaseModel):
 class ClassMetrics(BaseModel):
     class_name: str
     metrics: MetricsBase
+    grouped_metrics: Optional[GroupedMetricsBase] = None
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
@@ -89,10 +90,6 @@ class MultiClassificationModelQuality(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class CurrentMultiClassificationModelQuality(BaseModel):
-    pass
-
-
 class RegressionModelQuality(BaseModel):
     pass
 
@@ -103,7 +100,6 @@ class ModelQualityDTO(BaseModel):
         BinaryClassificationModelQuality
         | CurrentBinaryClassificationModelQuality
         | MultiClassificationModelQuality
-        | CurrentMultiClassificationModelQuality
         | RegressionModelQuality
     ]
 
@@ -152,10 +148,7 @@ class ModelQualityDTO(BaseModel):
                 model_quality_data=model_quality_data,
             )
         if model_type == ModelType.MULTI_CLASS:
-            return ModelQualityDTO._create_multiclass_model_quality(
-                dataset_type=dataset_type,
-                model_quality_data=model_quality_data,
-            )
+            return MultiClassificationModelQuality(**model_quality_data)
         if model_type == ModelType.REGRESSION:
             return RegressionModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid model type {model_type}')
@@ -170,16 +163,4 @@ class ModelQualityDTO(BaseModel):
             return BinaryClassificationModelQuality(**model_quality_data)
         if dataset_type == DatasetType.CURRENT:
             return CurrentBinaryClassificationModelQuality(**model_quality_data)
-        raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
-
-    @staticmethod
-    def _create_multiclass_model_quality(
-        dataset_type: DatasetType,
-        model_quality_data: Dict,
-    ) -> MultiClassificationModelQuality | CurrentMultiClassificationModelQuality:
-        """Create a multiclass model quality instance based on dataset type."""
-        if dataset_type == DatasetType.REFERENCE:
-            return MultiClassificationModelQuality(**model_quality_data)
-        if dataset_type == DatasetType.CURRENT:
-            return CurrentMultiClassificationModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
