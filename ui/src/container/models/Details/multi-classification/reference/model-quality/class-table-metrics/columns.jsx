@@ -1,3 +1,4 @@
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { numberFormatter } from '@Src/constants';
 
 export default [
@@ -13,6 +14,7 @@ export default [
     dataIndex: 'precision',
     align: 'right',
     width: '10rem',
+    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
     render: (precision) => numberFormatter().format(precision),
   },
   {
@@ -21,6 +23,7 @@ export default [
     dataIndex: 'recall',
     align: 'right',
     width: '10rem',
+    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
     render: (recall) => numberFormatter().format(recall),
   },
   {
@@ -29,6 +32,7 @@ export default [
     dataIndex: 'fMeasure',
     align: 'right',
     width: '10rem',
+    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
     render: (fMeasure) => numberFormatter().format(fMeasure),
   },
   {
@@ -37,6 +41,7 @@ export default [
     dataIndex: 'truePositiveRate',
     align: 'right',
     width: '10rem',
+    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
     render: (truePositiveRate) => numberFormatter().format(truePositiveRate),
   },
   {
@@ -45,6 +50,7 @@ export default [
     dataIndex: 'falsePositiveRate',
     align: 'right',
     width: '10rem',
+    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
     render: (falsePositiveRate) => numberFormatter().format(falsePositiveRate),
   },
 ];

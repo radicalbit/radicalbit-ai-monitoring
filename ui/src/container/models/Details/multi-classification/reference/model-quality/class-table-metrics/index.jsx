@@ -23,7 +23,6 @@ function ClassTableMetrics() {
       dataSource={classMetrics}
       modifier="m-4"
       pagination={false}
-      rowClassName={DataTable.ROW_NOT_CLICKABLE}
       rowKey={({ label }) => label}
       scroll={{ y: '32rem' }}
       size="small"
