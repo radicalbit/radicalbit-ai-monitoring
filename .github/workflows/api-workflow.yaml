@@ -50,11 +50,12 @@ jobs:
     if: github.event_name != 'pull_request'
     uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
     with:
-      push: ${{ github.event_name != 'pull_request' }}
+      push: ${{ startsWith(github.ref, 'refs/tags/v') }}
       context: ./api
       image: radicalbit-ai-monitoring-api
-      tag: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest' }}
+      tag: github.ref_name
       dockerhub_shortdesc: "Radicalbit AI Monitoring - backend API"
+      dockerhub_push_latest: true
     secrets:
       USERNAME: ${{ secrets.DOCKER_HUB_USER }}
       PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
