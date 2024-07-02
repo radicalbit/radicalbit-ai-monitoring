@@ -479,7 +479,7 @@ def test_data_quality_metrics(reference_dataset, expected_data_quality_json):
     target = expected_data_quality_json["target_metrics"]
 
     computed = data_quality.model_dump(serialize_as_any=True, exclude_none=True)
-    print(computed)
+
     computed_features = computed["feature_metrics"]
     computed_target = computed["target_metrics"]
 
