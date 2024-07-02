@@ -14,7 +14,7 @@ export default function confusionMatrixOptions(dataset, labelClass, colors) {
     ...commonChartOptions.xAxisOptions.categoryType(labelClass.xAxisLabel),
     ...commonChartOptions.gridOptions.heatmapChart(),
     ...commonChartOptions.commonOptions.heatmapChart(),
-    ...commonChartOptions.visualMapOptions.heatmapChart(dataMax, colors),
+    ...commonChartOptions.visualMapOptions.heatmapChart(dataMax, colors, '250rem'),
     series: {
       ...commonChartOptions.seriesOptions.heatmapChart(heatmapData),
     },
