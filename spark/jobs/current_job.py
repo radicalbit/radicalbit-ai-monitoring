@@ -9,6 +9,7 @@ from pyspark.sql.types import StructType, StructField, StringType
 from metrics.statistics import calculate_statistics_current
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
+from utils.reference_regression import ReferenceMetricsRegressionService
 from utils.current_binary import CurrentMetricsService
 from utils.current_multiclass import CurrentMetricsMulticlassService
 from utils.models import JobStatus, ModelOut, ModelType
@@ -89,6 +90,16 @@ def main(
                 serialize_as_any=True
             )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+        case ModelType.REGRESSION:
+            metrics_service = ReferenceMetricsRegressionService(
+                reference=reference_dataset
+            )
+            statistics = calculate_statistics_current(current_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+
+            complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
 
