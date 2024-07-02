@@ -43,16 +43,16 @@ class Distribution(BaseModel):
 
 
 class GroupedMetricsBase(BaseModel):
-    f1: List[Distribution]
-    accuracy: List[Distribution]
+    f1: Optional[List[Distribution]] = None
+    accuracy: Optional[List[Distribution]] = None
     precision: List[Distribution]
     recall: List[Distribution]
     f_measure: List[Distribution]
-    weighted_precision: List[Distribution]
-    weighted_recall: List[Distribution]
-    weighted_f_measure: List[Distribution]
-    weighted_true_positive_rate: List[Distribution]
-    weighted_false_positive_rate: List[Distribution]
+    weighted_precision: Optional[List[Distribution]] = None
+    weighted_recall: Optional[List[Distribution]] = None
+    weighted_f_measure: Optional[List[Distribution]] = None
+    weighted_true_positive_rate: Optional[List[Distribution]] = None
+    weighted_false_positive_rate: Optional[List[Distribution]] = None
     true_positive_rate: List[Distribution]
     false_positive_rate: List[Distribution]
     area_under_roc: Optional[List[Distribution]] = None

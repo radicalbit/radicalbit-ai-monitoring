@@ -29,4 +29,3 @@ class Drift(BaseModel):
     feature_metrics: List[FeatureDrift]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
-

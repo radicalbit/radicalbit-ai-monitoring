@@ -702,45 +702,17 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                                                 "accuracy": {accuracy}
                                             }},
                                             "groupedMetrics": {{
-                                                    "f1": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.8}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}}
-                                                    ],
-                                                    "accuracy": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": {accuracy}}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.9}}
-                                                    ],
                                                     "precision": [
                                                         {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.86}},
                                                         {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.88}}
                                                     ],
                                                     "recall": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.81}},
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": {recall}}},
                                                         {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
                                                     ],
                                                     "fMeasure": [
                                                         {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.8}},
                                                         {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}}
-                                                    ],
-                                                    "weightedPrecision": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.85}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.87}}
-                                                    ],
-                                                    "weightedRecall": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.82}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.84}}
-                                                    ],
-                                                    "weightedFMeasure": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.84}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.86}}
-                                                    ],
-                                                    "weightedTruePositiveRate": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.88}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.9}}
-                                                    ],
-                                                    "weightedFalsePositiveRate": [
-                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.12}},
-                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.1}}
                                                     ],
                                                     "truePositiveRate": [
                                                         {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.81}},
@@ -813,7 +785,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.global_metrics.f_measure == f_measure
         assert metrics.class_metrics[0].class_name == 'classA'
         assert metrics.class_metrics[0].metrics.accuracy == accuracy
-        assert metrics.class_metrics[0].grouped_metrics.accuracy[0].value == accuracy
+        assert metrics.class_metrics[0].grouped_metrics.recall[0].value == recall
         assert metrics.class_metrics[1].class_name == 'classB'
         assert metrics.class_metrics[1].metrics.f_measure == f_measure
         assert metrics.class_metrics[2].class_name == 'classC'
