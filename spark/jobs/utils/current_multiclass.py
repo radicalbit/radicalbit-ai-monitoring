@@ -121,6 +121,8 @@ class CurrentMetricsMulticlassService:
                 ]
             )
 
+        dataset_with_group.show()
+
         list_of_time_group = (
             dataset_with_group.select("time_group")
             .distinct()

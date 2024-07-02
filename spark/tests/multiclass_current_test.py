@@ -252,24 +252,24 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
                     "grouped_metrics": {
                         "true_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.6666666666666666,
                             }
                         ],
                         "false_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "recall": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.6666666666666666,
                             }
                         ],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.8}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.8}
                         ],
                     },
                 },
@@ -284,21 +284,21 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "false_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.14285714285714285,
                             }
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.75}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.75}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 1.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
                         "f_measure": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.8571428571428571,
                             }
                         ],
@@ -316,27 +316,27 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
                     "grouped_metrics": {
                         "true_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.3333333333333333,
                             }
                         ],
                         "false_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.14285714285714285,
                             }
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.5}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.5}
                         ],
                         "recall": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.3333333333333333,
                             }
                         ],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.4}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.4}
                         ],
                     },
                 },
@@ -351,20 +351,20 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "false_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.2222222222222222,
                             }
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 0.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 0.0}],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                     },
                 },
@@ -564,21 +564,21 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "false_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.14285714285714285,
                             }
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.75}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.75}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 1.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
                         "f_measure": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.8571428571428571,
                             }
                         ],
@@ -595,20 +595,20 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "false_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.2222222222222222,
                             }
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 0.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 0.0}],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                     },
                 },
@@ -624,24 +624,24 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
                     "grouped_metrics": {
                         "true_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.6666666666666666,
                             }
                         ],
                         "false_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "recall": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.6666666666666666,
                             }
                         ],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.8}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.8}
                         ],
                     },
                 },
@@ -657,27 +657,27 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
                     "grouped_metrics": {
                         "true_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.3333333333333333,
                             }
                         ],
                         "false_positive_rate": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.14285714285714285,
                             }
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.5}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.5}
                         ],
                         "recall": [
                             {
-                                "timestamp": "2024-06-16 07:00:00",
+                                "timestamp": "2024-06-16 00:00:00",
                                 "value": 0.3333333333333333,
                             }
                         ],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.4}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.4}
                         ],
                     },
                 },
@@ -877,17 +877,17 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "false_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 1.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                     },
                 },
@@ -902,17 +902,17 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "false_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 1.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                     },
                 },
@@ -927,17 +927,17 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "false_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 1.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                     },
                 },
@@ -952,17 +952,17 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
                     },
                     "grouped_metrics": {
                         "true_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                         "false_positive_rate": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 0.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
                         ],
                         "precision": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
-                        "recall": [{"timestamp": "2024-06-16 07:00:00", "value": 1.0}],
+                        "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
                         "f_measure": [
-                            {"timestamp": "2024-06-16 07:00:00", "value": 1.0}
+                            {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
                         ],
                     },
                 },
