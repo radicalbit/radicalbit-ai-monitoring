@@ -2,7 +2,7 @@ blank_issues_enabled: false
 contact_links:
   - name: Report a bug
     url: https://github.com/radicalbit/radicalbit-ai-monitoring/issues
-    about: This is the issue tracker for our backend. Please report issues with the UI in the frontend repository.
+    about: This is the issue tracker.
   - name: Feature Request
     url: https://github.com/radicalbit/radicalbit-ai-monitoring/issues?q=is%3Aissue+label%3A%22Feature+Request%22+
     about: Please create a feature request for making feature requests.
