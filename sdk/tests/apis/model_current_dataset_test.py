@@ -508,7 +508,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                              "median_metrics":{"median":3.0, "perc_25":2.0, "perc_75":3.0},
                              "class_median_metrics":[]
                           }
-                        ] 
+                        ]
                     }
                 }""",
         )
