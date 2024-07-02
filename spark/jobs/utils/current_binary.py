@@ -175,8 +175,19 @@ class CurrentMetricsService:
                 case Granularity.MONTH:
                     return "yyyy-MM"
 
+        current_df_clean = self.current.filter(
+            ~(
+                f.col(self.model.outputs.prediction.name).isNull()
+                | f.isnan(f.col(self.model.outputs.prediction.name))
+            )
+            & ~(
+                f.col(self.model.target.name).isNull()
+                | f.isnan(f.col(self.model.target.name))
+            )
+        )
+
         if self.model.granularity == Granularity.WEEK:
-            dataset_with_group = self.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.model.outputs.prediction.name,
                     self.model.target.name,
@@ -198,7 +209,7 @@ class CurrentMetricsService:
                 ]
             )
         else:
-            dataset_with_group = self.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.model.outputs.prediction.name,
                     self.model.target.name,
@@ -251,8 +262,19 @@ class CurrentMetricsService:
                 case Granularity.MONTH:
                     return "yyyy-MM"
 
+        current_df_clean = self.current.filter(
+            ~(
+                f.col(self.model.outputs.prediction_proba.name).isNull()
+                | f.isnan(f.col(self.model.outputs.prediction_proba.name))
+            )
+            & ~(
+                f.col(self.model.target.name).isNull()
+                | f.isnan(f.col(self.model.target.name))
+            )
+        )
+
         if self.model.granularity == Granularity.WEEK:
-            dataset_with_group = self.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.model.outputs.prediction_proba.name,
                     self.model.target.name,
@@ -274,7 +296,7 @@ class CurrentMetricsService:
                 ]
             )
         else:
-            dataset_with_group = self.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.model.outputs.prediction_proba.name,
                     self.model.target.name,
@@ -315,9 +337,17 @@ class CurrentMetricsService:
 
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
-            self.current.select(
-                [self.model.outputs.prediction.name, self.model.target.name]
+            self.current.filter(
+                ~(
+                    f.col(self.model.outputs.prediction.name).isNull()
+                    | f.isnan(f.col(self.model.outputs.prediction.name))
+                )
+                & ~(
+                    f.col(self.model.target.name).isNull()
+                    | f.isnan(f.col(self.model.target.name))
+                )
             )
+            .select([self.model.outputs.prediction.name, self.model.target.name])
             .withColumn(self.model.target.name, f.col(self.model.target.name))
             .orderBy(self.model.target.name)
         )
