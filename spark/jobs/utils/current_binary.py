@@ -15,6 +15,7 @@ from models.data_quality import (
     ClassMetrics,
     BinaryClassDataQuality,
 )
+from .misc import create_time_format
 from .models import ModelOut, Granularity
 from .ks import KolmogorovSmirnovTest
 from .chi2 import Chi2Test
@@ -164,17 +165,6 @@ class CurrentMetricsService:
             return float("nan")
 
     def calculate_multiclass_model_quality_group_by_timestamp(self):
-        def create_time_format(granularity: Granularity):
-            match granularity:
-                case Granularity.HOUR:
-                    return "yyyy-MM-dd HH"
-                case Granularity.DAY:
-                    return "yyyy-MM-dd"
-                case Granularity.WEEK:
-                    return "yyyy-MM-dd"
-                case Granularity.MONTH:
-                    return "yyyy-MM"
-
         if self.model.granularity == Granularity.WEEK:
             dataset_with_group = self.current.select(
                 [
@@ -240,17 +230,6 @@ class CurrentMetricsService:
         }
 
     def calculate_binary_class_model_quality_group_by_timestamp(self):
-        def create_time_format(granularity: Granularity):
-            match granularity:
-                case Granularity.HOUR:
-                    return "yyyy-MM-dd HH"
-                case Granularity.DAY:
-                    return "yyyy-MM-dd"
-                case Granularity.WEEK:
-                    return "yyyy-MM-dd"
-                case Granularity.MONTH:
-                    return "yyyy-MM"
-
         if self.model.granularity == Granularity.WEEK:
             dataset_with_group = self.current.select(
                 [

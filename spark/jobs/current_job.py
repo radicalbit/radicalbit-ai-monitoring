@@ -79,9 +79,8 @@ def main(
         case ModelType.MULTI_CLASS:
             metrics_service = CurrentMetricsMulticlassService(
                 spark_session=spark_session,
-                current=current_dataset.current,
-                reference=reference_dataset.reference,
-                model=model,
+                current=current_dataset,
+                reference=reference_dataset,
             )
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality()
