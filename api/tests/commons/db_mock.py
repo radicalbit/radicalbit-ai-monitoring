@@ -167,66 +167,68 @@ binary_model_quality_dict = {
     **model_quality_base_dict,
 }
 
+grouped_metrics_dict = {
+    'f1': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
+    ],
+    'accuracy': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.88},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.9},
+    ],
+    'precision': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.86},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.88},
+    ],
+    'recall': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.81},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.83},
+    ],
+    'fMeasure': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
+    ],
+    'weightedPrecision': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.85},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.87},
+    ],
+    'weightedRecall': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.82},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.84},
+    ],
+    'weightedFMeasure': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.84},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.86},
+    ],
+    'weightedTruePositiveRate': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.88},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.9},
+    ],
+    'weightedFalsePositiveRate': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.12},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.1},
+    ],
+    'truePositiveRate': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.81},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.83},
+    ],
+    'falsePositiveRate': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.14},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.12},
+    ],
+    'areaUnderRoc': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.94},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.95},
+    ],
+    'areaUnderPr': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.91},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.92},
+    ],
+}
+
 binary_current_model_quality_dict = {
     'globalMetrics': binary_model_quality_dict,
-    'groupedMetrics': {
-        'f1': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
-        ],
-        'accuracy': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.88},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.9},
-        ],
-        'precision': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.86},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.88},
-        ],
-        'recall': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.81},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.83},
-        ],
-        'fMeasure': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
-        ],
-        'weightedPrecision': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.85},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.87},
-        ],
-        'weightedRecall': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.82},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.84},
-        ],
-        'weightedFMeasure': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.84},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.86},
-        ],
-        'weightedTruePositiveRate': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.88},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.9},
-        ],
-        'weightedFalsePositiveRate': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.12},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.1},
-        ],
-        'truePositiveRate': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.81},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.83},
-        ],
-        'falsePositiveRate': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.14},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.12},
-        ],
-        'areaUnderRoc': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.94},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.95},
-        ],
-        'areaUnderPr': [
-            {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.91},
-            {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.92},
-        ],
-    },
+    'groupedMetrics': grouped_metrics_dict,
 }
 
 multiclass_model_quality_dict = {
@@ -239,14 +241,17 @@ multiclass_model_quality_dict = {
         {
             'class_name': 'classA',
             'metrics': model_quality_base_dict,
+            'grouped_metrics': grouped_metrics_dict,
         },
         {
             'class_name': 'classB',
             'metrics': model_quality_base_dict,
+            'grouped_metrics': grouped_metrics_dict,
         },
         {
             'class_name': 'classC',
             'metrics': model_quality_base_dict,
+            'grouped_metrics': grouped_metrics_dict,
         },
     ],
     'global_metrics': {
