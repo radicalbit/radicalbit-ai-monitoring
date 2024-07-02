@@ -372,7 +372,6 @@ class MetricsServiceTest(unittest.TestCase):
         model = db_mock.get_sample_model()
         current_dataset = db_mock.get_sample_current_dataset(status=status.value)
         current_metrics = db_mock.get_sample_current_metrics()
-        self.model_service.get_model_by_uuid = MagicMock(return_value=model)
         self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
             return_value=current_dataset
         )
@@ -380,7 +379,6 @@ class MetricsServiceTest(unittest.TestCase):
             return_value=current_metrics
         )
         res = self.metrics_service.get_current_drift(model.uuid, current_dataset.uuid)
-        self.model_service.get_model_by_uuid.assert_called_once_with(model.uuid)
         self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
             model.uuid, current_dataset.uuid
         )
@@ -390,46 +388,37 @@ class MetricsServiceTest(unittest.TestCase):
 
         assert res == DriftDTO.from_dict(
             job_status=status,
-            model_type=model.model_type,
             drift_data=current_metrics.drift,
         )
 
     def test_get_empty_current_drift(self):
         status = JobStatus.IMPORTING
-        model = db_mock.get_sample_model()
         current_dataset = db_mock.get_sample_current_dataset(status=status.value)
-        self.model_service.get_model_by_uuid = MagicMock(return_value=model)
         self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
             return_value=current_dataset
         )
-        res = self.metrics_service.get_current_drift(model.uuid, current_dataset.uuid)
-        self.model_service.get_model_by_uuid.assert_called_once_with(model.uuid)
+        res = self.metrics_service.get_current_drift(model_uuid, current_dataset.uuid)
         self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
-            model.uuid, current_dataset.uuid
+            model_uuid, current_dataset.uuid
         )
 
         assert res == DriftDTO.from_dict(
             job_status=status,
-            model_type=model.model_type,
             drift_data=None,
         )
 
     def test_get_missing_current_drift(self):
         status = JobStatus.MISSING_CURRENT
-        model = db_mock.get_sample_model()
-        self.model_service.get_model_by_uuid = MagicMock(return_value=model)
         self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
             return_value=None
         )
         res = self.metrics_service.get_current_drift(model_uuid, current_uuid)
-        self.model_service.get_model_by_uuid.assert_called_once_with(model.uuid)
         self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
             model_uuid, current_uuid
         )
 
         assert res == DriftDTO.from_dict(
             job_status=status,
-            model_type=model.model_type,
             drift_data=None,
         )
 
