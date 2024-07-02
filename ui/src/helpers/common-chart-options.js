@@ -117,19 +117,21 @@ const lineGridOptions = () => ({
 
 const heatmapGridOptions = () => ({
   grid: {
-    bottom: 80,
+    bottom: 24,
     top: 0,
     left: 64,
-    right: 0,
+    right: 60,
   },
 });
 
-const heatmapVisualMapOptions = (dataMax, colors) => {
+const heatmapVisualMapOptions = (dataMax, colors, itemHeight) => {
   const options = {
     visualMap: {
       calculable: true,
-      orient: 'horizontal',
-      left: 'center',
+      orient: 'vertical',
+      right: 'right',
+      top: 'center',
+      itemHeight,
     },
   };
 

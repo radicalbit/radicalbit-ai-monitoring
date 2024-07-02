@@ -70,6 +70,7 @@ class CurrentBinaryClassificationModelQuality(ModelQuality):
 class ClassMetrics(BaseModel):
     class_name: str
     metrics: MetricsBase
+    grouped_metrics: Optional[GroupedMetricsBase] = None
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
@@ -86,10 +87,6 @@ class MultiClassificationModelQuality(ModelQuality):
     global_metrics: GlobalMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
-
-
-class CurrentMultiClassificationModelQuality(ModelQuality):
-    pass
 
 
 class RegressionModelQuality(ModelQuality):

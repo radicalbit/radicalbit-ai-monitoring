@@ -10,13 +10,13 @@ from radicalbit_platform_sdk.models import (
     ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
-    CurrentMultiClassificationModelQuality,
     DataQuality,
     DatasetStats,
     Drift,
     JobStatus,
     ModelQuality,
     ModelType,
+    MultiClassificationModelQuality,
     RegressionDataQuality,
     RegressionModelQuality,
 )
@@ -241,7 +241,7 @@ class ModelCurrentDataset:
                         case ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                CurrentMultiClassificationModelQuality.model_validate(
+                                MultiClassificationModelQuality.model_validate(
                                     response_json['modelQuality']
                                 ),
                             )
