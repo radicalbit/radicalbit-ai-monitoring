@@ -28,7 +28,7 @@ body:
       required: true
     attributes:
       label: What version of Radicalbit AI Monitoring has the issue?
-      placeholder: core-
+      placeholder: v0.8.X
   - type: markdown
     attributes:
       value: |
