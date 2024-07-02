@@ -14,7 +14,9 @@ echarts.use([
   VisualMapComponent,
 ]);
 
-function ConfusionMatrix({ dataset, labelClass, colors }) {
+function ConfusionMatrix({
+  dataset, labelClass, colors, height = '20rem',
+}) {
   if (!dataset) return false;
 
   const handleOnChartReady = (echart) => {
@@ -31,7 +33,7 @@ function ConfusionMatrix({ dataset, labelClass, colors }) {
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={confusionMatrixOptions(dataset, labelClass, colors)}
-          style={{ height: '20rem' }}
+          style={{ height }}
         />
       )}
       size="small"
