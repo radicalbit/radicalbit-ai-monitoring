@@ -72,6 +72,20 @@ class NumericalFeatureMetrics(FeatureMetrics):
     )
 
 
+class NumericalTargetMetrics(FeatureMetrics):
+    type: str = 'numerical'
+    mean: float
+    std: float
+    min: float
+    max: float
+    median_metrics: MedianMetrics
+    histogram: Histogram
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
 class CategoryFrequency(BaseModel):
     name: str
     count: int
@@ -116,7 +130,16 @@ class ClassificationDataQuality(BaseModel):
 
 
 class RegressionDataQuality(BaseModel):
-    pass
+    n_observations: int
+    target_metrics: NumericalTargetMetrics
+    feature_metrics: List[NumericalFeatureMetrics]
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        protected_namespaces=(),
+    )
 
 
 class DataQualityDTO(BaseModel):

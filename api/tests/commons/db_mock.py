@@ -265,7 +265,7 @@ multiclass_model_quality_dict = {
     },
 }
 
-data_quality_dict = {
+classification_data_quality_dict = {
     'nObservations': 200,
     'classMetrics': [
         {'name': 'classA', 'count': 100, 'percentage': 50.0},
@@ -312,6 +312,56 @@ data_quality_dict = {
     ],
 }
 
+regression_data_quality_dict = {
+    'nObservations': 200,
+    'targetMetrics': {
+        'max': 3410.0,
+        'min': 2.0,
+        'std': 686.62,
+        'mean': 848.12,
+        'type': 'numerical',
+        'histogram': {
+            'buckets': [2.0, 342.8, 683.6, 1024.4],
+            'reference_values': [204, 144, 165, 89],
+        },
+        'feature_name': 'ground_truth',
+        'missing_value': {'count': 0, 'percentage': 0.0},
+        'median_metrics': {'median': 713.0, 'perc_25': 315.0, 'perc_75': 1097.0},
+    },
+    'featureMetrics': [
+        {
+            'max': 731.0,
+            'min': 1.0,
+            'std': 211.16,
+            'mean': 366.0,
+            'type': 'numerical',
+            'histogram': {
+                'buckets': [1.0, 74.0, 147.0, 220.0],
+                'reference_values': [73, 73, 73, 73],
+            },
+            'feature_name': 'instant',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'median_metrics': {'median': 366.0, 'perc_25': 183.5, 'perc_75': 548.5},
+            'class_median_metrics': [],
+        },
+        {
+            'max': 4.0,
+            'min': 1.0,
+            'std': 1.12,
+            'mean': 2.49,
+            'type': 'numerical',
+            'histogram': {
+                'buckets': [1.0, 1.3, 1.6, 1.9],
+                'reference_values': [181, 0, 0, 184],
+            },
+            'feature_name': 'season',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'median_metrics': {'median': 3.0, 'perc_25': 2.0, 'perc_75': 3.0},
+            'class_median_metrics': [],
+        },
+    ],
+}
+
 drift_dict = {
     'featureMetrics': [
         {
@@ -333,7 +383,7 @@ drift_dict = {
 def get_sample_reference_metrics(
     reference_uuid: uuid.UUID = REFERENCE_UUID,
     model_quality: Dict = binary_model_quality_dict,
-    data_quality: Dict = data_quality_dict,
+    data_quality: Dict = classification_data_quality_dict,
     statistics: Dict = statistics_dict,
 ) -> ReferenceDatasetMetrics:
     return ReferenceDatasetMetrics(
@@ -347,7 +397,7 @@ def get_sample_reference_metrics(
 def get_sample_current_metrics(
     current_uuid: uuid.UUID = CURRENT_UUID,
     model_quality: Dict = binary_current_model_quality_dict,
-    data_quality: Dict = data_quality_dict,
+    data_quality: Dict = classification_data_quality_dict,
     statistics: Dict = statistics_dict,
     drift: Dict = drift_dict,
 ) -> CurrentDatasetMetrics:

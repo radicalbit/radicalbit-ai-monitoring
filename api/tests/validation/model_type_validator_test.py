@@ -52,7 +52,9 @@ def test_prediction_for_binary():
 def test_prediction_for_multiclass():
     """Tests that for ModelType.MULTI_CLASS: prediction must be a number or string."""
     with pytest.raises(ValidationError) as excinfo:
-        model_data = get_model_sample_wrong(['outputs.prediction'], ModelType.MULTI_CLASS)
+        model_data = get_model_sample_wrong(
+            ['outputs.prediction'], ModelType.MULTI_CLASS
+        )
         ModelIn.model_validate(ModelIn(**model_data))
     assert 'prediction must be a number or string for a ModelType.MULTI_CLASS' in str(
         excinfo.value
@@ -62,7 +64,9 @@ def test_prediction_for_multiclass():
 def test_prediction_for_regression():
     """Tests that for ModelType.REGRESSION: prediction must be a number."""
     with pytest.raises(ValidationError) as excinfo:
-        model_data = get_model_sample_wrong(['outputs.prediction'], ModelType.REGRESSION)
+        model_data = get_model_sample_wrong(
+            ['outputs.prediction'], ModelType.REGRESSION
+        )
         ModelIn.model_validate(ModelIn(**model_data))
     assert 'prediction must be a number for a ModelType.REGRESSION' in str(
         excinfo.value
