@@ -1,4 +1,6 @@
 import { API_TAGS, apiService } from '@Src/store/apis';
+import currentModelQualityMulticlass from './mock/multiclass_current_model_quality.json';
+import currentDataQualityMulticlass from './mock/current_data_quality.json';
 
 export const modelsApiSlice = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -133,20 +135,22 @@ export const modelsApiSlice = apiService.injectEndpoints({
 
     getCurrentDataQuality: builder.query({
       providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-      query: ({ uuid, currentUUID }) => ({
+      /*  query: ({ uuid, currentUUID }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/models/${uuid}/current/${currentUUID}/data-quality`,
         method: 'get',
-      }),
+      }), */
+      queryFn: () => ({ data: { jobStatus: 'SUCCEEDED', dataQuality: currentDataQualityMulticlass } }),
     }),
 
     getCurrentModelQuality: builder.query({
       providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-      query: ({ uuid, currentUUID }) => ({
+      /*   query: ({ uuid, currentUUID }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/models/${uuid}/current/${currentUUID}/model-quality`,
         method: 'get',
-      }),
+      }), */
+      queryFn: () => ({ data: currentModelQualityMulticlass }),
     }),
 
     getCurrentImports: builder.query({
