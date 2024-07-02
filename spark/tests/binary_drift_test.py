@@ -120,7 +120,7 @@ def test_drift(spark_fixture, drift_dataset):
                     "drift_calc": {
                         "type": "CHI2",
                         "value": 0.0004993992273872871,
-                        "has_drift": False,
+                        "has_drift": True,
                     },
                 },
                 {
@@ -128,7 +128,7 @@ def test_drift(spark_fixture, drift_dataset):
                     "drift_calc": {
                         "type": "CHI2",
                         "value": 0.49015296041582523,
-                        "has_drift": True,
+                        "has_drift": False,
                     },
                 },
                 {
@@ -284,7 +284,7 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
                     "drift_calc": {
                         "type": "CHI2",
                         "value": 0.0012340980408668267,
-                        "has_drift": False,
+                        "has_drift": True,
                     },
                 },
                 {
@@ -292,7 +292,7 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
                     "drift_calc": {
                         "type": "CHI2",
                         "value": 0.002699796063260207,
-                        "has_drift": False,
+                        "has_drift": True,
                     },
                 },
                 {
@@ -370,7 +370,7 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
                     "drift_calc": {
                         "type": "CHI2",
                         "value": 0.26994857272252293,
-                        "has_drift": True,
+                        "has_drift": False,
                     },
                 },
                 {
@@ -378,7 +378,7 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
                     "drift_calc": {
                         "type": "CHI2",
                         "value": 0.3894236957350261,
-                        "has_drift": True,
+                        "has_drift": False,
                     },
                 },
                 {

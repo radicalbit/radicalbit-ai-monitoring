@@ -89,12 +89,16 @@ def main(
                 reference=reference_dataset
             )
             statistics = calculate_statistics_reference(reference_dataset)
+            data_quality = metrics_service.calculate_data_quality()
             model_quality = metrics_service.calculate_model_quality()
 
             complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
             complete_record["MODEL_QUALITY"] = model_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
 

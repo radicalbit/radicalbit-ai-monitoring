@@ -43,8 +43,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=column_def,
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
             ),
         )
         responses.add(
@@ -82,8 +80,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
             ),
         )
         response = ReferenceFileUpload(
@@ -129,8 +125,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
             ),
         )
         response = ReferenceFileUpload(
@@ -176,8 +170,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
             ),
         )
         response = ReferenceFileUpload(
@@ -214,8 +206,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=None,
-                latest_current_uuid=None,
             ),
         )
         with pytest.raises(ClientError):
@@ -249,8 +239,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
             ),
         )
         response = CurrentFileUpload(
@@ -302,8 +290,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=uuid.uuid4(),
-                latest_current_uuid=uuid.uuid4(),
             ),
         )
         response = CurrentFileUpload(
@@ -346,8 +332,6 @@ class ModelTest(unittest.TestCase):
                 timestamp=ColumnDefinition(name='created_at', type='str'),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
-                latest_reference_uuid=None,
-                latest_current_uuid=None,
             ),
         )
         with pytest.raises(ClientError):

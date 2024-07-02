@@ -13,6 +13,7 @@ from models.data_quality import (
     Histogram,
     CategoricalFeatureMetrics,
     ClassMetrics,
+    NumericalTargetMetrics,
 )
 from utils.misc import split_dict
 from utils.models import ModelOut
@@ -383,3 +384,47 @@ class DataQualityCalculator:
         ]
 
         return numerical_features_metrics
+
+    def regression_target_metrics(
+        target_column: str, dataframe: DataFrame, dataframe_count: int
+    ) -> NumericalTargetMetrics:
+        target_metrics = (
+            dataframe.select(target_column)
+            .filter(F.isnotnull(target_column))
+            .agg(
+                F.mean(target_column).alias("mean"),
+                F.stddev(target_column).alias("std"),
+                F.max(target_column).alias("max"),
+                F.min(target_column).alias("min"),
+                F.median(target_column).alias("median"),
+                F.percentile_approx(target_column, 0.25).alias("perc_25"),
+                F.percentile_approx(target_column, 0.75).alias("perc_75"),
+                F.count(F.when(F.col(target_column).isNull(), target_column)).alias(
+                    "missing_values"
+                ),
+                (
+                    (
+                        F.count(
+                            F.when(
+                                F.col(target_column).isNull() | F.isnan(target_column),
+                                target_column,
+                            )
+                        )
+                        / dataframe_count
+                    )
+                    * 100
+                ).alias("missing_values_perc"),
+            )
+            .toPandas()
+            .iloc[0]
+            .to_dict()
+        )
+
+        _histogram = (
+            dataframe.select(target_column).rdd.flatMap(lambda x: x).histogram(10)
+        )
+        histogram = Histogram(buckets=_histogram[0], reference_values=_histogram[1])
+
+        return NumericalTargetMetrics.from_dict(
+            target_column, target_metrics, histogram
+        )

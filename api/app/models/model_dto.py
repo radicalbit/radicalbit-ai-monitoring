@@ -6,8 +6,11 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, model_validator
 from pydantic.alias_generators import to_camel
 
+from app.db.dao.current_dataset_dao import CurrentDataset
 from app.db.dao.model_dao import Model
+from app.db.dao.reference_dataset_dao import ReferenceDataset
 from app.models.inferred_schema_dto import SupportedTypes
+from app.models.job_status import JobStatus
 from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
 
 
@@ -42,6 +45,7 @@ class OutputType(BaseModel, validate_assignment=True):
     prediction: ColumnDefinition
     prediction_proba: Optional[ColumnDefinition] = None
     output: List[ColumnDefinition]
+
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
     def to_dict(self):
@@ -72,19 +76,19 @@ class ModelIn(BaseModel, validate_assignment=True):
             case ModelType.BINARY:
                 if not is_number(self.target.type):
                     raise ValueError(
-                        f'target must be a number for a ModelType.BINARY, has been provided [{self.target}]'
+                        f'target must be a number for a {checked_model_type}, has been provided [{self.target}]'
                     )
                 return self
             case ModelType.MULTI_CLASS:
                 if not is_number_or_string(self.target.type):
                     raise ValueError(
-                        f'target must be a number or string for a ModelType.MULTI_CLASS, has been provided [{self.target}]'
+                        f'target must be a number or string for a {checked_model_type}, has been provided [{self.target}]'
                     )
                 return self
             case ModelType.REGRESSION:
                 if not is_number(self.target.type):
                     raise ValueError(
-                        f'target must be a number for a ModelType.REGRESSION, has been provided [{self.target}]'
+                        f'target must be a number for a {checked_model_type}, has been provided [{self.target}]'
                     )
                 return self
             case _:
@@ -97,31 +101,37 @@ class ModelIn(BaseModel, validate_assignment=True):
             case ModelType.BINARY:
                 if not is_number(self.outputs.prediction.type):
                     raise ValueError(
-                        f'prediction must be a number for a ModelType.BINARY, has been provided [{self.outputs.prediction}]'
+                        f'prediction must be a number for a {checked_model_type}, has been provided [{self.outputs.prediction}]'
                     )
-                if not is_optional_float(self.outputs.prediction_proba.type):
+                if not is_none(self.outputs.prediction_proba) and not is_optional_float(
+                    self.outputs.prediction_proba.type
+                ):
                     raise ValueError(
-                        f'prediction_proba must be an optional float for a ModelType.BINARY, has been provided [{self.outputs.prediction_proba}]'
+                        f'prediction_proba must be an optional float for a {checked_model_type}, has been provided [{self.outputs.prediction_proba}]'
                     )
                 return self
             case ModelType.MULTI_CLASS:
                 if not is_number_or_string(self.outputs.prediction.type):
                     raise ValueError(
-                        f'prediction must be a number or string for a ModelType.MULTI_CLASS, has been provided [{self.outputs.prediction}]'
+                        f'prediction must be a number or string for a {checked_model_type}, has been provided [{self.outputs.prediction}]'
                     )
-                if not is_optional_float(self.outputs.prediction_proba.type):
+                if not is_none(self.outputs.prediction_proba) and not is_optional_float(
+                    self.outputs.prediction_proba.type
+                ):
                     raise ValueError(
-                        f'prediction_proba must be an optional float for a ModelType.MULTI_CLASS, has been provided [{self.outputs.prediction_proba}]'
+                        f'prediction_proba must be an optional float for a {checked_model_type}, has been provided [{self.outputs.prediction_proba}]'
                     )
                 return self
             case ModelType.REGRESSION:
                 if not is_number(self.outputs.prediction.type):
                     raise ValueError(
-                        f'prediction must be a number for a ModelType.REGRESSION, has been provided [{self.outputs.prediction}]'
+                        f'prediction must be a number for a {checked_model_type}, has been provided [{self.outputs.prediction}]'
                     )
-                if not is_none(self.outputs.prediction_proba.type):
+                if not is_none(self.outputs.prediction_proba) and not is_none(
+                    self.outputs.prediction_proba.type
+                ):
                     raise ValueError(
-                        f'prediction_proba must be None for a ModelType.REGRESSION, has been provided [{self.outputs.prediction_proba}]'
+                        f'prediction_proba must be None for a {checked_model_type}, has been provided [{self.outputs.prediction_proba}]'
                     )
                 return self
             case _:
@@ -169,6 +179,8 @@ class ModelOut(BaseModel):
     updated_at: str
     latest_reference_uuid: Optional[UUID]
     latest_current_uuid: Optional[UUID]
+    latest_reference_job_status: JobStatus
+    latest_current_job_status: JobStatus
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
@@ -177,9 +189,27 @@ class ModelOut(BaseModel):
     @staticmethod
     def from_model(
         model: Model,
-        latest_reference_uuid: Optional[UUID] = None,
-        latest_current_uuid: Optional[UUID] = None,
+        latest_reference_dataset: Optional[ReferenceDataset] = None,
+        latest_current_dataset: Optional[CurrentDataset] = None,
     ):
+        latest_reference_uuid = (
+            latest_reference_dataset.uuid if latest_reference_dataset else None
+        )
+        latest_current_uuid = (
+            latest_current_dataset.uuid if latest_current_dataset else None
+        )
+
+        latest_reference_job_status = (
+            latest_reference_dataset.status
+            if latest_reference_dataset
+            else JobStatus.MISSING_REFERENCE
+        )
+        latest_current_job_status = (
+            latest_current_dataset.status
+            if latest_current_dataset
+            else JobStatus.MISSING_CURRENT
+        )
+
         return ModelOut(
             uuid=model.uuid,
             name=model.name,
@@ -197,4 +227,6 @@ class ModelOut(BaseModel):
             updated_at=str(model.updated_at),
             latest_reference_uuid=latest_reference_uuid,
             latest_current_uuid=latest_current_uuid,
+            latest_reference_job_status=latest_reference_job_status,
+            latest_current_job_status=latest_current_job_status,
         )

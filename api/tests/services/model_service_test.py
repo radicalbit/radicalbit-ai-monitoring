@@ -55,8 +55,8 @@ class ModelServiceTest(unittest.TestCase):
 
         assert res == ModelOut.from_model(
             model=model,
-            latest_reference_uuid=reference_dataset.uuid,
-            latest_current_uuid=current_dataset.uuid,
+            latest_reference_dataset=reference_dataset,
+            latest_current_dataset=current_dataset,
         )
 
     def test_get_model_by_uuid_not_found(self):
