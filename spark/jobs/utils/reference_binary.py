@@ -75,14 +75,38 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def __calc_bc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_binary_classification(self.reference, name)
+            label: self.__evaluate_binary_classification(
+                self.reference.filter(
+                    ~(
+                        f.col(self.model.outputs.prediction_proba.name).isNull()
+                        | f.isnan(f.col(self.model.outputs.prediction_proba.name))
+                    )
+                    & ~(
+                        f.col(self.model.target.name).isNull()
+                        | f.isnan(f.col(self.model.target.name))
+                    )
+                ),
+                name,
+            )
             for (name, label) in self.model_quality_binary_classificator.items()
         }
 
     # FIXME use pydantic struct like data quality
     def __calc_mc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_multi_class_classification(self.reference, name)
+            label: self.__evaluate_multi_class_classification(
+                self.reference.filter(
+                    ~(
+                        f.col(self.model.outputs.prediction.name).isNull()
+                        | f.isnan(f.col(self.model.outputs.prediction.name))
+                    )
+                    & ~(
+                        f.col(self.model.target.name).isNull()
+                        | f.isnan(f.col(self.model.target.name))
+                    )
+                ),
+                name,
+            )
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
 
@@ -98,9 +122,17 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
-            self.reference.select(
-                [self.model.outputs.prediction.name, self.model.target.name]
+            self.reference.filter(
+                ~(
+                    f.col(self.model.outputs.prediction.name).isNull()
+                    | f.isnan(f.col(self.model.outputs.prediction.name))
+                )
+                & ~(
+                    f.col(self.model.target.name).isNull()
+                    | f.isnan(f.col(self.model.target.name))
+                )
             )
+            .select([self.model.outputs.prediction.name, self.model.target.name])
             .withColumn(self.model.target.name, f.col(self.model.target.name))
             .orderBy(self.model.target.name)
         )

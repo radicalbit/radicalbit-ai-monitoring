@@ -132,7 +132,19 @@ class CurrentMetricsService:
     # FIXME use pydantic struct like data quality
     def __calc_mc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_multi_class_classification(self.current, name)
+            label: self.__evaluate_multi_class_classification(
+                self.current.filter(
+                    ~(
+                        f.col(self.model.outputs.prediction.name).isNull()
+                        | f.isnan(f.col(self.model.outputs.prediction.name))
+                    )
+                    & ~(
+                        f.col(self.model.target.name).isNull()
+                        | f.isnan(f.col(self.model.target.name))
+                    )
+                ),
+                name,
+            )
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
 

@@ -74,6 +74,13 @@ def dataset_bool_missing(spark_fixture, test_data_dir):
     )
 
 
+@pytest.fixture()
+def dataset_with_nulls(spark_fixture, test_data_dir):
+    yield spark_fixture.read.csv(
+        f"{test_data_dir}/reference/dataset_nulls.csv", header=True
+    )
+
+
 def test_calculation(spark_fixture, dataset):
     output = OutputType(
         prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
@@ -2030,6 +2037,75 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
                     "distinct_value": 2,
                 },
             ],
+        },
+        ignore_order=True,
+        significant_digits=6,
+    )
+
+
+def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
+    output = OutputType(
+        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction_proba=ColumnDefinition(
+            name="prediction_proba", type=SupportedTypes.float
+        ),
+        output=[
+            ColumnDefinition(name="prediction", type=SupportedTypes.float),
+            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+        ],
+    )
+    target = ColumnDefinition(name="target", type=SupportedTypes.float)
+    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    granularity = Granularity.HOUR
+    features = [
+        ColumnDefinition(name="cat1", type=SupportedTypes.string),
+        ColumnDefinition(name="cat2", type=SupportedTypes.string),
+        ColumnDefinition(name="num1", type=SupportedTypes.float),
+        ColumnDefinition(name="num2", type=SupportedTypes.float),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="model",
+        description="description",
+        model_type=ModelType.BINARY,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_with_nulls)
+    metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    assert not deepdiff.DeepDiff(
+        model_quality,
+        {
+            "f1": 1.0,
+            "accuracy": 1.0,
+            "weighted_precision": 1.0,
+            "weighted_recall": 1.0,
+            "weighted_true_positive_rate": 1.0,
+            "weighted_false_positive_rate": 0.0,
+            "weighted_f_measure": 1.0,
+            "true_positive_rate": 1.0,
+            "false_positive_rate": 0.0,
+            "precision": 1.0,
+            "recall": 1.0,
+            "f_measure": 1.0,
+            "true_positive_count": 5,
+            "false_positive_count": 0,
+            "true_negative_count": 3,
+            "false_negative_count": 0,
+            "area_under_roc": 0.5333333333333334,
+            "area_under_pr": 0.6529761904761904,
         },
         ignore_order=True,
         significant_digits=6,

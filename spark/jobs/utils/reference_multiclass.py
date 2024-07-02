@@ -3,6 +3,7 @@ from typing import List, Dict
 from pyspark.ml.evaluation import MulticlassClassificationEvaluator
 from pyspark.mllib.evaluation import MulticlassMetrics
 from pyspark.sql import DataFrame
+import pyspark.sql.functions as f
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from models.reference_dataset import ReferenceDataset
@@ -57,7 +58,22 @@ class ReferenceMetricsMulticlassService:
                 "class_name": label,
                 "metrics": {
                     metric_label: self.__evaluate_multi_class_classification(
-                        self.indexed_reference, metric_name, float(index)
+                        self.indexed_reference.filter(
+                            ~(
+                                f.col(
+                                    self.reference.model.outputs.prediction.name
+                                ).isNull()
+                                | f.isnan(
+                                    f.col(self.reference.model.outputs.prediction.name)
+                                )
+                            )
+                            & ~(
+                                f.col(self.reference.model.target.name).isNull()
+                                | f.isnan(f.col(self.reference.model.target.name))
+                            )
+                        ),
+                        metric_name,
+                        float(index),
                     )
                     for (
                         metric_name,
@@ -80,12 +96,25 @@ class ReferenceMetricsMulticlassService:
         }
 
     def __calc_confusion_matrix(self):
-        prediction_and_labels = self.indexed_reference.select(
-            *[
-                f"{self.reference.model.outputs.prediction.name}-idx",
-                f"{self.reference.model.target.name}-idx",
-            ]
-        ).rdd
+        prediction_and_labels = (
+            self.indexed_reference.filter(
+                ~(
+                    f.col(self.reference.model.outputs.prediction.name).isNull()
+                    | f.isnan(f.col(self.reference.model.outputs.prediction.name))
+                )
+                & ~(
+                    f.col(self.reference.model.target.name).isNull()
+                    | f.isnan(f.col(self.reference.model.target.name))
+                )
+            )
+            .select(
+                *[
+                    f"{self.reference.model.outputs.prediction.name}-idx",
+                    f"{self.reference.model.target.name}-idx",
+                ]
+            )
+            .rdd
+        )
         multiclass_metrics_calculator = MulticlassMetrics(prediction_and_labels)
         return multiclass_metrics_calculator.confusionMatrix().toArray().tolist()
 
