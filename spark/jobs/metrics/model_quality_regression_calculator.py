@@ -1,5 +1,5 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, isnan
 from pyspark.sql.functions import abs as pyspark_abs
 
 from models.regression_model_quality import RegressionMetricType, ModelQualityRegression
@@ -81,8 +81,14 @@ class ModelQualityRegressionCalculator:
     ) -> ModelQualityRegression:
         # TODO: understand if we should filter out rows with null values in prediction || ground_truth
         # # drop row where prediction or ground_truth is null
-        # _dataframe = dataframe.dropna(subset=[model.outputs.prediction.name, model.target.name])
-        # _dataframe_count = dataframe.count()
+        dataframe_clean = dataframe.filter(
+            ~(
+                col(model.outputs.prediction.name).isNull()
+                | isnan(col(model.outputs.prediction.name))
+            )
+            & ~(col(model.target.name).isNull() | isnan(col(model.target.name)))
+        )
+        dataframe_clean_count = dataframe_clean.count()
         return ModelQualityRegressionCalculator.__calc_mq_metrics(
-            model, dataframe, dataframe_count
+            model, dataframe_clean, dataframe_clean_count
         )
