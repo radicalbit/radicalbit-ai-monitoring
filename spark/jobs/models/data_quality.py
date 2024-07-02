@@ -79,6 +79,43 @@ class NumericalFeatureMetrics(FeatureMetrics):
         )
 
 
+class NumericalTargetMetrics(FeatureMetrics):
+    type: str = "numerical"
+    mean: float
+    std: float
+    min: float
+    max: float
+    median_metrics: MedianMetrics
+    histogram: Histogram
+
+    model_config = ConfigDict(ser_json_inf_nan="null")
+
+    @classmethod
+    def from_dict(
+        cls,
+        feature_name: str,
+        global_dict: Dict,
+        histogram: Histogram,
+    ) -> "NumericalTargetMetrics":
+        return NumericalTargetMetrics(
+            feature_name=feature_name,
+            missing_value=MissingValue(
+                count=global_dict.get("missing_values"),
+                percentage=global_dict.get("missing_values_perc"),
+            ),
+            mean=global_dict.get("mean"),
+            std=global_dict.get("std"),
+            min=global_dict.get("min"),
+            max=global_dict.get("max"),
+            median_metrics=MedianMetrics(
+                median=global_dict.get("median"),
+                perc_25=global_dict.get("perc_25"),
+                perc_75=global_dict.get("perc_75"),
+            ),
+            histogram=histogram,
+        )
+
+
 class CategoryFrequency(BaseModel):
     name: str
     count: int
@@ -134,4 +171,10 @@ class BinaryClassDataQuality(BaseModel):
 class MultiClassDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
+    feature_metrics: List[FeatureMetrics]
+
+
+class RegressionDataQuality(BaseModel):
+    n_observations: int
+    target_metrics: NumericalTargetMetrics
     feature_metrics: List[FeatureMetrics]
