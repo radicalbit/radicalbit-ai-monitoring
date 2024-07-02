@@ -25,7 +25,6 @@ export default function chartOptions(title, dataset) {
           formatter: (el) => (el.data.count > 0) ? `${el.data.count}\n(${numberFormatter().format(el.data.percentage)}%)` : '',
         },
       },
-
     ],
   };
   options.grid.top = 25;
