@@ -1,6 +1,5 @@
 import datetime
 import uuid
-import json
 
 import pytest
 import deepdiff
