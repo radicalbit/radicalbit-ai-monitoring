@@ -39,8 +39,10 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="basis-1/5">
+      <div className="flex flex-col gap-4 basis-1/5">
         <DataPointDistributionCounter />
+
+        <ClassCounter />
       </div>
 
       <DataPointDistributionChart />
@@ -84,6 +86,32 @@ function DataPointDistributionCounter() {
   );
 }
 
+function ClassCounter() {
+  const { uuid } = useParams();
+
+  const { data } = useGetReferenceDataQualityQuery({ uuid });
+  const nObservations = data?.dataQuality.classMetrics.length ?? 0;
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Classes" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+          <div className="flex flex-row items-end ">
+
+            {/* FIXME: inline style */}
+            <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>{nObservations}</div>
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow"
+      size="small"
+      type="secondary"
+    />
+  );
+}
+
 function DataPointDistributionChart() {
   const { uuid } = useParams();
 
@@ -109,11 +137,11 @@ function DataPointDistributionChart() {
             echarts={echarts}
             onChartReady={handleOnChartReady}
             option={chartOptions(title, classMetrics)}
-            style={{ height: '100%' }}
+            style={{ height: '20rem', width: '100%' }}
           />
         </div>
       )}
-      modifier="w-full h-full shadow"
+      modifier="w-full h-full shadow overflow-auto max-w-full "
       size="small"
     />
   );
