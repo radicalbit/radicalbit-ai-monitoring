@@ -9,15 +9,17 @@ from pyspark.sql.functions import col
 import pyspark.sql.functions as f
 
 from metrics.data_quality_calculator import DataQualityCalculator
+from metrics.drift_calculator import DriftCalculator
+from models.current_dataset import CurrentDataset
 from models.data_quality import (
     NumericalFeatureMetrics,
     CategoricalFeatureMetrics,
     ClassMetrics,
     BinaryClassDataQuality,
 )
-from .models import ModelOut, Granularity
-from .ks import KolmogorovSmirnovTest
-from .chi2 import Chi2Test
+from models.reference_dataset import ReferenceDataset
+from .misc import create_time_format
+from .models import Granularity
 
 
 class CurrentMetricsService:
@@ -56,36 +58,34 @@ class CurrentMetricsService:
     def __init__(
         self,
         spark_session: SparkSession,
-        current: DataFrame,
-        reference: DataFrame,
-        model: ModelOut,
+        current: CurrentDataset,
+        reference: ReferenceDataset,
     ):
         self.spark_session = spark_session
         self.current = current
         self.reference = reference
-        self.current_count = self.current.count()
-        self.reference_count = self.reference.count()
-        self.model = model
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.calculate_combined_data_quality_numerical(
-            model=self.model,
-            current_dataframe=self.current,
-            current_count=self.current_count,
-            reference_dataframe=self.reference,
+            model=self.current.model,
+            current_dataframe=self.current.current,
+            current_count=self.current.current_count,
+            reference_dataframe=self.reference.reference,
             spark_session=self.spark_session,
         )
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
         return DataQualityCalculator.categorical_metrics(
-            model=self.model, dataframe=self.current, dataframe_count=self.current_count
+            model=self.current.model,
+            dataframe=self.current.current,
+            dataframe_count=self.current.current_count,
         )
 
     def calculate_class_metrics(self) -> List[ClassMetrics]:
         metrics = DataQualityCalculator.class_metrics(
-            class_column=self.model.target.name,
-            dataframe=self.current,
-            dataframe_count=self.current_count,
+            class_column=self.current.model.target.name,
+            dataframe=self.current.current,
+            dataframe_count=self.current.current_count,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
@@ -112,12 +112,12 @@ class CurrentMetricsService:
 
     def calculate_data_quality(self) -> BinaryClassDataQuality:
         feature_metrics = []
-        if self.model.get_numerical_features():
+        if self.current.model.get_numerical_features():
             feature_metrics.extend(self.calculate_data_quality_numerical())
-        if self.model.get_categorical_features():
+        if self.current.model.get_categorical_features():
             feature_metrics.extend(self.calculate_data_quality_categorical())
         return BinaryClassDataQuality(
-            n_observations=self.current_count,
+            n_observations=self.current.current_count,
             class_metrics=self.calculate_class_metrics(),
             feature_metrics=feature_metrics,
         )
@@ -125,14 +125,16 @@ class CurrentMetricsService:
     # FIXME use pydantic struct like data quality
     def __calc_bc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_binary_classification(self.current, name)
+            label: self.__evaluate_binary_classification(self.current.current, name)
             for (name, label) in self.model_quality_binary_classificator.items()
         }
 
     # FIXME use pydantic struct like data quality
     def __calc_mc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_multi_class_classification(self.current, name)
+            label: self.__evaluate_multi_class_classification(
+                self.current.current, name
+            )
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
 
@@ -142,8 +144,8 @@ class CurrentMetricsService:
         try:
             return BinaryClassificationEvaluator(
                 metricName=metric_name,
-                labelCol=self.model.target.name,
-                rawPredictionCol=self.model.outputs.prediction_proba.name,
+                labelCol=self.current.model.target.name,
+                rawPredictionCol=self.current.model.outputs.prediction_proba.name,
             ).evaluate(dataset)
         except Exception:
             return float("nan")
@@ -156,37 +158,28 @@ class CurrentMetricsService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=self.model.outputs.prediction.name,
-                labelCol=self.model.target.name,
+                predictionCol=self.current.model.outputs.prediction.name,
+                labelCol=self.current.model.target.name,
                 metricLabel=1,
             ).evaluate(dataset)
         except Exception:
             return float("nan")
 
     def calculate_multiclass_model_quality_group_by_timestamp(self):
-        def create_time_format(granularity: Granularity):
-            match granularity:
-                case Granularity.HOUR:
-                    return "yyyy-MM-dd HH"
-                case Granularity.DAY:
-                    return "yyyy-MM-dd"
-                case Granularity.WEEK:
-                    return "yyyy-MM-dd"
-                case Granularity.MONTH:
-                    return "yyyy-MM"
-
-        if self.model.granularity == Granularity.WEEK:
-            dataset_with_group = self.current.select(
+        if self.current.model.granularity == Granularity.WEEK:
+            dataset_with_group = self.current.current.select(
                 [
-                    self.model.outputs.prediction.name,
-                    self.model.target.name,
+                    self.current.model.outputs.prediction.name,
+                    self.current.model.target.name,
                     f.date_format(
                         f.to_timestamp(
                             f.date_sub(
                                 f.next_day(
                                     f.date_format(
-                                        self.model.timestamp.name,
-                                        create_time_format(self.model.granularity),
+                                        self.current.model.timestamp.name,
+                                        create_time_format(
+                                            self.current.model.granularity
+                                        ),
                                     ),
                                     "sunday",
                                 ),
@@ -198,15 +191,15 @@ class CurrentMetricsService:
                 ]
             )
         else:
-            dataset_with_group = self.current.select(
+            dataset_with_group = self.current.current.select(
                 [
-                    self.model.outputs.prediction.name,
-                    self.model.target.name,
+                    self.current.model.outputs.prediction.name,
+                    self.current.model.target.name,
                     f.date_format(
                         f.to_timestamp(
                             f.date_format(
-                                self.model.timestamp.name,
-                                create_time_format(self.model.granularity),
+                                self.current.model.timestamp.name,
+                                create_time_format(self.current.model.granularity),
                             )
                         ),
                         "yyyy-MM-dd HH:mm:ss",
@@ -240,29 +233,20 @@ class CurrentMetricsService:
         }
 
     def calculate_binary_class_model_quality_group_by_timestamp(self):
-        def create_time_format(granularity: Granularity):
-            match granularity:
-                case Granularity.HOUR:
-                    return "yyyy-MM-dd HH"
-                case Granularity.DAY:
-                    return "yyyy-MM-dd"
-                case Granularity.WEEK:
-                    return "yyyy-MM-dd"
-                case Granularity.MONTH:
-                    return "yyyy-MM"
-
-        if self.model.granularity == Granularity.WEEK:
-            dataset_with_group = self.current.select(
+        if self.current.model.granularity == Granularity.WEEK:
+            dataset_with_group = self.current.current.select(
                 [
-                    self.model.outputs.prediction_proba.name,
-                    self.model.target.name,
+                    self.current.model.outputs.prediction_proba.name,
+                    self.current.model.target.name,
                     f.date_format(
                         f.to_timestamp(
                             f.date_sub(
                                 f.next_day(
                                     f.date_format(
-                                        self.model.timestamp.name,
-                                        create_time_format(self.model.granularity),
+                                        self.current.model.timestamp.name,
+                                        create_time_format(
+                                            self.current.model.granularity
+                                        ),
                                     ),
                                     "sunday",
                                 ),
@@ -274,15 +258,15 @@ class CurrentMetricsService:
                 ]
             )
         else:
-            dataset_with_group = self.current.select(
+            dataset_with_group = self.current.current.select(
                 [
-                    self.model.outputs.prediction_proba.name,
-                    self.model.target.name,
+                    self.current.model.outputs.prediction_proba.name,
+                    self.current.model.target.name,
                     f.date_format(
                         f.to_timestamp(
                             f.date_format(
-                                self.model.timestamp.name,
-                                create_time_format(self.model.granularity),
+                                self.current.model.timestamp.name,
+                                create_time_format(self.current.model.granularity),
                             )
                         ),
                         "yyyy-MM-dd HH:mm:ss",
@@ -315,28 +299,33 @@ class CurrentMetricsService:
 
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
-            self.current.select(
-                [self.model.outputs.prediction.name, self.model.target.name]
+            self.current.current.select(
+                [
+                    self.current.model.outputs.prediction.name,
+                    self.current.model.target.name,
+                ]
             )
-            .withColumn(self.model.target.name, f.col(self.model.target.name))
-            .orderBy(self.model.target.name)
+            .withColumn(
+                self.current.model.target.name, f.col(self.current.model.target.name)
+            )
+            .orderBy(self.current.model.target.name)
         )
 
         tp = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 1)
-            & (col(self.model.target.name) == 1)
+            (col(self.current.model.outputs.prediction.name) == 1)
+            & (col(self.current.model.target.name) == 1)
         ).count()
         tn = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 0)
-            & (col(self.model.target.name) == 0)
+            (col(self.current.model.outputs.prediction.name) == 0)
+            & (col(self.current.model.target.name) == 0)
         ).count()
         fp = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 1)
-            & (col(self.model.target.name) == 0)
+            (col(self.current.model.outputs.prediction.name) == 1)
+            & (col(self.current.model.target.name) == 0)
         ).count()
         fn = prediction_and_label.filter(
-            (col(self.model.outputs.prediction.name) == 0)
-            & (col(self.model.target.name) == 1)
+            (col(self.current.model.outputs.prediction.name) == 0)
+            & (col(self.current.model.target.name) == 1)
         ).count()
 
         return {
@@ -354,7 +343,7 @@ class CurrentMetricsService:
             self.calculate_multiclass_model_quality_group_by_timestamp()
         )
         metrics["global_metrics"].update(self.calculate_confusion_matrix())
-        if self.model.outputs.prediction_proba is not None:
+        if self.current.model.outputs.prediction_proba is not None:
             metrics["global_metrics"].update(self.__calc_bc_metrics())
             binary_class_metrics = (
                 self.calculate_binary_class_model_quality_group_by_timestamp()
@@ -363,62 +352,8 @@ class CurrentMetricsService:
         return metrics
 
     def calculate_drift(self):
-        drift_result = dict()
-        drift_result["feature_metrics"] = []
-
-        categorical_features = [
-            categorical.name for categorical in self.model.get_categorical_features()
-        ]
-        chi2 = Chi2Test(
+        return DriftCalculator.calculate_drift(
             spark_session=self.spark_session,
-            reference_data=self.reference,
-            current_data=self.current,
+            reference_dataset=self.reference,
+            current_dataset=self.current,
         )
-
-        for column in categorical_features:
-            feature_dict_to_append = {
-                "feature_name": column,
-                "drift_calc": {
-                    "type": "CHI2",
-                },
-            }
-            if self.reference_count > 5 and self.current_count > 5:
-                result_tmp = chi2.test(column, column)
-                feature_dict_to_append["drift_calc"]["value"] = float(
-                    result_tmp["pValue"]
-                )
-                feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                    result_tmp["pValue"] <= 0.05
-                )
-            else:
-                feature_dict_to_append["drift_calc"]["value"] = None
-                feature_dict_to_append["drift_calc"]["has_drift"] = False
-            drift_result["feature_metrics"].append(feature_dict_to_append)
-
-        numerical_features = [
-            numerical.name for numerical in self.model.get_numerical_features()
-        ]
-        ks = KolmogorovSmirnovTest(
-            reference_data=self.reference,
-            current_data=self.current,
-            alpha=0.05,
-            phi=0.004,
-        )
-
-        for column in numerical_features:
-            feature_dict_to_append = {
-                "feature_name": column,
-                "drift_calc": {
-                    "type": "KS",
-                },
-            }
-            result_tmp = ks.test(column, column)
-            feature_dict_to_append["drift_calc"]["value"] = float(
-                result_tmp["ks_statistic"]
-            )
-            feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                result_tmp["ks_statistic"] > result_tmp["critical_value"]
-            )
-            drift_result["feature_metrics"].append(feature_dict_to_append)
-
-        return drift_result
