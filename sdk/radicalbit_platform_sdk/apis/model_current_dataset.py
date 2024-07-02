@@ -7,7 +7,6 @@ import requests
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    BinaryClassDrift,
     ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
@@ -17,10 +16,8 @@ from radicalbit_platform_sdk.models import (
     JobStatus,
     ModelQuality,
     ModelType,
-    MultiClassDrift,
     MultiClassificationModelQuality,
     RegressionDataQuality,
-    RegressionDrift,
     RegressionModelQuality,
 )
 
@@ -122,26 +119,10 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'drift' in response_json:
-                    match self.__model_type:
-                        case ModelType.BINARY:
-                            return (
-                                job_status,
-                                BinaryClassDrift.model_validate(response_json['drift']),
-                            )
-                        case ModelType.MULTI_CLASS:
-                            return (
-                                job_status,
-                                MultiClassDrift.model_validate(response_json['drift']),
-                            )
-                        case ModelType.REGRESSION:
-                            return (
-                                job_status,
-                                RegressionDrift.model_validate(response_json['drift']),
-                            )
-                        case _:
-                            raise ClientError(
-                                'Unable to parse metrics because of not managed model type'
-                            ) from None
+                    return (
+                        job_status,
+                        Drift.model_validate(response_json['drift']),
+                    )
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
