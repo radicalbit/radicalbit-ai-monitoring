@@ -308,8 +308,8 @@ const useGetPredictions = () => {
 
 const probabilityValidTypes = {
   [ModelTypeEnum.BINARY_CLASSIFICATION]: ['float', 'double'],
-  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['float', 'double'],
-  [ModelTypeEnum.REGRESSION]: [],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['float', 'double', 'string'],
+  [ModelTypeEnum.REGRESSION]: ['float', 'double'],
 };
 const useGetProbabilities = () => {
   const { useFormbitStepOne, useFormbit } = useModalContext();

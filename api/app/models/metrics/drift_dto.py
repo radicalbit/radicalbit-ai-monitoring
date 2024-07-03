@@ -4,9 +4,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
-from app.models.exceptions import MetricsInternalError
 from app.models.job_status import JobStatus
-from app.models.model_dto import ModelType
 
 
 class DriftAlgorithm(str, Enum):
@@ -29,23 +27,15 @@ class FeatureMetrics(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class BinaryClassDrift(BaseModel):
+class Drift(BaseModel):
     feature_metrics: List[FeatureMetrics]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class MultiClassDrift(BaseModel):
-    pass
-
-
-class RegressionDrift(BaseModel):
-    pass
-
-
 class DriftDTO(BaseModel):
     job_status: JobStatus
-    drift: Optional[BinaryClassDrift | MultiClassDrift | RegressionDrift]
+    drift: Optional[Drift]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -55,21 +45,11 @@ class DriftDTO(BaseModel):
 
     @staticmethod
     def from_dict(
-        model_type: ModelType,
         job_status: JobStatus,
         drift_data: Optional[Dict],
     ) -> 'DriftDTO':
         """Create a DriftDTO from a dictionary of data."""
-        if not drift_data:
-            return DriftDTO(
-                job_status=job_status,
-                drift=None,
-            )
-
-        drift = DriftDTO._create_drift(
-            model_type=model_type,
-            drift_data=drift_data,
-        )
+        drift = DriftDTO._create_drift(drift_data=drift_data)
 
         return DriftDTO(
             job_status=job_status,
@@ -78,14 +58,9 @@ class DriftDTO(BaseModel):
 
     @staticmethod
     def _create_drift(
-        model_type: ModelType,
-        drift_data: Dict,
-    ) -> BinaryClassDrift | MultiClassDrift | RegressionDrift:
-        """Create a specific drift instance based on the model type."""
-        if model_type == ModelType.BINARY:
-            return BinaryClassDrift(**drift_data)
-        if model_type == ModelType.MULTI_CLASS:
-            return MultiClassDrift(**drift_data)
-        if model_type == ModelType.REGRESSION:
-            return RegressionDrift(**drift_data)
-        raise MetricsInternalError(f'Invalid model type {model_type}')
+        drift_data: Optional[Dict],
+    ) -> Optional[Drift]:
+        """Create a specific drift instance from a dictionary of data."""
+        if not drift_data:
+            return None
+        return Drift(**drift_data)

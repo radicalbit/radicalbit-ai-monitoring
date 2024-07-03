@@ -6,8 +6,11 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, model_validator
 from pydantic.alias_generators import to_camel
 
+from app.db.dao.current_dataset_dao import CurrentDataset
 from app.db.dao.model_dao import Model
+from app.db.dao.reference_dataset_dao import ReferenceDataset
 from app.models.inferred_schema_dto import SupportedTypes
+from app.models.job_status import JobStatus
 from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
 
 
@@ -42,6 +45,7 @@ class OutputType(BaseModel, validate_assignment=True):
     prediction: ColumnDefinition
     prediction_proba: Optional[ColumnDefinition] = None
     output: List[ColumnDefinition]
+
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
     def to_dict(self):
@@ -175,6 +179,8 @@ class ModelOut(BaseModel):
     updated_at: str
     latest_reference_uuid: Optional[UUID]
     latest_current_uuid: Optional[UUID]
+    latest_reference_job_status: JobStatus
+    latest_current_job_status: JobStatus
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
@@ -183,9 +189,27 @@ class ModelOut(BaseModel):
     @staticmethod
     def from_model(
         model: Model,
-        latest_reference_uuid: Optional[UUID] = None,
-        latest_current_uuid: Optional[UUID] = None,
+        latest_reference_dataset: Optional[ReferenceDataset] = None,
+        latest_current_dataset: Optional[CurrentDataset] = None,
     ):
+        latest_reference_uuid = (
+            latest_reference_dataset.uuid if latest_reference_dataset else None
+        )
+        latest_current_uuid = (
+            latest_current_dataset.uuid if latest_current_dataset else None
+        )
+
+        latest_reference_job_status = (
+            latest_reference_dataset.status
+            if latest_reference_dataset
+            else JobStatus.MISSING_REFERENCE
+        )
+        latest_current_job_status = (
+            latest_current_dataset.status
+            if latest_current_dataset
+            else JobStatus.MISSING_CURRENT
+        )
+
         return ModelOut(
             uuid=model.uuid,
             name=model.name,
@@ -203,4 +227,6 @@ class ModelOut(BaseModel):
             updated_at=str(model.updated_at),
             latest_reference_uuid=latest_reference_uuid,
             latest_current_uuid=latest_current_uuid,
+            latest_reference_job_status=latest_reference_job_status,
+            latest_current_job_status=latest_current_job_status,
         )

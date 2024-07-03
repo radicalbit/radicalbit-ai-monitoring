@@ -229,10 +229,8 @@ class MetricsService:
         missing_status,
     ) -> DriftDTO:
         """Retrieve drift for a model by its UUID."""
-        model = self.model_service.get_model_by_uuid(model_uuid)
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_drift_dto(
-            model_type=model.model_type,
             dataset=dataset,
             metrics=metrics,
             missing_status=missing_status,
@@ -321,7 +319,6 @@ class MetricsService:
 
     @staticmethod
     def _create_drift_dto(
-        model_type: ModelType,
         dataset: Optional[ReferenceDataset | CurrentDataset],
         metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
         missing_status,
@@ -329,18 +326,15 @@ class MetricsService:
         """Create a DriftDTO from the provided dataset and metrics."""
         if not dataset:
             return DriftDTO.from_dict(
-                model_type=model_type,
                 job_status=missing_status,
                 drift_data=None,
             )
         if not metrics:
             return DriftDTO.from_dict(
-                model_type=model_type,
                 job_status=dataset.status,
                 drift_data=None,
             )
         return DriftDTO.from_dict(
-            model_type=model_type,
             job_status=dataset.status,
             drift_data=metrics.drift,
         )

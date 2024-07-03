@@ -197,9 +197,8 @@ def test_calculation(spark_fixture, dataset):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -435,9 +434,8 @@ def test_calculation_current_joined(spark_fixture, current_joined):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -828,9 +826,8 @@ def test_calculation_complete(spark_fixture, complete_dataset):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -977,9 +974,8 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -1126,9 +1122,8 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -1290,9 +1285,8 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -1454,9 +1448,8 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -1631,9 +1624,8 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -1924,9 +1916,8 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -2203,9 +2194,8 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)
@@ -2482,9 +2472,8 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     stats = calculate_statistics_current(current_dataset)

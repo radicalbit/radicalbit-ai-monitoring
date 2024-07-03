@@ -3,6 +3,7 @@ import logging
 
 import boto3
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from spark_on_k8s.client import SparkOnK8S
 from spark_on_k8s.k8s.sync_client import KubernetesClientManager
 from starlette.middleware.cors import CORSMiddleware
@@ -20,6 +21,7 @@ from app.models.exceptions import (
     SchemaException,
     metrics_exception_handler,
     model_exception_handler,
+    request_validation_exception_handler,
     schema_exception_handler,
 )
 from app.routes.healthcheck_route import HealthcheckRoute
@@ -125,3 +127,4 @@ app.include_router(HealthcheckRoute.get_healthcheck_route())
 app.add_exception_handler(ModelError, model_exception_handler)
 app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
+app.add_exception_handler(RequestValidationError, request_validation_exception_handler)

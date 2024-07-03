@@ -6,7 +6,9 @@ from fastapi_pagination import Page, Params
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
+from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.exceptions import ModelInternalError, ModelNotFoundError
 from app.models.model_dto import ModelIn, ModelOut
 from app.models.model_order import OrderType
@@ -35,13 +37,13 @@ class ModelService:
 
     def get_model_by_uuid(self, model_uuid: UUID) -> Optional[ModelOut]:
         model = self.check_and_get_model(model_uuid)
-        latest_reference_uuid, latest_current_uuid = self.get_latest_dataset_uuids(
+        latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
             model_uuid
         )
         return ModelOut.from_model(
             model=model,
-            latest_reference_uuid=latest_reference_uuid,
-            latest_current_uuid=latest_current_uuid,
+            latest_reference_dataset=latest_reference_dataset,
+            latest_current_dataset=latest_current_dataset,
         )
 
     def delete_model(self, model_uuid: UUID) -> Optional[ModelOut]:
@@ -55,13 +57,13 @@ class ModelService:
         models = self.model_dao.get_all()
         model_out_list = []
         for model in models:
-            latest_reference_uuid, latest_current_uuid = self.get_latest_dataset_uuids(
+            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
                 model.uuid
             )
             model_out = ModelOut.from_model(
                 model=model,
-                latest_reference_uuid=latest_reference_uuid,
-                latest_current_uuid=latest_current_uuid,
+                latest_reference_dataset=latest_reference_dataset,
+                latest_current_dataset=latest_current_dataset,
             )
             model_out_list.append(model_out)
         return model_out_list
@@ -78,13 +80,13 @@ class ModelService:
 
         _items = []
         for model in models.items:
-            latest_reference_uuid, latest_current_uuid = self.get_latest_dataset_uuids(
+            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
                 model.uuid
             )
             model_out = ModelOut.from_model(
                 model=model,
-                latest_reference_uuid=latest_reference_uuid,
-                latest_current_uuid=latest_current_uuid,
+                latest_reference_dataset=latest_reference_dataset,
+                latest_current_dataset=latest_current_dataset,
             )
             _items.append(model_out)
 
@@ -96,9 +98,9 @@ class ModelService:
             raise ModelNotFoundError(f'Model {model_uuid} not found')
         return model
 
-    def get_latest_dataset_uuids(
+    def get_latest_datasets(
         self, model_uuid: UUID
-    ) -> (Optional[UUID], Optional[UUID]):
+    ) -> (Optional[ReferenceDataset], Optional[CurrentDataset]):
         latest_reference_dataset = (
             self.rd_dao.get_latest_reference_dataset_by_model_uuid(model_uuid)
         )
@@ -106,11 +108,4 @@ class ModelService:
             model_uuid
         )
 
-        latest_reference_uuid = (
-            latest_reference_dataset.uuid if latest_reference_dataset else None
-        )
-        latest_current_uuid = (
-            latest_current_dataset.uuid if latest_current_dataset else None
-        )
-
-        return latest_reference_uuid, latest_current_uuid
+        return latest_reference_dataset, latest_current_dataset

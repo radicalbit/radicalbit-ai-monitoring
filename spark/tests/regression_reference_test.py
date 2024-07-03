@@ -393,7 +393,7 @@ def expected_data_quality_json():
 
 
 @pytest.fixture()
-def reference_dataset(spark_fixture, reference_bike):
+def reference_dataset(reference_bike):
     output = OutputType(
         prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
         prediction_proba=None,

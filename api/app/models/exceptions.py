@@ -2,6 +2,7 @@ import logging
 
 from fastapi import status
 from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 from app.core import get_config
@@ -117,4 +118,21 @@ def schema_exception_handler(_, err: SchemaException):
     return JSONResponse(
         status_code=err.status_code,
         content=jsonable_encoder(ErrorOut(err.message)),
+    )
+
+
+def request_validation_exception_handler(_, err: RequestValidationError):
+    validation_errors = err.errors()
+    error_messages = [error['msg'] for error in validation_errors]
+    parts = error_messages[0].split(',', 1)
+    error_type = parts[0].strip()
+    error_message = parts[1].strip() if len(parts) > 1 else ''
+    logger.error(
+        'A validation error [%s] has been raised with message [%s]',
+        error_type,
+        error_message,
+    )
+    return JSONResponse(
+        status_code=422,  # https://www.rfc-editor.org/rfc/rfc9110.html#name-422-unprocessable-content
+        content=jsonable_encoder(ErrorOut(error_message)),
     )

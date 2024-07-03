@@ -15,20 +15,16 @@ from .dataset_data_quality import (
     RegressionDataQuality,
 )
 from .dataset_drift import (
-    BinaryClassDrift,
     Drift,
     DriftAlgorithm,
     FeatureDrift,
     FeatureDriftCalculation,
-    MultiClassDrift,
-    RegressionDrift,
 )
 from .dataset_model_quality import (
     BinaryClassificationModelQuality,
     CurrentBinaryClassificationModelQuality,
     ModelQuality,
     MultiClassificationModelQuality,
-    CurrentMultiClassificationModelQuality,
     RegressionModelQuality,
 )
 from .dataset_stats import DatasetStats
@@ -56,7 +52,6 @@ __all__ = [
     'BinaryClassificationModelQuality',
     'CurrentBinaryClassificationModelQuality',
     'MultiClassificationModelQuality',
-    'CurrentMultiClassificationModelQuality',
     'RegressionModelQuality',
     'DataQuality',
     'ClassificationDataQuality',
@@ -73,9 +68,6 @@ __all__ = [
     'FeatureDriftCalculation',
     'FeatureDrift',
     'Drift',
-    'BinaryClassDrift',
-    'MultiClassDrift',
-    'RegressionDrift',
     'ReferenceFileUpload',
     'CurrentFileUpload',
     'FileReference',
