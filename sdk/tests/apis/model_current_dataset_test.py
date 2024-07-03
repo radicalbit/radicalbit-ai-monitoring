@@ -471,7 +471,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                           "type":"numerical",
                           "histogram":{
                              "buckets":[2.0, 342.8, 683.6, 1024.4],
-                             "reference_values":[204, 144, 165, 89]
+                             "reference_values":[204, 144, 165, 89],
+                             "current_values":[123, 231, 122, 89]
                           },
                           "feature_name":"ground_truth",
                           "missing_value":{"count":0, "percentage":0.0},
@@ -486,7 +487,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                              "type":"numerical",
                              "histogram":{
                                 "buckets":[1.0, 74.0, 147.0, 220.0],
-                                "reference_values":[73, 73, 73, 73]
+                                "reference_values":[73, 73, 73, 73],
+                                "current_values":[73, 73, 73, 73]
                              },
                              "feature_name":"instant",
                              "missing_value":{"count":0, "percentage":0.0},
@@ -501,7 +503,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                              "type":"numerical",
                              "histogram":{
                                 "buckets":[1.0, 1.3, 1.6, 1.9],
-                                "reference_values":[181, 0, 0, 184]
+                                "reference_values":[181, 0, 0, 184],
+                                "current_values":[123, 0, 0, 212]
                              },
                              "feature_name":"season",
                              "missing_value":{"count":0, "percentage":0.0},
