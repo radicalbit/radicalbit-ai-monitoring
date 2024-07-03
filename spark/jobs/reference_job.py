@@ -53,9 +53,7 @@ def main(
 
     match model.model_type:
         case ModelType.BINARY:
-            metrics_service = ReferenceMetricsService(
-                reference_dataset.reference, model=model
-            )
+            metrics_service = ReferenceMetricsService(reference=reference_dataset)
             model_quality = metrics_service.calculate_model_quality()
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()

@@ -141,7 +141,6 @@ class MetricsRouteTest(unittest.TestCase):
         current_metrics = db_mock.get_sample_current_metrics()
         drift = DriftDTO.from_dict(
             job_status=JobStatus.SUCCEEDED,
-            model_type=model.model_type,
             drift_data=current_metrics.drift,
         )
         self.metrics_service.get_current_drift = MagicMock(return_value=drift)

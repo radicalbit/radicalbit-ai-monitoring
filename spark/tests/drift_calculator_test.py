@@ -6,7 +6,6 @@ import pytest
 
 from jobs.models.current_dataset import CurrentDataset
 from jobs.models.reference_dataset import ReferenceDataset
-from jobs.utils.current_binary import CurrentMetricsService
 from jobs.utils.models import (
     ModelOut,
     ModelType,
@@ -16,6 +15,7 @@ from jobs.utils.models import (
     SupportedTypes,
     Granularity,
 )
+from metrics.drift_calculator import DriftCalculator
 
 
 @pytest.fixture()
@@ -102,14 +102,12 @@ def test_drift(spark_fixture, drift_dataset):
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset
     )
-    metrics_service = CurrentMetricsService(
-        spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
-    )
 
-    drift = metrics_service.calculate_drift()
+    drift = DriftCalculator.calculate_drift(
+        spark_session=spark_fixture,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+    )
 
     assert not deepdiff.DeepDiff(
         drift,
@@ -188,14 +186,11 @@ def test_drift_small(spark_fixture, drift_small_dataset):
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset
     )
-    metrics_service = CurrentMetricsService(
+    drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
     )
-
-    drift = metrics_service.calculate_drift()
 
     assert not deepdiff.DeepDiff(
         drift,
@@ -266,14 +261,11 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset
     )
-    metrics_service = CurrentMetricsService(
+    drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
     )
-
-    drift = metrics_service.calculate_drift()
 
     assert not deepdiff.DeepDiff(
         drift,
@@ -352,14 +344,11 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset
     )
-    metrics_service = CurrentMetricsService(
+    drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
     )
-
-    drift = metrics_service.calculate_drift()
 
     assert not deepdiff.DeepDiff(
         drift,
