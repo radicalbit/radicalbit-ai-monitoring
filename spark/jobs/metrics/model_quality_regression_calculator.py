@@ -78,7 +78,6 @@ class ModelQualityRegressionCalculator:
     def numerical_metrics(
         model: ModelOut, dataframe: DataFrame, dataframe_count: int
     ) -> ModelQualityRegression:
-        # TODO: understand if we should filter out rows with null values in prediction || ground_truth
         # # drop row where prediction or ground_truth is null
         dataframe_clean = dataframe.filter(
             ~(
