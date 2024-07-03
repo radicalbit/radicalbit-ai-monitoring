@@ -2081,7 +2081,7 @@ def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
     )
 
     reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_with_nulls)
-    metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
+    metrics_service = ReferenceMetricsService(reference_dataset)
 
     model_quality = metrics_service.calculate_model_quality()
 

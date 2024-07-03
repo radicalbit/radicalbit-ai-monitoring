@@ -49,6 +49,20 @@ def dataset_target_string(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
+def dataset_with_nulls(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/reference/multiclass/dataset_target_string_nulls.csv",
+            header=True,
+        ),
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/multiclass/dataset_target_string_nulls.csv",
+            header=True,
+        ),
+    )
+
+
+@pytest.fixture()
 def dataset_perfect_classes(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
@@ -1314,3 +1328,123 @@ def test_calculation_dataset_for_hour(spark_fixture, dataset_for_hour):
         ignore_order=True,
         significant_digits=6,
     )
+
+
+def test_calculation_dataset_with_nulls(spark_fixture, dataset_with_nulls):
+    output = OutputType(
+        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.string),
+        prediction_proba=None,
+        output=[ColumnDefinition(name="prediction", type=SupportedTypes.string)],
+    )
+    target = ColumnDefinition(name="target", type=SupportedTypes.string)
+    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    granularity = Granularity.HOUR
+    features = [
+        ColumnDefinition(name="cat1", type=SupportedTypes.string),
+        ColumnDefinition(name="cat2", type=SupportedTypes.string),
+        ColumnDefinition(name="num1", type=SupportedTypes.float),
+        ColumnDefinition(name="num2", type=SupportedTypes.float),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="model",
+        description="description",
+        model_type=ModelType.MULTI_CLASS,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    current_dataframe, reference_dataframe = dataset_with_nulls
+    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe)
+
+    metrics_service = CurrentMetricsMulticlassService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    print(model_quality)
+
+    assert not deepdiff.DeepDiff(
+        model_quality,
+        {
+        'classes': ['HEALTHY', 'ORPHAN', 'UNHEALTHY', 'UNKNOWN'],
+        'class_metrics': [
+            {'class_name': 'HEALTHY',
+             'metrics': {
+                 'true_positive_rate': 1.0,
+                 'false_positive_rate': 0.16666666666666666,
+                 'precision': 0.6666666666666666,
+                 'recall': 1.0,
+                 'f_measure': 0.8},
+             'grouped_metrics': {
+                 'true_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}],
+                 'false_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.16666666666666666}],
+                 'precision': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.6666666666666666}],
+                 'recall': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}],
+                 'f_measure': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.8}]}},
+            {'class_name': 'ORPHAN',
+             'metrics': {
+                 'true_positive_rate': 0.0,
+                 'false_positive_rate': 0.2857142857142857,
+                 'precision': 0.0,
+                 'recall': 0.0,
+                 'f_measure': 0.0},
+             'grouped_metrics': {
+                 'true_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.0}],
+                 'false_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.2857142857142857}],
+                 'precision': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.0}],
+                 'recall': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.0}],
+                 'f_measure': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.0}]}},
+            {'class_name': 'UNHEALTHY',
+             'metrics': {
+                 'true_positive_rate': 1.0,
+                 'false_positive_rate': 0.0,
+                 'precision': 1.0,
+                 'recall': 1.0,
+                 'f_measure': 1.0},
+             'grouped_metrics': {
+                 'true_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}],
+                 'false_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.0}],
+                 'precision': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}],
+                 'recall': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}],
+                 'f_measure': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}]}},
+            {'class_name': 'UNKNOWN',
+             'metrics': {
+                 'true_positive_rate': 0.3333333333333333,
+                 'false_positive_rate': 0.0,
+                 'precision': 1.0,
+                 'recall': 0.3333333333333333,
+                 'f_measure': 0.5},
+             'grouped_metrics': {
+                 'true_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.3333333333333333}],
+                 'false_positive_rate': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.0}],
+                 'precision': [{'timestamp': '2024-06-16 00:00:00', 'value': 1.0}],
+                 'recall': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.3333333333333333}],
+                 'f_measure': [{'timestamp': '2024-06-16 00:00:00', 'value': 0.5}]}}],
+        'global_metrics': {
+            'f1': 0.6375,
+            'accuracy': 0.625,
+            'weighted_precision': 0.7916666666666666,
+            'weighted_recall': 0.625,
+            'weighted_true_positive_rate': 0.625,
+            'weighted_false_positive_rate': 0.07738095238095238,
+            'weighted_f_measure': 0.6375,
+            'confusion_matrix': [[2.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 2.0, 0.0],
+                                 [0.0, 2.0, 0.0, 1.0]]}}
+        ,
+        ignore_order=True,
+        significant_digits=6,
+    )
+

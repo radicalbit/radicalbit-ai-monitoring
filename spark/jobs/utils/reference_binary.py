@@ -5,8 +5,7 @@ from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
-from pyspark.sql.functions import col
-import pyspark.sql.functions as f
+import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from models.data_quality import (
@@ -76,12 +75,12 @@ class ReferenceMetricsService:
             label: self.__evaluate_binary_classification(
                 self.reference.reference.filter(
                     ~(
-                        f.col(self.reference.model.outputs.prediction_proba.name).isNull()
-                        | f.isnan(f.col(self.reference.model.outputs.prediction_proba.name))
+                        F.col(self.reference.model.outputs.prediction_proba.name).isNull()
+                        | F.isnan(F.col(self.reference.model.outputs.prediction_proba.name))
                     )
                     & ~(
-                        f.col(self.reference.model.target.name).isNull()
-                        | f.isnan(f.col(self.reference.model.target.name))
+                        F.col(self.reference.model.target.name).isNull()
+                        | F.isnan(F.col(self.reference.model.target.name))
                     )
                 ),
                 name,
@@ -95,12 +94,12 @@ class ReferenceMetricsService:
             label: self.__evaluate_multi_class_classification(
                 self.reference.reference.filter(
                     ~(
-                        f.col(self.reference.model.outputs.prediction.name).isNull()
-                        | f.isnan(f.col(self.reference.model.outputs.prediction.name))
+                        F.col(self.reference.model.outputs.prediction.name).isNull()
+                        | F.isnan(F.col(self.reference.model.outputs.prediction.name))
                     )
                     & ~(
-                        f.col(self.reference.model.target.name).isNull()
-                        | f.isnan(f.col(self.reference.model.target.name))
+                        F.col(self.reference.model.target.name).isNull()
+                        | F.isnan(F.col(self.reference.model.target.name))
                     )
                 ),
                 name,
@@ -122,34 +121,34 @@ class ReferenceMetricsService:
         prediction_and_label = (
             self.reference.reference.filter(
                 ~(
-                    f.col(self.reference.model.outputs.prediction.name).isNull()
-                    | f.isnan(f.col(self.reference.model.outputs.prediction.name))
+                    F.col(self.reference.model.outputs.prediction.name).isNull()
+                    | F.isnan(F.col(self.reference.model.outputs.prediction.name))
                 )
                 & ~(
-                    f.col(self.reference.model.target.name).isNull()
-                    | f.isnan(f.col(self.reference.model.target.name))
+                    F.col(self.reference.model.target.name).isNull()
+                    | F.isnan(F.col(self.reference.model.target.name))
                 )
             )
             .select([self.reference.model.outputs.prediction.name, self.reference.model.target.name])
-            .withColumn(self.reference.model.target.name, f.col(self.reference.model.target.name))
+            .withColumn(self.reference.model.target.name, F.col(self.reference.model.target.name))
             .orderBy(self.reference.model.target.name)
         )
 
         tp = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 1)
-            & (col(self.reference.model.target.name) == 1)
+            (F.col(self.reference.model.outputs.prediction.name) == 1)
+            & (F.col(self.reference.model.target.name) == 1)
         ).count()
         tn = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 0)
-            & (col(self.reference.model.target.name) == 0)
+            (F.col(self.reference.model.outputs.prediction.name) == 0)
+            & (F.col(self.reference.model.target.name) == 0)
         ).count()
         fp = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 1)
-            & (col(self.reference.model.target.name) == 0)
+            (F.col(self.reference.model.outputs.prediction.name) == 1)
+            & (F.col(self.reference.model.target.name) == 0)
         ).count()
         fn = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 0)
-            & (col(self.reference.model.target.name) == 1)
+            (F.col(self.reference.model.outputs.prediction.name) == 0)
+            & (F.col(self.reference.model.target.name) == 1)
         ).count()
 
         return {

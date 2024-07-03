@@ -2736,9 +2736,8 @@ def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
-        current=current_dataset.current,
-        reference=reference_dataset.reference,
-        model=model,
+        current=current_dataset,
+        reference=reference_dataset,
     )
 
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
