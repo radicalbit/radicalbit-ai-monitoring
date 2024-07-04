@@ -19,6 +19,7 @@ from models.data_quality import (
 from models.reference_dataset import ReferenceDataset
 from .misc import create_time_format
 from .models import Granularity
+from .spark import check_not_null
 
 
 class CurrentMetricsService:
@@ -133,14 +134,8 @@ class CurrentMetricsService:
         return {
             label: self.__evaluate_multi_class_classification(
                 self.current.current.filter(
-                    ~(
-                        F.col(self.current.model.outputs.prediction.name).isNull()
-                        | F.isnan(F.col(self.current.model.outputs.prediction.name))
-                    )
-                    & ~(
-                        F.col(self.current.model.target.name).isNull()
-                        | F.isnan(F.col(self.current.model.target.name))
-                    )
+                    check_not_null(self.current.model.outputs.prediction.name)
+                    & check_not_null(self.current.model.target.name)
                 ),
                 name,
             )
@@ -175,16 +170,9 @@ class CurrentMetricsService:
             return float("nan")
 
     def calculate_multiclass_model_quality_group_by_timestamp(self):
-
         current_df_clean = self.current.current.filter(
-            ~(
-                F.col(self.current.model.outputs.prediction.name).isNull()
-                | F.isnan(F.col(self.current.model.outputs.prediction.name))
-            )
-            & ~(
-                F.col(self.current.model.target.name).isNull()
-                | F.isnan(F.col(self.current.model.target.name))
-            )
+            check_not_null(self.current.model.outputs.prediction.name)
+            & check_not_null(self.current.model.target.name)
         )
 
         if self.current.model.granularity == Granularity.WEEK:
@@ -254,16 +242,9 @@ class CurrentMetricsService:
         }
 
     def calculate_binary_class_model_quality_group_by_timestamp(self):
-
         current_df_clean = self.current.current.filter(
-            ~(
-                F.col(self.current.model.outputs.prediction_proba.name).isNull()
-                | F.isnan(F.col(self.current.model.outputs.prediction_proba.name))
-            )
-            & ~(
-                F.col(self.current.model.target.name).isNull()
-                | F.isnan(F.col(self.current.model.target.name))
-            )
+            check_not_null(self.current.model.outputs.prediction_proba.name)
+            & check_not_null(self.current.model.target.name)
         )
 
         if self.current.model.granularity == Granularity.WEEK:
@@ -333,17 +314,18 @@ class CurrentMetricsService:
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
             self.current.current.filter(
-                ~(
-                    F.col(self.current.model.outputs.prediction.name).isNull()
-                    | F.isnan(F.col(self.current.model.outputs.prediction.name))
-                )
-                & ~(
-                    F.col(self.current.model.target.name).isNull()
-                    | F.isnan(F.col(self.current.model.target.name))
-                )
+                check_not_null(self.current.model.outputs.prediction.name)
+                & check_not_null(self.current.model.target.name)
             )
-            .select([self.current.model.outputs.prediction.name, self.current.model.target.name])
-            .withColumn(self.current.model.target.name, F.col(self.current.model.target.name))
+            .select(
+                [
+                    self.current.model.outputs.prediction.name,
+                    self.current.model.target.name,
+                ]
+            )
+            .withColumn(
+                self.current.model.target.name, F.col(self.current.model.target.name)
+            )
             .orderBy(self.current.model.target.name)
         )
 

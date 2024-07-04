@@ -15,6 +15,7 @@ from models.data_quality import (
     BinaryClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
+from .spark import check_not_null
 
 
 class ReferenceMetricsService:
@@ -74,14 +75,8 @@ class ReferenceMetricsService:
         return {
             label: self.__evaluate_binary_classification(
                 self.reference.reference.filter(
-                    ~(
-                        F.col(self.reference.model.outputs.prediction_proba.name).isNull()
-                        | F.isnan(F.col(self.reference.model.outputs.prediction_proba.name))
-                    )
-                    & ~(
-                        F.col(self.reference.model.target.name).isNull()
-                        | F.isnan(F.col(self.reference.model.target.name))
-                    )
+                    check_not_null(self.reference.model.outputs.prediction.name)
+                    & check_not_null(self.reference.model.target.name)
                 ),
                 name,
             )
@@ -93,14 +88,8 @@ class ReferenceMetricsService:
         return {
             label: self.__evaluate_multi_class_classification(
                 self.reference.reference.filter(
-                    ~(
-                        F.col(self.reference.model.outputs.prediction.name).isNull()
-                        | F.isnan(F.col(self.reference.model.outputs.prediction.name))
-                    )
-                    & ~(
-                        F.col(self.reference.model.target.name).isNull()
-                        | F.isnan(F.col(self.reference.model.target.name))
-                    )
+                    check_not_null(self.reference.model.outputs.prediction.name)
+                    & check_not_null(self.reference.model.target.name)
                 ),
                 name,
             )
@@ -120,17 +109,19 @@ class ReferenceMetricsService:
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
             self.reference.reference.filter(
-                ~(
-                    F.col(self.reference.model.outputs.prediction.name).isNull()
-                    | F.isnan(F.col(self.reference.model.outputs.prediction.name))
-                )
-                & ~(
-                    F.col(self.reference.model.target.name).isNull()
-                    | F.isnan(F.col(self.reference.model.target.name))
-                )
+                check_not_null(self.reference.model.outputs.prediction.name)
+                & check_not_null(self.reference.model.target.name)
             )
-            .select([self.reference.model.outputs.prediction.name, self.reference.model.target.name])
-            .withColumn(self.reference.model.target.name, F.col(self.reference.model.target.name))
+            .select(
+                [
+                    self.reference.model.outputs.prediction.name,
+                    self.reference.model.target.name,
+                ]
+            )
+            .withColumn(
+                self.reference.model.target.name,
+                F.col(self.reference.model.target.name),
+            )
             .orderBy(self.reference.model.target.name)
         )
 

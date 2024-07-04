@@ -745,52 +745,68 @@ def test_calculation_dataset_with_nulls(spark_fixture, dataset_with_nulls):
 
     model_quality = multiclass_service.calculate_model_quality()
 
-    print(model_quality)
-
     assert not deepdiff.DeepDiff(
         model_quality,
         {
-        'classes': ['HEALTHY', 'ORPHAN', 'UNHEALTHY', 'UNKNOWN'],
-        'class_metrics': [
-            {'class_name': 'HEALTHY',
-             'metrics': {
-                 'true_positive_rate': 1.0,
-                 'false_positive_rate': 0.16666666666666666,
-                 'precision': 0.6666666666666666,
-                 'recall': 1.0,
-                 'f_measure': 0.8}},
-            {'class_name': 'ORPHAN',
-             'metrics': {
-                 'true_positive_rate': 0.0,
-                 'false_positive_rate': 0.2857142857142857,
-                 'precision': 0.0,
-                 'recall': 0.0,
-                 'f_measure': 0.0}},
-            {'class_name': 'UNHEALTHY',
-             'metrics': {
-                 'true_positive_rate': 1.0,
-                 'false_positive_rate': 0.0,
-                 'precision': 1.0,
-                 'recall': 1.0,
-                 'f_measure': 1.0}},
-            {'class_name': 'UNKNOWN',
-             'metrics': {
-                 'true_positive_rate': 0.3333333333333333,
-                 'false_positive_rate': 0.0,
-                 'precision': 1.0,
-                 'recall': 0.3333333333333333,
-                 'f_measure': 0.5}}],
-        'global_metrics': {
-            'f1': 0.6375,
-            'accuracy': 0.625,
-            'weighted_precision': 0.7916666666666666,
-            'weighted_recall': 0.625,
-            'weighted_true_positive_rate': 0.625,
-            'weighted_false_positive_rate': 0.07738095238095238,
-            'weighted_f_measure': 0.6375,
-            'confusion_matrix': [[2.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0], [0.0, 0.0, 2.0, 0.0],
-                                 [0.0, 2.0, 0.0, 1.0]]}}
-        ,
+            "classes": ["HEALTHY", "ORPHAN", "UNHEALTHY", "UNKNOWN"],
+            "class_metrics": [
+                {
+                    "class_name": "HEALTHY",
+                    "metrics": {
+                        "true_positive_rate": 1.0,
+                        "false_positive_rate": 0.16666666666666666,
+                        "precision": 0.6666666666666666,
+                        "recall": 1.0,
+                        "f_measure": 0.8,
+                    },
+                },
+                {
+                    "class_name": "ORPHAN",
+                    "metrics": {
+                        "true_positive_rate": 0.0,
+                        "false_positive_rate": 0.2857142857142857,
+                        "precision": 0.0,
+                        "recall": 0.0,
+                        "f_measure": 0.0,
+                    },
+                },
+                {
+                    "class_name": "UNHEALTHY",
+                    "metrics": {
+                        "true_positive_rate": 1.0,
+                        "false_positive_rate": 0.0,
+                        "precision": 1.0,
+                        "recall": 1.0,
+                        "f_measure": 1.0,
+                    },
+                },
+                {
+                    "class_name": "UNKNOWN",
+                    "metrics": {
+                        "true_positive_rate": 0.3333333333333333,
+                        "false_positive_rate": 0.0,
+                        "precision": 1.0,
+                        "recall": 0.3333333333333333,
+                        "f_measure": 0.5,
+                    },
+                },
+            ],
+            "global_metrics": {
+                "f1": 0.6375,
+                "accuracy": 0.625,
+                "weighted_precision": 0.7916666666666666,
+                "weighted_recall": 0.625,
+                "weighted_true_positive_rate": 0.625,
+                "weighted_false_positive_rate": 0.07738095238095238,
+                "weighted_f_measure": 0.6375,
+                "confusion_matrix": [
+                    [2.0, 0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0, 0.0],
+                    [0.0, 0.0, 2.0, 0.0],
+                    [0.0, 2.0, 0.0, 1.0],
+                ],
+            },
+        },
         ignore_order=True,
         significant_digits=6,
     )
