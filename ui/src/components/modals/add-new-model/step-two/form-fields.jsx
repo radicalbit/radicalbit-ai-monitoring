@@ -74,7 +74,7 @@ function UploadButton() {
   const fileList = form.file ? [form.file] : undefined;
 
   const beforeUpload = (file) => {
-    const isTooBig = file.size / 1024 > 500;
+    const isTooBig = file.size / 1024 > 1000;
 
     if (isTooBig) {
       setError('file', 'File must be smaller than 500KB');

@@ -20,5 +20,8 @@ export default function confusionMatrixOptions(dataset, labelClass, colors) {
     },
   };
 
+  options.xAxis.axisLabel.rotate = 45;
+  options.grid.bottom = 60;
+
   return options;
 }

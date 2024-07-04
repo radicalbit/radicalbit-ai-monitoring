@@ -54,35 +54,3 @@ function ClassTableMetrics() {
 }
 
 export default ClassTableMetrics;
-
-/*
- const { data: referenceData } = useGetReferenceModelQualityQueryWithPolling();
-  console.debug('🚀 ~ ClassTableMetrics ~ referenceData:', referenceData);
-  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
-  const referenceClassMetrics = referenceData?.modelQuality.classMetrics ?? [];
-  console.debug('🚀 ~ ClassTableMetrics ~ referenceClassMetrics:', referenceData);
-  const currentClassMetrics = currentData?.modelQuality.classMetrics ?? [];
-
-  const classMetrics = currentClassMetrics.map(({
-    className, metrics: {
-      precision, falsePositiveRate, recall, truePositiveRate, fMeasure,
-    },
-  }) => {
-    const referenceElement = referenceClassMetrics.find((f) => f.className === className);
-    console.debug('🚀 ~ ClassTableMetrics ~ referenceElement:', referenceElement);
-    return {
-      className,
-      currentPrecision: precision,
-      currentFalsePositiveRate: falsePositiveRate,
-      currentRecall: recall,
-      currentTruePositiveRate: truePositiveRate,
-      currentfMeasure: fMeasure,
-      referencePrecision: referenceElement.precision,
-      referenceFalsePositiveRate: referenceElement.falsePositiveRate,
-      referenceRecall: referenceElement.recall,
-      referenceTruePositiveRate: referenceElement.truePositiveRate,
-      referencefMeasure: referenceElement.fMeasure,
-    };
-  }) ?? [];
-
-*/

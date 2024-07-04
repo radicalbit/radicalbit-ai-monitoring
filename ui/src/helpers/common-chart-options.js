@@ -169,13 +169,18 @@ const lineSeriesOptions = (title, color, data) => {
   const options = {
     name: title,
     type: 'line',
-    lineStyle: { width: 2, color },
+    lineStyle: { width: 2 },
     symbol: 'none',
   };
 
   if (data) {
     options.data = data;
   }
+
+  if (color !== null) {
+    options.lineStyle.color = color;
+  }
+
   return options;
 };
 

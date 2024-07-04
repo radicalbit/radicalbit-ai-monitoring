@@ -37,6 +37,7 @@ export default function CurrentDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { data } = useGetReferenceDataQualityQueryWithPolling();
+
   const jobStatus = data?.jobStatus;
 
   const activeTab = searchParams.get('tab-metrics') || METRICS_TABS.METRICS;

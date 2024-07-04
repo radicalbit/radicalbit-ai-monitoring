@@ -2,24 +2,62 @@ import JobStatus from '@Components/JobStatus';
 import ConfusionMatrix from '@Components/charts/confusion-matrix-chart';
 import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { JOB_STATUS, numberFormatter } from '@Src/constants';
-import { useGetCurrentModelQualityQueryWithPolling } from '@State/models/polling-hook';
+import { useGetCurrentModelQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
+import { faChartLine, faCode } from '@fortawesome/free-solid-svg-icons';
+import { FormbitContextProvider } from '@radicalbit/formbit';
 import {
   Board,
+  Button,
+  FontAwesomeIcon,
   SectionTitle,
   Spinner,
 } from '@radicalbit/radicalbit-design-system';
-import { memo } from 'react';
+import { memo, useState } from 'react';
+import MulticlassChartMetrics from './class-chart-metrics';
 import ClassTableMetrics from './class-table-metrics';
+import SearchChart from './search-chart';
+
+const initialValues = { __metadata: { selectedCharts: [] } };
 
 function MultiClassificationModelQualityMetrics() {
   const { data, isLoading } = useGetCurrentModelQualityQueryWithPolling();
+  console.debug('🚀 ~ MultiClassificationModelQualityMetrics ~ data:', data);
+  const { isLoading: referenceIsLoading } = useGetReferenceModelQualityQueryWithPolling();
+
+  const [showChart, setShowChart] = useState(false);
 
   const jobStatus = data?.jobStatus;
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
+    if (showChart) {
+      return (
+        <Spinner spinning={isLoading}>
+          <div className="flex flex-col gap-4 py-4">
+
+            <Button onClick={() => setShowChart(false)}>
+              <FontAwesomeIcon icon={faCode} />
+            </Button>
+
+            <FormbitContextProvider initialValues={initialValues}>
+
+              <SearchChart />
+
+              <MulticlassChartMetrics />
+
+            </FormbitContextProvider>
+
+          </div>
+        </Spinner>
+      );
+    }
+
     return (
-      <Spinner spinning={isLoading}>
+      <Spinner spinning={isLoading || referenceIsLoading}>
         <div className="flex flex-col gap-4 py-4">
+
+          <Button onClick={() => setShowChart(true)}>
+            <FontAwesomeIcon icon={faChartLine} />
+          </Button>
 
           <GlobalMetrics />
 
@@ -43,6 +81,8 @@ function GlobalMetrics() {
     yAxisLabel: labels.toReversed(),
   };
 
+  const confusionMatrixHeight = (labels.length > 13) ? labels.length * 1.8 : '22';
+
   return (
     <div className="flex flex-row gap-4">
       <div className="flex flex-col gap-4 basis-1/6">
@@ -57,7 +97,7 @@ function GlobalMetrics() {
         <ConfusionMatrix
           colors={[CHART_COLOR.WHITE, CHART_COLOR.CURRENT]}
           dataset={confusionMatrixData}
-          height="36rem"
+          height={`${confusionMatrixHeight}rem`}
           labelClass={confusionMatrixLabel}
         />
       </div>
