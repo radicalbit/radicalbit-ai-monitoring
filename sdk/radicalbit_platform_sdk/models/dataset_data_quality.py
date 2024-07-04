@@ -99,6 +99,7 @@ class DataQuality(BaseModel):
 class ClassificationDataQuality(DataQuality):
     n_observations: int
     class_metrics: List[ClassMetrics]
+    class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[Union[NumericalFeatureMetrics, CategoricalFeatureMetrics]]
 
     model_config = ConfigDict(

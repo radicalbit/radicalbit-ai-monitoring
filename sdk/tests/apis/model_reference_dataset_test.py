@@ -486,6 +486,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                             {"name": "classA", "count": 100, "percentage": 50.0},
                             {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
+                        "classMetricsPrediction": [
+                            {"name": "predictionA", "count": 100, "percentage": 50.0},
+                            {"name": "predictionB", "count": 100, "percentage": 50.0}
+                        ],
                         "featureMetrics": [
                             {
                                 "featureName": "age",
@@ -538,6 +542,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'predictionA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -576,6 +583,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                                     "classMetrics": [
                                         {"name": "classA", "count": 100, "percentage": 50.0},
                                         {"name": "classB", "count": 100, "percentage": 50.0}
+                                    ],
+                                    "classMetricsPrediction": [
+                                        {"name": "predictionA", "count": 100, "percentage": 50.0},
+                                        {"name": "predictionB", "count": 100, "percentage": 50.0}
                                     ],
                                     "featureMetrics": [
                                         {
@@ -629,6 +640,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'predictionA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
