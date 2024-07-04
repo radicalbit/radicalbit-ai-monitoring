@@ -352,6 +352,13 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
+        r2 = 0.91
+        mae = 125.01
+        mse = 408.76
+        var = 393.31
+        mape = 35.19
+        rmse = 202.23
+        adj_r2 = 0.91
         model_reference_dataset = ModelReferenceDataset(
             base_url,
             model_id,
@@ -368,17 +375,31 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             method=responses.GET,
             url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
             status=200,
-            body="""{
+            body=f"""{{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
-                    "modelQuality": {}
-                }""",
+                    "modelQuality": {{
+                        "r2": {r2},
+                        "mae": {mae},
+                        "mse": {mse},
+                        "var": {var},
+                        "mape": {mape},
+                        "rmse": {rmse},
+                        "adjR2": {adj_r2}
+                    }}
+                }}""",
         )
 
         metrics = model_reference_dataset.model_quality()
 
         assert isinstance(metrics, RegressionModelQuality)
-        # TODO: add asserts to properties
+        assert metrics.r2 == r2
+        assert metrics.mae == mae
+        assert metrics.mse == mse
+        assert metrics.var == var
+        assert metrics.mape == mape
+        assert metrics.rmse == rmse
+        assert metrics.adj_r2 == adj_r2
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

@@ -91,7 +91,15 @@ class MultiClassificationModelQuality(BaseModel):
 
 
 class RegressionModelQuality(BaseModel):
-    pass
+    r2: float
+    mae: float
+    mse: float
+    var: float
+    mape: float
+    rmse: float
+    adj_r2: float
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
 class ModelQualityDTO(BaseModel):

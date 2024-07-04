@@ -90,4 +90,16 @@ class MultiClassificationModelQuality(ModelQuality):
 
 
 class RegressionModelQuality(ModelQuality):
+    r2: float
+    mae: float
+    mse: float
+    var: float
+    mape: float
+    rmse: float
+    adj_r2: float
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class CurrentRegressionModelQuality(ModelQuality):
     pass
