@@ -79,10 +79,6 @@ class ModelQualityRegressionCalculator:
     def numerical_metrics(
         model: ModelOut, dataframe: DataFrame, dataframe_count: int
     ) -> ModelQualityRegression:
-        # TODO: understand if we should filter out rows with null values in prediction || ground_truth
-        # # drop row where prediction or ground_truth is null
-        # _dataframe = dataframe.dropna(subset=[model.outputs.prediction.name, model.target.name])
-        # _dataframe_count = dataframe.count()
         return ModelQualityRegressionCalculator.__calc_mq_metrics(
             model, dataframe, dataframe_count
         )

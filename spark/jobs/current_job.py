@@ -9,8 +9,10 @@ from pyspark.sql.types import StructType, StructField, StringType
 from metrics.statistics import calculate_statistics_current
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
+
 from utils.current_binary import CurrentMetricsService
 from utils.current_multiclass import CurrentMetricsMulticlassService
+from utils.current_regression import CurrentMetricsRegressionService
 from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 
@@ -96,8 +98,17 @@ def main(
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
         case ModelType.REGRESSION:
+            metrics_service = CurrentMetricsRegressionService(
+                reference=reference_dataset,
+                current=current_dataset,
+                spark_session=spark_session,
+            )
             statistics = calculate_statistics_current(current_dataset)
+            data_quality = metrics_service.calculate_data_quality(is_current=True)
             complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
 

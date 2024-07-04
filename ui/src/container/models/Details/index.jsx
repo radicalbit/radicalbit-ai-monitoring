@@ -3,6 +3,7 @@ import { modelsApiSlice } from '@State/models/api';
 import { useParams } from 'react-router-dom';
 import BinaryClassificationMetrics from './binary-classification';
 import MultiClassificationMetrics from './multi-classification';
+import RegressionMetrics from './regression';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
@@ -13,6 +14,9 @@ export function ModelDetails() {
   const modelType = data?.modelType;
 
   switch (modelType) {
+    case ModelTypeEnum.REGRESSION:
+      return <RegressionMetrics />;
+
     case ModelTypeEnum.BINARY_CLASSIFICATION:
       return <BinaryClassificationMetrics />;
 
