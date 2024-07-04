@@ -115,6 +115,12 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
                 {"name": "2", "count": 3, "percentage": 30.0},
                 {"name": "0", "count": 3, "percentage": 30.0},
             ],
+            "class_metrics_prediction": [
+                {"name": "3", "count": 2, "percentage": 20.0},
+                {"name": "0", "count": 2, "percentage": 20.0},
+                {"name": "1", "count": 4, "percentage": 40.0},
+                {"name": "2", "count": 2, "percentage": 20.0},
+            ],
             "feature_metrics": [
                 {
                     "feature_name": "num1",
@@ -334,6 +340,12 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
                 {"name": "HEALTHY", "count": 3, "percentage": 30.0},
                 {"name": "UNKNOWN", "count": 3, "percentage": 30.0},
             ],
+            "class_metrics_prediction": [
+                {"name": "ORPHAN", "count": 2, "percentage": 20.0},
+                {"name": "UNHEALTHY", "count": 2, "percentage": 20.0},
+                {"name": "HEALTHY", "count": 4, "percentage": 40.0},
+                {"name": "UNKNOWN", "count": 2, "percentage": 20.0},
+            ],
             "feature_metrics": [
                 {
                     "feature_name": "num1",
@@ -548,6 +560,12 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
         {
             "n_observations": 10,
             "class_metrics": [
+                {"name": "ORPHAN", "count": 2, "percentage": 20.0},
+                {"name": "UNHEALTHY", "count": 2, "percentage": 20.0},
+                {"name": "HEALTHY", "count": 4, "percentage": 40.0},
+                {"name": "UNKNOWN", "count": 2, "percentage": 20.0},
+            ],
+            "class_metrics_prediction": [
                 {"name": "ORPHAN", "count": 2, "percentage": 20.0},
                 {"name": "UNHEALTHY", "count": 2, "percentage": 20.0},
                 {"name": "HEALTHY", "count": 4, "percentage": 40.0},

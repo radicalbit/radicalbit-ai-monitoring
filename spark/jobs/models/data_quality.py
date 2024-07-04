@@ -165,12 +165,14 @@ class ClassMetrics(BaseModel):
 class BinaryClassDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
+    class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[FeatureMetrics]
 
 
 class MultiClassDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
+    class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[FeatureMetrics]
 
 

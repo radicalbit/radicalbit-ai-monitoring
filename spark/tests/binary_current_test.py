@@ -284,6 +284,9 @@ def test_calculation(spark_fixture, dataset):
         ignore_order=True,
         significant_digits=6,
     )
+    print(
+        data_quality.model_dump(serialize_as_any=True, exclude_none=True),
+    )
 
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
@@ -292,6 +295,10 @@ def test_calculation(spark_fixture, dataset):
             "class_metrics": [
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -462,6 +469,10 @@ def test_calculation_current_joined(spark_fixture, current_joined):
             "class_metrics": [
                 {"name": "1.0", "count": 131, "percentage": 55.04201680672269},
                 {"name": "0.0", "count": 107, "percentage": 44.957983193277315},
+            ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 133, "percentage": 55.88235294117647},
+                {"name": "0.0", "count": 105, "percentage": 44.11764705882353},
             ],
             "feature_metrics": [
                 {
@@ -855,6 +866,10 @@ def test_calculation_complete(spark_fixture, complete_dataset):
                 {"name": "1.0", "count": 7, "percentage": 100.0},
                 {"name": "0.0", "count": 0, "percentage": 0.0},
             ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 7, "percentage": 100.0},
+                {"name": "0.0", "count": 0, "percentage": 0.0},
+            ],
             "feature_metrics": [
                 {
                     "feature_name": "num1",
@@ -1000,6 +1015,10 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
         {
             "n_observations": 7,
             "class_metrics": [
+                {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
+                {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
+            ],
+            "class_metrics_prediction": [
                 {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
                 {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
             ],
@@ -1150,6 +1169,10 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
             "class_metrics": [
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -1314,6 +1337,10 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+            ],
             "feature_metrics": [
                 {
                     "feature_name": "num1",
@@ -1474,6 +1501,10 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
         {
             "n_observations": 7,
             "class_metrics": [
+                {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
+                {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
+            ],
+            "class_metrics_prediction": [
                 {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
                 {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
             ],
@@ -1782,6 +1813,10 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+            ],
             "feature_metrics": [
                 {
                     "feature_name": "num1",
@@ -2059,6 +2094,10 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
             "class_metrics": [
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -2338,6 +2377,10 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
             ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+            ],
             "feature_metrics": [
                 {
                     "feature_name": "num1",
@@ -2601,6 +2644,10 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
             "class_metrics": [
                 {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "1.0", "count": 5, "percentage": 50.0},
+                {"name": "0.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {

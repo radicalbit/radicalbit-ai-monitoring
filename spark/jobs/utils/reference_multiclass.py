@@ -144,9 +144,9 @@ class ReferenceMetricsMulticlassService:
             dataframe_count=self.reference.reference_count,
         )
 
-    def calculate_class_metrics(self) -> List[ClassMetrics]:
+    def calculate_class_metrics(self, column) -> List[ClassMetrics]:
         return DataQualityCalculator.class_metrics(
-            class_column=self.reference.model.target.name,
+            class_column=column,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
         )
@@ -159,6 +159,11 @@ class ReferenceMetricsMulticlassService:
             feature_metrics.extend(self.calculate_data_quality_categorical())
         return MultiClassDataQuality(
             n_observations=self.reference.reference_count,
-            class_metrics=self.calculate_class_metrics(),
+            class_metrics=self.calculate_class_metrics(
+                self.reference.model.target.name
+            ),
+            class_metrics_prediction=self.calculate_class_metrics(
+                self.reference.model.outputs.prediction.name
+            ),
             feature_metrics=feature_metrics,
         )
