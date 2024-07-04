@@ -140,6 +140,18 @@ def dataset_for_month(spark_fixture, test_data_dir):
     )
 
 
+@pytest.fixture()
+def dataset_with_nulls(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/dataset_nulls.csv", header=True
+        ),
+        spark_fixture.read.csv(
+            f"{test_data_dir}/reference/dataset_nulls.csv", header=True
+        ),
+    )
+
+
 def test_calculation(spark_fixture, dataset):
     output = OutputType(
         prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
@@ -2673,6 +2685,124 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
                     "distinct_value": 2,
                 },
             ],
+        },
+        ignore_order=True,
+        significant_digits=6,
+    )
+
+
+def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
+    output = OutputType(
+        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction_proba=ColumnDefinition(
+            name="prediction_proba", type=SupportedTypes.float
+        ),
+        output=[
+            ColumnDefinition(name="prediction", type=SupportedTypes.float),
+            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+        ],
+    )
+    target = ColumnDefinition(name="target", type=SupportedTypes.float)
+    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    granularity = Granularity.MONTH
+    features = [
+        ColumnDefinition(name="cat1", type=SupportedTypes.string),
+        ColumnDefinition(name="cat2", type=SupportedTypes.string),
+        ColumnDefinition(name="num1", type=SupportedTypes.float),
+        ColumnDefinition(name="num2", type=SupportedTypes.float),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="model",
+        description="description",
+        model_type=ModelType.BINARY,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    raw_current_dataset, raw_reference_dataset = dataset_with_nulls
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
+    )
+
+    metrics_service = CurrentMetricsService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
+
+    assert not deepdiff.DeepDiff(
+        model_quality,
+        {
+            "global_metrics": {
+                "f1": 0.7500000000000001,
+                "accuracy": 0.75,
+                "weighted_precision": 0.75,
+                "weighted_recall": 0.75,
+                "weighted_true_positive_rate": 0.75,
+                "weighted_false_positive_rate": 0.2833333333333333,
+                "weighted_f_measure": 0.75,
+                "true_positive_rate": 0.8,
+                "false_positive_rate": 0.3333333333333333,
+                "precision": 0.8,
+                "recall": 0.8,
+                "f_measure": 0.8000000000000002,
+                "true_positive_count": 4,
+                "false_positive_count": 1,
+                "true_negative_count": 2,
+                "false_negative_count": 1,
+                "area_under_roc": 0.4,
+                "area_under_pr": 0.2944444444444444,
+            },
+            "grouped_metrics": {
+                "f1": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.7500000000000001}
+                ],
+                "accuracy": [{"timestamp": "2024-06-01 00:00:00", "value": 0.75}],
+                "weighted_precision": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.75}
+                ],
+                "weighted_recall": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.75}
+                ],
+                "weighted_true_positive_rate": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.75}
+                ],
+                "weighted_false_positive_rate": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.2833333333333333}
+                ],
+                "weighted_f_measure": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.7500000000000001}
+                ],
+                "true_positive_rate": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.8}
+                ],
+                "false_positive_rate": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.3333333333333333}
+                ],
+                "precision": [{"timestamp": "2024-06-01 00:00:00", "value": 0.8}],
+                "recall": [{"timestamp": "2024-06-01 00:00:00", "value": 0.8}],
+                "f_measure": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.8000000000000002}
+                ],
+                "area_under_roc": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.5333333333333334}
+                ],
+                "area_under_pr": [
+                    {"timestamp": "2024-06-01 00:00:00", "value": 0.6529761904761904}
+                ],
+            },
         },
         ignore_order=True,
         significant_digits=6,

@@ -9,3 +9,7 @@ def apply_schema_to_dataframe(df, schema):
 
 def check_not_null(x):
     return F.when(F.col(x).isNotNull() & ~F.isnan(x), F.col(x))
+
+
+def is_not_null(x):
+    return F.col(x).isNotNull() & ~F.isnan(x)
