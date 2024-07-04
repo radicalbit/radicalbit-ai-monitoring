@@ -19,7 +19,7 @@ from models.data_quality import (
 from models.reference_dataset import ReferenceDataset
 from .misc import create_time_format
 from .models import Granularity
-from .spark import check_not_null
+from .spark import is_not_null
 
 
 class CurrentMetricsService:
@@ -134,8 +134,8 @@ class CurrentMetricsService:
         return {
             label: self.__evaluate_multi_class_classification(
                 self.current.current.filter(
-                    check_not_null(self.current.model.outputs.prediction.name)
-                    & check_not_null(self.current.model.target.name)
+                    is_not_null(self.current.model.outputs.prediction.name)
+                    & is_not_null(self.current.model.target.name)
                 ),
                 name,
             )
@@ -171,8 +171,8 @@ class CurrentMetricsService:
 
     def calculate_multiclass_model_quality_group_by_timestamp(self):
         current_df_clean = self.current.current.filter(
-            check_not_null(self.current.model.outputs.prediction.name)
-            & check_not_null(self.current.model.target.name)
+            is_not_null(self.current.model.outputs.prediction.name)
+            & is_not_null(self.current.model.target.name)
         )
 
         if self.current.model.granularity == Granularity.WEEK:
@@ -243,8 +243,8 @@ class CurrentMetricsService:
 
     def calculate_binary_class_model_quality_group_by_timestamp(self):
         current_df_clean = self.current.current.filter(
-            check_not_null(self.current.model.outputs.prediction_proba.name)
-            & check_not_null(self.current.model.target.name)
+            is_not_null(self.current.model.outputs.prediction_proba.name)
+            & is_not_null(self.current.model.target.name)
         )
 
         if self.current.model.granularity == Granularity.WEEK:
@@ -314,8 +314,8 @@ class CurrentMetricsService:
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
             self.current.current.filter(
-                check_not_null(self.current.model.outputs.prediction.name)
-                & check_not_null(self.current.model.target.name)
+                is_not_null(self.current.model.outputs.prediction.name)
+                & is_not_null(self.current.model.target.name)
             )
             .select(
                 [

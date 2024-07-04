@@ -4,7 +4,7 @@ import pyspark.sql.functions as F
 from models.regression_model_quality import RegressionMetricType, ModelQualityRegression
 from utils.models import ModelOut
 from pyspark.ml.evaluation import RegressionEvaluator
-from utils.spark import check_not_null
+from utils.spark import is_not_null
 
 
 class ModelQualityRegressionCalculator:
@@ -81,8 +81,7 @@ class ModelQualityRegressionCalculator:
     ) -> ModelQualityRegression:
         # # drop row where prediction or ground_truth is null
         dataframe_clean = dataframe.filter(
-            check_not_null(model.outputs.prediction.name)
-            & check_not_null(model.target.name)
+            is_not_null(model.outputs.prediction.name) & is_not_null(model.target.name)
         )
         dataframe_clean_count = dataframe_clean.count()
         return ModelQualityRegressionCalculator.__calc_mq_metrics(

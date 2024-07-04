@@ -15,7 +15,7 @@ from models.data_quality import (
     BinaryClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
-from .spark import check_not_null
+from .spark import is_not_null
 
 
 class ReferenceMetricsService:
@@ -75,8 +75,8 @@ class ReferenceMetricsService:
         return {
             label: self.__evaluate_binary_classification(
                 self.reference.reference.filter(
-                    check_not_null(self.reference.model.outputs.prediction.name)
-                    & check_not_null(self.reference.model.target.name)
+                    is_not_null(self.reference.model.outputs.prediction.name)
+                    & is_not_null(self.reference.model.target.name)
                 ),
                 name,
             )
@@ -88,8 +88,8 @@ class ReferenceMetricsService:
         return {
             label: self.__evaluate_multi_class_classification(
                 self.reference.reference.filter(
-                    check_not_null(self.reference.model.outputs.prediction.name)
-                    & check_not_null(self.reference.model.target.name)
+                    is_not_null(self.reference.model.outputs.prediction.name)
+                    & is_not_null(self.reference.model.target.name)
                 ),
                 name,
             )
@@ -109,8 +109,8 @@ class ReferenceMetricsService:
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
             self.reference.reference.filter(
-                check_not_null(self.reference.model.outputs.prediction.name)
-                & check_not_null(self.reference.model.target.name)
+                is_not_null(self.reference.model.outputs.prediction.name)
+                & is_not_null(self.reference.model.target.name)
             )
             .select(
                 [
