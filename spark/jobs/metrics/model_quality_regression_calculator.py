@@ -1,10 +1,10 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col
-from pyspark.sql.functions import abs as pyspark_abs
+import pyspark.sql.functions as F
 
 from models.regression_model_quality import RegressionMetricType, ModelQualityRegression
 from utils.models import ModelOut
 from pyspark.ml.evaluation import RegressionEvaluator
+from utils.spark import is_not_null
 
 
 class ModelQualityRegressionCalculator:
@@ -35,12 +35,12 @@ class ModelQualityRegressionCalculator:
                     # mape = 100 * (abs(actual - predicted) / actual) / n
                     _dataframe = dataframe.withColumn(
                         "mape",
-                        pyspark_abs(
+                        F.abs(
                             (
-                                col(model.outputs.prediction.name)
-                                - col(model.target.name)
+                                F.col(model.outputs.prediction.name)
+                                - F.col(model.target.name)
                             )
-                            / col(model.target.name)
+                            / F.col(model.target.name)
                         ),
                     )
                     return _dataframe.agg({"mape": "avg"}).collect()[0][0] * 100
@@ -79,6 +79,11 @@ class ModelQualityRegressionCalculator:
     def numerical_metrics(
         model: ModelOut, dataframe: DataFrame, dataframe_count: int
     ) -> ModelQualityRegression:
+        # # drop row where prediction or ground_truth is null
+        dataframe_clean = dataframe.filter(
+            is_not_null(model.outputs.prediction.name) & is_not_null(model.target.name)
+        )
+        dataframe_clean_count = dataframe_clean.count()
         return ModelQualityRegressionCalculator.__calc_mq_metrics(
-            model, dataframe, dataframe_count
+            model, dataframe_clean, dataframe_clean_count
         )

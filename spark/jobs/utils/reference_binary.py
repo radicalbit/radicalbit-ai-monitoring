@@ -5,8 +5,7 @@ from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
-from pyspark.sql.functions import col
-import pyspark.sql.functions as f
+import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from models.data_quality import (
@@ -16,6 +15,7 @@ from models.data_quality import (
     BinaryClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
+from .spark import is_not_null
 
 
 class ReferenceMetricsService:
@@ -73,7 +73,13 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def __calc_bc_metrics(self) -> dict[str, float]:
         return {
-            label: self.__evaluate_binary_classification(self.reference.reference, name)
+            label: self.__evaluate_binary_classification(
+                self.reference.reference.filter(
+                    is_not_null(self.reference.model.outputs.prediction.name)
+                    & is_not_null(self.reference.model.target.name)
+                ),
+                name,
+            )
             for (name, label) in self.model_quality_binary_classificator.items()
         }
 
@@ -81,7 +87,11 @@ class ReferenceMetricsService:
     def __calc_mc_metrics(self) -> dict[str, float]:
         return {
             label: self.__evaluate_multi_class_classification(
-                self.reference.reference, name
+                self.reference.reference.filter(
+                    is_not_null(self.reference.model.outputs.prediction.name)
+                    & is_not_null(self.reference.model.target.name)
+                ),
+                name,
             )
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
@@ -98,7 +108,11 @@ class ReferenceMetricsService:
     # FIXME use pydantic struct like data quality
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
-            self.reference.reference.select(
+            self.reference.reference.filter(
+                is_not_null(self.reference.model.outputs.prediction.name)
+                & is_not_null(self.reference.model.target.name)
+            )
+            .select(
                 [
                     self.reference.model.outputs.prediction.name,
                     self.reference.model.target.name,
@@ -106,26 +120,26 @@ class ReferenceMetricsService:
             )
             .withColumn(
                 self.reference.model.target.name,
-                f.col(self.reference.model.target.name),
+                F.col(self.reference.model.target.name),
             )
             .orderBy(self.reference.model.target.name)
         )
 
         tp = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 1)
-            & (col(self.reference.model.target.name) == 1)
+            (F.col(self.reference.model.outputs.prediction.name) == 1)
+            & (F.col(self.reference.model.target.name) == 1)
         ).count()
         tn = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 0)
-            & (col(self.reference.model.target.name) == 0)
+            (F.col(self.reference.model.outputs.prediction.name) == 0)
+            & (F.col(self.reference.model.target.name) == 0)
         ).count()
         fp = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 1)
-            & (col(self.reference.model.target.name) == 0)
+            (F.col(self.reference.model.outputs.prediction.name) == 1)
+            & (F.col(self.reference.model.target.name) == 0)
         ).count()
         fn = prediction_and_label.filter(
-            (col(self.reference.model.outputs.prediction.name) == 0)
-            & (col(self.reference.model.target.name) == 1)
+            (F.col(self.reference.model.outputs.prediction.name) == 0)
+            & (F.col(self.reference.model.target.name) == 1)
         ).count()
 
         return {

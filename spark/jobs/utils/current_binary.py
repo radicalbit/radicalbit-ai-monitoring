@@ -5,8 +5,7 @@ from pyspark.ml.evaluation import (
     MulticlassClassificationEvaluator,
 )
 from pyspark.sql import DataFrame, SparkSession
-from pyspark.sql.functions import col
-import pyspark.sql.functions as f
+import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from metrics.drift_calculator import DriftCalculator
@@ -20,6 +19,7 @@ from models.data_quality import (
 from models.reference_dataset import ReferenceDataset
 from .misc import create_time_format
 from .models import Granularity
+from .spark import is_not_null
 
 
 class CurrentMetricsService:
@@ -133,7 +133,11 @@ class CurrentMetricsService:
     def __calc_mc_metrics(self) -> dict[str, float]:
         return {
             label: self.__evaluate_multi_class_classification(
-                self.current.current, name
+                self.current.current.filter(
+                    is_not_null(self.current.model.outputs.prediction.name)
+                    & is_not_null(self.current.model.target.name)
+                ),
+                name,
             )
             for (name, label) in self.model_quality_multiclass_classificator.items()
         }
@@ -166,16 +170,21 @@ class CurrentMetricsService:
             return float("nan")
 
     def calculate_multiclass_model_quality_group_by_timestamp(self):
+        current_df_clean = self.current.current.filter(
+            is_not_null(self.current.model.outputs.prediction.name)
+            & is_not_null(self.current.model.target.name)
+        )
+
         if self.current.model.granularity == Granularity.WEEK:
-            dataset_with_group = self.current.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
-                    f.date_format(
-                        f.to_timestamp(
-                            f.date_sub(
-                                f.next_day(
-                                    f.date_format(
+                    F.date_format(
+                        F.to_timestamp(
+                            F.date_sub(
+                                F.next_day(
+                                    F.date_format(
                                         self.current.model.timestamp.name,
                                         create_time_format(
                                             self.current.model.granularity
@@ -191,13 +200,13 @@ class CurrentMetricsService:
                 ]
             )
         else:
-            dataset_with_group = self.current.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
-                    f.date_format(
-                        f.to_timestamp(
-                            f.date_format(
+                    F.date_format(
+                        F.to_timestamp(
+                            F.date_format(
                                 self.current.model.timestamp.name,
                                 create_time_format(self.current.model.granularity),
                             )
@@ -210,12 +219,12 @@ class CurrentMetricsService:
         list_of_time_group = (
             dataset_with_group.select("time_group")
             .distinct()
-            .orderBy(f.col("time_group").asc())
+            .orderBy(F.col("time_group").asc())
             .rdd.flatMap(lambda x: x)
             .collect()
         )
         array_of_groups = [
-            dataset_with_group.where(f.col("time_group") == x)
+            dataset_with_group.where(F.col("time_group") == x)
             for x in list_of_time_group
         ]
 
@@ -233,16 +242,21 @@ class CurrentMetricsService:
         }
 
     def calculate_binary_class_model_quality_group_by_timestamp(self):
+        current_df_clean = self.current.current.filter(
+            is_not_null(self.current.model.outputs.prediction_proba.name)
+            & is_not_null(self.current.model.target.name)
+        )
+
         if self.current.model.granularity == Granularity.WEEK:
-            dataset_with_group = self.current.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.current.model.outputs.prediction_proba.name,
                     self.current.model.target.name,
-                    f.date_format(
-                        f.to_timestamp(
-                            f.date_sub(
-                                f.next_day(
-                                    f.date_format(
+                    F.date_format(
+                        F.to_timestamp(
+                            F.date_sub(
+                                F.next_day(
+                                    F.date_format(
                                         self.current.model.timestamp.name,
                                         create_time_format(
                                             self.current.model.granularity
@@ -258,13 +272,13 @@ class CurrentMetricsService:
                 ]
             )
         else:
-            dataset_with_group = self.current.current.select(
+            dataset_with_group = current_df_clean.select(
                 [
                     self.current.model.outputs.prediction_proba.name,
                     self.current.model.target.name,
-                    f.date_format(
-                        f.to_timestamp(
-                            f.date_format(
+                    F.date_format(
+                        F.to_timestamp(
+                            F.date_format(
                                 self.current.model.timestamp.name,
                                 create_time_format(self.current.model.granularity),
                             )
@@ -277,12 +291,12 @@ class CurrentMetricsService:
         list_of_time_group = (
             dataset_with_group.select("time_group")
             .distinct()
-            .orderBy(f.col("time_group").asc())
+            .orderBy(F.col("time_group").asc())
             .rdd.flatMap(lambda x: x)
             .collect()
         )
         array_of_groups = [
-            dataset_with_group.where(f.col("time_group") == x)
+            dataset_with_group.where(F.col("time_group") == x)
             for x in list_of_time_group
         ]
 
@@ -299,33 +313,37 @@ class CurrentMetricsService:
 
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
-            self.current.current.select(
+            self.current.current.filter(
+                is_not_null(self.current.model.outputs.prediction.name)
+                & is_not_null(self.current.model.target.name)
+            )
+            .select(
                 [
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                 ]
             )
             .withColumn(
-                self.current.model.target.name, f.col(self.current.model.target.name)
+                self.current.model.target.name, F.col(self.current.model.target.name)
             )
             .orderBy(self.current.model.target.name)
         )
 
         tp = prediction_and_label.filter(
-            (col(self.current.model.outputs.prediction.name) == 1)
-            & (col(self.current.model.target.name) == 1)
+            (F.col(self.current.model.outputs.prediction.name) == 1)
+            & (F.col(self.current.model.target.name) == 1)
         ).count()
         tn = prediction_and_label.filter(
-            (col(self.current.model.outputs.prediction.name) == 0)
-            & (col(self.current.model.target.name) == 0)
+            (F.col(self.current.model.outputs.prediction.name) == 0)
+            & (F.col(self.current.model.target.name) == 0)
         ).count()
         fp = prediction_and_label.filter(
-            (col(self.current.model.outputs.prediction.name) == 1)
-            & (col(self.current.model.target.name) == 0)
+            (F.col(self.current.model.outputs.prediction.name) == 1)
+            & (F.col(self.current.model.target.name) == 0)
         ).count()
         fn = prediction_and_label.filter(
-            (col(self.current.model.outputs.prediction.name) == 0)
-            & (col(self.current.model.target.name) == 1)
+            (F.col(self.current.model.outputs.prediction.name) == 0)
+            & (F.col(self.current.model.target.name) == 1)
         ).count()
 
         return {

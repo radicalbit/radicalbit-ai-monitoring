@@ -27,6 +27,13 @@ def reference_bike(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
+def reference_bike_nulls(spark_fixture, test_data_dir):
+    yield spark_fixture.read.csv(
+        f"{test_data_dir}/reference/regression/reference_bike_nulls.csv", header=True
+    )
+
+
+@pytest.fixture()
 def expected_data_quality_json():
     yield {
         "n_observations": 731,
@@ -431,6 +438,52 @@ def reference_dataset(reference_bike):
     )
 
 
+@pytest.fixture()
+def reference_dataset_nulls(spark_fixture, reference_bike_nulls):
+    output = OutputType(
+        prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
+        prediction_proba=None,
+        output=[ColumnDefinition(name="predictions", type=SupportedTypes.float)],
+    )
+    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
+    timestamp = ColumnDefinition(name="dteday", type=SupportedTypes.datetime)
+    granularity = Granularity.HOUR
+    features = [
+        ColumnDefinition(name="season", type=SupportedTypes.int),
+        ColumnDefinition(name="yr", type=SupportedTypes.int),
+        ColumnDefinition(name="mnth", type=SupportedTypes.int),
+        ColumnDefinition(name="holiday", type=SupportedTypes.int),
+        ColumnDefinition(name="weekday", type=SupportedTypes.int),
+        ColumnDefinition(name="workingday", type=SupportedTypes.int),
+        ColumnDefinition(name="weathersit", type=SupportedTypes.float),
+        ColumnDefinition(name="temp", type=SupportedTypes.float),
+        ColumnDefinition(name="atemp", type=SupportedTypes.float),
+        ColumnDefinition(name="hum", type=SupportedTypes.float),
+        ColumnDefinition(name="windspeed", type=SupportedTypes.float),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="regression model",
+        description="description",
+        model_type=ModelType.REGRESSION,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    yield ReferenceDataset(
+        raw_dataframe=reference_bike_nulls,
+        model=model,
+    )
+
+
 def test_model_quality_metrics(reference_dataset):
     assert reference_dataset.reference_count == 731
 
@@ -496,3 +549,24 @@ def test_data_quality_metrics(reference_dataset, expected_data_quality_json):
         ignore_order=True,
         ignore_type_subclasses=True,
     )
+
+
+def test_model_quality_metrics_nulls(reference_dataset_nulls):
+    regression_service = ReferenceMetricsRegressionService(
+        reference=reference_dataset_nulls
+    )
+    model_quality_metrics = regression_service.calculate_model_quality()
+
+    expected = my_approx(
+        {
+            "mae": 125.10728395061736,
+            "mape": 35.20983108087226,
+            "mse": 40967.56920781895,
+            "rmse": 202.40446933755922,
+            "r2": 0.9130200184348737,
+            "adj_r2": 0.9116855975182538,
+            "var": 393588.541292358,
+        }
+    )
+
+    assert model_quality_metrics.model_dump() == expected
