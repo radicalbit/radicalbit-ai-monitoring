@@ -119,9 +119,11 @@ function DataPointDistributionChart() {
   const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
 
   const currentClassMetrics = currentData?.dataQuality.classMetrics ?? [];
+  const sortedCurrentClassMetrics = [...currentClassMetrics].sort((a, b) => a.name - b.name);
 
   const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });
   const referenceClassMetrics = referenceData?.dataQuality.classMetrics ?? [];
+  const sortedReferenceClassMetrics = [...referenceClassMetrics].sort((a, b) => a.name - b.name);
 
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
@@ -137,7 +139,7 @@ function DataPointDistributionChart() {
           <ReactEchartsCore
             echarts={echarts}
             onChartReady={handleOnChartReady}
-            option={chartOptions(title, referenceClassMetrics, currentClassMetrics)}
+            option={chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics)}
             style={{ height: '20rem', width: '100%' }}
           />
         </div>

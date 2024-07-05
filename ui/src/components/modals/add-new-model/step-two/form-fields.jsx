@@ -74,10 +74,10 @@ function UploadButton() {
   const fileList = form.file ? [form.file] : undefined;
 
   const beforeUpload = (file) => {
-    const isTooBig = file.size / 1024 > 1000;
+    const isTooBig = file.size / 1024 > 2000;
 
     if (isTooBig) {
-      setError('file', 'File must be smaller than 500KB');
+      setError('file', 'File must be smaller than 2MB');
     }
 
     return !isTooBig;
@@ -165,7 +165,7 @@ function Recap() {
         <li>
           <label>
             <strong>File Size Limit: </strong>
-            500KB max
+            2MB ( if your file is bigger please use our SDK )
           </label>
         </li>
 

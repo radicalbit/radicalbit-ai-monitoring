@@ -9,7 +9,7 @@ function ClassTableMetrics() {
   const currentClassMetrics = currentData?.modelQuality.classMetrics ?? [];
   const referenceClassMetrics = referenceData?.modelQuality.classMetrics ?? [];
 
-  const classMetrics = currentClassMetrics.map((currentElement) => {
+  const classMetrics = [...currentClassMetrics].sort((a, b) => a.className - b.className).map((currentElement) => {
     const { className } = currentElement;
 
     const currentPrecision = currentElement?.metrics.precision;
