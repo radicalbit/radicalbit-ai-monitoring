@@ -9,8 +9,8 @@ export default function chartOptions(title, dataset) {
 
   const options = {
     ...commonChartOptions.gridOptions.barChart(),
-    ...commonChartOptions.xAxisOptions.categoryType(xAxisLabel),
-    ...commonChartOptions.yAxisOptions.valueType(),
+    xAxis: commonChartOptions.xAxisOptions.categoryType(xAxisLabel).xAxis,
+    yAxis: commonChartOptions.yAxisOptions.valueType().yAxis,
     ...commonChartOptions.commonOptions.barChart(),
     series: [
       {
