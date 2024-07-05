@@ -1,10 +1,10 @@
 import { useGetReferenceModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { DataTable } from '@radicalbit/radicalbit-design-system';
-import columns from './columns.jsx';
+import columns from './columns';
 
 function ClassTableMetrics() {
   const { data } = useGetReferenceModelQualityQueryWithPolling();
-  const classMetrics = data?.modelQuality.classMetrics.map(({
+  const classMetrics = data?.modelQuality?.classMetrics.map(({
     className, metrics: {
       precision, falsePositiveRate, recall, truePositiveRate, fMeasure,
     },

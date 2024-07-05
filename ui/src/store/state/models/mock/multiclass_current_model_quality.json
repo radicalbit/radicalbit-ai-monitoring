@@ -1,0 +1,425 @@
+{
+    "jobStatus":"SUCCEEDED",
+    "modelQuality":{
+        "classes":
+        [
+            "apple",
+            "banana",
+            "blackgram"
+        ],
+        "classMetrics":
+        [
+            {
+                "className": "apple",
+                "metrics":
+                {
+                    "fMeasure": 1,
+                    "precision": 1,
+                    "falsePositiveRate" : 1,
+                    "recall":1,
+                    "truePositiveRate":1
+                },
+                "groupedMetrics":
+                {
+                    "truePositiveRate":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "falsePositiveRate":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": null
+                        }
+                    ],
+                    "precision":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "recall":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "fMeasure":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ]
+                }
+            },
+            {
+                "className": "banana",
+                "metrics":
+                {
+                    "fMeasure": 1,
+                    "precision": 1,
+                    "falsePositiveRate" : 1,
+                    "recall":1,
+                    "truePositiveRate":1
+                },
+                "groupedMetrics":
+                {
+                    "truePositiveRate":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "falsePositiveRate":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": null
+                        }
+                    ],
+                    "precision":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "recall":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "fMeasure":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ]
+                }
+            },
+            {
+                "className": "blackgram",
+                "metrics":
+                {
+                    "fMeasure": 1,
+                    "precision": 1,
+                    "falsePositiveRate" : 1,
+                    "recall":1,
+                    "truePositiveRate":1
+                },
+                "groupedMetrics":
+                {
+                    "truePositiveRate":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "falsePositiveRate":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": null
+                        }
+                    ],
+                    "precision":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "recall":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ],
+                    "fMeasure":
+                    [
+                        {
+                            "timestamp": "2024-06-16 00:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 01:00:00",
+                            "value": null
+                        },
+                        {
+                            "timestamp": "2024-06-16 02:00:00",
+                            "value": 0.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 03:00:00",
+                            "value": 1.0
+                        },
+                        {
+                            "timestamp": "2024-06-16 04:00:00",
+                            "value": 1.0
+                        }
+                    ]
+                }
+            }
+        ],
+        "globalMetrics":
+        {
+            "f1": 0.6933333333333332,
+            "accuracy": 0.7,
+            "confusionMatrix":
+            [
+                [
+                    3.0,
+                    1.0,
+                    1.0
+                ],
+                [
+                    1.0,
+                    2.0,
+                    0.0
+                ],
+                [
+                    0.0,
+                    0.0,
+                    2.0
+                ]
+            ]
+        }
+    }
+}
+
