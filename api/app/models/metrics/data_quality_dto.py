@@ -132,7 +132,7 @@ class ClassificationDataQuality(BaseModel):
 class RegressionDataQuality(BaseModel):
     n_observations: int
     target_metrics: NumericalTargetMetrics
-    feature_metrics: List[NumericalFeatureMetrics]
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
