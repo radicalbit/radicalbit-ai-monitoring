@@ -117,8 +117,6 @@ function TruePositiveRateChart() {
   const cappedSeries = items.slice(0, 13);
   const currentSeries = cappedSeries.map(({ className, currentData }) => ({ className, data: currentData.truePositiveRate }));
 
-  console.debug('🚀 ~ TruePositiveRateChart ~ currentSeries:', cappedSeries);
-
   const referenceSeries = cappedSeries.map(({ className, referenceData, currentData }) => ({
     className,
     data: currentData.truePositiveRate.map((o) => ({

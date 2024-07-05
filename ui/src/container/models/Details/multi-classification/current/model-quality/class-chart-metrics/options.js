@@ -13,14 +13,12 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
     const series = referenceDataset.map((el) => {
       const referenceSeries = el.data.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);
       const referenceOption = {
-        ...commonChartOptions.seriesOptions.lineChart(el.className, CHART_COLOR.REFERENCE, referenceSeries),
+        ...commonChartOptions.seriesOptions.lineChart(el.className, null, referenceSeries),
         endLabel: {
           show: true,
           color: CHART_COLOR.REFERENCE,
           formatter: ({ value }) => `${value[1]}`,
         },
-        color: CHART_COLOR.REFERENCE,
-
       };
       referenceOption.lineStyle.type = 'dotted';
       return referenceOption;

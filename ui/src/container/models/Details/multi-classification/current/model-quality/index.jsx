@@ -3,16 +3,16 @@ import ConfusionMatrix from '@Components/charts/confusion-matrix-chart';
 import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { JOB_STATUS, numberFormatter } from '@Src/constants';
 import { useGetCurrentModelQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
-import { faChartLine, faCode } from '@fortawesome/free-solid-svg-icons';
+import { faChartLine, faTable } from '@fortawesome/free-solid-svg-icons';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import {
   Board,
-  Button,
   FontAwesomeIcon,
   SectionTitle,
   Spinner,
 } from '@radicalbit/radicalbit-design-system';
-import { memo, useState } from 'react';
+import { memo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import MulticlassChartMetrics from './class-chart-metrics';
 import ClassTableMetrics from './class-table-metrics';
 import SearchChart from './search-chart';
@@ -20,49 +20,48 @@ import SearchChart from './search-chart';
 const initialValues = { __metadata: { selectedCharts: [] } };
 
 function MultiClassificationModelQualityMetrics() {
-  const { data, isLoading } = useGetCurrentModelQualityQueryWithPolling();
-  console.debug('🚀 ~ MultiClassificationModelQualityMetrics ~ data:', data);
-  const { isLoading: referenceIsLoading } = useGetReferenceModelQualityQueryWithPolling();
+  const { data, isSuccess, isLoading } = useGetCurrentModelQualityQueryWithPolling();
+  const { isSuccess: referenceIsSuccess, IsLoading: referenceIsLoading } = useGetReferenceModelQualityQueryWithPolling();
 
-  const [showChart, setShowChart] = useState(false);
+  const mode = useGetModeParam();
+
+  if (!isSuccess || !referenceIsSuccess) {
+    return false;
+  }
 
   const jobStatus = data?.jobStatus;
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
-    if (showChart) {
+    if (mode === MODE.CHART) {
       return (
-        <Spinner spinning={isLoading}>
-          <div className="flex flex-col gap-4 py-4">
+        <Spinner fullHeight fullWidth spinning={isLoading || referenceIsLoading}>
+          <div className="flex flex-row gap-4 py-4">
+            <div className="flex flex-col w-full gap-4 ">
+              <FormbitContextProvider initialValues={initialValues}>
 
-            <Button onClick={() => setShowChart(false)}>
-              <FontAwesomeIcon icon={faCode} />
-            </Button>
+                <SearchChart />
 
-            <FormbitContextProvider initialValues={initialValues}>
+                <MulticlassChartMetrics />
 
-              <SearchChart />
+              </FormbitContextProvider>
+            </div>
 
-              <MulticlassChartMetrics />
-
-            </FormbitContextProvider>
-
+            <div className="flex ">
+              <FaCode />
+            </div>
           </div>
+
         </Spinner>
       );
     }
 
     return (
-      <Spinner spinning={isLoading || referenceIsLoading}>
+      <Spinner fullHeight fullWidth spinning={isLoading || referenceIsLoading}>
         <div className="flex flex-col gap-4 py-4">
-
-          <Button onClick={() => setShowChart(true)}>
-            <FontAwesomeIcon icon={faChartLine} />
-          </Button>
 
           <GlobalMetrics />
 
           <ClassTableMetrics />
-
         </div>
       </Spinner>
     );
@@ -100,6 +99,10 @@ function GlobalMetrics() {
           height={`${confusionMatrixHeight}rem`}
           labelClass={confusionMatrixLabel}
         />
+      </div>
+
+      <div className="flex ">
+        <FaCode />
       </div>
     </div>
   );
@@ -178,5 +181,39 @@ function ClassCounter() {
     />
   );
 }
+
+function FaCode() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const mode = useGetModeParam();
+
+  const handleOnClickCode = () => {
+    searchParams.set('mode', MODE.CHART);
+    setSearchParams(searchParams);
+  };
+
+  const handleOnClickTable = () => {
+    searchParams.set('mode', MODE.TABLE);
+    setSearchParams(searchParams);
+  };
+
+  if (mode === MODE.CHART) {
+    return <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} />;
+  }
+
+  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} />;
+}
+
+const useGetModeParam = () => {
+  const [searchParams] = useSearchParams();
+
+  const mode = searchParams.get('mode');
+
+  return mode === MODE.CHART ? MODE.CHART : MODE.TABLE;
+};
+
+const MODE = {
+  CHART: 'table',
+  TABLE: 'chart',
+};
 
 export default memo(MultiClassificationModelQualityMetrics);
