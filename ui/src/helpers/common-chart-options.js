@@ -218,36 +218,74 @@ const heatmapCommonOptions = () => ({
 });
 
 // Object to simplify usage of common options
-const yAxisOptions = {
-  valueType: yAxisValueType,
-  categoryType: yAxisCategoryType,
+const yAxisOptions = (optionType, data) => {
+  switch (optionType) {
+    case OPTIONS_TYPE.VALUE:
+      return yAxisValueType(data);
+    case OPTIONS_TYPE.CATEGORY:
+      return yAxisCategoryType(data);
+    default:
+      return false;
+  }
 };
 
-const xAxisOptions = {
-  categoryType: xAxisCategoryType,
-  timeType: xAxisTimeType,
-  valueType: xAxisValueType,
+const xAxisOptions = (optionType, data) => {
+  switch (optionType) {
+    case OPTIONS_TYPE.VALUE:
+      return xAxisValueType(data);
+    case OPTIONS_TYPE.CATEGORY:
+      return xAxisCategoryType(data);
+    case OPTIONS_TYPE.TIME:
+      return xAxisTimeType(data);
+    default:
+      return false;
+  }
 };
 
-const gridOptions = {
-  barChart: barGridOptions,
-  lineChart: lineGridOptions,
-  heatmapChart: heatmapGridOptions,
+const gridOptions = (chartType) => {
+  switch (chartType) {
+    case CHART_TYPE.BAR:
+      return barGridOptions();
+    case CHART_TYPE.LINE:
+      return lineGridOptions();
+    case CHART_TYPE.HEATMAP:
+      return heatmapGridOptions();
+    default:
+      return false;
+  }
 };
 
-const seriesOptions = {
-  barChart: barSeriesOptions,
-  lineChart: lineSeriesOptions,
-  heatmapChart: heatmapSeriesOptions,
+const seriesOptions = (chartType, title, color, data) => {
+  switch (chartType) {
+    case CHART_TYPE.BAR:
+      return barSeriesOptions(title, color, data);
+    case CHART_TYPE.LINE:
+      return lineSeriesOptions(title, color, data);
+    case CHART_TYPE.HEATMAP:
+      return heatmapSeriesOptions(title, color, data);
+    default:
+      return false;
+  }
 };
 
-const commonOptions = {
-  barChart: barChartCommonOptions,
-  heatmapChart: heatmapCommonOptions,
+const commonOptions = (chartType) => {
+  switch (chartType) {
+    case CHART_TYPE.BAR:
+      return barChartCommonOptions();
+    case CHART_TYPE.HEATMAP:
+      return heatmapCommonOptions();
+    default:
+      return false;
+  }
 };
 
-const visualMapOptions = {
-  heatmapChart: heatmapVisualMapOptions,
+const visualMapOptions = (chartType, dataMax, colors, itemHeight) => {
+  switch (chartType) {
+    case CHART_TYPE.HEATMAP:
+      return heatmapVisualMapOptions(dataMax, colors, itemHeight);
+    default:
+      return false;
+  }
 };
 
 const CHART_COLOR = {
@@ -261,6 +299,18 @@ const CHART_COLOR = {
   LINE_CHART_COLOR: '#73B2E0',
 };
 
+const OPTIONS_TYPE = {
+  CATEGORY: 'CATEGORY',
+  TIME: 'TIME',
+  VALUE: 'VALUE',
+};
+
+const CHART_TYPE = {
+  BAR: 'bar',
+  HEATMAP: 'heatmap',
+  LINE: 'line',
+};
+
 export {
   yAxisOptions,
   xAxisOptions,
@@ -269,5 +319,7 @@ export {
   commonOptions,
   visualMapOptions,
   tooltipOptions,
+  OPTIONS_TYPE,
   CHART_COLOR,
+  CHART_TYPE,
 };

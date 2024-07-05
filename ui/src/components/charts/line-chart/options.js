@@ -1,19 +1,19 @@
+import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
 import { numberFormatter } from '@Src/constants';
-import { CHART_COLOR } from '@Helpers/common-chart-options';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function lineChartOptions(title, color, currentDataset, referenceDataset) {
   const currentDatasetFormatted = currentDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);
 
   const series = [
-    commonChartOptions.seriesOptions.lineChart(title, CHART_COLOR.LINE_CHART_COLOR, currentDatasetFormatted),
+    commonChartOptions.seriesOptions(CHART_TYPE.LINE, title, CHART_COLOR.LINE_CHART_COLOR, currentDatasetFormatted),
   ];
 
   if (referenceDataset) {
     const referenceDatasetFormatted = referenceDataset.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);
 
     const referenceLine = {
-      ...commonChartOptions.seriesOptions.lineChart('Reference', CHART_COLOR.REFERENCE, referenceDatasetFormatted),
+      ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, 'Reference', CHART_COLOR.REFERENCE, referenceDatasetFormatted),
       endLabel: {
         show: true,
         color: CHART_COLOR.REFERENCE,
@@ -29,9 +29,9 @@ export default function lineChartOptions(title, color, currentDataset, reference
   return {
     color: [color],
     ...commonChartOptions.tooltipOptions(),
-    ...commonChartOptions.yAxisOptions.valueType(),
-    ...commonChartOptions.xAxisOptions.timeType(),
-    ...commonChartOptions.gridOptions.lineChart(),
+    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
+    ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.TIME),
+    ...commonChartOptions.gridOptions(CHART_TYPE.LINE),
     series,
   };
 }

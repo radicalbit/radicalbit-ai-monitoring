@@ -1,4 +1,4 @@
-import { CHART_COLOR } from '@Helpers/common-chart-options';
+import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
 import { numberFormatter } from '@Src/constants';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
@@ -9,13 +9,13 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
   const currentData = currentDataset.map(({ count, percentage }) => ({ percentage, count, value: count }));
 
   const options = {
-    ...commonChartOptions.gridOptions.barChart(),
-    xAxis: commonChartOptions.xAxisOptions.valueType().xAxis,
-    yAxis: commonChartOptions.yAxisOptions.categoryType(yAxisLabel).yAxis,
-    ...commonChartOptions.commonOptions.barChart(),
+    ...commonChartOptions.gridOptions(CHART_TYPE.BAR),
+    ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.VALUE),
+    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.CATEGORY, yAxisLabel),
+    ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
     series: [
       {
-        ...commonChartOptions.seriesOptions.barChart(title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
         color: CHART_COLOR.REFERENCE_LIGHT,
         label: {
           show: true,
@@ -25,7 +25,7 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
         },
       },
       {
-        ...commonChartOptions.seriesOptions.barChart(title, CHART_COLOR.CURRENT_LIGHT_LIGHT, currentData),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.CURRENT_LIGHT_LIGHT, currentData),
         color: CHART_COLOR.CURRENT_LIGHT,
         label: {
           show: true,

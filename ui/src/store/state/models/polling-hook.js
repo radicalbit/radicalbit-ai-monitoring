@@ -107,7 +107,6 @@ const useGetCurrentModelQualityQueryWithPolling = () => {
 
   const { data: model } = useGetModelByUUIDQuery({ uuid }, { skip: modalData?.uuid });
   const latestCurrentUuid = model?.latestCurrentUuid;
-  console.debug('🚀 ~ useGetCurrentModelQualityQueryWithPolling ~ latestCurrentUuid:', latestCurrentUuid);
 
   const currentUUID = modalData?.uuid !== undefined ? modalData.uuid : latestCurrentUuid;
 
