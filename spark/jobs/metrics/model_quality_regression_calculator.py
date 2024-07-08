@@ -9,7 +9,7 @@ from utils.spark import is_not_null
 
 class ModelQualityRegressionCalculator:
     @staticmethod
-    def __eval_model_quality_metric(
+    def eval_model_quality_metric(
         model: ModelOut,
         dataframe: DataFrame,
         dataframe_count: int,
@@ -25,7 +25,7 @@ class ModelQualityRegressionCalculator:
                     p: float = len(model.features)
                     n: float = dataframe_count
                     r2: float = (
-                        ModelQualityRegressionCalculator.__eval_model_quality_metric(
+                        ModelQualityRegressionCalculator.eval_model_quality_metric(
                             model, dataframe, dataframe_count, RegressionMetricType.R2
                         )
                     )
@@ -65,7 +65,7 @@ class ModelQualityRegressionCalculator:
     ) -> ModelQualityRegression:
         return ModelQualityRegression(
             **{
-                metric_name.value: ModelQualityRegressionCalculator.__eval_model_quality_metric(
+                metric_name.value: ModelQualityRegressionCalculator.eval_model_quality_metric(
                     model,
                     dataframe,
                     dataframe_count,

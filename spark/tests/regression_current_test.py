@@ -41,7 +41,7 @@ def model():
     )
     target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
     timestamp = ColumnDefinition(name="dteday", type=SupportedTypes.datetime)
-    granularity = Granularity.HOUR
+    granularity = Granularity.MONTH
     features = [
         ColumnDefinition(name="season", type=SupportedTypes.int),
         ColumnDefinition(name="yr", type=SupportedTypes.int),
@@ -504,3 +504,74 @@ def expected_data_quality():
             },
         ],
     }
+
+
+def test_model_quality(spark_fixture, current_dataset, reference_dataset):
+    metrics_service = CurrentMetricsRegressionService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    assert not deepdiff.DeepDiff(
+        model_quality,
+        {
+            "global_metrics": {
+                "mae": 71.82560000000001,
+                "mape": 64.05698977276327,
+                "mse": 17820.507872000002,
+                "rmse": 133.49347501657152,
+                "r2": 0.8210737287050056,
+                "adj_r2": 0.7987079447931313,
+                "var": 118288.03041600004,
+            },
+            "grouped_metrics": {
+                "mae": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 35.67896551724138},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 89.1396551724138},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 91.54031249999998},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 63.352999999999994},
+                ],
+                "mape": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 106.34668362054698},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 50.26665120922357},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 53.63275511849746},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 14.766410342106367},
+                ],
+                "mse": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 2848.1115689655176},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 21631.813796551716},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 31460.352303125004},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 6540.16779},
+                ],
+                "rmse": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 53.36770155220775},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 147.07757747716582},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 177.3706635921651},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 80.87130387226362},
+                ],
+                "r2": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 0.17834461931155865},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 0.38953892422363723},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 0.7043715045425691},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 0.9678020606644815},
+                ],
+                "adj_r2": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": -0.35331474466331514},
+                    {"timestamp": "2011-02-01 00:00:00", "value": -0.00546530127871514},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 0.5417758320409822},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 1.1448907270098334},
+                ],
+                "var": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 4720.8670980975085},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 70942.48770856117},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 150522.01462734386},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 163422.92379},
+                ],
+            },
+        },
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )
