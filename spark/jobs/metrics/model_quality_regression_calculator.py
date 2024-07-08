@@ -17,8 +17,6 @@ class ModelQualityRegressionCalculator:
     ) -> float:
         try:
             dataframe = dataframe.withColumn(
-                model.target.name, F.col(model.target.name).cast("float")
-            ).withColumn(
                 model.outputs.prediction.name,
                 F.col(model.outputs.prediction.name).cast("float"),
             )
