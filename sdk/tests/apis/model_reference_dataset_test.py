@@ -355,7 +355,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         r2 = 0.91
         mae = 125.01
         mse = 408.76
-        var = 393.31
+        variance = 393.31
         mape = 35.19
         rmse = 202.23
         adj_r2 = 0.91
@@ -382,7 +382,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "r2": {r2},
                         "mae": {mae},
                         "mse": {mse},
-                        "var": {var},
+                        "variance": {variance},
                         "mape": {mape},
                         "rmse": {rmse},
                         "adjR2": {adj_r2}
@@ -396,7 +396,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.r2 == r2
         assert metrics.mae == mae
         assert metrics.mse == mse
-        assert metrics.var == var
+        assert metrics.variance == variance
         assert metrics.mape == mape
         assert metrics.rmse == rmse
         assert metrics.adj_r2 == adj_r2

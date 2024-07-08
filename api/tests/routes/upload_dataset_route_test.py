@@ -82,7 +82,7 @@ class UploadDatasetRouteTest(unittest.TestCase):
             path='test',
             date=str(datetime.datetime.now(tz=datetime.UTC)),
             status=JobStatus.IMPORTING,
-            correlation_id_column=None
+            correlation_id_column=None,
         )
         self.file_service.upload_current_file = MagicMock(
             return_value=upload_file_result
@@ -103,11 +103,9 @@ class UploadDatasetRouteTest(unittest.TestCase):
             path='test',
             date=str(datetime.datetime.now(tz=datetime.UTC)),
             status=JobStatus.IMPORTING,
-            correlation_id_column=None
+            correlation_id_column=None,
         )
-        self.file_service.bind_current_file = MagicMock(
-            return_value=upload_file_result
-        )
+        self.file_service.bind_current_file = MagicMock(return_value=upload_file_result)
         res = self.client.post(
             f'{self.prefix}/{model_uuid}/current/bind',
             json=jsonable_encoder(file_ref),

@@ -89,11 +89,11 @@ class MultiClassificationModelQuality(ModelQuality):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class RegressionModelQuality(ModelQuality):
+class BaseRegressionMetrics(BaseModel):
     r2: Optional[float] = None
     mae: Optional[float] = None
     mse: Optional[float] = None
-    var: Optional[float] = None
+    variance: Optional[float] = None
     mape: Optional[float] = None
     rmse: Optional[float] = None
     adj_r2: Optional[float] = None
@@ -101,5 +101,24 @@ class RegressionModelQuality(ModelQuality):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class CurrentRegressionModelQuality(ModelQuality):
+class GroupedBaseRegressionMetrics(BaseModel):
+    r2: List[Distribution]
+    mae: List[Distribution]
+    mse: List[Distribution]
+    variance: List[Distribution]
+    mape: List[Distribution]
+    rmse: List[Distribution]
+    adj_r2: List[Distribution]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class RegressionModelQuality(ModelQuality, BaseRegressionMetrics):
     pass
+
+
+class CurrentRegressionModelQuality(ModelQuality):
+    global_metrics: BaseRegressionMetrics
+    grouped_metrics: GroupedBaseRegressionMetrics
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

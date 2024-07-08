@@ -220,7 +220,8 @@ class FileServiceTest(unittest.TestCase):
         self.spark_k8s_client.submit_app = MagicMock()
 
         result = self.files_service.upload_current_file(
-            model.uuid, file,
+            model.uuid,
+            file,
         )
 
         self.model_svc.get_model_by_uuid.assert_called_once()
