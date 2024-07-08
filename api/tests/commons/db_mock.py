@@ -323,6 +323,43 @@ regression_model_quality_dict = {
     'mape': 35.19314237273801,
     'rmse': 202.23194752188695,
     'adj_r2': 0.9116805380966796,
+    'variance': 0.23
+}
+
+grouped_regression_model_quality_dict = {
+    'r2': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
+    ],
+    'mae': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.88},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.9},
+    ],
+    'mse': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.86},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.88},
+    ],
+    'mape': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.81},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.83},
+    ],
+    'rmse': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
+    ],
+    'adj_r2': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.85},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.87},
+    ],
+    'variance': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.82},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.84},
+    ],
+}
+
+current_regression_model_quality_dict = {
+    'global_metrics': regression_model_quality_dict,
+    'grouped_metrics': grouped_regression_model_quality_dict,
 }
 
 regression_data_quality_dict = {
