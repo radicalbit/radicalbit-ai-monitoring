@@ -323,7 +323,7 @@ regression_model_quality_dict = {
     'mape': 35.19314237273801,
     'rmse': 202.23194752188695,
     'adj_r2': 0.9116805380966796,
-    'variance': 0.23
+    'variance': 0.23,
 }
 
 grouped_regression_model_quality_dict = {

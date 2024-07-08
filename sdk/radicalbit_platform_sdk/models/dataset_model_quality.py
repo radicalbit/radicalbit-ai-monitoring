@@ -13,7 +13,7 @@ class Distribution(BaseModel):
     value: Optional[float] = None
 
 
-class BaseMetrics(BaseModel):
+class BaseClassificationMetrics(BaseModel):
     precision: Optional[float] = None
     recall: Optional[float] = None
     f_measure: Optional[float] = None
@@ -25,7 +25,7 @@ class BaseMetrics(BaseModel):
     )
 
 
-class GroupedBaseMetrics(BaseModel):
+class GroupedBaseClassificationMetrics(BaseModel):
     precision: List[Distribution]
     recall: List[Distribution]
     f_measure: List[Distribution]
@@ -53,7 +53,7 @@ class AdditionalMetrics(BaseModel):
     )
 
 
-class AdditionalGroupedMetrics(GroupedBaseMetrics):
+class AdditionalGroupedMetrics(GroupedBaseClassificationMetrics):
     f1: List[Distribution]
     accuracy: List[Distribution]
     weighted_precision: List[Distribution]
@@ -69,7 +69,7 @@ class AdditionalGroupedMetrics(GroupedBaseMetrics):
     )
 
 
-class GlobalBinaryMetrics(BaseMetrics, AdditionalMetrics):
+class GlobalBinaryMetrics(BaseClassificationMetrics, AdditionalMetrics):
     true_positive_count: int
     false_positive_count: int
     true_negative_count: int
@@ -91,13 +91,13 @@ class CurrentBinaryClassificationModelQuality(ModelQuality):
 
 class ClassMetrics(BaseModel):
     class_name: str
-    metrics: BaseMetrics
+    metrics: BaseClassificationMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
 class AdditionalClassMetrics(ClassMetrics):
-    grouped_metrics: GroupedBaseMetrics
+    grouped_metrics: GroupedBaseClassificationMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
