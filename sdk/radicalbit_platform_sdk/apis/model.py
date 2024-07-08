@@ -284,7 +284,7 @@ class Model:
         self,
         file_name: str,
         bucket: str,
-        correlation_id_column: str,
+        correlation_id_column: Optional[str] = None,
         object_name: Optional[str] = None,
         aws_credentials: Optional[AwsCredentials] = None,
         separator: str = ',',
@@ -307,7 +307,8 @@ class Model:
         ).columns.tolist()
 
         required_headers = self.__required_headers()
-        required_headers.append(correlation_id_column)
+        if correlation_id_column:
+            required_headers.append(correlation_id_column)
         required_headers.append(self.__timestamp.name)
 
         if set(required_headers).issubset(file_headers):
@@ -465,7 +466,7 @@ class Model:
         self,
         dataset_url: str,
         separator: str,
-        correlation_id_column: str,
+        correlation_id_column: Optional[str] = None,
     ) -> ModelCurrentDataset:
         def __callback(response: requests.Response) -> ModelCurrentDataset:
             try:

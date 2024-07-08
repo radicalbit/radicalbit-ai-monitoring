@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from models.current_dataset import CurrentDataset
@@ -11,6 +12,10 @@ from models.data_quality import (
     RegressionDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
+from models.regression_model_quality import ModelQualityRegression, RegressionMetricType
+from metrics.model_quality_regression_calculator import ModelQualityRegressionCalculator
+from .misc import create_time_format
+from .models import Granularity
 
 
 class CurrentMetricsRegressionService:
@@ -23,6 +28,88 @@ class CurrentMetricsRegressionService:
         self.spark_session = spark_session
         self.current = current
         self.reference = reference
+
+    def calculate_model_quality(self) -> ModelQualityRegression:
+        metrics = dict()
+        metrics["global_metrics"] = ModelQualityRegressionCalculator.numerical_metrics(
+            model=self.current.model,
+            dataframe=self.current.current,
+            dataframe_count=self.current.current_count,
+        ).model_dump(serialize_as_any=True)
+        metrics["grouped_metrics"] = (
+            self.calculate_regression_model_quality_group_by_timestamp()
+        )
+        return metrics
+
+    def calculate_regression_model_quality_group_by_timestamp(self):
+        if self.current.model.granularity == Granularity.WEEK:
+            dataset_with_group = self.current.current.select(
+                [
+                    self.current.model.outputs.prediction.name,
+                    self.current.model.target.name,
+                    F.date_format(
+                        F.to_timestamp(
+                            F.date_sub(
+                                F.next_day(
+                                    F.date_format(
+                                        self.current.model.timestamp.name,
+                                        create_time_format(
+                                            self.current.model.granularity
+                                        ),
+                                    ),
+                                    "sunday",
+                                ),
+                                7,
+                            )
+                        ),
+                        "yyyy-MM-dd HH:mm:ss",
+                    ).alias("time_group"),
+                ]
+            )
+        else:
+            dataset_with_group = self.current.current.select(
+                [
+                    self.current.model.outputs.prediction.name,
+                    self.current.model.target.name,
+                    F.date_format(
+                        F.to_timestamp(
+                            F.date_format(
+                                self.current.model.timestamp.name,
+                                create_time_format(self.current.model.granularity),
+                            )
+                        ),
+                        "yyyy-MM-dd HH:mm:ss",
+                    ).alias("time_group"),
+                ]
+            )
+
+        list_of_time_group = (
+            dataset_with_group.select("time_group")
+            .distinct()
+            .orderBy(F.col("time_group").asc())
+            .rdd.flatMap(lambda x: x)
+            .collect()
+        )
+        array_of_groups = [
+            dataset_with_group.where(F.col("time_group") == x)
+            for x in list_of_time_group
+        ]
+
+        return {
+            metric_name.value: [
+                {
+                    "timestamp": group,
+                    "value": ModelQualityRegressionCalculator.eval_model_quality_metric(
+                        self.current.model,
+                        group_dataset,
+                        group_dataset.count(),
+                        metric_name,
+                    ),
+                }
+                for group, group_dataset in zip(list_of_time_group, array_of_groups)
+            ]
+            for metric_name in RegressionMetricType
+        }
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.calculate_combined_data_quality_numerical(
