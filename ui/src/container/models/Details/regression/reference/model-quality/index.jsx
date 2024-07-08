@@ -23,7 +23,7 @@ function MultiClassificationModelQualityMetrics() {
 
           <GlobalMetrics />
 
-          <ClassTableMetrics />
+          {/* <ClassTableMetrics /> */}
 
         </div>
       </Spinner>
@@ -34,66 +34,110 @@ function MultiClassificationModelQualityMetrics() {
 }
 
 function GlobalMetrics() {
-  const { data } = useGetReferenceModelQualityQueryWithPolling();
-  const labels = data?.modelQuality.classes ?? [];
-  const confusionMatrixData = data?.modelQuality.globalMetrics.confusionMatrix ?? [];
-
-  const confusionMatrixLabel = {
-    xAxisLabel: labels,
-    yAxisLabel: labels.toReversed(),
-  };
-
   return (
-    <div className="flex flex-row gap-4">
-      <div className="flex flex-col gap-4 basis-1/6">
-        <AccuracyCounter />
+    <div className="flex flex-row gap-4 h-full w-full">
 
-        <F1ScoreCounter />
+      <div className="flex flex-col gap-4 h-full">
 
-        <ClassCounter />
+        <R2Counter />
+
+        <AdjR2Counter />
+
       </div>
 
-      <div className="w-full">
-        <ConfusionMatrix
-          colors={[CHART_COLOR.WHITE, CHART_COLOR.REFERENCE]}
-          dataset={confusionMatrixData}
-          height="36rem"
-          labelClass={confusionMatrixLabel}
-        />
-      </div>
+      <MseCounter />
+
+      <RmseCounter />
+
+      <MaeCounter />
+
+      <MapeCounter />
+
+      <KolmogorovSmirnovCounter />
+
     </div>
+
   );
 }
 
-function AccuracyCounter() {
+function R2Counter() {
   const { data } = useGetReferenceModelQualityQueryWithPolling();
-  const accuracy = data?.modelQuality.globalMetrics.accuracy ?? 0;
-  const accuracyFormatted = numberFormatter().format(accuracy);
+  const r2 = data?.modelQuality.r2;
+  const r2Formatted = numberFormatter().format(r2);
 
   return (
     <Board
-      header={<SectionTitle size="small" title="Accuracy" />}
+      header={<SectionTitle size="small" title="R-squared" />}
       main={(
         <div className="flex flex-col h-full items-center justify-center gap-4">
 
           {/* FIXME: inline style */}
           <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
-            {accuracyFormatted}
+            { r2 === null ? '--' : r2Formatted}
           </div>
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-full shadow basis-1/6"
       size="small"
       type="secondary"
     />
   );
 }
 
-function F1ScoreCounter() {
+function MaeCounter() {
   const { data } = useGetReferenceModelQualityQueryWithPolling();
-  const f1Score = data?.modelQuality.globalMetrics.f1 ?? 0;
-  const f1ScoreFormatted = numberFormatter().format(f1Score);
+  const mae = data?.modelQuality.mae;
+  const maeFormatted = numberFormatter().format(mae);
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Mae" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+
+          {/* FIXME: inline style */}
+          <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
+            {mae === null ? '--' : maeFormatted}
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow basis-1/6"
+      size="small"
+
+    />
+  );
+}
+
+function MseCounter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const mse = data?.modelQuality.mse ?? 0;
+  const mseFormatted = numberFormatter().format(mse);
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Mse" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+
+          {/* FIXME: inline style */}
+          <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
+            { mse === null ? '--' : mseFormatted}
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow basis-1/6"
+      size="small"
+    />
+  );
+}
+/* var name must be changed BEside
+function VarCounter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const var = data?.modelQuality.get("var") ?? "--";
+  const varFormatted = numberFormatter().format(var);
 
   return (
     <Board
@@ -101,9 +145,8 @@ function F1ScoreCounter() {
       main={(
         <div className="flex flex-col h-full items-center justify-center gap-4">
 
-          {/* FIXME: inline style */}
           <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
-            {f1ScoreFormatted}
+            {maeFormatted}
           </div>
 
         </div>
@@ -114,25 +157,99 @@ function F1ScoreCounter() {
     />
   );
 }
+*/
 
-function ClassCounter() {
+function MapeCounter() {
   const { data } = useGetReferenceModelQualityQueryWithPolling();
-  const classes = data?.modelQuality.classes ?? [];
+  const mape = data?.modelQuality.mape;
+  const mapeFormatted = numberFormatter().format(mape);
 
   return (
     <Board
-      header={<SectionTitle size="small" title="Classes" />}
+      header={<SectionTitle size="small" title="Mape" />}
       main={(
         <div className="flex flex-col h-full items-center justify-center gap-4">
 
           {/* FIXME: inline style */}
           <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
-            {classes.length}
+            { mape === null ? '--' : `${mapeFormatted}%`}
           </div>
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-full shadow basis-1/6"
+      size="small"
+    />
+  );
+}
+
+function RmseCounter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const rmse = data?.modelQuality.rmse;
+  const rmseFormatted = numberFormatter().format(rmse);
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Rmse" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+
+          {/* FIXME: inline style */}
+          <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
+            { rmse === null ? '--' : rmseFormatted}
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow basis-1/6"
+      size="small"
+    />
+  );
+}
+
+function AdjR2Counter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const adjR2 = data?.modelQuality.adjR2;
+  const adjR2Formatted = numberFormatter().format(adjR2);
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Adjusted R-squared" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+
+          {/* FIXME: inline style */}
+          <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
+            { adjR2 === null ? '--' : adjR2Formatted}
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow basis-1/6"
+      size="small"
+    />
+  );
+}
+
+function KolmogorovSmirnovCounter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const kol = data?.modelQuality.kol;
+  const kolFormatted = numberFormatter().format(kol);
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Kolmogorov-Smirnov" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+
+          {/* FIXME: inline style */}
+          <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>
+            { kol === null ? '--' : kolFormatted}
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow basis-1/6"
       size="small"
       type="secondary"
     />

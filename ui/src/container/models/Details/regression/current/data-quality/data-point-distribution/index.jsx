@@ -14,6 +14,7 @@ import {
 } from 'echarts/components';
 import * as echarts from 'echarts/lib/echarts';
 import { useParams } from 'react-router';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import chartOptions from './options';
 
 echarts.use([
@@ -89,11 +90,7 @@ function DataPointDistributionChart() {
   const title = model?.target.name;
 
   const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
-
-  const currentClassMetrics = currentData?.dataQuality.classMetrics ?? [];
-
-  const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });
-  const referenceClassMetrics = referenceData?.dataQuality.classMetrics ?? [];
+  const dataset = currentData?.dataQuality.targetMetrics ?? [];
 
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
@@ -109,7 +106,7 @@ function DataPointDistributionChart() {
           <ReactEchartsCore
             echarts={echarts}
             onChartReady={handleOnChartReady}
-            option={chartOptions(title, referenceClassMetrics, currentClassMetrics)}
+            option={chartOptions(dataset, CHART_COLOR.REFERENCE, CHART_COLOR.CURRENT)}
             style={{ height: '100%' }}
           />
         </div>
