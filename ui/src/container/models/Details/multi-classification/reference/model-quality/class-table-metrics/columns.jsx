@@ -9,7 +9,13 @@ export default [
     render: (label) => <div className="font-[var(--coo-font-weight-bold)]">{label}</div>,
   },
   {
-    title: 'Precision',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Precison
+      </div>
+    ),
     key: 'precision',
     dataIndex: 'precision',
     align: 'right',
@@ -19,7 +25,13 @@ export default [
     render: (precision) => numberFormatter().format(precision),
   },
   {
-    title: 'Recall',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Recall
+      </div>
+    ),
     key: 'recall',
     dataIndex: 'recall',
     align: 'right',
@@ -29,7 +41,13 @@ export default [
     render: (recall) => numberFormatter().format(recall),
   },
   {
-    title: 'F1-Score',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        F1-Score
+      </div>
+    ),
     key: 'fMeasure',
     dataIndex: 'fMeasure',
     align: 'right',
@@ -39,7 +57,13 @@ export default [
     render: (fMeasure) => numberFormatter().format(fMeasure),
   },
   {
-    title: 'True Positive Rate',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        True Positive Rate
+      </div>
+    ),
     key: 'truePositiveRate',
     dataIndex: 'truePositiveRate',
     align: 'right',
@@ -49,33 +73,34 @@ export default [
     render: (truePositiveRate) => numberFormatter().format(truePositiveRate),
   },
   {
-    title: 'False Positive Rate',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        False Positive Rate
+      </div>
+    ),
     key: 'falsePositiveRate',
     dataIndex: 'falsePositiveRate',
     align: 'right',
-    width: '10rem',
+    width: '8rem',
     onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     render: (falsePositiveRate) => numberFormatter().format(falsePositiveRate),
   },
   {
-    title: 'Support',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Support
+      </div>
+    ),
     key: 'support',
-    dataIndex: 'support',
     align: 'right',
-    width: '5rem',
+    width: '10rem',
     onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
-    render: (support) => numberFormatter().format(support),
-  },
-  {
-    title: 'Support %',
-    key: 'supportPercent',
-    dataIndex: 'supportPercent',
-    align: 'right',
-    width: '5rem',
-    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
-    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
-    render: (supportPercent) => `${numberFormatter().format(supportPercent)}%`,
+    render: ({ support, supportPercent }) => `${numberFormatter().format(support)} (${numberFormatter().format(supportPercent)}%)`,
   },
 ];

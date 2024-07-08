@@ -17,7 +17,13 @@ export default [
     ),
   },
   {
-    title: 'Precision',
+    title: () => (
+      <div>
+        Current
+        <br />
+        Precision
+      </div>
+    ),
     key: 'currentPrecision',
     dataIndex: 'currentPrecision',
     align: 'right',
@@ -27,7 +33,13 @@ export default [
     render: (currentPrecision) => numberFormatter().format(currentPrecision),
   },
   {
-    title: 'Precision',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Precision
+      </div>
+    ),
     key: 'referencePrecision',
     dataIndex: 'referencePrecision',
     align: 'right',
@@ -37,7 +49,13 @@ export default [
     render: (referencePrecision) => numberFormatter().format(referencePrecision),
   },
   {
-    title: 'Recall',
+    title: () => (
+      <div>
+        Current
+        <br />
+        Recall
+      </div>
+    ),
     key: 'currentRecall',
     dataIndex: 'currentRecall',
     align: 'right',
@@ -47,7 +65,13 @@ export default [
     render: (currentRecall) => numberFormatter().format(currentRecall),
   },
   {
-    title: 'Recall',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Recall
+      </div>
+    ),
     key: 'referenceRecall',
     dataIndex: 'referenceRecall',
     align: 'right',
@@ -57,7 +81,13 @@ export default [
     render: (referenceRecall) => numberFormatter().format(referenceRecall),
   },
   {
-    title: 'F1-Score',
+    title: () => (
+      <div>
+        Current
+        <br />
+        F1-Score
+      </div>
+    ),
     key: 'currentfMeasure',
     dataIndex: 'currentfMeasure',
     align: 'right',
@@ -67,7 +97,13 @@ export default [
     render: (currentfMeasure) => numberFormatter().format(currentfMeasure),
   },
   {
-    title: 'F1-Score',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        F1-Score
+      </div>
+    ),
     key: 'referencefMeasure',
     dataIndex: 'referencefMeasure',
     align: 'right',
@@ -77,7 +113,13 @@ export default [
     render: (referencefMeasure) => numberFormatter().format(referencefMeasure),
   },
   {
-    title: 'True Positive Rate',
+    title: () => (
+      <div>
+        Current
+        <br />
+        True Positive Rate
+      </div>
+    ),
     key: 'currentTruePositiveRate',
     dataIndex: 'currentTruePositiveRate',
     align: 'right',
@@ -87,7 +129,13 @@ export default [
     render: (currentTruePositiveRate) => numberFormatter().format(currentTruePositiveRate),
   },
   {
-    title: 'True Positive Rate',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        True Positive Rate
+      </div>
+    ),
     key: 'referenceTruePositiveRate',
     dataIndex: 'referenceTruePositiveRate',
     align: 'right',
@@ -97,7 +145,13 @@ export default [
     render: (referenceTruePositiveRate) => numberFormatter().format(referenceTruePositiveRate),
   },
   {
-    title: 'False Positive Rate',
+    title: () => (
+      <div>
+        Current
+        <br />
+        False Positive Rate
+      </div>
+    ),
     key: 'currentFalsePositiveRate',
     dataIndex: 'currentFalsePositiveRate',
     align: 'right',
@@ -107,7 +161,13 @@ export default [
     render: (currentFalsePositiveRate) => numberFormatter().format(currentFalsePositiveRate),
   },
   {
-    title: 'False Positive Rate',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        False Positive Rate
+      </div>
+    ),
     key: 'referenceFalsePositiveRate',
     dataIndex: 'referenceFalsePositiveRate',
     align: 'right',
@@ -117,43 +177,34 @@ export default [
     render: (referenceFalsePositiveRate) => numberFormatter().format(referenceFalsePositiveRate),
   },
   {
-    title: 'Support',
+    title: () => (
+      <div>
+        Current
+        <br />
+        Support
+      </div>
+    ),
     key: 'currentSupport',
-    dataIndex: 'currentSupport',
+
     align: 'right',
-    width: '5rem',
+    width: '8rem',
     onCell: () => ({ style: { background: TABLE_COLOR.CURRENT_COLUMN } }),
     onHeaderCell: () => ({ style: { background: TABLE_COLOR.CURRENT_COLUMN } }),
-    render: (currentSupport) => numberFormatter().format(currentSupport),
+    render: ({ currentSupport, currentSupportPercent }) => `${numberFormatter().format(currentSupport)} (${numberFormatter().format(currentSupportPercent)}%)`,
   },
   {
-    title: 'Support',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Support
+      </div>
+    ),
     key: 'referenceSupport',
-    dataIndex: 'referenceSupport',
     align: 'right',
-    width: '5rem',
+    width: '8rem',
     onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
-    render: (referenceSupport) => numberFormatter().format(referenceSupport),
-  },
-  {
-    title: 'Support %',
-    key: 'currentSupportPercent',
-    dataIndex: 'currentSupportPercent',
-    align: 'right',
-    width: '5rem',
-    onCell: () => ({ style: { background: TABLE_COLOR.CURRENT_COLUMN } }),
-    onHeaderCell: () => ({ style: { background: TABLE_COLOR.CURRENT_COLUMN } }),
-    render: (currentSupportPercent) => `${numberFormatter().format(currentSupportPercent)}%`,
-  },
-  {
-    title: 'Support %',
-    key: 'referenceSupportPercent',
-    dataIndex: 'referenceSupportPercent',
-    align: 'right',
-    width: '5rem',
-    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
-    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
-    render: (referenceSupportPercent) => `${numberFormatter().format(referenceSupportPercent)}%`,
+    render: ({ referenceSupport, referenceSupportPercent }) => `${numberFormatter().format(referenceSupport)} (${numberFormatter().format(referenceSupportPercent)}%)`,
   },
 ];
