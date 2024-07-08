@@ -166,8 +166,12 @@ def test_calculation(spark_fixture, dataset):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -348,8 +352,12 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
         {
             "n_observations": 238,
             "class_metrics": [
-                {"name": "1.0", "count": 131, "percentage": 55.04201680672269},
                 {"name": "0.0", "count": 107, "percentage": 44.957983193277315},
+                {"name": "1.0", "count": 131, "percentage": 55.04201680672269},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 105, "percentage": 44.11764705882353},
+                {"name": "1.0", "count": 133, "percentage": 55.88235294117647},
             ],
             "feature_metrics": [
                 {
@@ -745,8 +753,12 @@ def test_calculation_complete(spark_fixture, complete_dataset):
         {
             "n_observations": 7,
             "class_metrics": [
-                {"name": "1.0", "count": 7, "percentage": 100.0},
                 {"name": "0.0", "count": 0, "percentage": 0.0},
+                {"name": "1.0", "count": 7, "percentage": 100.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 0, "percentage": 0.0},
+                {"name": "1.0", "count": 7, "percentage": 100.0},
             ],
             "feature_metrics": [
                 {
@@ -899,8 +911,12 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
         {
             "n_observations": 7,
             "class_metrics": [
-                {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
                 {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
+                {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 1, "percentage": 14.285714285714285},
+                {"name": "1.0", "count": 6, "percentage": 85.71428571428571},
             ],
             "feature_metrics": [
                 {
@@ -1053,8 +1069,12 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -1230,8 +1250,12 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {
@@ -1413,8 +1437,12 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
         {
             "n_observations": 30000,
             "class_metrics": [
-                {"name": "1.0", "count": 14962, "percentage": 49.87333333333333},
                 {"name": "0.0", "count": 15038, "percentage": 50.126666666666665},
+                {"name": "1.0", "count": 14962, "percentage": 49.87333333333333},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 33, "percentage": 0.11},
+                {"name": "1.0", "count": 29967, "percentage": 99.89},
             ],
             "feature_metrics": [
                 {
@@ -1953,8 +1981,12 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
         {
             "n_observations": 10,
             "class_metrics": [
-                {"name": "1.0", "count": 6, "percentage": 60.0},
                 {"name": "0.0", "count": 4, "percentage": 40.0},
+                {"name": "1.0", "count": 6, "percentage": 60.0},
+            ],
+            "class_metrics_prediction": [
+                {"name": "0.0", "count": 5, "percentage": 50.0},
+                {"name": "1.0", "count": 5, "percentage": 50.0},
             ],
             "feature_metrics": [
                 {

@@ -320,7 +320,6 @@ regression_model_quality_dict = {
     'r2': 0.9131323648676931,
     'mae': 125.0137756497949,
     'mse': 40897.76059849524,
-    'var': 393448.3132709007,
     'mape': 35.19314237273801,
     'rmse': 202.23194752188695,
     'adj_r2': 0.9116805380966796,
@@ -372,6 +371,17 @@ regression_data_quality_dict = {
             'missing_value': {'count': 0, 'percentage': 0.0},
             'median_metrics': {'median': 3.0, 'perc_25': 2.0, 'perc_75': 3.0},
             'class_median_metrics': [],
+        },
+        {
+            'type': 'categorical',
+            'feature_name': 'Sex',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'distinct_value': 3,
+            'category_frequency': [
+                {'name': 'F', 'count': 1064, 'frequency': 0.31837223219628963},
+                {'name': 'M', 'count': 1208, 'frequency': 0.36146020347097546},
+                {'name': 'I', 'count': 1070, 'frequency': 0.3201675643327349},
+            ],
         },
     ],
 }

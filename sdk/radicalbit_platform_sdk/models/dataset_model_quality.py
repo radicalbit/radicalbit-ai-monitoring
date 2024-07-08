@@ -90,13 +90,13 @@ class MultiClassificationModelQuality(ModelQuality):
 
 
 class RegressionModelQuality(ModelQuality):
-    r2: float
-    mae: float
-    mse: float
-    var: float
-    mape: float
-    rmse: float
-    adj_r2: float
+    r2: Optional[float] = None
+    mae: Optional[float] = None
+    mse: Optional[float] = None
+    var: Optional[float] = None
+    mape: Optional[float] = None
+    rmse: Optional[float] = None
+    adj_r2: Optional[float] = None
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 

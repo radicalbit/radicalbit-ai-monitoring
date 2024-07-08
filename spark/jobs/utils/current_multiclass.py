@@ -68,9 +68,9 @@ class CurrentMetricsMulticlassService:
             dataframe_count=self.current.current_count,
         )
 
-    def calculate_class_metrics(self) -> List[ClassMetrics]:
+    def calculate_class_metrics(self, column) -> List[ClassMetrics]:
         return DataQualityCalculator.class_metrics(
-            class_column=self.current.model.target.name,
+            class_column=column,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
         )
@@ -217,7 +217,10 @@ class CurrentMetricsMulticlassService:
             feature_metrics.extend(self.calculate_data_quality_categorical())
         return MultiClassDataQuality(
             n_observations=self.current.current_count,
-            class_metrics=self.calculate_class_metrics(),
+            class_metrics=self.calculate_class_metrics(self.current.model.target.name),
+            class_metrics_prediction=self.calculate_class_metrics(
+                self.current.model.outputs.prediction.name
+            ),
             feature_metrics=feature_metrics,
         )
 

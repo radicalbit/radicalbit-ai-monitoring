@@ -9,10 +9,16 @@ import {
   Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import ClassTableMetrics from './class-table-metrics';
 
 function MultiClassificationModelQualityMetrics() {
   const { data, isLoading } = useGetReferenceModelQualityQueryWithPolling();
+  const modelQuality = data?.modelQuality;
+
+  if (!modelQuality) {
+    return <SomethingWentWrong />;
+  }
 
   const jobStatus = data?.jobStatus;
 
@@ -35,6 +41,7 @@ function MultiClassificationModelQualityMetrics() {
 
 function GlobalMetrics() {
   const { data } = useGetReferenceModelQualityQueryWithPolling();
+
   const labels = data?.modelQuality.classes ?? [];
   const confusionMatrixData = data?.modelQuality.globalMetrics.confusionMatrix ?? [];
 

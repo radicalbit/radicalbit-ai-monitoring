@@ -722,6 +722,32 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                                          "missing_value":{"count":0, "percentage":0.0},
                                          "median_metrics":{"median":3.0, "perc_25":2.0, "perc_75":3.0},
                                          "class_median_metrics":[]
+                                      },
+                                      {
+                                          "type":"categorical",
+                                          "feature_name":"Sex",
+                                          "missing_value":{
+                                            "count":0,
+                                            "percentage":0.0
+                                          },
+                                          "distinct_value":3,
+                                          "category_frequency":[
+                                            {
+                                              "name":"F",
+                                              "count":1064,
+                                              "frequency":0.31837223219628963
+                                            },
+                                            {
+                                              "name":"M",
+                                              "count":1208,
+                                              "frequency":0.36146020347097546
+                                            },
+                                            {
+                                              "name":"I",
+                                              "count":1070,
+                                              "frequency":0.3201675643327349
+                                            }
+                                          ]
                                       }
                                     ]
                                 }
@@ -735,7 +761,8 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.target_metrics.feature_name == 'ground_truth'
         assert metrics.target_metrics.median_metrics.median == 713.0
         assert metrics.feature_metrics[0].max == 731.0
-        assert len(metrics.feature_metrics) == 2
+        assert metrics.feature_metrics[2].distinct_value == 3
+        assert len(metrics.feature_metrics) == 3
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

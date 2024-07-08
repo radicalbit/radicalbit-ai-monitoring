@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -100,7 +100,7 @@ class ClassificationDataQuality(DataQuality):
     n_observations: int
     class_metrics: List[ClassMetrics]
     class_metrics_prediction: List[ClassMetrics]
-    feature_metrics: List[Union[NumericalFeatureMetrics, CategoricalFeatureMetrics]]
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -112,7 +112,7 @@ class ClassificationDataQuality(DataQuality):
 class RegressionDataQuality(DataQuality):
     n_observations: int
     target_metrics: NumericalTargetMetrics
-    feature_metrics: List[NumericalFeatureMetrics]
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

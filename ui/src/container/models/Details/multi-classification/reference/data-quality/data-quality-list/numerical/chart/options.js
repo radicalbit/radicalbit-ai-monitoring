@@ -1,4 +1,5 @@
 import { numberFormatter } from '@Src/constants';
+import { CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function chartOptions(dataset, color) {
@@ -9,11 +10,11 @@ export default function chartOptions(dataset, color) {
   const xAxisData = values.map((el, idx) => `[${el}${(idx < values.length - 1) ? `-${values[idx + 1]})` : (idx === values.length - 1) ? `-${last}]` : ''} `);
 
   const options = {
-    ...commonChartOptions.gridOptions.barChart(),
-    ...commonChartOptions.xAxisOptions.categoryType(xAxisData),
-    ...commonChartOptions.yAxisOptions.valueType(),
+    ...commonChartOptions.gridOptions(CHART_TYPE.BAR),
+    ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.CATEGORY, xAxisData),
+    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
     series: [
-      commonChartOptions.seriesOptions.barChart('reference', color, dataset.referenceValues),
+      commonChartOptions.seriesOptions(CHART_TYPE.BAR, 'reference', color, dataset.referenceValues),
     ],
   };
 
