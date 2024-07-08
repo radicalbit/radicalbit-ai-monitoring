@@ -151,6 +151,30 @@ function AdjR2Chart() {
   return false;
 }
 
+function VarianceChart() {
+  const { uuid } = useParams();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
+  const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
+
+  const referenceVariance = referenceData?.modelQuality?.variance;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.variance;
+
+  if (currentSeries && currentSeries !== null) {
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceVariance }));
+
+    return (
+      <LineChart
+        color={CHART_COLOR.CURRENT}
+        currentData={currentSeries}
+        referenceData={referenceSeries}
+        title={MODEL_QUALITY_FIELD.VARIANCE}
+      />
+    );
+  }
+
+  return false;
+}
+
 export {
   MseChart,
   RmseChart,
@@ -158,4 +182,5 @@ export {
   MapeChart,
   R2Chart,
   AdjR2Chart,
+  VarianceChart,
 };

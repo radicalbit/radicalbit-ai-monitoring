@@ -16,6 +16,7 @@ import {
   MseChart,
   R2Chart,
   RmseChart,
+  VarianceChart,
 } from './charts';
 import columns from './columns';
 
@@ -55,6 +56,8 @@ function MultiClassificationModelQualityMetrics() {
           <R2Chart />
 
           <AdjR2Chart />
+
+          <VarianceChart />
         </div>
       </Spinner>
     );
@@ -75,6 +78,7 @@ function PerformanceBoard() {
   const referenceMape = referenceData?.modelQuality?.mape;
   const referenceR2 = referenceData?.modelQuality?.r2;
   const referenceAdjR2 = referenceData?.modelQuality?.ajdR2;
+  const referenceVariance = referenceData?.modelQuality?.variance;
 
   const leftTableData = currentData ? [
     {
@@ -112,6 +116,11 @@ function PerformanceBoard() {
       label: MODEL_QUALITY_FIELD.ADJ_R2,
       referenceValue: referenceAdjR2,
       currentValue: currentData.modelQuality.globalMetrics.ajdR2,
+    },
+    {
+      label: MODEL_QUALITY_FIELD.VARIANCE,
+      referenceValue: referenceVariance,
+      currentValue: currentData.modelQuality.globalMetrics.variance,
     },
   ] : [];
 

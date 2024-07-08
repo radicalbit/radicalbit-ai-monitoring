@@ -31,6 +31,7 @@ function MultiClassificationModelQualityMetrics() {
       const rightTableData = data ? [
         { label: MODEL_QUALITY_FIELD.R2, value: data.modelQuality.r2 },
         { label: MODEL_QUALITY_FIELD.ADJ_R2, value: data.modelQuality.adjR2 },
+        { label: MODEL_QUALITY_FIELD.VARIANCE, value: data.modelQuality.variance },
       ] : [];
 
       return (

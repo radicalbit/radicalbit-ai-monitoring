@@ -43,4 +43,5 @@ export const MODEL_QUALITY_FIELD = {
   MAPE: 'Mean absolute percentage error',
   R2: 'R-squared',
   ADJ_R2: 'Adjusted R-squared',
+  VARIANCE: 'Variance',
 };
