@@ -283,6 +283,10 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             {"name": "classA", "count": 100, "percentage": 50.0},
                             {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
+                        "classMetricsPrediction": [
+                            {"name": "classA", "count": 100, "percentage": 50.0},
+                            {"name": "classB", "count": 100, "percentage": 50.0}
+                        ],
                         "featureMetrics": [
                             {
                                 "featureName": "age",
@@ -335,6 +339,9 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -372,6 +379,10 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                                 "dataQuality": {
                                     "nObservations": 200,
                                     "classMetrics": [
+                                        {"name": "classA", "count": 100, "percentage": 50.0},
+                                        {"name": "classB", "count": 100, "percentage": 50.0}
+                                    ],
+                                   "classMetricsPrediction": [
                                         {"name": "classA", "count": 100, "percentage": 50.0},
                                         {"name": "classB", "count": 100, "percentage": 50.0}
                                     ],
@@ -427,6 +438,9 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'

@@ -271,6 +271,10 @@ classification_data_quality_dict = {
         {'name': 'classA', 'count': 100, 'percentage': 50.0},
         {'name': 'classB', 'count': 100, 'percentage': 50.0},
     ],
+    'classMetricsPrediction': [
+        {'name': 'classA', 'count': 100, 'percentage': 50.0},
+        {'name': 'classB', 'count': 100, 'percentage': 50.0},
+    ],
     'featureMetrics': [
         {
             'featureName': 'age',
