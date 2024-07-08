@@ -23,6 +23,7 @@ from .dataset_drift import (
 from .dataset_model_quality import (
     BinaryClassificationModelQuality,
     CurrentBinaryClassificationModelQuality,
+    CurrentMultiClassificationModelQuality,
     CurrentRegressionModelQuality,
     ModelQuality,
     MultiClassificationModelQuality,
@@ -52,6 +53,7 @@ __all__ = [
     'ModelQuality',
     'BinaryClassificationModelQuality',
     'CurrentBinaryClassificationModelQuality',
+    'CurrentMultiClassificationModelQuality',
     'MultiClassificationModelQuality',
     'RegressionModelQuality',
     'CurrentRegressionModelQuality',
