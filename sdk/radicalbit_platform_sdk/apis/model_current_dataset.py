@@ -49,7 +49,7 @@ class ModelCurrentDataset:
     def path(self) -> str:
         return self.__path
 
-    def correlation_id_column(self) -> str:
+    def correlation_id_column(self) -> Optional[str]:
         return self.__correlation_id_column
 
     def date(self) -> str:

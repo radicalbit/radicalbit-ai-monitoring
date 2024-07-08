@@ -73,6 +73,48 @@ class UploadDatasetRouteTest(unittest.TestCase):
         assert res.status_code == 200
         assert jsonable_encoder(upload_file_result) == res.json()
 
+    def test_upload_current(self):
+        file = csv.get_correct_sample_csv_file()
+        model_uuid = uuid.uuid4()
+        upload_file_result = CurrentDatasetDTO(
+            uuid=uuid.uuid4(),
+            model_uuid=model_uuid,
+            path='test',
+            date=str(datetime.datetime.now(tz=datetime.UTC)),
+            status=JobStatus.IMPORTING,
+            correlation_id_column=None
+        )
+        self.file_service.upload_current_file = MagicMock(
+            return_value=upload_file_result
+        )
+        res = self.client.post(
+            f'{self.prefix}/{model_uuid}/current/upload',
+            files={'csv_file': (file.filename, file.file)},
+        )
+        assert res.status_code == 200
+        assert jsonable_encoder(upload_file_result) == res.json()
+
+    def test_bind_current(self):
+        file_ref = FileReference(file_url='/file')
+        model_uuid = uuid.uuid4()
+        upload_file_result = CurrentDatasetDTO(
+            uuid=uuid.uuid4(),
+            model_uuid=model_uuid,
+            path='test',
+            date=str(datetime.datetime.now(tz=datetime.UTC)),
+            status=JobStatus.IMPORTING,
+            correlation_id_column=None
+        )
+        self.file_service.bind_current_file = MagicMock(
+            return_value=upload_file_result
+        )
+        res = self.client.post(
+            f'{self.prefix}/{model_uuid}/current/bind',
+            json=jsonable_encoder(file_ref),
+        )
+        assert res.status_code == 200
+        assert jsonable_encoder(upload_file_result) == res.json()
+
     def test_get_all_reference_datasets_by_model_uuid_paginated(self):
         test_model_uuid = uuid.uuid4()
         reference_upload_1 = db_mock.get_sample_reference_dataset(
