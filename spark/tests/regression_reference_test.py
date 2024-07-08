@@ -34,6 +34,14 @@ def reference_bike_nulls(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
+def reference_test_fe(spark_fixture, test_data_dir):
+    yield spark_fixture.read.csv(
+        f"{test_data_dir}/reference/regression/regression_reference_test_FE.csv",
+        header=True,
+    )
+
+
+@pytest.fixture()
 def expected_data_quality_json():
     yield {
         "n_observations": 731,
@@ -484,6 +492,50 @@ def reference_dataset_nulls(spark_fixture, reference_bike_nulls):
     )
 
 
+@pytest.fixture()
+def reference_dataset_test_fe(spark_fixture, reference_test_fe):
+    output = OutputType(
+        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction_proba=None,
+        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+    )
+    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
+    timestamp = ColumnDefinition(name="timestamp", type=SupportedTypes.datetime)
+    granularity = Granularity.MONTH
+    features = [
+        ColumnDefinition(name="Sex", type=SupportedTypes.string),
+        ColumnDefinition(name="Length", type=SupportedTypes.float),
+        ColumnDefinition(name="Diameter", type=SupportedTypes.float),
+        ColumnDefinition(name="Height", type=SupportedTypes.float),
+        ColumnDefinition(name="Whole_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="Shucked_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="Viscera_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="Shell_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="pred_id", type=SupportedTypes.string),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="regression model",
+        description="description",
+        model_type=ModelType.REGRESSION,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    yield ReferenceDataset(
+        raw_dataframe=reference_test_fe,
+        model=model,
+    )
+
+
 def test_model_quality_metrics(reference_dataset):
     assert reference_dataset.reference_count == 731
 
@@ -566,6 +618,27 @@ def test_model_quality_metrics_nulls(reference_dataset_nulls):
             "r2": 0.9130200184348737,
             "adj_r2": 0.9116855975182538,
             "var": 393588.541292358,
+        }
+    )
+
+    assert model_quality_metrics.model_dump() == expected
+
+
+def test_model_quality_metrics_test_int(reference_dataset_test_fe):
+    regression_service = ReferenceMetricsRegressionService(
+        reference=reference_dataset_test_fe
+    )
+    model_quality_metrics = regression_service.calculate_model_quality()
+
+    expected = my_approx(
+        {
+            "mae": 1.9473369239976062,
+            "mape": 32.80513741749641,
+            "mse": 27.478755236385403,
+            "rmse": 5.242018240752831,
+            "r2": 0.5846200997960207,
+            "adj_r2": 0.5834981252756619,
+            "var": 66.40816713170544,
         }
     )
 

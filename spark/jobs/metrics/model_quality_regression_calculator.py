@@ -16,6 +16,12 @@ class ModelQualityRegressionCalculator:
         metric_name: RegressionMetricType,
     ) -> float:
         try:
+            dataframe = dataframe.withColumn(
+                model.target.name, F.col(model.target.name).cast("float")
+            ).withColumn(
+                model.outputs.prediction.name,
+                F.col(model.outputs.prediction.name).cast("float"),
+            )
             match metric_name:
                 case RegressionMetricType.ADJ_R2:
                     # Source: https://medium.com/analytics-vidhya/adjusted-r-squared-formula-explanation-1ce033e25699
@@ -56,7 +62,8 @@ class ModelQualityRegressionCalculator:
                         labelCol=model.target.name,
                         predictionCol=model.outputs.prediction.name,
                     ).evaluate(dataframe)
-        except Exception:
+        except Exception as e:
+            print(e)
             return float("nan")
 
     @staticmethod
