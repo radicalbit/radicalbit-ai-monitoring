@@ -38,3 +38,8 @@ export const MODEL_QUALITY_FIELD = {
   AREA_UNDER_ROC: 'AUC-ROC',
   AREA_UNDER_PR: 'PR AUC',
 };
+
+export const TABLE_COLOR = {
+  REFERENCE_COLUMN: '#fafafc',
+  CURRENT_COLUMN: '#f1f9ff',
+};
