@@ -41,7 +41,7 @@ def model():
     )
     target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
     timestamp = ColumnDefinition(name="dteday", type=SupportedTypes.datetime)
-    granularity = Granularity.HOUR
+    granularity = Granularity.MONTH
     features = [
         ColumnDefinition(name="season", type=SupportedTypes.int),
         ColumnDefinition(name="yr", type=SupportedTypes.int),
@@ -504,3 +504,77 @@ def expected_data_quality():
             },
         ],
     }
+
+
+def test_model_quality(spark_fixture, current_dataset, reference_dataset):
+    metrics_service = CurrentMetricsRegressionService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    assert not deepdiff.DeepDiff(
+        model_quality,
+        {
+            "global_metrics": {
+                "mae": 71.82559791564941,
+                "mape": 64.05699022707124,
+                "mse": 17820.506660010054,
+                "rmse": 133.49347047706138,
+                "r2": 0.8210737408739541,
+                "adj_r2": 0.7987079584831984,
+                "variance": 118288.02759401732,
+            },
+            "grouped_metrics": {
+                "mae": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 35.67896665375808},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 89.13965238373855},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 91.54030847549438},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 63.352996826171875},
+                ],
+                "mape": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 106.34668638669385},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 50.266650033642435},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 53.63275529139244},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 14.766409719281478},
+                ],
+                "mse": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 2848.1117152678507},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 21631.812814960613},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 31460.34954782362},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 6540.166909402423},
+                ],
+                "rmse": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 53.36770292290882},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 147.07757414018158},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 177.37065582509305},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 80.87129842782556},
+                ],
+                "r2": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 0.17834457710460982},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 0.3895389519246505},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 0.7043715304337479},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 0.9678020649997567},
+                ],
+                "adj_r2": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": -0.3533148141806426},
+                    {
+                        "timestamp": "2011-02-01 00:00:00",
+                        "value": -0.005465255653516854,
+                    },
+                    {"timestamp": "2011-03-01 00:00:00", "value": 0.5417758721723092},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 1.1448907075010948},
+                ],
+                "variance": [
+                    {"timestamp": "2011-01-01 00:00:00", "value": 4720.867246089001},
+                    {"timestamp": "2011-02-01 00:00:00", "value": 70942.48575413873},
+                    {"timestamp": "2011-03-01 00:00:00", "value": 150522.0080596708},
+                    {"timestamp": "2011-04-01 00:00:00", "value": 163422.9263027128},
+                ],
+            },
+        },
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )

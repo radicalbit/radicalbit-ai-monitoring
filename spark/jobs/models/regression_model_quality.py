@@ -10,7 +10,7 @@ class RegressionMetricType(str, Enum):
     RMSE = "rmse"
     R2 = "r2"
     ADJ_R2 = "adj_r2"
-    VAR = "var"
+    VAR = "variance"
 
 
 class ModelQualityRegression(BaseModel):
@@ -20,4 +20,4 @@ class ModelQualityRegression(BaseModel):
     rmse: float
     r2: float
     adj_r2: float
-    var: float
+    variance: float
