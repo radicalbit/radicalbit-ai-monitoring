@@ -23,5 +23,5 @@ class CurrentDataset(Reflected, BaseTable, BaseDAO):
     )
     path = Column('PATH', VARCHAR, nullable=False)
     date = Column('DATE', TIMESTAMP(timezone=True), nullable=False)
-    correlation_id_column = Column('CORRELATION_ID_COLUMN', VARCHAR, nullable=False)
+    correlation_id_column = Column('CORRELATION_ID_COLUMN', VARCHAR, nullable=True)
     status = Column('STATUS', VARCHAR, nullable=False, default=JobStatus.IMPORTING)

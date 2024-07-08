@@ -119,6 +119,7 @@ class ClassMetrics(BaseModel):
 class ClassificationDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
+    class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(

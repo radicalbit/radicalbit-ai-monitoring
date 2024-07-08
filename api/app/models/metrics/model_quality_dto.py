@@ -90,14 +90,49 @@ class MultiClassificationModelQuality(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class RegressionModelQuality(BaseModel):
+class RegressionMetricsBase(BaseModel):
     r2: Optional[float] = None
     mae: Optional[float] = None
     mse: Optional[float] = None
-    var: Optional[float] = None
+    variance: Optional[float] = None
     mape: Optional[float] = None
     rmse: Optional[float] = None
     adj_r2: Optional[float] = None
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class BaseRegressionMetrics(BaseModel):
+    r2: Optional[float] = None
+    mae: Optional[float] = None
+    mse: Optional[float] = None
+    variance: Optional[float] = None
+    mape: Optional[float] = None
+    rmse: Optional[float] = None
+    adj_r2: Optional[float] = None
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class GroupedBaseRegressionMetrics(BaseModel):
+    r2: List[Distribution]
+    mae: List[Distribution]
+    mse: List[Distribution]
+    variance: List[Distribution]
+    mape: List[Distribution]
+    rmse: List[Distribution]
+    adj_r2: List[Distribution]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class RegressionModelQuality(BaseRegressionMetrics):
+    pass
+
+
+class CurrentRegressionModelQuality(BaseModel):
+    global_metrics: BaseRegressionMetrics
+    grouped_metrics: GroupedBaseRegressionMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
@@ -109,6 +144,7 @@ class ModelQualityDTO(BaseModel):
         | CurrentBinaryClassificationModelQuality
         | MultiClassificationModelQuality
         | RegressionModelQuality
+        | CurrentRegressionModelQuality
     ]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
@@ -143,11 +179,6 @@ class ModelQualityDTO(BaseModel):
         model_type: ModelType,
         dataset_type: DatasetType,
         model_quality_data: Dict,
-    ) -> (
-        BinaryClassificationModelQuality
-        | CurrentBinaryClassificationModelQuality
-        | MultiClassificationModelQuality
-        | RegressionModelQuality
     ):
         """Create a specific model quality instance based on model type and dataset type."""
         if model_type == ModelType.BINARY:
@@ -158,7 +189,9 @@ class ModelQualityDTO(BaseModel):
         if model_type == ModelType.MULTI_CLASS:
             return MultiClassificationModelQuality(**model_quality_data)
         if model_type == ModelType.REGRESSION:
-            return RegressionModelQuality(**model_quality_data)
+            return ModelQualityDTO._create_regression_model_quality(
+                dataset_type=dataset_type, model_quality_data=model_quality_data
+            )
         raise MetricsInternalError(f'Invalid model type {model_type}')
 
     @staticmethod
@@ -171,4 +204,16 @@ class ModelQualityDTO(BaseModel):
             return BinaryClassificationModelQuality(**model_quality_data)
         if dataset_type == DatasetType.CURRENT:
             return CurrentBinaryClassificationModelQuality(**model_quality_data)
+        raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
+
+    @staticmethod
+    def _create_regression_model_quality(
+        dataset_type: DatasetType,
+        model_quality_data: Dict,
+    ) -> RegressionModelQuality | CurrentRegressionModelQuality:
+        """Create a binary model quality instance based on dataset type."""
+        if dataset_type == DatasetType.REFERENCE:
+            return RegressionModelQuality(**model_quality_data)
+        if dataset_type == DatasetType.CURRENT:
+            return CurrentRegressionModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid dataset type {dataset_type}')

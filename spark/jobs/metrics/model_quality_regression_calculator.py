@@ -9,13 +9,17 @@ from utils.spark import is_not_null
 
 class ModelQualityRegressionCalculator:
     @staticmethod
-    def __eval_model_quality_metric(
+    def eval_model_quality_metric(
         model: ModelOut,
         dataframe: DataFrame,
         dataframe_count: int,
         metric_name: RegressionMetricType,
     ) -> float:
         try:
+            dataframe = dataframe.withColumn(
+                model.outputs.prediction.name,
+                F.col(model.outputs.prediction.name).cast("float"),
+            )
             match metric_name:
                 case RegressionMetricType.ADJ_R2:
                     # Source: https://medium.com/analytics-vidhya/adjusted-r-squared-formula-explanation-1ce033e25699
@@ -25,7 +29,7 @@ class ModelQualityRegressionCalculator:
                     p: float = len(model.features)
                     n: float = dataframe_count
                     r2: float = (
-                        ModelQualityRegressionCalculator.__eval_model_quality_metric(
+                        ModelQualityRegressionCalculator.eval_model_quality_metric(
                             model, dataframe, dataframe_count, RegressionMetricType.R2
                         )
                     )
@@ -44,19 +48,25 @@ class ModelQualityRegressionCalculator:
                         ),
                     )
                     return _dataframe.agg({"mape": "avg"}).collect()[0][0] * 100
+                case RegressionMetricType.VAR:
+                    return RegressionEvaluator(
+                        metricName="var",
+                        labelCol=model.target.name,
+                        predictionCol=model.outputs.prediction.name,
+                    ).evaluate(dataframe)
                 case (
                     RegressionMetricType.MAE
                     | RegressionMetricType.MSE
                     | RegressionMetricType.RMSE
                     | RegressionMetricType.R2
-                    | RegressionMetricType.VAR
                 ):
                     return RegressionEvaluator(
                         metricName=metric_name.value,
                         labelCol=model.target.name,
                         predictionCol=model.outputs.prediction.name,
                     ).evaluate(dataframe)
-        except Exception:
+        except Exception as e:
+            print(e)
             return float("nan")
 
     @staticmethod
@@ -65,7 +75,7 @@ class ModelQualityRegressionCalculator:
     ) -> ModelQualityRegression:
         return ModelQualityRegression(
             **{
-                metric_name.value: ModelQualityRegressionCalculator.__eval_model_quality_metric(
+                metric_name.value: ModelQualityRegressionCalculator.eval_model_quality_metric(
                     model,
                     dataframe,
                     dataframe_count,

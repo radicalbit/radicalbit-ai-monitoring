@@ -345,7 +345,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         r2 = 0.91
         mae = 125.01
         mse = 408.76
-        var = 393.31
+        variance = 393.31
         mape = 35.19
         rmse = 202.23
         adj_r2 = 0.91
@@ -372,7 +372,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "r2": {r2},
                         "mae": {mae},
                         "mse": {mse},
-                        "var": {var},
+                        "variance": {variance},
                         "mape": {mape},
                         "rmse": {rmse},
                         "adjR2": {adj_r2}
@@ -386,7 +386,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.r2 == r2
         assert metrics.mae == mae
         assert metrics.mse == mse
-        assert metrics.var == var
+        assert metrics.variance == variance
         assert metrics.mape == mape
         assert metrics.rmse == rmse
         assert metrics.adj_r2 == adj_r2
@@ -476,6 +476,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                             {"name": "classA", "count": 100, "percentage": 50.0},
                             {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
+                        "classMetricsPrediction": [
+                            {"name": "classA", "count": 100, "percentage": 50.0},
+                            {"name": "classB", "count": 100, "percentage": 50.0}
+                        ],
                         "featureMetrics": [
                             {
                                 "featureName": "age",
@@ -528,6 +532,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -564,6 +571,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                                 "dataQuality": {
                                     "nObservations": 200,
                                     "classMetrics": [
+                                        {"name": "classA", "count": 100, "percentage": 50.0},
+                                        {"name": "classB", "count": 100, "percentage": 50.0}
+                                    ],
+                                    "classMetricsPrediction": [
                                         {"name": "classA", "count": 100, "percentage": 50.0},
                                         {"name": "classB", "count": 100, "percentage": 50.0}
                                     ],
@@ -619,6 +630,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'

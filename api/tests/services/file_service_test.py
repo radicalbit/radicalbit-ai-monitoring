@@ -199,13 +199,12 @@ class FileServiceTest(unittest.TestCase):
         )
         object_name = f'{str(model.uuid)}/current/{file.filename}'
         path = f's3://bucket/{object_name}'
-        correlation_id_column = 'correlation_id'
         inserted_file = CurrentDataset(
             uuid=uuid4(),
             model_uuid=model_uuid,
             path=path,
             date=datetime.datetime.now(tz=datetime.UTC),
-            correlation_id_column=correlation_id_column,
+            correlation_id_column=None,
             status=JobStatus.IMPORTING,
         )
         reference_file = get_sample_reference_dataset(model_uuid=model_uuid)
@@ -221,7 +220,8 @@ class FileServiceTest(unittest.TestCase):
         self.spark_k8s_client.submit_app = MagicMock()
 
         result = self.files_service.upload_current_file(
-            model.uuid, file, correlation_id_column
+            model.uuid,
+            file,
         )
 
         self.model_svc.get_model_by_uuid.assert_called_once()

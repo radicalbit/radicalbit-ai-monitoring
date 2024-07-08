@@ -14,10 +14,23 @@ After you have poetry installed you can install the project's dependencies run:
 poetry install
 ```
 
+Then, activate an environment:
+
+```bash
+poetry shell
+```
+
+If you apply any change in the requirements, don't forget to run the following command:
+
+```bash
+poetry update
+```
+
+
 ### Tutorials ###
 
-| Task                  | Tutorial Name                                     | Dataset to use                                                                                  | Description                                                                                                               |
-|-----------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|
-| Binary Classification | notebooks/binary-classification-income-data.ipynb | data/binary_classification/reference-income.csv,  data/binary_classification/current1-income.csv| In this tutorial we monitor data and performance of a ML used to classify if the income is > 50K given a set of features. |
+| Task                  | Tutorial Name                                     | Dataset to use                                                                                  | Dataset license   | Description                                                                                                               |
+|-----------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------|-------------------|---------------------------------------------------------------------------------------------------------------------------|
+| Binary Classification | notebooks/binary-classification-income-data.ipynb | data/binary_classification/reference-income.csv,  data/binary_classification/current1-income.csv|Kohavi,Ron. (1996). Census Income. UCI Machine Learning Repository. https://doi.org/10.24432/C5GP7S. Adapted by Radicalbit.                   | In this tutorial we monitor data and performance of a ML used to classify if the income is > 50K given a set of features. |
 
 
