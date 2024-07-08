@@ -25,7 +25,7 @@ echarts.use([
   BarChart,
 ]);
 
-const { useGetModelByUUIDQuery, useGetReferenceDataQualityQuery } = modelsApiSlice;
+const { useGetModelByUUIDQuery } = modelsApiSlice;
 
 const numberFormatter = (value) => new Intl.NumberFormat('it-IT').format(value);
 
@@ -90,7 +90,7 @@ function DataPointDistributionChart() {
   const title = model?.target.name;
 
   const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
-  const dataset = currentData?.dataQuality.targetMetrics ?? [];
+  const dataset = currentData?.dataQuality.targetMetrics.histogram ?? [];
 
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache

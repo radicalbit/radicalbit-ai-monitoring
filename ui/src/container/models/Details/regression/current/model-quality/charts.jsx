@@ -7,23 +7,23 @@ import { useParams } from 'react-router';
 
 const { useGetReferenceModelQualityQuery } = modelsApiSlice;
 
-function AccuracyChart() {
+function MseChart() {
   const { uuid } = useParams();
   const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
-  const referenceAccuracy = referenceData?.modelQuality?.accuracy;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.accuracy;
+  const referenceMse = referenceData?.modelQuality?.mse;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.mse;
 
   if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceAccuracy }));
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceMse }));
 
     return (
       <LineChart
         color={CHART_COLOR.CURRENT}
         currentData={currentSeries}
         referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.ACCURACY}
+        title={MODEL_QUALITY_FIELD.MSE}
       />
     );
   }
@@ -31,92 +31,23 @@ function AccuracyChart() {
   return false;
 }
 
-function PrecisionChart() {
+function RmseChart() {
   const { uuid } = useParams();
   const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
-  const referencePrecision = referenceData?.modelQuality?.precision;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.precision;
+  const referenceRmse = referenceData?.modelQuality?.rmse;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.rmse;
 
   if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referencePrecision }));
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceRmse }));
 
     return (
       <LineChart
         color={CHART_COLOR.CURRENT}
         currentData={currentSeries}
         referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.PRECISION}
-      />
-    );
-  }
-  return false;
-}
-
-function RecallChart() {
-  const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
-  const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
-
-  const referenceRecall = referenceData?.modelQuality?.recall;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.recall;
-
-  if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceRecall }));
-
-    return (
-      <LineChart
-        color={CHART_COLOR.CURRENT}
-        currentData={currentSeries}
-        referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.RECALL}
-      />
-    );
-  }
-  return false;
-}
-
-function F1Chart() {
-  const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
-  const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
-
-  const referenceF1 = referenceData?.modelQuality?.f1;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.f1;
-
-  if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceF1 }));
-
-    return (
-      <LineChart
-        color={CHART_COLOR.CURRENT}
-        currentData={currentSeries}
-        referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.F1}
-      />
-    );
-  }
-  return false;
-}
-
-function FalsePositiveRateChart() {
-  const { uuid } = useParams();
-  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
-  const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
-
-  const referenceFalsePositiveRate = referenceData?.modelQuality?.falsePositiveRate;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.falsePositiveRate;
-
-  if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceFalsePositiveRate }));
-
-    return (
-      <LineChart
-        color={CHART_COLOR.CURRENT}
-        currentData={currentSeries}
-        referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.FALSE_POSITIVE_RATE}
+        title={MODEL_QUALITY_FIELD.RMSE}
       />
     );
   }
@@ -124,23 +55,23 @@ function FalsePositiveRateChart() {
   return false;
 }
 
-function TruePositiveRateChart() {
+function MaeChart() {
   const { uuid } = useParams();
   const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
-  const referenceTruePositiveRate = referenceData?.modelQuality?.truePositiveRate;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.truePositiveRate;
+  const referenceMae = referenceData?.modelQuality?.mae;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.mae;
 
   if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceTruePositiveRate }));
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceMae }));
 
     return (
       <LineChart
         color={CHART_COLOR.CURRENT}
         currentData={currentSeries}
         referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.TRUE_POSITIVE_RATE}
+        title={MODEL_QUALITY_FIELD.MAE}
       />
     );
   }
@@ -148,53 +79,83 @@ function TruePositiveRateChart() {
   return false;
 }
 
-function AreaUnderRocChart() {
+function MapeChart() {
   const { uuid } = useParams();
   const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
-  const referenceAreaUnderRoc = referenceData?.modelQuality?.areaUnderRoc;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.areaUnderRoc;
+  const referenceMape = referenceData?.modelQuality?.mape;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.mape;
 
   if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceAreaUnderRoc }));
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceMape }));
 
     return (
       <LineChart
         color={CHART_COLOR.CURRENT}
         currentData={currentSeries}
         referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.AREA_UNDER_ROC}
+        title={MODEL_QUALITY_FIELD.MAPE}
       />
     );
   }
+
   return false;
 }
-function AreaUnderPrChart() {
+
+function R2Chart() {
   const { uuid } = useParams();
   const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
   const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
 
-  const referenceAreaUnderPr = referenceData?.modelQuality?.areaUnderPr;
-  const currentSeries = currentData?.modelQuality?.groupedMetrics?.areaUnderPr;
+  const referenceR2 = referenceData?.modelQuality?.r2;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.r2;
 
   if (currentSeries && currentSeries !== null) {
-    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceAreaUnderPr }));
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceR2 }));
 
     return (
       <LineChart
         color={CHART_COLOR.CURRENT}
         currentData={currentSeries}
         referenceData={referenceSeries}
-        title={MODEL_QUALITY_FIELD.AREA_UNDER_PR}
+        title={MODEL_QUALITY_FIELD.R2}
       />
     );
   }
+
+  return false;
+}
+
+function AdjR2Chart() {
+  const { uuid } = useParams();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
+  const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
+
+  const referenceAdjR2 = referenceData?.modelQuality?.adjR2;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.adjR2;
+
+  if (currentSeries && currentSeries !== null) {
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceAdjR2 }));
+
+    return (
+      <LineChart
+        color={CHART_COLOR.CURRENT}
+        currentData={currentSeries}
+        referenceData={referenceSeries}
+        title={MODEL_QUALITY_FIELD.ADJ_R2}
+      />
+    );
+  }
+
   return false;
 }
 
 export {
-  AccuracyChart, AreaUnderPrChart, AreaUnderRocChart, F1Chart,
-  FalsePositiveRateChart, PrecisionChart,
-  RecallChart, TruePositiveRateChart,
+  MseChart,
+  RmseChart,
+  MaeChart,
+  MapeChart,
+  R2Chart,
+  AdjR2Chart,
 };
