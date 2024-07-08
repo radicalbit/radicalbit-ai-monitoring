@@ -45,3 +45,8 @@ export const MODEL_QUALITY_FIELD = {
   ADJ_R2: 'Adjusted R-squared',
   VARIANCE: 'Variance',
 };
+
+export const TABLE_COLOR = {
+  REFERENCE_COLUMN: '#fafafc',
+  CURRENT_COLUMN: '#f1f9ff',
+};
