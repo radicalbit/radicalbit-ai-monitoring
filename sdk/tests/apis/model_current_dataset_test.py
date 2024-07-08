@@ -284,8 +284,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
                         "classMetricsPrediction": [
-                            {"name": "predictionA", "count": 100, "percentage": 50.0},
-                            {"name": "predictionB", "count": 100, "percentage": 50.0}
+                            {"name": "classA", "count": 100, "percentage": 50.0},
+                            {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
                         "featureMetrics": [
                             {
@@ -339,7 +339,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
-        assert metrics.class_metrics_prediction[0].name == 'predictionA'
+        assert metrics.class_metrics_prediction[0].name == 'classA'
         assert metrics.class_metrics_prediction[0].count == 100
         assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
@@ -383,8 +383,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                                         {"name": "classB", "count": 100, "percentage": 50.0}
                                     ],
                                    "classMetricsPrediction": [
-                                        {"name": "predictionA", "count": 100, "percentage": 50.0},
-                                        {"name": "predictionB", "count": 100, "percentage": 50.0}
+                                        {"name": "classA", "count": 100, "percentage": 50.0},
+                                        {"name": "classB", "count": 100, "percentage": 50.0}
                                     ],
                                     "featureMetrics": [
                                         {
@@ -438,7 +438,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
-        assert metrics.class_metrics_prediction[0].name == 'predictionA'
+        assert metrics.class_metrics_prediction[0].name == 'classA'
         assert metrics.class_metrics_prediction[0].count == 100
         assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
