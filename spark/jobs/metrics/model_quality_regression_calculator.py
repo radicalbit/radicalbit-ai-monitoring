@@ -50,12 +50,17 @@ class ModelQualityRegressionCalculator:
                         ),
                     )
                     return _dataframe.agg({"mape": "avg"}).collect()[0][0] * 100
+                case RegressionMetricType.VAR:
+                    return RegressionEvaluator(
+                        metricName="var",
+                        labelCol=model.target.name,
+                        predictionCol=model.outputs.prediction.name,
+                    ).evaluate(dataframe)
                 case (
                     RegressionMetricType.MAE
                     | RegressionMetricType.MSE
                     | RegressionMetricType.RMSE
                     | RegressionMetricType.R2
-                    | RegressionMetricType.VAR
                 ):
                     return RegressionEvaluator(
                         metricName=metric_name.value,

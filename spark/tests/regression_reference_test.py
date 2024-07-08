@@ -550,7 +550,7 @@ def test_model_quality_metrics(reference_dataset):
             "rmse": 202.2319475218869,
             "r2": 0.9131323648676931,
             "adj_r2": 0.9118033746222753,
-            "var": 393448.3132709007,
+            "variance": 393448.3132709007,
         }
     )
 
@@ -617,7 +617,7 @@ def test_model_quality_metrics_nulls(reference_dataset_nulls):
             "rmse": 202.40446933755922,
             "r2": 0.9130200184348737,
             "adj_r2": 0.9116855975182538,
-            "var": 393588.541292358,
+            "variance": 393588.541292358,
         }
     )
 
@@ -638,7 +638,7 @@ def test_model_quality_metrics_test_int(reference_dataset_test_fe):
             "rmse": 5.242018240752831,
             "r2": 0.5846200997960207,
             "adj_r2": 0.5834981252756619,
-            "var": 66.40816713170544,
+            "variance": 66.40816713170544,
         }
     )
 
