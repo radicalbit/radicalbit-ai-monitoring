@@ -198,7 +198,7 @@ class FileService:
         self,
         model_uuid: UUID,
         csv_file: UploadFile,
-        correlation_id_column: str,
+        correlation_id_column: Optional[str] = None,
         sep: str = ',',
         columns=None,
     ) -> CurrentDatasetDTO:
