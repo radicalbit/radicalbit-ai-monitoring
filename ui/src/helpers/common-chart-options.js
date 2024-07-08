@@ -85,7 +85,7 @@ const yAxisCategoryType = (yAxisData) => {
       axisLine: { show: false },
       splitLine: { show: false },
       axisLabel: {
-        fontSize: 10,
+        fontSize: 9,
       },
     },
   };
@@ -149,6 +149,13 @@ const heatmapVisualMapOptions = (dataMax, colors, itemHeight) => {
 const tooltipOptions = () => ({
   tooltip: {
     trigger: 'axis',
+    crosshairs: true,
+    axisPointer: {
+      type: 'cross',
+      label: {
+        show: true,
+      },
+    },
   },
 });
 
@@ -191,12 +198,6 @@ const heatmapSeriesOptions = (data) => {
     label: {
       show: true,
     },
-    emphasis: {
-      itemStyle: {
-        shadowBlur: 10,
-        shadowColor: 'rgba(0, 0, 0, 0.5)',
-      },
-    },
   };
 
   if (data) {
@@ -211,6 +212,7 @@ const barChartCommonOptions = () => ({
   barCategoryGap: '21%',
   overflow: 'truncate',
   lineOverflow: 'truncate',
+  progressiveChunkMode: 'mod',
 });
 
 const heatmapCommonOptions = () => ({
@@ -293,7 +295,7 @@ const CHART_COLOR = {
   REFERENCE_LIGHT: '#DBDBDB',
   REFERENCE_DARK: '#667',
   CURRENT: '#3695d9',
-  CURRENT_LIGHT: '#C8E4F9',
+  CURRENT_LIGHT: '#3795d990',
   CURRENT_DARK: '#0A71BB',
   WHITE: '#FFFFFF',
   LINE_CHART_COLOR: '#73B2E0',
