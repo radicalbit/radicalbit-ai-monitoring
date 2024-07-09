@@ -12,12 +12,13 @@ export default function chartOptions(title, dataset) {
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.CATEGORY, xAxisLabel),
     ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
     ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
+    ...commonChartOptions.tooltipOptions(CHART_TYPE.BAR),
     series: [
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
         color: CHART_COLOR.REFERENCE_LIGHT,
         label: {
-          show: true,
+          show: false,
           position: 'top',
           fontWeight: 'bold',
           rotate: 45,
@@ -27,6 +28,18 @@ export default function chartOptions(title, dataset) {
       },
     ],
   };
+
+  if (referenceData.length >= 30) {
+    options.dataZoom = [
+      {
+        show: true,
+      },
+      {
+        type: 'inside',
+      },
+    ];
+    options.grid.bottom = 40;
+  }
 
   options.grid.top = 25;
   options.xAxis.axisLabel.rotate = 35;

@@ -7,6 +7,9 @@ import {
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import { BarChart } from 'echarts/charts';
 import {
+  DataZoomComponent,
+  DataZoomInsideComponent,
+  DataZoomSliderComponent,
   GridComponent,
   LegendComponent,
   MarkLineComponent,
@@ -22,6 +25,9 @@ echarts.use([
   MarkLineComponent,
   LegendComponent,
   BarChart,
+  DataZoomComponent,
+  DataZoomInsideComponent,
+  DataZoomSliderComponent,
 ]);
 
 const { useGetModelByUUIDQuery, useGetReferenceDataQualityQuery } = modelsApiSlice;

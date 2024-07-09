@@ -1,6 +1,5 @@
 import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
 import * as commonChartOptions from '@Helpers/common-chart-options';
-import { numberFormatter } from '@Src/constants';
 
 export default function chartOptions(title, referenceDataset, currentDataset) {
   const xAxisLabel = currentDataset.map(({ name }) => name);
@@ -19,35 +18,25 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
         color: CHART_COLOR.REFERENCE_LIGHT,
-        tooltip: {
-          trigger: 'axis',
-          crosshairs: true,
-          axisPointer: {
-            type: 'cross',
-            label: {
-              show: true,
-            },
-          },
-          formatter: (el) => (el.data.count > 0) ? `${el.data.count} (${numberFormatter().format(el.data.percentage)}%)` : '',
-        },
       },
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, `${title}_current`, CHART_COLOR.CURRENT_LIGHT, currentData),
         color: CHART_COLOR.CURRENT_LIGHT,
-        tooltip: {
-          trigger: 'axis',
-          crosshairs: true,
-          axisPointer: {
-            type: 'cross',
-            label: {
-              show: true,
-            },
-          },
-          formatter: (el) => (el.data.count > 0) ? `${el.data.count} (${numberFormatter().format(el.data.percentage)}%)` : '',
-        },
       },
     ],
   };
+
+  if (currentData.length <= 30 || referenceData.length >= 30) {
+    options.dataZoom = [
+      {
+        show: true,
+      },
+      {
+        type: 'inside',
+      },
+    ];
+    options.grid.bottom = 40;
+  }
 
   options.grid.top = 25;
   options.xAxis.axisLabel.rotate = 35;
