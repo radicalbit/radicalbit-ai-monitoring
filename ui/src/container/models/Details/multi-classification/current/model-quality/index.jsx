@@ -205,10 +205,10 @@ function FaCode() {
   };
 
   if (mode === MODE.CHART) {
-    return <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} />;
+    return <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} size="lg" />;
   }
 
-  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} />;
+  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="lg" />;
 }
 
 const useGetModeParam = () => {

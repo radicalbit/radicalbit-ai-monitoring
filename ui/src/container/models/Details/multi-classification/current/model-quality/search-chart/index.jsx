@@ -17,7 +17,7 @@ function SearchChart() {
   };
 
   return (
-    <div className="flex flex-row w-full gap-4 mt-4">
+    <div className="flex flex-row w-full gap-4">
       <div className="w-full">
         <FormField>
           <Select

@@ -18,8 +18,11 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
           color: CHART_COLOR.REFERENCE,
           formatter: ({ value }) => `${value[1]}`,
         },
+
       };
-      referenceOption.lineStyle.type = 'dotted';
+      referenceOption.lineStyle = {
+        width: 2, type: 'dotted',
+      };
       return referenceOption;
     });
     dataSeries = dataSeries.concat(series);
@@ -30,12 +33,44 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
     ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.TIME),
     ...commonChartOptions.gridOptions(CHART_TYPE.LINE),
-    ...commonChartOptions.tooltipOptions(),
+    ...commonChartOptions.colorList,
     series: dataSeries,
+
+    tooltip: {
+      trigger: 'axis',
+      crosshairs: true,
+      axisPointer: {
+        type: 'cross',
+        label: {
+          show: true,
+        },
+      },
+    },
     legend: {
       right: 0,
+      top: 16,
+      bottom: 0,
       orient: 'vertical',
+      type: 'scroll',
+      scrollDataIndex: 'scroll',
+      pageIconSize: 8,
+      pageTextStyle: {
+        fontSize: 8,
+      },
       data: dataSeries.map(({ name }) => name),
+      textStyle: {
+        fontSize: 10,
+        fontWeight: '300',
+      },
+    },
+
+    title: {
+      text: '... Reference ',
+      textStyle: {
+        fontSize: 10,
+        fontWeight: '300',
+      },
+      right: 0,
     },
   };
 

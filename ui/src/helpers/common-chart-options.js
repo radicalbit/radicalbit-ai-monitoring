@@ -193,7 +193,7 @@ const lineSeriesOptions = (title, color, data) => {
   const options = {
     name: title,
     type: 'line',
-    lineStyle: { width: 2 },
+    lineStyle: { width: 2.2 },
     symbol: 'none',
   };
 
