@@ -5,7 +5,7 @@ import {
 function Csv() {
   return (
     <div className="flex justify-center mt-4">
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
 
         <Header />
 
