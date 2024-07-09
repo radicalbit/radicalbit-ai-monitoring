@@ -33,6 +33,26 @@ def reference_bike_dataframe(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
+def current_test_fe(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/regression/regression_reference_test_FE.csv",
+            header=True,
+        )
+    )
+
+
+@pytest.fixture()
+def reference_test_fe(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/reference/regression/regression_reference_test_FE.csv",
+            header=True,
+        )
+    )
+
+
+@pytest.fixture()
 def model():
     output = OutputType(
         prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
@@ -70,6 +90,61 @@ def model():
         algorithm="algorithm",
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
+    )
+
+
+@pytest.fixture()
+def model_test_fe():
+    output = OutputType(
+        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction_proba=None,
+        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+    )
+    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
+    timestamp = ColumnDefinition(name="timestamp", type=SupportedTypes.datetime)
+    granularity = Granularity.MONTH
+    features = [
+        ColumnDefinition(name="Sex", type=SupportedTypes.string),
+        ColumnDefinition(name="Length", type=SupportedTypes.float),
+        ColumnDefinition(name="Diameter", type=SupportedTypes.float),
+        ColumnDefinition(name="Height", type=SupportedTypes.float),
+        ColumnDefinition(name="Whole_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="Shucked_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="Viscera_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="Shell_weight", type=SupportedTypes.float),
+        ColumnDefinition(name="pred_id", type=SupportedTypes.string),
+    ]
+    yield ModelOut(
+        uuid=uuid.uuid4(),
+        name="regression model",
+        description="description",
+        model_type=ModelType.REGRESSION,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+
+@pytest.fixture()
+def current_dataset_fe(current_test_fe, model_test_fe):
+    yield CurrentDataset(
+        raw_dataframe=current_test_fe,
+        model=model_test_fe,
+    )
+
+
+@pytest.fixture()
+def reference_dataset_fe(reference_test_fe, model_test_fe):
+    yield ReferenceDataset(
+        raw_dataframe=reference_test_fe,
+        model=model_test_fe,
     )
 
 
@@ -574,6 +649,198 @@ def test_model_quality(spark_fixture, current_dataset, reference_dataset):
                     {"timestamp": "2011-04-01 00:00:00", "value": 163422.9263027128},
                 ],
             },
+        },
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )
+
+
+def test_drift_regression(spark_fixture, current_dataset, reference_dataset):
+    metrics_service = CurrentMetricsRegressionService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    drift = metrics_service.calculate_drift()
+
+    assert not deepdiff.DeepDiff(
+        drift,
+        {
+            "feature_metrics": [
+                {
+                    "feature_name": "season",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.7886320109,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "yr",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.9986320109,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "mnth",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.7510372975,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "holiday",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.9686320109,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "weekday",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.1475135386,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "workingday",
+                    "drift_calc": {"type": "KS", "value": 0.69, "has_drift": True},
+                },
+                {
+                    "feature_name": "weathersit",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.6219091927,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "temp",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.5259741552,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "atemp",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.5322880465,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "hum",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.2230727748,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "windspeed",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.2180156245,
+                        "has_drift": True,
+                    },
+                },
+            ]
+        },
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )
+
+
+def test_drift_regression_chi(spark_fixture, current_dataset_fe, reference_dataset_fe):
+    metrics_service = CurrentMetricsRegressionService(
+        spark_session=spark_fixture,
+        current=current_dataset_fe,
+        reference=reference_dataset_fe,
+    )
+
+    drift = metrics_service.calculate_drift()
+
+    assert not deepdiff.DeepDiff(
+        drift,
+        {
+            "feature_metrics": [
+                {
+                    "feature_name": "Sex",
+                    "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+                },
+                {
+                    "feature_name": "pred_id",
+                    "drift_calc": {
+                        "type": "CHI2",
+                        "value": 0.2397280792131291,
+                        "has_drift": False,
+                    },
+                },
+                {
+                    "feature_name": "Length",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.0239680774,
+                        "has_drift": False,
+                    },
+                },
+                {
+                    "feature_name": "Diameter",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.0301533877,
+                        "has_drift": False,
+                    },
+                },
+                {
+                    "feature_name": "Height",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.065718922,
+                        "has_drift": True,
+                    },
+                },
+                {
+                    "feature_name": "Whole_weight",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.0023194914,
+                        "has_drift": False,
+                    },
+                },
+                {
+                    "feature_name": "Shucked_weight",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.0030926552,
+                        "has_drift": False,
+                    },
+                },
+                {
+                    "feature_name": "Viscera_weight",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.0038658189,
+                        "has_drift": False,
+                    },
+                },
+                {
+                    "feature_name": "Shell_weight",
+                    "drift_calc": {
+                        "type": "KS",
+                        "value": 0.010824293,
+                        "has_drift": False,
+                    },
+                },
+            ]
         },
         ignore_order=True,
         ignore_type_subclasses=True,

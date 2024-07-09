@@ -16,6 +16,7 @@ from models.regression_model_quality import ModelQualityRegression, RegressionMe
 from metrics.model_quality_regression_calculator import ModelQualityRegressionCalculator
 from .misc import create_time_format
 from .models import Granularity
+from metrics.drift_calculator import DriftCalculator
 
 
 class CurrentMetricsRegressionService:
@@ -160,4 +161,11 @@ class CurrentMetricsRegressionService:
             n_observations=self.current.current_count,
             target_metrics=target_metrics,
             feature_metrics=feature_metrics,
+        )
+
+    def calculate_drift(self):
+        return DriftCalculator.calculate_drift(
+            spark_session=self.spark_session,
+            reference_dataset=self.reference,
+            current_dataset=self.current,
         )

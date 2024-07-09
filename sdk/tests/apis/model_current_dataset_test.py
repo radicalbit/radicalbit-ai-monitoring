@@ -10,12 +10,12 @@ from radicalbit_platform_sdk.models import (
     ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
+    CurrentMultiClassificationModelQuality,
     CurrentRegressionModelQuality,
     Drift,
     DriftAlgorithm,
     JobStatus,
     ModelType,
-    MultiClassificationModelQuality,
     RegressionDataQuality,
 )
 
@@ -760,7 +760,6 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         weighted_f_measure = 2.45
         true_positive_rate = 4.12
         false_positive_rate = 5.89
-        precision = 2.33
         weighted_recall = 4.22
         f_measure = 9.33
         confusion_matrix = [
@@ -795,7 +794,7 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                                         {{
                                             "className": "classA",
                                             "metrics": {{
-                                                "accuracy": {accuracy}
+                                                "recall": {recall}
                                             }},
                                             "groupedMetrics": {{
                                                     "precision": [
@@ -824,35 +823,96 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                                             "className": "classB",
                                             "metrics": {{
                                                 "fMeasure": {f_measure}
-                                            }}
+                                            }},
+                                             "groupedMetrics": {{
+                                                    "precision": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.86}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.88}}
+                                                    ],
+                                                    "recall": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": {recall}}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                                                    ],
+                                                    "fMeasure": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.8}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}}
+                                                    ],
+                                                    "truePositiveRate": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.81}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                                                    ],
+                                                    "falsePositiveRate": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.14}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}}
+                                                    ]
+                                                }}
                                         }},
                                         {{
                                             "className": "classC",
                                             "metrics": {{
                                                 "recall": {recall}
-                                            }}
+                                            }},
+                                             "groupedMetrics": {{
+                                                    "precision": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.86}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.88}}
+                                                    ],
+                                                    "recall": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": {recall}}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                                                    ],
+                                                    "fMeasure": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.8}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}}
+                                                    ],
+                                                    "truePositiveRate": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.81}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                                                    ],
+                                                    "falsePositiveRate": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.14}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}}
+                                                    ]
+                                                }}
                                         }},
                                         {{
                                             "className": "classD",
                                             "metrics": {{
                                                 "truePositiveRate": {true_positive_rate},
                                                 "falsePositiveRate": {false_positive_rate}
-                                            }}
+                                            }},
+                                             "groupedMetrics": {{
+                                                    "precision": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.86}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.88}}
+                                                    ],
+                                                    "recall": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": {recall}}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                                                    ],
+                                                    "fMeasure": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.8}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}}
+                                                    ],
+                                                    "truePositiveRate": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.81}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                                                    ],
+                                                    "falsePositiveRate": [
+                                                        {{"timestamp": "2024-01-01T00:00:00Z", "value": 0.14}},
+                                                        {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}}
+                                                    ]
+                                                }}
                                         }}
                                     ],
                                     "globalMetrics": {{
                                         "f1": {f1},
                                         "accuracy": {accuracy},
-                                        "precision": {precision},
-                                        "recall": {recall},
-                                        "fMeasure": {f_measure},
                                         "weightedPrecision": {weighted_precision},
                                         "weightedRecall": {weighted_recall},
                                         "weightedFMeasure": {weighted_f_measure},
                                         "weightedTruePositiveRate": {weighted_true_positive_rate},
                                         "weightedFalsePositiveRate": {weighted_false_positive_rate},
-                                        "truePositiveRate": {true_positive_rate},
-                                        "falsePositiveRate": {false_positive_rate},
                                         "confusionMatrix": {confusion_matrix}
                                     }}
                                 }}
@@ -861,9 +921,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
         metrics = model_current_dataset.model_quality()
 
-        assert isinstance(metrics, MultiClassificationModelQuality)
+        assert isinstance(metrics, CurrentMultiClassificationModelQuality)
         assert metrics.classes == ['classA', 'classB', 'classC', 'classD']
-        assert metrics.global_metrics.accuracy == accuracy
         assert metrics.global_metrics.weighted_precision == weighted_precision
         assert metrics.global_metrics.weighted_recall == weighted_recall
         assert (
@@ -874,14 +933,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             metrics.global_metrics.weighted_false_positive_rate
             == weighted_false_positive_rate
         )
-        assert metrics.global_metrics.weighted_f_measure == weighted_f_measure
-        assert metrics.global_metrics.true_positive_rate == true_positive_rate
-        assert metrics.global_metrics.false_positive_rate == false_positive_rate
-        assert metrics.global_metrics.precision == precision
-        assert metrics.global_metrics.f_measure == f_measure
         assert metrics.class_metrics[0].class_name == 'classA'
-        assert metrics.class_metrics[0].metrics.accuracy == accuracy
-        assert metrics.class_metrics[0].grouped_metrics.recall[0].value == recall
+        assert metrics.class_metrics[0].metrics.recall == recall
         assert metrics.class_metrics[1].class_name == 'classB'
         assert metrics.class_metrics[1].metrics.f_measure == f_measure
         assert metrics.class_metrics[2].class_name == 'classC'
