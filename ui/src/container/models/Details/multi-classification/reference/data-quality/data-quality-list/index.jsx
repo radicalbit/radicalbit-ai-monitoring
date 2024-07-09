@@ -13,6 +13,7 @@ import {
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
+import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 import CategoricalLeftTable from './categorical/left-table/index';
 import CategoricalRightTable from './categorical/right-table';
@@ -21,6 +22,10 @@ import NumericalTable from './numerical/table/index';
 
 function DataQualityList() {
   const items = useGetFilteredFeatures();
+
+  if (items.length === 0) {
+    return (<NoFeaturesAvailable />);
+  }
 
   return (
     <Spinner fullHeight fullWidth>

@@ -1,5 +1,4 @@
 import SmartTable from '@Components/smart-table';
-// @ts-ignore
 import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-button';
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { NamespaceEnum } from '@Src/constants';
