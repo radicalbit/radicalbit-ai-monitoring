@@ -13,7 +13,7 @@ function ClassTableMetrics() {
       precision, falsePositiveRate, recall, truePositiveRate, fMeasure,
     },
   }) => {
-    const classMetricsPrediction = dataQualityData.find((d) => d.name === className);
+    const classMetricsPrediction = dataQualityData?.find((d) => d.name === className);
     return {
       className,
       precision,

@@ -3,9 +3,9 @@ import { numberFormatter } from '@Src/constants';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function chartOptions(title, dataset) {
-  const yAxisLabel = dataset.map(({ name }) => name);
+  const yAxisLabel = dataset?.map(({ name }) => name);
 
-  const referenceData = dataset.map(({ count, percentage }) => ({ percentage, count, value: count }));
+  const referenceData = dataset?.map(({ count, percentage }) => ({ percentage, count, value: count }));
 
   const options = {
     ...commonChartOptions.gridOptions(CHART_TYPE.BAR),

@@ -26,18 +26,18 @@ function ClassTableMetrics() {
     const currentTruePositiveRate = currentElement?.metrics.truePositiveRate;
     const currentFalsePositiveRate = currentElement?.metrics.falsePositiveRate;
 
-    const currentDataQualityElement = currentClassMetricsPredictions.find((d) => d.name === className);
+    const currentDataQualityElement = currentClassMetricsPredictions?.find((d) => d.name === className);
     const currentSupport = currentDataQualityElement?.count;
     const currentSupportPercent = currentDataQualityElement?.percentage;
 
-    const referenceElement = referenceClassMetrics.find((f) => f.className === className);
+    const referenceElement = referenceClassMetrics?.find((f) => f.className === className);
     const referencePrecision = referenceElement?.metrics.precision;
     const referenceRecall = referenceElement?.metrics.recall;
     const referencefMeasure = referenceElement?.metrics.fMeasure;
     const referenceTruePositiveRate = referenceElement?.metrics.truePositiveRate;
     const referenceFalsePositiveRate = referenceElement?.metrics.falsePositiveRate;
 
-    const referenceDataQualityElement = referenceClassMetricsPredictions.find((d) => d.name === className);
+    const referenceDataQualityElement = referenceClassMetricsPredictions?.find((d) => d.name === className);
     const referenceSupport = referenceDataQualityElement?.count;
     const referenceSupportPercent = referenceDataQualityElement?.percentage;
 
