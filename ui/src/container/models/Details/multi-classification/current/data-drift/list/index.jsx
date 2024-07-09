@@ -13,10 +13,15 @@ import {
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
+import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 
 function DataDriftList() {
   const items = useGetFilteredFeatures();
+
+  if (items.length === 0) {
+    return (<NoFeaturesAvailable />);
+  }
 
   return (
     <Spinner fullHeight fullWidth>

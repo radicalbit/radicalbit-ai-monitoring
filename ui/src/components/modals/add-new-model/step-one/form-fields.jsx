@@ -46,10 +46,16 @@ function ModelType() {
     write('modelType', value);
   };
 
+  const modelTypeSelections = [
+    ModelTypeEnum.BINARY_CLASSIFICATION,
+    ModelTypeEnum.MULTI_CLASSIFICATION,
+    ModelTypeEnum.REGRESSION,
+  ];
+
   return (
     <FormField label="Model type" modifier="w-full" required>
       <Select onChange={handleOnChange} value={form.modelType}>
-        {Object.values(ModelTypeEnum).map((value) => (
+        {Object.values(modelTypeSelections).map((value) => (
           <Select.Option key={value}>
             {ModelTypeEnumLabel[value]}
           </Select.Option>
