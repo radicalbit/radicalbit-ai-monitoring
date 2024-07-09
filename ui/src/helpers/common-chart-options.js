@@ -146,6 +146,23 @@ const heatmapVisualMapOptions = (dataMax, colors, itemHeight) => {
   return options;
 };
 
+const colorList = {
+  color: [
+    '#3695D9',
+    '#64A4DD',
+    '#85B2E1',
+    '#A2C2E5',
+    '#BDD1E9',
+    '#D7E1ED',
+    '#F1F1F1',
+    '#E3D7F1',
+    '#D4BEF2',
+    '#C4A5F2',
+    '#B28DF2',
+    '#9F74F1',
+    '#8A5BF0'],
+};
+
 const tooltipOptions = () => ({
   tooltip: {
     trigger: 'axis',
@@ -210,9 +227,13 @@ const heatmapSeriesOptions = (data) => {
 const barChartCommonOptions = () => ({
   emphasis: { disabled: true },
   barCategoryGap: '21%',
+  barGap: '0',
   overflow: 'truncate',
   lineOverflow: 'truncate',
-  progressiveChunkMode: 'mod',
+  itemStyle: {
+    borderWidth: 1,
+    borderColor: 'rgba(201, 25, 25, 1)',
+  },
 });
 
 const heatmapCommonOptions = () => ({
@@ -321,6 +342,7 @@ export {
   commonOptions,
   visualMapOptions,
   tooltipOptions,
+  colorList,
   OPTIONS_TYPE,
   CHART_COLOR,
   CHART_TYPE,
