@@ -10,6 +10,7 @@ from radicalbit_platform_sdk.models import (
     ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
+    CurrentRegressionModelQuality,
     DataQuality,
     DatasetStats,
     Drift,
@@ -18,7 +19,6 @@ from radicalbit_platform_sdk.models import (
     ModelType,
     MultiClassificationModelQuality,
     RegressionDataQuality,
-    RegressionModelQuality,
 )
 
 
@@ -49,7 +49,7 @@ class ModelCurrentDataset:
     def path(self) -> str:
         return self.__path
 
-    def correlation_id_column(self) -> str:
+    def correlation_id_column(self) -> Optional[str]:
         return self.__correlation_id_column
 
     def date(self) -> str:
@@ -248,7 +248,7 @@ class ModelCurrentDataset:
                         case ModelType.REGRESSION:
                             return (
                                 job_status,
-                                RegressionModelQuality.model_validate(
+                                CurrentRegressionModelQuality.model_validate(
                                     response_json['modelQuality']
                                 ),
                             )

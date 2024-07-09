@@ -352,6 +352,13 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
+        r2 = 0.91
+        mae = 125.01
+        mse = 408.76
+        variance = 393.31
+        mape = 35.19
+        rmse = 202.23
+        adj_r2 = 0.91
         model_reference_dataset = ModelReferenceDataset(
             base_url,
             model_id,
@@ -368,17 +375,31 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             method=responses.GET,
             url=f'{base_url}/api/models/{str(model_id)}/reference/model-quality',
             status=200,
-            body="""{
+            body=f"""{{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
-                    "modelQuality": {}
-                }""",
+                    "modelQuality": {{
+                        "r2": {r2},
+                        "mae": {mae},
+                        "mse": {mse},
+                        "variance": {variance},
+                        "mape": {mape},
+                        "rmse": {rmse},
+                        "adjR2": {adj_r2}
+                    }}
+                }}""",
         )
 
         metrics = model_reference_dataset.model_quality()
 
         assert isinstance(metrics, RegressionModelQuality)
-        # TODO: add asserts to properties
+        assert metrics.r2 == r2
+        assert metrics.mae == mae
+        assert metrics.mse == mse
+        assert metrics.variance == variance
+        assert metrics.mape == mape
+        assert metrics.rmse == rmse
+        assert metrics.adj_r2 == adj_r2
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
@@ -465,6 +486,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                             {"name": "classA", "count": 100, "percentage": 50.0},
                             {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
+                        "classMetricsPrediction": [
+                            {"name": "classA", "count": 100, "percentage": 50.0},
+                            {"name": "classB", "count": 100, "percentage": 50.0}
+                        ],
                         "featureMetrics": [
                             {
                                 "featureName": "age",
@@ -517,6 +542,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -553,6 +581,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                                 "dataQuality": {
                                     "nObservations": 200,
                                     "classMetrics": [
+                                        {"name": "classA", "count": 100, "percentage": 50.0},
+                                        {"name": "classB", "count": 100, "percentage": 50.0}
+                                    ],
+                                    "classMetricsPrediction": [
                                         {"name": "classA", "count": 100, "percentage": 50.0},
                                         {"name": "classB", "count": 100, "percentage": 50.0}
                                     ],
@@ -608,6 +640,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -687,6 +722,32 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                                          "missing_value":{"count":0, "percentage":0.0},
                                          "median_metrics":{"median":3.0, "perc_25":2.0, "perc_75":3.0},
                                          "class_median_metrics":[]
+                                      },
+                                      {
+                                          "type":"categorical",
+                                          "feature_name":"Sex",
+                                          "missing_value":{
+                                            "count":0,
+                                            "percentage":0.0
+                                          },
+                                          "distinct_value":3,
+                                          "category_frequency":[
+                                            {
+                                              "name":"F",
+                                              "count":1064,
+                                              "frequency":0.31837223219628963
+                                            },
+                                            {
+                                              "name":"M",
+                                              "count":1208,
+                                              "frequency":0.36146020347097546
+                                            },
+                                            {
+                                              "name":"I",
+                                              "count":1070,
+                                              "frequency":0.3201675643327349
+                                            }
+                                          ]
                                       }
                                     ]
                                 }
@@ -700,7 +761,8 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.target_metrics.feature_name == 'ground_truth'
         assert metrics.target_metrics.median_metrics.median == 713.0
         assert metrics.feature_metrics[0].max == 731.0
-        assert len(metrics.feature_metrics) == 2
+        assert metrics.feature_metrics[2].distinct_value == 3
+        assert len(metrics.feature_metrics) == 3
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

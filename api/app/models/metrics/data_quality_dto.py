@@ -119,6 +119,7 @@ class ClassMetrics(BaseModel):
 class ClassificationDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
+    class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
@@ -132,7 +133,7 @@ class ClassificationDataQuality(BaseModel):
 class RegressionDataQuality(BaseModel):
     n_observations: int
     target_metrics: NumericalTargetMetrics
-    feature_metrics: List[NumericalFeatureMetrics]
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,

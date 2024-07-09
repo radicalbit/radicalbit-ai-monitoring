@@ -40,8 +40,10 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="basis-1/5">
+      <div className="flex flex-col gap-4 basis-1/5">
         <DataPointDistributionCounter />
+
+        <ClassCounter />
       </div>
 
       <DataPointDistributionChart />
@@ -82,6 +84,32 @@ function DataPointDistributionCounter() {
   );
 }
 
+function ClassCounter() {
+  const { uuid } = useParams();
+
+  const { data } = useGetReferenceDataQualityQuery({ uuid });
+  const nObservations = data?.dataQuality.classMetrics.length ?? 0;
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="Classes" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+          <div className="flex flex-row items-end ">
+
+            {/* FIXME: inline style */}
+            <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>{nObservations}</div>
+          </div>
+
+        </div>
+      )}
+      modifier="h-full shadow"
+      size="small"
+      type="secondary"
+    />
+  );
+}
+
 function DataPointDistributionChart() {
   const { uuid } = useParams();
 
@@ -91,9 +119,11 @@ function DataPointDistributionChart() {
   const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
 
   const currentClassMetrics = currentData?.dataQuality.classMetrics ?? [];
+  const sortedCurrentClassMetrics = [...currentClassMetrics].sort((a, b) => a.name - b.name);
 
   const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });
   const referenceClassMetrics = referenceData?.dataQuality.classMetrics ?? [];
+  const sortedReferenceClassMetrics = [...referenceClassMetrics].sort((a, b) => a.name - b.name);
 
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
@@ -109,12 +139,12 @@ function DataPointDistributionChart() {
           <ReactEchartsCore
             echarts={echarts}
             onChartReady={handleOnChartReady}
-            option={chartOptions(title, referenceClassMetrics, currentClassMetrics)}
-            style={{ height: '100%' }}
+            option={chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics)}
+            style={{ height: '20rem', width: '100%' }}
           />
         </div>
       )}
-      modifier="w-full h-full shadow"
+      modifier="w-full h-full shadow overflow-auto max-w-full "
       size="small"
     />
   );

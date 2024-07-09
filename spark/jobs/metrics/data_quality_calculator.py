@@ -187,6 +187,7 @@ class DataQualityCalculator:
             .filter(F.isnotnull(class_column))
             .groupBy(class_column)
             .agg(*[F.count(check_not_null(class_column)).alias("count")])
+            .orderBy(class_column)
             .withColumn(
                 "percentage",
                 (F.col("count") / dataframe_count) * 100,

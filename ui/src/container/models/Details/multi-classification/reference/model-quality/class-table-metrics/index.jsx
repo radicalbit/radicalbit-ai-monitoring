@@ -1,21 +1,30 @@
-import { useGetReferenceModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetReferenceDataQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { DataTable } from '@radicalbit/radicalbit-design-system';
-import columns from './columns.jsx';
+import columns from './columns';
 
 function ClassTableMetrics() {
-  const { data } = useGetReferenceModelQualityQueryWithPolling();
-  const classMetrics = data?.modelQuality.classMetrics.map(({
+  const { data: modelQualityData } = useGetReferenceModelQualityQueryWithPolling();
+  const { data: dataQuality } = useGetReferenceDataQualityQueryWithPolling();
+
+  const dataQualityData = dataQuality?.dataQuality.classMetricsPrediction;
+
+  const classMetrics = modelQualityData?.modelQuality?.classMetrics.map(({
     className, metrics: {
       precision, falsePositiveRate, recall, truePositiveRate, fMeasure,
     },
-  }) => ({
-    className,
-    precision,
-    falsePositiveRate,
-    truePositiveRate,
-    recall,
-    fMeasure,
-  })) ?? [];
+  }) => {
+    const classMetricsPrediction = dataQualityData.find((d) => d.name === className);
+    return {
+      className,
+      precision,
+      falsePositiveRate,
+      truePositiveRate,
+      recall,
+      fMeasure,
+      support: classMetricsPrediction?.count,
+      supportPercent: classMetricsPrediction?.percentage,
+    };
+  }).sort((a, b) => a.className - b.className) ?? [];
 
   return (
     <DataTable

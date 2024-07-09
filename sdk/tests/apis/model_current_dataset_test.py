@@ -10,13 +10,13 @@ from radicalbit_platform_sdk.models import (
     ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
+    CurrentRegressionModelQuality,
     Drift,
     DriftAlgorithm,
     JobStatus,
     ModelType,
     MultiClassificationModelQuality,
     RegressionDataQuality,
-    RegressionModelQuality,
 )
 
 
@@ -283,6 +283,10 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             {"name": "classA", "count": 100, "percentage": 50.0},
                             {"name": "classB", "count": 100, "percentage": 50.0}
                         ],
+                        "classMetricsPrediction": [
+                            {"name": "classA", "count": 100, "percentage": 50.0},
+                            {"name": "classB", "count": 100, "percentage": 50.0}
+                        ],
                         "featureMetrics": [
                             {
                                 "featureName": "age",
@@ -335,6 +339,9 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -372,6 +379,10 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                                 "dataQuality": {
                                     "nObservations": 200,
                                     "classMetrics": [
+                                        {"name": "classA", "count": 100, "percentage": 50.0},
+                                        {"name": "classB", "count": 100, "percentage": 50.0}
+                                    ],
+                                   "classMetricsPrediction": [
                                         {"name": "classA", "count": 100, "percentage": 50.0},
                                         {"name": "classB", "count": 100, "percentage": 50.0}
                                     ],
@@ -427,6 +438,9 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.class_metrics[0].name == 'classA'
         assert metrics.class_metrics[0].count == 100
         assert metrics.class_metrics[0].percentage == 50.0
+        assert metrics.class_metrics_prediction[0].name == 'classA'
+        assert metrics.class_metrics_prediction[0].count == 100
+        assert metrics.class_metrics_prediction[0].percentage == 50.0
         assert len(metrics.feature_metrics) == 2
         assert metrics.feature_metrics[0].feature_name == 'age'
         assert metrics.feature_metrics[0].type == 'numerical'
@@ -510,6 +524,32 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                              "missing_value":{"count":0, "percentage":0.0},
                              "median_metrics":{"median":3.0, "perc_25":2.0, "perc_75":3.0},
                              "class_median_metrics":[]
+                          },
+                          {
+                              "type":"categorical",
+                              "feature_name":"Sex",
+                              "missing_value":{
+                                "count":0,
+                                "percentage":0.0
+                              },
+                              "distinct_value":3,
+                              "category_frequency":[
+                                {
+                                  "name":"F",
+                                  "count":1064,
+                                  "frequency":0.31837223219628963
+                                },
+                                {
+                                  "name":"M",
+                                  "count":1208,
+                                  "frequency":0.36146020347097546
+                                },
+                                {
+                                  "name":"I",
+                                  "count":1070,
+                                  "frequency":0.3201675643327349
+                                }
+                              ]
                           }
                         ]
                     }
@@ -523,7 +563,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.target_metrics.feature_name == 'ground_truth'
         assert metrics.target_metrics.median_metrics.median == 713.0
         assert metrics.feature_metrics[0].max == 731.0
-        assert len(metrics.feature_metrics) == 2
+        assert metrics.feature_metrics[2].distinct_value == 3
+        assert len(metrics.feature_metrics) == 3
         assert model_current_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
@@ -857,6 +898,13 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         base_url = 'http://api:9000'
         model_id = uuid.uuid4()
         import_uuid = uuid.uuid4()
+        r2 = 0.91
+        mae = 125.01
+        mse = 408.76
+        variance = 393.31
+        mape = 35.19
+        rmse = 202.23
+        adj_r2 = 0.91
         model_current_dataset = ModelCurrentDataset(
             base_url,
             model_id,
@@ -874,17 +922,70 @@ class ModelCurrentDatasetTest(unittest.TestCase):
             method=responses.GET,
             url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/model-quality',
             status=200,
-            body="""{
+            body=f"""{{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
-                    "modelQuality": {}
-                }""",
+                    "modelQuality": {{
+                        "global_metrics": {{
+                            "r2": {r2},
+                            "mae": {mae},
+                            "mse": {mse},
+                            "variance": {variance},
+                            "mape": {mape},
+                            "rmse": {rmse},
+                            "adjR2": {adj_r2}
+                        }},
+                        "grouped_metrics": {{
+                            "r2": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {r2}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.88}}
+                            ],
+                            "mae": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {mae}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                            ],
+                            "mse": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {mse}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.85}}
+                            ],
+                            "variance": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {variance}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.83}}
+                            ],
+                            "mape": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {mape}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}}
+                            ],
+                            "rmse": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {rmse}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}}
+                            ],
+                            "adjR2": [
+                                {{"timestamp": "2024-01-01T00:00:00Z", "value": {adj_r2}}},
+                                {{"timestamp": "2024-02-01T00:00:00Z", "value": 0.12}}
+                            ]
+                        }}
+                    }}
+                }}""",
         )
 
         metrics = model_current_dataset.model_quality()
 
-        assert isinstance(metrics, RegressionModelQuality)
-        # TODO: add asserts to properties
+        assert isinstance(metrics, CurrentRegressionModelQuality)
+        assert metrics.global_metrics.r2 == r2
+        assert metrics.global_metrics.mae == mae
+        assert metrics.global_metrics.mse == mse
+        assert metrics.global_metrics.variance == variance
+        assert metrics.global_metrics.mape == mape
+        assert metrics.global_metrics.rmse == rmse
+        assert metrics.global_metrics.adj_r2 == adj_r2
+        assert metrics.grouped_metrics.r2[0].value == r2
+        assert metrics.grouped_metrics.mae[0].value == mae
+        assert metrics.grouped_metrics.mse[0].value == mse
+        assert metrics.grouped_metrics.variance[0].value == variance
+        assert metrics.grouped_metrics.mape[0].value == mape
+        assert metrics.grouped_metrics.rmse[0].value == rmse
+        assert metrics.grouped_metrics.adj_r2[0].value == adj_r2
         assert model_current_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

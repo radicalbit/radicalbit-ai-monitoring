@@ -271,6 +271,10 @@ classification_data_quality_dict = {
         {'name': 'classA', 'count': 100, 'percentage': 50.0},
         {'name': 'classB', 'count': 100, 'percentage': 50.0},
     ],
+    'classMetricsPrediction': [
+        {'name': 'classA', 'count': 100, 'percentage': 50.0},
+        {'name': 'classB', 'count': 100, 'percentage': 50.0},
+    ],
     'featureMetrics': [
         {
             'featureName': 'age',
@@ -310,6 +314,52 @@ classification_data_quality_dict = {
             'missingValue': {'count': 0, 'percentage': 0.0},
         },
     ],
+}
+
+regression_model_quality_dict = {
+    'r2': 0.9131323648676931,
+    'mae': 125.0137756497949,
+    'mse': 40897.76059849524,
+    'mape': 35.19314237273801,
+    'rmse': 202.23194752188695,
+    'adj_r2': 0.9116805380966796,
+    'variance': 0.23
+}
+
+grouped_regression_model_quality_dict = {
+    'r2': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
+    ],
+    'mae': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.88},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.9},
+    ],
+    'mse': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.86},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.88},
+    ],
+    'mape': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.81},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.83},
+    ],
+    'rmse': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.8},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.85},
+    ],
+    'adj_r2': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.85},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.87},
+    ],
+    'variance': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.82},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.84},
+    ],
+}
+
+current_regression_model_quality_dict = {
+    'global_metrics': regression_model_quality_dict,
+    'grouped_metrics': grouped_regression_model_quality_dict,
 }
 
 regression_data_quality_dict = {
@@ -358,6 +408,17 @@ regression_data_quality_dict = {
             'missing_value': {'count': 0, 'percentage': 0.0},
             'median_metrics': {'median': 3.0, 'perc_25': 2.0, 'perc_75': 3.0},
             'class_median_metrics': [],
+        },
+        {
+            'type': 'categorical',
+            'feature_name': 'Sex',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'distinct_value': 3,
+            'category_frequency': [
+                {'name': 'F', 'count': 1064, 'frequency': 0.31837223219628963},
+                {'name': 'M', 'count': 1208, 'frequency': 0.36146020347097546},
+                {'name': 'I', 'count': 1070, 'frequency': 0.3201675643327349},
+            ],
         },
     ],
 }

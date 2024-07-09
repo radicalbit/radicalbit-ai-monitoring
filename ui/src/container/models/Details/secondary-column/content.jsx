@@ -1,5 +1,5 @@
 import { modelsApiSlice } from '@Src/store/state/models/api';
-import { Menu } from '@radicalbit/radicalbit-design-system';
+import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useEffect, useState } from 'react';
 import {
   useNavigate, useParams, useSearchParams,
@@ -38,7 +38,7 @@ export default function SecondaryColumnModelsContent() {
     {
       label: (
         <div className="flex gap-2 items-center">
-          <div>{name}</div>
+          <Truncate className="w-10/12">{name}</Truncate>
 
           <JobStatusPin modelUUID={modelUUID} />
         </div>),

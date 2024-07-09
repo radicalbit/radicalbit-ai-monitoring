@@ -48,7 +48,7 @@ class UploadDatasetRoute:
             model_uuid: UUID,
             csv_file: UploadFile = File(...),
             sep: str = Form(','),
-            correlation_id_column: str = Form(''),
+            correlation_id_column: Optional[str] = Form(None),
         ) -> CurrentDatasetDTO:
             return file_service.upload_current_file(
                 model_uuid, csv_file, correlation_id_column, sep

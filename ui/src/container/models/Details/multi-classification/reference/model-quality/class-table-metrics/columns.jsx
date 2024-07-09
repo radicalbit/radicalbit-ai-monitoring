@@ -1,4 +1,4 @@
-import { CHART_COLOR } from '@Helpers/common-chart-options';
+import { TABLE_COLOR } from '@Container/models/Details/constants';
 import { numberFormatter } from '@Src/constants';
 
 export default [
@@ -9,48 +9,98 @@ export default [
     render: (label) => <div className="font-[var(--coo-font-weight-bold)]">{label}</div>,
   },
   {
-    title: 'Reference Precision',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Precison
+      </div>
+    ),
     key: 'precision',
     dataIndex: 'precision',
     align: 'right',
     width: '10rem',
-    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
+    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     render: (precision) => numberFormatter().format(precision),
   },
   {
-    title: 'Reference Recall',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Recall
+      </div>
+    ),
     key: 'recall',
     dataIndex: 'recall',
     align: 'right',
     width: '10rem',
-    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
+    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     render: (recall) => numberFormatter().format(recall),
   },
   {
-    title: 'Reference F1-Score',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        F1-Score
+      </div>
+    ),
     key: 'fMeasure',
     dataIndex: 'fMeasure',
     align: 'right',
     width: '10rem',
-    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
+    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     render: (fMeasure) => numberFormatter().format(fMeasure),
   },
   {
-    title: 'Reference True Positive Rate',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        True Positive Rate
+      </div>
+    ),
     key: 'truePositiveRate',
     dataIndex: 'truePositiveRate',
     align: 'right',
     width: '10rem',
-    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
+    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     render: (truePositiveRate) => numberFormatter().format(truePositiveRate),
   },
   {
-    title: 'Reference False Positive Rate',
+    title: () => (
+      <div>
+        Reference
+        <br />
+        False Positive Rate
+      </div>
+    ),
     key: 'falsePositiveRate',
     dataIndex: 'falsePositiveRate',
     align: 'right',
-    width: '10rem',
-    onCell: () => ({ style: { background: CHART_COLOR.REFERENCE_LIGHT } }),
+    width: '8rem',
+    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
     render: (falsePositiveRate) => numberFormatter().format(falsePositiveRate),
+  },
+  {
+    title: () => (
+      <div>
+        Reference
+        <br />
+        Support
+      </div>
+    ),
+    key: 'support',
+    align: 'right',
+    width: '10rem',
+    onCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    onHeaderCell: () => ({ style: { background: TABLE_COLOR.REFERENCE_COLUMN } }),
+    render: ({ support, supportPercent }) => `${numberFormatter().format(support)} (${numberFormatter().format(supportPercent)}%)`,
   },
 ];

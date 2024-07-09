@@ -21,7 +21,7 @@ class ReferenceFileUpload(FileUploadResult):
 
 
 class CurrentFileUpload(FileUploadResult):
-    correlation_id_column: str
+    correlation_id_column: Optional[str] = None
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
