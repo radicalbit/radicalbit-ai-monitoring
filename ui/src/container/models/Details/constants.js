@@ -37,4 +37,16 @@ export const MODEL_QUALITY_FIELD = {
   TRUE_POSITIVE_RATE: 'True positive rate',
   AREA_UNDER_ROC: 'AUC-ROC',
   AREA_UNDER_PR: 'PR AUC',
+  MSE: 'Mean squared error',
+  RMSE: 'Root mean squared error',
+  MAE: 'Mean absolute error',
+  MAPE: 'Mean absolute percentage error',
+  R2: 'R-squared',
+  ADJ_R2: 'Adjusted R-squared',
+  VARIANCE: 'Variance',
+};
+
+export const TABLE_COLOR = {
+  REFERENCE_COLUMN: '#fafafc',
+  CURRENT_COLUMN: '#f1f9ff',
 };

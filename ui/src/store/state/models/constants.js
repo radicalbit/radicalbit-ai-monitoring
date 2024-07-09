@@ -19,8 +19,8 @@ export const GranularityEnum = {
 
 export const ModelTypeEnumLabel = {
   [ModelTypeEnum.REGRESSION]: 'Regression',
-  [ModelTypeEnum.BINARY_CLASSIFICATION]: 'Binary classification',
-  [ModelTypeEnum.MULTI_CLASSIFICATION]: 'Multi Classification',
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: 'Binary Classification',
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: 'Multiclass Classification',
 };
 
 export const DataTypeEnumLabel = {

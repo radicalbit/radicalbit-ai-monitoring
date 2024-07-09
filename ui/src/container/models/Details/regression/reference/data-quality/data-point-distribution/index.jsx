@@ -13,6 +13,7 @@ import {
   SectionTitle,
 } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import chartOptions from './options';
 
 echarts.use([
@@ -91,8 +92,7 @@ function DataPointDistributionChart() {
   const title = model?.target.name;
 
   const { data } = useGetReferenceDataQualityQuery({ uuid });
-
-  const classMetrics = data?.dataQuality.classMetrics ?? {};
+  const classMetrics = data?.dataQuality.targetMetrics.histogram;
 
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
@@ -108,12 +108,12 @@ function DataPointDistributionChart() {
           <ReactEchartsCore
             echarts={echarts}
             onChartReady={handleOnChartReady}
-            option={chartOptions(title, classMetrics)}
-            style={{ height: '100%' }}
+            option={chartOptions(classMetrics, CHART_COLOR.REFERENCE)}
+            style={{ height: '20rem', width: '100%' }}
           />
         </div>
       )}
-      modifier="w-full h-full shadow"
+      modifier="w-full h-full shadow overflow-auto max-w-full "
       size="small"
     />
   );

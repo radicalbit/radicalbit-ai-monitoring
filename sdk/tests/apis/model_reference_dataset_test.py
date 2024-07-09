@@ -236,7 +236,6 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         weighted_f_measure = 2.45
         true_positive_rate = 4.12
         false_positive_rate = 5.89
-        precision = 2.33
         weighted_recall = 4.22
         f_measure = 9.33
         confusion_matrix = [
@@ -297,16 +296,12 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "globalMetrics": {{
                             "f1": {f1},
                             "accuracy": {accuracy},
-                            "precision": {precision},
                             "recall": {recall},
-                            "fMeasure": {f_measure},
                             "weightedPrecision": {weighted_precision},
                             "weightedRecall": {weighted_recall},
                             "weightedFMeasure": {weighted_f_measure},
                             "weightedTruePositiveRate": {weighted_true_positive_rate},
                             "weightedFalsePositiveRate": {weighted_false_positive_rate},
-                            "truePositiveRate": {true_positive_rate},
-                            "falsePositiveRate": {false_positive_rate},
                             "confusionMatrix": {confusion_matrix}
                         }}
                     }}
@@ -329,12 +324,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
             == weighted_false_positive_rate
         )
         assert metrics.global_metrics.weighted_f_measure == weighted_f_measure
-        assert metrics.global_metrics.true_positive_rate == true_positive_rate
-        assert metrics.global_metrics.false_positive_rate == false_positive_rate
-        assert metrics.global_metrics.precision == precision
-        assert metrics.global_metrics.f_measure == f_measure
         assert metrics.class_metrics[0].class_name == 'classA'
-        assert metrics.class_metrics[0].metrics.accuracy == accuracy
         assert metrics.class_metrics[1].class_name == 'classB'
         assert metrics.class_metrics[1].metrics.f_measure == f_measure
         assert metrics.class_metrics[2].class_name == 'classC'
@@ -355,7 +345,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         r2 = 0.91
         mae = 125.01
         mse = 408.76
-        var = 393.31
+        variance = 393.31
         mape = 35.19
         rmse = 202.23
         adj_r2 = 0.91
@@ -382,7 +372,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "r2": {r2},
                         "mae": {mae},
                         "mse": {mse},
-                        "var": {var},
+                        "variance": {variance},
                         "mape": {mape},
                         "rmse": {rmse},
                         "adjR2": {adj_r2}
@@ -396,7 +386,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.r2 == r2
         assert metrics.mae == mae
         assert metrics.mse == mse
-        assert metrics.var == var
+        assert metrics.variance == variance
         assert metrics.mape == mape
         assert metrics.rmse == rmse
         assert metrics.adj_r2 == adj_r2

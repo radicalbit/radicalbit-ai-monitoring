@@ -3,7 +3,7 @@ import { numberFormatter } from '@Src/constants';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function chartOptions(title, referenceDataset, currentDataset) {
-  const yAxisLabel = currentDataset.map(({ name }) => name);
+  const yAxisLabel = currentDataset?.map(({ name }) => name);
 
   const referenceData = referenceDataset.map(({ count, percentage }) => ({ percentage, count, value: count }));
   const currentData = currentDataset.map(({ count, percentage }) => ({ percentage, count, value: count }));

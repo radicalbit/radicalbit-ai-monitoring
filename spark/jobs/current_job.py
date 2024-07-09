@@ -106,13 +106,17 @@ def main(
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality(is_current=True)
             model_quality = metrics_service.calculate_model_quality()
+            drift = metrics_service.calculate_drift()
             complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
-            complete_record["MODEL_QUALITY"] = model_quality
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
 
     schema = StructType(
         [

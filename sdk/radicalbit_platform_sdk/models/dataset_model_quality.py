@@ -8,19 +8,43 @@ class ModelQuality(BaseModel):
     pass
 
 
-class MetricsBase(BaseModel):
-    f1: Optional[float] = None
-    accuracy: Optional[float] = None
+class Distribution(BaseModel):
+    timestamp: str
+    value: Optional[float] = None
+
+
+class BaseClassificationMetrics(BaseModel):
     precision: Optional[float] = None
     recall: Optional[float] = None
     f_measure: Optional[float] = None
+    true_positive_rate: Optional[float] = None
+    false_positive_rate: Optional[float] = None
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
+class GroupedBaseClassificationMetrics(BaseModel):
+    precision: List[Distribution]
+    recall: List[Distribution]
+    f_measure: List[Distribution]
+    true_positive_rate: List[Distribution]
+    false_positive_rate: List[Distribution]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
+class AdditionalMetrics(BaseModel):
+    f1: Optional[float] = None
+    accuracy: Optional[float] = None
     weighted_precision: Optional[float] = None
     weighted_recall: Optional[float] = None
     weighted_f_measure: Optional[float] = None
     weighted_true_positive_rate: Optional[float] = None
     weighted_false_positive_rate: Optional[float] = None
-    true_positive_rate: Optional[float] = None
-    false_positive_rate: Optional[float] = None
     area_under_roc: Optional[float] = None
     area_under_pr: Optional[float] = None
 
@@ -29,53 +53,56 @@ class MetricsBase(BaseModel):
     )
 
 
-class BinaryClassificationModelQuality(ModelQuality, MetricsBase):
+class AdditionalGroupedMetrics(GroupedBaseClassificationMetrics):
+    f1: List[Distribution]
+    accuracy: List[Distribution]
+    weighted_precision: List[Distribution]
+    weighted_recall: List[Distribution]
+    weighted_f_measure: List[Distribution]
+    weighted_true_positive_rate: List[Distribution]
+    weighted_false_positive_rate: List[Distribution]
+    area_under_roc: Optional[List[Distribution]] = None
+    area_under_pr: Optional[List[Distribution]] = None
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
+class GlobalBinaryMetrics(BaseClassificationMetrics, AdditionalMetrics):
     true_positive_count: int
     false_positive_count: int
     true_negative_count: int
     false_negative_count: int
 
-
-class Distribution(BaseModel):
-    timestamp: str
-    value: Optional[float] = None
-
-
-class GroupedMetricsBase(BaseModel):
-    f1: Optional[List[Distribution]] = None
-    accuracy: Optional[List[Distribution]] = None
-    precision: List[Distribution]
-    recall: List[Distribution]
-    f_measure: List[Distribution]
-    weighted_precision: Optional[List[Distribution]] = None
-    weighted_recall: Optional[List[Distribution]] = None
-    weighted_f_measure: Optional[List[Distribution]] = None
-    weighted_true_positive_rate: Optional[List[Distribution]] = None
-    weighted_false_positive_rate: Optional[List[Distribution]] = None
-    true_positive_rate: List[Distribution]
-    false_positive_rate: List[Distribution]
-    area_under_roc: Optional[List[Distribution]] = None
-    area_under_pr: Optional[List[Distribution]] = None
-
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
+class BinaryClassificationModelQuality(ModelQuality, GlobalBinaryMetrics):
+    pass
+
+
 class CurrentBinaryClassificationModelQuality(ModelQuality):
-    global_metrics: BinaryClassificationModelQuality
-    grouped_metrics: GroupedMetricsBase
+    global_metrics: GlobalBinaryMetrics
+    grouped_metrics: AdditionalGroupedMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
 class ClassMetrics(BaseModel):
     class_name: str
-    metrics: MetricsBase
-    grouped_metrics: Optional[GroupedMetricsBase] = None
+    metrics: BaseClassificationMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class GlobalMetrics(MetricsBase):
+class AdditionalClassMetrics(ClassMetrics):
+    grouped_metrics: GroupedBaseClassificationMetrics
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class GlobalMulticlassMetrics(AdditionalMetrics):
     confusion_matrix: List[List[int]]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
@@ -84,16 +111,24 @@ class GlobalMetrics(MetricsBase):
 class MultiClassificationModelQuality(ModelQuality):
     classes: List[str]
     class_metrics: List[ClassMetrics]
-    global_metrics: GlobalMetrics
+    global_metrics: GlobalMulticlassMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class RegressionModelQuality(ModelQuality):
+class CurrentMultiClassificationModelQuality(ModelQuality):
+    classes: List[str]
+    class_metrics: List[AdditionalClassMetrics]
+    global_metrics: GlobalMulticlassMetrics
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class BaseRegressionMetrics(BaseModel):
     r2: Optional[float] = None
     mae: Optional[float] = None
     mse: Optional[float] = None
-    var: Optional[float] = None
+    variance: Optional[float] = None
     mape: Optional[float] = None
     rmse: Optional[float] = None
     adj_r2: Optional[float] = None
@@ -101,5 +136,24 @@ class RegressionModelQuality(ModelQuality):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class CurrentRegressionModelQuality(ModelQuality):
+class GroupedBaseRegressionMetrics(BaseModel):
+    r2: List[Distribution]
+    mae: List[Distribution]
+    mse: List[Distribution]
+    variance: List[Distribution]
+    mape: List[Distribution]
+    rmse: List[Distribution]
+    adj_r2: List[Distribution]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class RegressionModelQuality(ModelQuality, BaseRegressionMetrics):
     pass
+
+
+class CurrentRegressionModelQuality(ModelQuality):
+    global_metrics: BaseRegressionMetrics
+    grouped_metrics: GroupedBaseRegressionMetrics
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

@@ -635,6 +635,37 @@ class MetricsServiceTest(unittest.TestCase):
             model_quality_data=current_metrics.model_quality,
         )
 
+    def test_get_current_regression_model_quality_by_model_by_uuid(self):
+        status = JobStatus.SUCCEEDED
+        current_dataset = db_mock.get_sample_current_dataset(status=status.value)
+        current_metrics = db_mock.get_sample_current_metrics(
+            model_quality=db_mock.current_regression_model_quality_dict
+        )
+        model = db_mock.get_sample_model(model_type=ModelType.REGRESSION)
+        self.model_service.get_model_by_uuid = MagicMock(return_value=model)
+        self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
+            return_value=current_dataset
+        )
+        self.current_metrics_dao.get_current_metrics_by_model_uuid = MagicMock(
+            return_value=current_metrics
+        )
+        res = self.metrics_service.get_current_model_quality_by_model_by_uuid(
+            model_uuid, current_dataset.uuid
+        )
+        self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid, current_dataset.uuid
+        )
+        self.current_metrics_dao.get_current_metrics_by_model_uuid.assert_called_once_with(
+            model_uuid, current_dataset.uuid
+        )
+
+        assert res == ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.CURRENT,
+            model_type=model.model_type,
+            job_status=current_dataset.status,
+            model_quality_data=current_metrics.model_quality,
+        )
+
 
 model_uuid = db_mock.MODEL_UUID
 current_uuid = db_mock.CURRENT_UUID

@@ -13,6 +13,7 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import MulticlassChartMetrics from './class-chart-metrics';
 import ClassTableMetrics from './class-table-metrics';
 import SearchChart from './search-chart';
@@ -20,50 +21,57 @@ import SearchChart from './search-chart';
 const initialValues = { __metadata: { selectedCharts: [] } };
 
 function MultiClassificationModelQualityMetrics() {
-  const { data, isSuccess, isLoading } = useGetCurrentModelQualityQueryWithPolling();
-  const { isSuccess: referenceIsSuccess, IsLoading: referenceIsLoading } = useGetReferenceModelQualityQueryWithPolling();
-
   const mode = useGetModeParam();
 
-  if (!isSuccess || !referenceIsSuccess) {
-    return false;
-  }
+  const { data, isLoading: isCurrentLoading, isError: isCurrentError } = useGetCurrentModelQualityQueryWithPolling();
+  const { isLoading: isReferenceLoading, isError: isReferenceError } = useGetReferenceModelQualityQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
+
+  const isLoading = isCurrentLoading || isReferenceLoading;
+  const isError = isCurrentError || isReferenceError;
+
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
+
+  if (isError) {
+    return <SomethingWentWrong />;
+  }
+
+  if (!data) {
+    return <JobStatus jobStatus={JOB_STATUS.MISSING_CURRENT} />;
+  }
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
     if (mode === MODE.CHART) {
       return (
-        <Spinner fullHeight fullWidth spinning={isLoading || referenceIsLoading}>
-          <div className="flex flex-row gap-4 py-4">
-            <div className="flex flex-col w-full gap-4 ">
-              <FormbitContextProvider initialValues={initialValues}>
+        <div className="flex flex-row gap-4 py-4">
+          <div className="flex flex-col w-full gap-4 ">
+            <FormbitContextProvider initialValues={initialValues}>
 
-                <SearchChart />
+              <SearchChart />
 
-                <MulticlassChartMetrics />
+              <MulticlassChartMetrics />
 
-              </FormbitContextProvider>
-            </div>
-
-            <div className="flex ">
-              <FaCode />
-            </div>
+            </FormbitContextProvider>
           </div>
 
-        </Spinner>
+          <div className="flex ">
+            <FaCode />
+          </div>
+        </div>
+
       );
     }
 
     return (
-      <Spinner fullHeight fullWidth spinning={isLoading || referenceIsLoading}>
-        <div className="flex flex-col gap-4 py-4">
+      <div className="flex flex-col gap-4 py-4">
 
-          <GlobalMetrics />
+        <GlobalMetrics />
 
-          <ClassTableMetrics />
-        </div>
-      </Spinner>
+        <ClassTableMetrics />
+      </div>
     );
   }
 
