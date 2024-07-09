@@ -147,20 +147,7 @@ const heatmapVisualMapOptions = (dataMax, colors, itemHeight) => {
 };
 
 const colorList = {
-  color: [
-    '#3695D9',
-    '#64A4DD',
-    '#85B2E1',
-    '#A2C2E5',
-    '#BDD1E9',
-    '#D7E1ED',
-    '#F1F1F1',
-    '#E3D7F1',
-    '#D4BEF2',
-    '#C4A5F2',
-    '#B28DF2',
-    '#9F74F1',
-    '#8A5BF0'],
+  color: ['#00BFFF', '#1E90FF', '#00CED1', '#20B2AA', '#4169E1', '#6A5ACD', '#8A2BE2', '#9400D3', '#BA55D3'],
 };
 
 const tooltipOptions = () => ({
