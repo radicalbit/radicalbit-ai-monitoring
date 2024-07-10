@@ -39,7 +39,7 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="flex flex-col gap-4 basis-1/5">
+      <div className="flex flex-col gap-4 basis-1/6">
         <DataPointDistributionCounter />
 
         <ClassCounter />
