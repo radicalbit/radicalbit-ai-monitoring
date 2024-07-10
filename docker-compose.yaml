@@ -120,16 +120,9 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
       /usr/bin/mc mb myminio/test-bucket;
-      if [ \"$INIT_DATA\" = \"true\" ]; then
-              /usr/bin/mc mirror /data/files myminio/test-bucket;
-      fi
       /usr/bin/mc policy set public myminio/test-bucket;
       exit 0;
       "
-    environment:
-      INIT_DATA: ${INIT_DATA:-false}
-    volumes:
-      - ./init-data/files:/data/files
 
   init-data:
     profiles: [ "init-data" ]
@@ -148,6 +141,21 @@ services:
       sleep 10;
       PGPASSWORD=postgres psql -h postgres -U postgres -d radicalbit -f /docker-entrypoint-initdb.d/init_db.sql;
       "
+
+  minio-mirror:
+    profiles: [ "init-data" ]
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
+      /usr/bin/mc mirror /data/files myminio/test-bucket;
+      exit 0;
+      "
+    volumes:
+      - ./init-data/files:/data/files
 
   k3s:
     image: rancher/k3s:v1.30.1-k3s1
