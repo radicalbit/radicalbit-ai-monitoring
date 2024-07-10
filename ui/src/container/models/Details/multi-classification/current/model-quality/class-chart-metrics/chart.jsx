@@ -6,6 +6,8 @@ import {
   MarkLineComponent,
   MarkPointComponent,
   TooltipComponent,
+  TitleComponent,
+  LegendScrollComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/lib/echarts';
 import {
@@ -19,8 +21,10 @@ echarts.use([
   MarkPointComponent,
   MarkLineComponent,
   LegendComponent,
+  LegendScrollComponent,
   LineChartEchart,
   TooltipComponent,
+  TitleComponent,
 ]);
 
 function LineChart({

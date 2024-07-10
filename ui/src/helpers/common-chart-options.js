@@ -85,7 +85,7 @@ const yAxisCategoryType = (yAxisData) => {
       axisLine: { show: false },
       splitLine: { show: false },
       axisLabel: {
-        fontSize: 10,
+        fontSize: 9,
       },
     },
   };
@@ -146,9 +146,20 @@ const heatmapVisualMapOptions = (dataMax, colors, itemHeight) => {
   return options;
 };
 
+const colorList = {
+  color: ['#00BFFF', '#1E90FF', '#00CED1', '#20B2AA', '#4169E1', '#6A5ACD', '#8A2BE2', '#9400D3', '#BA55D3'],
+};
+
 const tooltipOptions = () => ({
   tooltip: {
     trigger: 'axis',
+    crosshairs: true,
+    axisPointer: {
+      type: 'cross',
+      label: {
+        show: true,
+      },
+    },
   },
 });
 
@@ -169,7 +180,7 @@ const lineSeriesOptions = (title, color, data) => {
   const options = {
     name: title,
     type: 'line',
-    lineStyle: { width: 2 },
+    lineStyle: { width: 2.2 },
     symbol: 'none',
   };
 
@@ -191,12 +202,6 @@ const heatmapSeriesOptions = (data) => {
     label: {
       show: true,
     },
-    emphasis: {
-      itemStyle: {
-        shadowBlur: 10,
-        shadowColor: 'rgba(0, 0, 0, 0.5)',
-      },
-    },
   };
 
   if (data) {
@@ -209,8 +214,13 @@ const heatmapSeriesOptions = (data) => {
 const barChartCommonOptions = () => ({
   emphasis: { disabled: true },
   barCategoryGap: '21%',
+  barGap: '0',
   overflow: 'truncate',
   lineOverflow: 'truncate',
+  itemStyle: {
+    borderWidth: 1,
+    borderColor: 'rgba(201, 25, 25, 1)',
+  },
 });
 
 const heatmapCommonOptions = () => ({
@@ -293,7 +303,7 @@ const CHART_COLOR = {
   REFERENCE_LIGHT: '#DBDBDB',
   REFERENCE_DARK: '#667',
   CURRENT: '#3695d9',
-  CURRENT_LIGHT: '#C8E4F9',
+  CURRENT_LIGHT: '#3795d990',
   CURRENT_DARK: '#0A71BB',
   WHITE: '#FFFFFF',
   LINE_CHART_COLOR: '#73B2E0',
@@ -319,6 +329,7 @@ export {
   commonOptions,
   visualMapOptions,
   tooltipOptions,
+  colorList,
   OPTIONS_TYPE,
   CHART_COLOR,
   CHART_TYPE,

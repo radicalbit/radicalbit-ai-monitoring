@@ -25,7 +25,7 @@ function SearchFeatureList() {
             mode="multiple"
             onChange={handleOnSelect}
             options={options}
-            placeholder={<FontAwesomeIcon icon={faSearch} />}
+            placeholder={`${<FontAwesomeIcon icon={faSearch} />} Please select one or more of the available features.`}
             style={{ width: '100%' }}
           />
         </FormField>

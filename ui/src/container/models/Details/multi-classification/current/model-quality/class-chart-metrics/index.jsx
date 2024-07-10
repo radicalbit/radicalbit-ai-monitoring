@@ -22,7 +22,7 @@ function MulticlassChartMetrics() {
 function RecallChart() {
   const items = useGetDataCharts();
 
-  const cappedSeries = items.slice(0, 13);
+  const cappedSeries = items;
   const currentSeries = cappedSeries.map(({ className, currentData }) => ({ className, data: currentData.recall }));
   const referenceSeries = cappedSeries.map(({ className, referenceData, currentData }) => ({
     className,

@@ -17,7 +17,7 @@ function Header() {
   return (
     <SectionTitle
       subtitle={(
-        <>
+        <p>
           Upload your CSV file containing a representative sample of the data you want to monitor.
 
           <br />
@@ -25,9 +25,8 @@ function Header() {
           The uploaded file will be used to automatically infer variables names, data types,
           <br />
           and construct the corresponding schema
-        </>
+        </p>
       )}
-      title="Upload CSV file"
       titleWeight="normal"
     />
   );
@@ -120,7 +119,7 @@ function UploadButton() {
           prefix={<FontAwesomeIcon icon={faUpload} />}
           type="primary"
         >
-          Import CSV
+          Upload CSV
         </Button>
       </Upload>
     </div>
@@ -166,13 +165,6 @@ function Recap() {
           <label>
             <strong>File Size Limit: </strong>
             2MB ( if your file is bigger please use our SDK )
-          </label>
-        </li>
-
-        <li>
-          <label>
-            <strong>Data Row Limit: </strong>
-            100 rows max
           </label>
         </li>
       </ul>

@@ -134,7 +134,7 @@ function AccuracyCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-36 shadow"
       size="small"
       type="primary"
     />
@@ -159,7 +159,7 @@ function F1ScoreCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-36 shadow"
       size="small"
       type="primary"
     />
@@ -183,7 +183,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-36 shadow"
       size="small"
       type="secondary"
     />
@@ -205,10 +205,10 @@ function FaCode() {
   };
 
   if (mode === MODE.CHART) {
-    return <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} />;
+    return <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} size="lg" />;
   }
 
-  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} />;
+  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="lg" />;
 }
 
 const useGetModeParam = () => {
