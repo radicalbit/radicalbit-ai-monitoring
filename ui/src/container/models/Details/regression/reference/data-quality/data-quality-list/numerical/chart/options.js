@@ -13,12 +13,14 @@ export default function chartOptions(dataset, color) {
     ...commonChartOptions.gridOptions(CHART_TYPE.BAR),
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.CATEGORY, xAxisData),
     ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
+    ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
     series: [
       commonChartOptions.seriesOptions(CHART_TYPE.BAR, 'reference', color, dataset.referenceValues),
     ],
   };
 
   options.xAxis.axisLabel.rotate = 20;
+  options.barCategoryGap = '0';
 
   return options;
 }

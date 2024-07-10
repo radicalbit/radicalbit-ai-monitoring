@@ -146,10 +146,6 @@ const heatmapVisualMapOptions = (dataMax, colors, itemHeight) => {
   return options;
 };
 
-const colorList = {
-  color: ['#00BFFF', '#1E90FF', '#00CED1', '#20B2AA', '#4169E1', '#6A5ACD', '#8A2BE2', '#9400D3', '#BA55D3'],
-};
-
 const tooltipOptions = () => ({
   tooltip: {
     trigger: 'axis',
@@ -215,8 +211,6 @@ const barChartCommonOptions = () => ({
   emphasis: { disabled: true },
   barCategoryGap: '21%',
   barGap: '0',
-  overflow: 'truncate',
-  lineOverflow: 'truncate',
   itemStyle: {
     borderWidth: 1,
     borderColor: 'rgba(201, 25, 25, 1)',
@@ -319,6 +313,20 @@ const CHART_TYPE = {
   BAR: 'bar',
   HEATMAP: 'heatmap',
   LINE: 'line',
+};
+
+const colorList = {
+  color: [
+    '#00BFFF',
+    '#1E90FF',
+    '#00CED1',
+    '#20B2AA',
+    '#4169E1',
+    '#6A5ACD',
+    '#8A2BE2',
+    '#9400D3',
+    '#BA55D3',
+  ],
 };
 
 export {
