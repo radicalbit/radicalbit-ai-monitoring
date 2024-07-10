@@ -2,7 +2,7 @@ import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-opt
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function chartOptions(title, referenceDataset, currentDataset) {
-  const xAxisLabel = currentDataset?.map(({ name }) => name);
+  const xAxisLabel = currentDataset.map(({ name }) => name);
 
   const referenceData = referenceDataset.map(({ count, percentage }) => ({ percentage, count, value: count }));
   const currentData = currentDataset.map(({ count, percentage }) => ({ percentage, count, value: count }));
@@ -26,7 +26,7 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
     ],
   };
 
-  if (currentData.length <= 30 || referenceData.length >= 30) {
+  if (currentData.length >= 20 || referenceData.length >= 20) {
     options.dataZoom = [
       {
         show: true,

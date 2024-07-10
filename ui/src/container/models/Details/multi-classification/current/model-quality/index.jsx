@@ -134,7 +134,7 @@ function AccuracyCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-36 shadow"
       size="small"
       type="primary"
     />
@@ -159,7 +159,7 @@ function F1ScoreCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-36 shadow"
       size="small"
       type="primary"
     />
@@ -183,7 +183,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-36 shadow"
       size="small"
       type="secondary"
     />

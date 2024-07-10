@@ -21,7 +21,8 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
 
       };
       referenceOption.lineStyle = {
-        width: 2, type: 'dotted',
+        width: 2,
+        type: 'dotted',
       };
       return referenceOption;
     });
@@ -38,13 +39,10 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
 
     tooltip: {
       trigger: 'axis',
-      crosshairs: true,
-      axisPointer: {
-        type: 'cross',
-        label: {
-          show: true,
-        },
-      },
+    },
+
+    emphasis: {
+      focus: 'series',
     },
     legend: {
       right: 0,
@@ -65,13 +63,14 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
     },
 
     title: {
-      text: '... Reference ',
+      text: '••• Reference',
       textStyle: {
         fontSize: 10,
         fontWeight: '300',
       },
       right: 0,
     },
+
   };
 
   options.grid.right = 140;
