@@ -17,6 +17,7 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
           show: true,
           color: CHART_COLOR.REFERENCE,
           formatter: ({ value }) => `${value[1]}`,
+          backgroundColor: '#fff',
         },
 
       };
