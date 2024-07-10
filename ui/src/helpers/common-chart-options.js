@@ -168,6 +168,33 @@ const dataZoomOptions = () => ([
   },
 ]);
 
+const legendOptions = (data) => {
+  const options = {
+    legend: {
+      right: 0,
+      top: 16,
+      bottom: 0,
+      orient: 'vertical',
+      type: 'scroll',
+      scrollDataIndex: 'scroll',
+      pageIconSize: 8,
+      pageTextStyle: {
+        fontSize: 8,
+      },
+      textStyle: {
+        fontSize: 10,
+        fontWeight: '300',
+      },
+    },
+  };
+
+  if (data) {
+    options.legend.data = data;
+  }
+
+  return options;
+};
+
 const barSeriesOptions = (title, color, data) => {
   const options = {
     title,
@@ -347,6 +374,7 @@ export {
   visualMapOptions,
   tooltipOptions,
   dataZoomOptions,
+  legendOptions,
   colorList,
   OPTIONS_TYPE,
   CHART_COLOR,

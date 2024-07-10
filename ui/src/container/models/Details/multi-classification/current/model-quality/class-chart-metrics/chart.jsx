@@ -28,7 +28,7 @@ echarts.use([
 ]);
 
 function LineChart({
-  title, color, currentData, referenceData = [],
+  title, currentData, referenceData = [],
 }) {
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
@@ -48,7 +48,7 @@ function LineChart({
           echarts={echarts}
           notMerge
           onChartReady={handleOnChartReady}
-          option={lineChartOptions(color, currentData, referenceData)}
+          option={lineChartOptions(currentData, referenceData)}
           style={{ height: '24rem' }}
         />
       )}
