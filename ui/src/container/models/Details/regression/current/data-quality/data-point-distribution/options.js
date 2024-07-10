@@ -13,6 +13,7 @@ export default function chartOptions(dataset, referenceColor, currentColor) {
     ...commonChartOptions.gridOptions(CHART_TYPE.BAR),
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.CATEGORY, xAxisData),
     ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
+    ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
     series: [
       commonChartOptions.seriesOptions(CHART_TYPE.BAR, 'reference', referenceColor, dataset.referenceValues),
       commonChartOptions.seriesOptions(CHART_TYPE.BAR, 'current', currentColor, dataset.currentValues),
@@ -20,6 +21,7 @@ export default function chartOptions(dataset, referenceColor, currentColor) {
   };
 
   options.xAxis.axisLabel.rotate = 20;
+  options.barCategoryGap = '0';
 
   return options;
 }

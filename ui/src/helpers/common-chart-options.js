@@ -159,6 +159,15 @@ const tooltipOptions = () => ({
   },
 });
 
+const dataZoomOptions = () => ([
+  {
+    show: true,
+  },
+  {
+    type: 'inside',
+  },
+]);
+
 const barSeriesOptions = (title, color, data) => {
   const options = {
     title,
@@ -337,6 +346,7 @@ export {
   commonOptions,
   visualMapOptions,
   tooltipOptions,
+  dataZoomOptions,
   colorList,
   OPTIONS_TYPE,
   CHART_COLOR,
