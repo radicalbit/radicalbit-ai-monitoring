@@ -22,7 +22,7 @@ import columns from './columns';
 
 const { useGetReferenceModelQualityQuery } = modelsApiSlice;
 
-function MultiClassificationModelQualityMetrics() {
+function RegressionModelQualityMetrics() {
   const { data, isLoading, isError } = useGetCurrentModelQualityQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
@@ -164,4 +164,4 @@ function PerformanceBoard() {
   );
 }
 
-export default memo(MultiClassificationModelQualityMetrics);
+export default memo(RegressionModelQualityMetrics);
