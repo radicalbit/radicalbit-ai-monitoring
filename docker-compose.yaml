@@ -143,19 +143,15 @@ services:
       "
 
   minio-mirror:
-    profiles: [ "init-data" ]
+    profiles: ["init-data"]
     image: minio/mc
     depends_on:
       minio:
         condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
-      /usr/bin/mc mirror /data/files myminio/test-bucket;
-      exit 0;
-      "
+    entrypoint: /bin/sh /scripts/mirror_files.sh
     volumes:
-      - ./init-data/files:/data/files
+      - ./init-data/mirror_files.sh:/scripts/mirror_files.sh
+      - ./docs/quickstarts/data:/data
 
   k3s:
     image: rancher/k3s:v1.30.1-k3s1
