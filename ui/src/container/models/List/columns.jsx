@@ -11,7 +11,7 @@ export const getColumns = (
   columnFactory({
     title: 'S',
     key: 'name',
-    width: '2rem',
+    width: '3rem',
     align: 'center',
     render: ({ latestCurrentJobStatus, latestReferenceJobStatus }) => {
       const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;

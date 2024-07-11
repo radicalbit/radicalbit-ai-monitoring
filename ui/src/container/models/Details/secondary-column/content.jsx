@@ -1,19 +1,14 @@
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import JobStatusPin from '@Components/JobStatus/job-status-pin';
+import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
+import { JOB_STATUS } from '@Src/constants';
+import { useGetModelQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { selectors as layoutSelectors } from '@State/layout';
 import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   useNavigate, useParams, useSearchParams,
 } from 'react-router-dom';
-import { selectors as layoutSelectors } from '@State/layout';
-import { useSelector } from 'react-redux';
-import JobStatusPin from '@Components/JobStatus/job-status-pin';
-import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
-import { NamespaceEnum } from '@Src/constants';
-import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
-
-const { useGetModelsQuery } = modelsApiSlice;
-
-const { selectQueryParamsSelector } = contextConfigurationSelectors;
 
 const commonChildrenMenu = [
   { label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW },
@@ -30,23 +25,24 @@ export default function SecondaryColumnModelsContent() {
 
   const isSecondaryColumnCollapsed = useSelector(selectHasSecondaryColumnCollapsed);
 
-  const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.MODELS));
-
-  const { data } = useGetModelsQuery({ queryParams });
+  const { data } = useGetModelQueryWithPolling();
   const modelList = data?.items ?? [];
-  const modelListMenuItem = modelList.map(({ uuid: modelUUID, name }) => (
-    {
+  const modelListMenuItem = modelList.map(({
+    uuid: modelUUID, name, latestReferenceJobStatus, latestCurrentJobStatus,
+  }) => {
+    const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;
+    return {
       label: (
         <div className="flex gap-2 items-center">
           <Truncate className="w-10/12">{name}</Truncate>
 
-          <JobStatusPin modelUUID={modelUUID} />
+          <JobStatusPin jobStatus={jobStatus} />
         </div>),
       key: modelUUID,
       children: commonChildrenMenu,
       className: uuid === modelUUID ? Menu.HIDE_EXPAND_ICON : '',
-    }
-  ));
+    };
+  });
 
   const [openKeys, setOpenKeys] = useState([uuid]);
   const rootSubmenuKeys = modelListMenuItem.map(({ key }) => (key));
