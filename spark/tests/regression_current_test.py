@@ -227,6 +227,23 @@ def test_model_quality(spark_fixture, current_dataset, reference_dataset):
     )
 
 
+def test_model_quality_test_fe(spark_fixture, current_dataset_fe, reference_dataset_fe):
+    metrics_service = CurrentMetricsRegressionService(
+        spark_session=spark_fixture,
+        current=current_dataset_fe,
+        reference=reference_dataset_fe,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    assert not deepdiff.DeepDiff(
+        model_quality,
+        res.test_model_quality_test_fe_res,
+        ignore_order=True,
+        ignore_type_subclasses=True,
+    )
+
+
 def test_drift_regression(spark_fixture, current_dataset, reference_dataset):
     metrics_service = CurrentMetricsRegressionService(
         spark_session=spark_fixture,
