@@ -3,7 +3,7 @@ from math import inf
 
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
-from pyspark.sql.types import *
+from pyspark.sql.types import ArrayType, FloatType
 from pyspark.ml.feature import StandardScaler, VectorAssembler, Bucketizer
 from pyspark.ml.stat import KolmogorovSmirnovTest
 
