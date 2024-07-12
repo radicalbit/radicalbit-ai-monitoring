@@ -93,8 +93,8 @@ def main(
             complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
-            complete_record["MODEL_QUALITY"] = model_quality.model_dump_json(
-                serialize_as_any=True
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
             )
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
