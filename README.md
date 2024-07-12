@@ -50,6 +50,12 @@ If the UI is needed:
 docker compose --profile ui up
 ```
 
+In order to initialize the platform with demo models you can run:
+
+```bash
+docker compose --profile ui --profile init-data up
+```
+
 Once all containers are up & running, you can go to [http://localhost:5173](http://127.0.0.1:5173) to play with the app.
 
 ### Interacting with K3s cluster
