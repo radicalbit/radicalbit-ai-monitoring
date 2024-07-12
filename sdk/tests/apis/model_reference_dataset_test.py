@@ -349,6 +349,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         mape = 35.19
         rmse = 202.23
         adj_r2 = 0.91
+        p_value = 0.2
+        statistic = 0.4
+        correlation_coefficient = 0.2
         model_reference_dataset = ModelReferenceDataset(
             base_url,
             model_id,
@@ -375,7 +378,21 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "variance": {variance},
                         "mape": {mape},
                         "rmse": {rmse},
-                        "adjR2": {adj_r2}
+                        "adjR2": {adj_r2},
+                        "residuals": {{
+                            "ks": {{
+                                "p_value": {p_value},
+                                "statistic": {statistic}
+                            }},
+                            "histogram": {{
+                                "values": [1, 2, 3],
+                                "buckets": [-3.2, -1, 2.2]
+                            }},
+                            "correlationCoefficient": {correlation_coefficient},
+                            "standardizedResiduals": [0.02, 0.03],
+                            "targets": [1, 2.2, 3],
+                            "predictions": [1.3, 2, 4.5]
+                        }}
                     }}
                 }}""",
         )
@@ -390,6 +407,9 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.mape == mape
         assert metrics.rmse == rmse
         assert metrics.adj_r2 == adj_r2
+        assert metrics.residuals.correlation_coefficient == correlation_coefficient
+        assert metrics.residuals.ks.p_value == p_value
+        assert metrics.residuals.ks.statistic == statistic
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
