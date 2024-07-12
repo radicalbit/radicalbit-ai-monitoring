@@ -16,11 +16,18 @@ class ReferenceMetricsRegressionService:
         self.reference = reference
 
     def calculate_model_quality(self) -> ModelQualityRegression:
-        return ModelQualityRegressionCalculator.numerical_metrics(
+        metrics = ModelQualityRegressionCalculator.numerical_metrics(
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
+        ).dict()
+
+        metrics["residuals"] = ModelQualityRegressionCalculator.residual_metrics(
+            model=self.reference.model,
+            dataframe=self.reference.reference,
         )
+
+        return metrics
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.numerical_metrics(

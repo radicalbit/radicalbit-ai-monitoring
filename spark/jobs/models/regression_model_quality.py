@@ -1,5 +1,6 @@
-from pydantic import BaseModel
+from typing import List, Optional
 
+from pydantic import BaseModel, ConfigDict
 from enum import Enum
 
 
@@ -21,3 +22,10 @@ class ModelQualityRegression(BaseModel):
     r2: float
     adj_r2: float
     variance: float
+
+
+class Histogram(BaseModel):
+    buckets: List[float]
+    values: Optional[List[int]] = None
+
+    model_config = ConfigDict(ser_json_inf_nan="null")
