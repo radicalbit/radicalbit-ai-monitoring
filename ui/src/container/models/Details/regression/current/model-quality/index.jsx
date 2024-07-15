@@ -9,6 +9,8 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 import { useParams } from 'react-router';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
+import ResidualBucketChart from '@Components/charts/residual-bucket-chart';
 import {
   AdjR2Chart,
   MaeChart,
@@ -45,6 +47,8 @@ function RegressionModelQualityMetrics() {
         <div className="flex flex-col gap-4 py-4">
           <PerformanceBoard />
 
+          <BucketChart />
+
           <MseChart />
 
           <RmseChart />
@@ -77,7 +81,7 @@ function PerformanceBoard() {
   const referenceMae = referenceData?.modelQuality?.mae;
   const referenceMape = referenceData?.modelQuality?.mape;
   const referenceR2 = referenceData?.modelQuality?.r2;
-  const referenceAdjR2 = referenceData?.modelQuality?.ajdR2;
+  const referenceAdjR2 = referenceData?.modelQuality?.adjR2;
   const referenceVariance = referenceData?.modelQuality?.variance;
 
   const leftTableData = currentData ? [
@@ -115,7 +119,7 @@ function PerformanceBoard() {
     {
       label: MODEL_QUALITY_FIELD.ADJ_R2,
       referenceValue: referenceAdjR2,
-      currentValue: currentData.modelQuality.globalMetrics.ajdR2,
+      currentValue: currentData.modelQuality.globalMetrics.adjR2,
     },
     {
       label: MODEL_QUALITY_FIELD.VARIANCE,
@@ -160,6 +164,28 @@ function PerformanceBoard() {
       modifier="shadow"
       size="small"
       type="primary-light"
+    />
+  );
+}
+
+function BucketChart() {
+  const { data, isLoading, isSuccess } = useGetCurrentModelQualityQueryWithPolling();
+
+  const dataset = data?.modelQuality.globalMetrics.residuals.histogram;
+
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
+
+  if (!isSuccess) {
+    return false;
+  }
+
+  return (
+    <Board
+      header={(<SectionTitle size="small" title="Residuals" />)}
+      main={(<ResidualBucketChart color={CHART_COLOR.CURRENT} dataset={dataset} />)}
+      size="small"
     />
   );
 }
