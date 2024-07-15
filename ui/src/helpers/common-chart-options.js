@@ -42,7 +42,7 @@ const xAxisTimeType = (xAxisData) => {
   return options;
 };
 
-const xAxisValueType = (xAxisData) => {
+const xAxisValueType = (xAxisData, xAxisName) => {
   const options = {
     xAxis: {
       type: 'value',
@@ -53,13 +53,20 @@ const xAxisValueType = (xAxisData) => {
       },
     },
   };
+
   if (xAxisData) {
     options.xAxis.data = xAxisData;
+  }
+
+  if (xAxisName) {
+    options.xAxis.name = xAxisName;
+    options.xAxis.nameGap = 25;
+    options.xAxis.nameLocation = 'middle';
   }
   return options;
 };
 
-const yAxisValueType = (yAxisData) => {
+const yAxisValueType = (yAxisData, yAxisName) => {
   const options = {
     yAxis: {
       type: 'value',
@@ -72,6 +79,12 @@ const yAxisValueType = (yAxisData) => {
   };
   if (yAxisData) {
     options.yAxis.data = yAxisData;
+  }
+
+  if (yAxisName) {
+    options.yAxis.name = yAxisName;
+    options.yAxis.nameGap = 25;
+    options.yAxis.nameLocation = 'middle';
   }
   return options;
 };
@@ -121,6 +134,16 @@ const heatmapGridOptions = () => ({
     top: 0,
     left: 64,
     right: 60,
+  },
+});
+
+const scatterGridOptions = () => ({
+  grid: {
+    left: 20,
+    right: 0,
+    bottom: 50,
+    top: 10,
+    containLabel: true,
   },
 });
 
@@ -243,6 +266,23 @@ const heatmapSeriesOptions = (data) => {
   return options;
 };
 
+const scatterSeriesOptions = (data, color) => {
+  const options = {
+    name: '',
+    type: 'scatter',
+    emphasis: {
+      focus: 'series',
+    },
+    color,
+  };
+
+  if (data) {
+    options.data = data;
+  }
+
+  return options;
+};
+
 const barChartCommonOptions = () => ({
   emphasis: { disabled: true },
   barCategoryGap: '21%',
@@ -258,10 +298,10 @@ const heatmapCommonOptions = () => ({
 });
 
 // Object to simplify usage of common options
-const yAxisOptions = (optionType, data) => {
+const yAxisOptions = (optionType, data, yAxisName) => {
   switch (optionType) {
     case OPTIONS_TYPE.VALUE:
-      return yAxisValueType(data);
+      return yAxisValueType(data, yAxisName);
     case OPTIONS_TYPE.CATEGORY:
       return yAxisCategoryType(data);
     default:
@@ -269,10 +309,10 @@ const yAxisOptions = (optionType, data) => {
   }
 };
 
-const xAxisOptions = (optionType, data) => {
+const xAxisOptions = (optionType, data, xAxisName) => {
   switch (optionType) {
     case OPTIONS_TYPE.VALUE:
-      return xAxisValueType(data);
+      return xAxisValueType(data, xAxisName);
     case OPTIONS_TYPE.CATEGORY:
       return xAxisCategoryType(data);
     case OPTIONS_TYPE.TIME:
@@ -290,6 +330,8 @@ const gridOptions = (chartType) => {
       return lineGridOptions();
     case CHART_TYPE.HEATMAP:
       return heatmapGridOptions();
+    case CHART_TYPE.SCATTER:
+      return scatterGridOptions();
     default:
       return false;
   }
@@ -302,7 +344,9 @@ const seriesOptions = (chartType, title, color, data) => {
     case CHART_TYPE.LINE:
       return lineSeriesOptions(title, color, data);
     case CHART_TYPE.HEATMAP:
-      return heatmapSeriesOptions(title, color, data);
+      return heatmapSeriesOptions(data);
+    case CHART_TYPE.SCATTER:
+      return scatterSeriesOptions(data, color);
     default:
       return false;
   }
@@ -349,6 +393,7 @@ const CHART_TYPE = {
   BAR: 'bar',
   HEATMAP: 'heatmap',
   LINE: 'line',
+  SCATTER: 'scatter',
 };
 
 const colorList = {
