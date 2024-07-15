@@ -4,26 +4,26 @@ import { JOB_STATUS } from '@Src/constants';
 import { useGetReferenceDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { Tabs } from '@radicalbit/radicalbit-design-system';
 import { useSearchParams } from 'react-router-dom';
-import MultiClassificationDataQualityMetrics from './data-quality';
+import RegressionDataQualityMetrics from './data-quality';
 import Imports from './imports';
-import MultiClassificationModelQualityMetrics from './model-quality';
-import MultiClassificationDataDriftMetrics from './data-drift';
+import RegressionModelQualityMetrics from './model-quality';
+import RegressionDataDriftMetrics from './data-drift';
 
 const tabs = [
   {
     label: METRICS_TABS.DATA_QUALITIY,
     key: METRICS_TABS.DATA_QUALITIY,
-    children: <MultiClassificationDataQualityMetrics />,
+    children: <RegressionDataQualityMetrics />,
   },
   {
     label: METRICS_TABS.MODEL_QUALITY,
     key: METRICS_TABS.MODEL_QUALITY,
-    children: <MultiClassificationModelQualityMetrics />,
+    children: <RegressionModelQualityMetrics />,
   },
   {
     label: METRICS_TABS.DATA_DRIFT,
     key: METRICS_TABS.DATA_DRIFT,
-    children: <MultiClassificationDataDriftMetrics />,
+    children: <RegressionDataDriftMetrics />,
   },
   {
     label: METRICS_TABS.IMPORT,

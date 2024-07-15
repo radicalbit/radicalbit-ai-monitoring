@@ -125,14 +125,25 @@ class CurrentMultiClassificationModelQuality(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class RegressionMetricsBase(BaseModel):
-    r2: Optional[float] = None
-    mae: Optional[float] = None
-    mse: Optional[float] = None
-    variance: Optional[float] = None
-    mape: Optional[float] = None
-    rmse: Optional[float] = None
-    adj_r2: Optional[float] = None
+class KsMetrics(BaseModel):
+    p_value: Optional[float] = None
+    statistic: Optional[float] = None
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class Histogram(BaseModel):
+    buckets: List[float]
+    values: Optional[List[int]] = None
+
+
+class ResidualsMetrics(BaseModel):
+    ks: KsMetrics
+    correlation_coefficient: Optional[float] = None
+    histogram: Histogram
+    standardized_residuals: List[float]
+    predictions: List[float]
+    targets: List[float]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
@@ -145,6 +156,7 @@ class BaseRegressionMetrics(BaseModel):
     mape: Optional[float] = None
     rmse: Optional[float] = None
     adj_r2: Optional[float] = None
+    residuals: ResidualsMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
