@@ -107,6 +107,8 @@ export const modelsApiSlice = apiService.injectEndpoints({
         if (result) {
           return [
             { type: API_TAGS.REFERENCE_IMPORT, id: modelUUID },
+            { type: API_TAGS.MODEL, id: modelUUID },
+            { type: API_TAGS.MODELS },
           ];
         }
         return [];
@@ -178,6 +180,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
           return [
             { type: API_TAGS.CURRENT_IMPORT, id: modelUUID },
             { type: API_TAGS.MODEL, id: modelUUID },
+            { type: API_TAGS.MODELS },
           ];
         }
         return [];
