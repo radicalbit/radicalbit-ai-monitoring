@@ -2,11 +2,13 @@ import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-opt
 import { numberFormatter } from '@Src/constants';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
-export default function lineChartOptions(color, currentDataset, referenceDataset) {
+export default function lineChartOptions(currentDataset, referenceDataset) {
   let dataSeries = currentDataset.map((el) => {
     const currentSeries = el.data.map(({ timestamp, value }) => [timestamp, numberFormatter().format(value)]);
     return commonChartOptions.seriesOptions(CHART_TYPE.LINE, el.className, null, currentSeries);
   });
+
+  const legendLabel = dataSeries.map(({ name }) => name);
 
   if (referenceDataset) {
     const series = referenceDataset.map((el) => {
@@ -31,38 +33,13 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
   }
 
   const options = {
-    // color: [color],
     ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.TIME),
     ...commonChartOptions.gridOptions(CHART_TYPE.LINE),
     ...commonChartOptions.colorList,
-    series: dataSeries,
-
-    tooltip: {
-      trigger: 'axis',
-    },
-
-    emphasis: {
-      focus: 'series',
-    },
-    legend: {
-      right: 0,
-      top: 16,
-      bottom: 0,
-      orient: 'vertical',
-      type: 'scroll',
-      scrollDataIndex: 'scroll',
-      pageIconSize: 8,
-      pageTextStyle: {
-        fontSize: 8,
-      },
-      data: dataSeries.map(({ name }) => name),
-      textStyle: {
-        fontSize: 10,
-        fontWeight: '300',
-      },
-    },
-
+    ...commonChartOptions.legendOptions(legendLabel),
+    tooltip: { trigger: 'axis' },
+    emphasis: { focus: 'series' },
     title: {
       text: '••• Reference',
       textStyle: {
@@ -72,6 +49,7 @@ export default function lineChartOptions(color, currentDataset, referenceDataset
       right: 0,
     },
 
+    series: dataSeries,
   };
 
   options.grid.right = 140;
