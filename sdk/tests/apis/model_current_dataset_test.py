@@ -958,6 +958,9 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         mape = 35.19
         rmse = 202.23
         adj_r2 = 0.91
+        p_value = 0.2
+        statistic = 0.4
+        correlation_coefficient = 0.2
         model_current_dataset = ModelCurrentDataset(
             base_url,
             model_id,
@@ -986,7 +989,21 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             "variance": {variance},
                             "mape": {mape},
                             "rmse": {rmse},
-                            "adjR2": {adj_r2}
+                            "adjR2": {adj_r2},
+                            "residuals": {{
+                                "ks": {{
+                                    "p_value": {p_value},
+                                    "statistic": {statistic}
+                                }},
+                                "histogram": {{
+                                    "values": [1, 2, 3],
+                                    "buckets": [-3.2, -1, 2.2]
+                                }},
+                                "correlationCoefficient": {correlation_coefficient},
+                                "standardizedResiduals": [0.02, 0.03],
+                                "targets": [1, 2.2, 3],
+                                "predictions": [1.3, 2, 4.5]
+                            }}
                         }},
                         "grouped_metrics": {{
                             "r2": [
@@ -1032,6 +1049,12 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert metrics.global_metrics.mape == mape
         assert metrics.global_metrics.rmse == rmse
         assert metrics.global_metrics.adj_r2 == adj_r2
+        assert (
+            metrics.global_metrics.residuals.correlation_coefficient
+            == correlation_coefficient
+        )
+        assert metrics.global_metrics.residuals.ks.p_value == p_value
+        assert metrics.global_metrics.residuals.ks.statistic == statistic
         assert metrics.grouped_metrics.r2[0].value == r2
         assert metrics.grouped_metrics.mae[0].value == mae
         assert metrics.grouped_metrics.mse[0].value == mse
