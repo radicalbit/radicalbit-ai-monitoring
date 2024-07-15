@@ -5,6 +5,7 @@ import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import { Spinner } from '@radicalbit/radicalbit-design-system';
 
+import { memo } from 'react';
 import DataDriftList from './list';
 import DataDriftHeader from './header';
 import SearchFeatureList from './search-filter';
@@ -17,7 +18,7 @@ const initialValues = {
   },
 };
 
-function MultiClassificationDataDriftMetrics() {
+function RegressionDataDriftMetrics() {
   const { data, isError, isLoading } = useGetCurrentDriftQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
@@ -51,4 +52,4 @@ function MultiClassificationDataDriftMetrics() {
   return (<JobStatus jobStatus={jobStatus} />);
 }
 
-export default MultiClassificationDataDriftMetrics;
+export default memo(RegressionDataDriftMetrics);

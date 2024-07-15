@@ -7,6 +7,9 @@ import BinaryClassificationDataDriftMetrics from '@Container/models/Details/bina
 import MultiClassificationDataQualityMetrics from '@Container/models/Details/multi-classification/current/data-quality';
 import MultiClassificationModelQualityMetrics from '@Container/models/Details/multi-classification/current/model-quality';
 import MultiClassificationDataDriftMetrics from '@Container/models/Details/multi-classification/current/data-drift';
+import RegressionDataQualityMetrics from '@Container/models/Details/regression/current/data-quality';
+import RegressionModelQualityMetrics from '@Container/models/Details/regression/current/model-quality';
+import RegressionDataDriftMetrics from '@Container/models/Details/regression/current/data-drift';
 import { modelsApiSlice } from '@Src/store/state/models/api';
 import { ModelTypeEnum } from '@Src/store/state/models/constants';
 
@@ -87,6 +90,24 @@ function useGetTabs() {
         },
       ];
 
+    case ModelTypeEnum.REGRESSION:
+      return [
+        {
+          label: METRICS_TABS.DATA_QUALITIY,
+          key: METRICS_TABS.DATA_QUALITIY,
+          children: <RegressionDataQualityMetrics />,
+        },
+        {
+          label: METRICS_TABS.MODEL_QUALITY,
+          key: METRICS_TABS.MODEL_QUALITY,
+          children: <RegressionModelQualityMetrics />,
+        },
+        {
+          label: METRICS_TABS.DATA_DRIFT,
+          key: METRICS_TABS.DATA_DRIFT,
+          children: <RegressionDataDriftMetrics />,
+        },
+      ];
     default:
       return false;
   }

@@ -17,7 +17,7 @@ const initialValues = {
   },
 };
 
-function MultiClassificationDataQualityMetrics() {
+function RegressionDataQualityMetrics() {
   const { data, isError, isLoading } = useGetCurrentDataQualityQueryWithPolling();
   const jobStatus = data?.jobStatus;
 
@@ -52,4 +52,4 @@ function MultiClassificationDataQualityMetrics() {
   return (<JobStatus jobStatus={jobStatus} />);
 }
 
-export default memo(MultiClassificationDataQualityMetrics);
+export default memo(RegressionDataQualityMetrics);
