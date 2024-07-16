@@ -1,7 +1,7 @@
 {
   "name": "radicalbit-ai-monitoring-ui",
   "private": true,
-  "version": "0.8.2",
+  "version": "0.9.0",
   "type": "module",
   "scripts": {
     "start:local": "NODE_ENV=local && vite --host 0.0.0.0",
