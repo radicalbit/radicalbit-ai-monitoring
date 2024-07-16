@@ -2,7 +2,7 @@ import moment from 'moment';
 
 const dateFormatter = (value) => moment(+value).format('DD MMM HH.mm');
 
-const xAxisCategoryType = (xAxisData) => {
+const xAxisCategoryType = (xAxisData, xAxisName) => {
   const options = {
     xAxis: {
       type: 'category',
@@ -18,6 +18,12 @@ const xAxisCategoryType = (xAxisData) => {
   };
   if (xAxisData) {
     options.xAxis.data = xAxisData;
+  }
+
+  if (xAxisName) {
+    options.xAxis.name = xAxisName;
+    options.xAxis.nameGap = 25;
+    options.xAxis.nameLocation = 'middle';
   }
   return options;
 };
@@ -89,7 +95,7 @@ const yAxisValueType = (yAxisData, yAxisName) => {
   return options;
 };
 
-const yAxisCategoryType = (yAxisData) => {
+const yAxisCategoryType = (yAxisData, yAxisName) => {
   const options = {
     yAxis: {
       type: 'category',
@@ -104,6 +110,12 @@ const yAxisCategoryType = (yAxisData) => {
   };
   if (yAxisData) {
     options.yAxis.data = yAxisData;
+  }
+
+  if (yAxisName) {
+    options.yAxis.name = yAxisName;
+    options.yAxis.nameGap = 25;
+    options.yAxis.nameLocation = 'middle';
   }
   return options;
 };
@@ -303,7 +315,7 @@ const yAxisOptions = (optionType, data, yAxisName) => {
     case OPTIONS_TYPE.VALUE:
       return yAxisValueType(data, yAxisName);
     case OPTIONS_TYPE.CATEGORY:
-      return yAxisCategoryType(data);
+      return yAxisCategoryType(data, yAxisName);
     default:
       return false;
   }
@@ -314,7 +326,7 @@ const xAxisOptions = (optionType, data, xAxisName) => {
     case OPTIONS_TYPE.VALUE:
       return xAxisValueType(data, xAxisName);
     case OPTIONS_TYPE.CATEGORY:
-      return xAxisCategoryType(data);
+      return xAxisCategoryType(data, xAxisName);
     case OPTIONS_TYPE.TIME:
       return xAxisTimeType(data);
     default:
@@ -381,6 +393,7 @@ const CHART_COLOR = {
   CURRENT_DARK: '#0A71BB',
   WHITE: '#FFFFFF',
   LINE_CHART_COLOR: '#73B2E0',
+  RED: '#ff0000',
 };
 
 const OPTIONS_TYPE = {

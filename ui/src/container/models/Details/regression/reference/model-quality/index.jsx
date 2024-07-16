@@ -192,7 +192,7 @@ function PredictedActualBoardChart() {
   const predictions = data?.modelQuality.residuals.predictions ?? [];
   const targets = data?.modelQuality.residuals.targets ?? [];
 
-  const dataset = predictions.map((p, idx) => ([p, targets[idx]]));
+  const dataset = predictions.map((p, idx) => ([targets[idx], p]));
 
   return (
     <Board

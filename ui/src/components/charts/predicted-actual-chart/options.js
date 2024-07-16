@@ -1,9 +1,12 @@
 import * as commonChartOptions from '@Helpers/common-chart-options';
-import { CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
+import { CHART_TYPE, OPTIONS_TYPE, CHART_COLOR } from '@Helpers/common-chart-options';
 import { numberFormatter } from '@Src/constants';
 
 export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
-  const test = [0, 27];
+  const xsortedData = dataset.map((d) => d[0]).sort((a, b) => parseFloat(b) - parseFloat(a));
+  const ysortedData = dataset.map((d) => d[1]).sort((a, b) => parseFloat(b) - parseFloat(a));
+  const xMax = xsortedData[0];
+  const yMax = ysortedData[0];
 
   const options = {
     ...commonChartOptions.gridOptions(CHART_TYPE.SCATTER),
@@ -25,13 +28,13 @@ export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
         ...commonChartOptions.seriesOptions(CHART_TYPE.SCATTER, null, color, dataset),
       },
       {
-        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, color, test),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, CHART_COLOR.RED, [[0, 0], [xMax, yMax]]),
       },
-
     ],
   };
 
   options.yAxis.scale = false;
+
   options.xAxis.axisLine = {
     lineStyle: {
       width: 2,

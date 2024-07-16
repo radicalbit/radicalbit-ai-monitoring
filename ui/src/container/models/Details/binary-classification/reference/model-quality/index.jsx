@@ -34,8 +34,8 @@ function BinaryClassificationModelQualityMetrics() {
     ] : [];
 
     const confusionMatrixLabel = {
-      xAxisLabel: ['Predicted: 1', 'Predicted: 0'],
-      yAxisLabel: ['Actual: 0', 'Actual: 1'],
+      xAxisLabel: ['1', '0'],
+      yAxisLabel: ['0', '1'],
     };
 
     const confusionMatrixData = [
