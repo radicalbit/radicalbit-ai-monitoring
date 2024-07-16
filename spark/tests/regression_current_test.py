@@ -34,20 +34,20 @@ def reference_bike_dataframe(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
-def current_test_fe(spark_fixture, test_data_dir):
+def current_test_abalone(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/regression/regression_reference_test_FE.csv",
+            f"{test_data_dir}/current/regression/regression_abalone_current1.csv",
             header=True,
         )
     )
 
 
 @pytest.fixture()
-def reference_test_fe(spark_fixture, test_data_dir):
+def reference_test_abalone(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/regression/regression_reference_test_FE.csv",
+            f"{test_data_dir}/reference/regression/regression_abalone_reference.csv",
             header=True,
         )
     )
@@ -95,7 +95,7 @@ def model():
 
 
 @pytest.fixture()
-def model_test_fe():
+def model_test_abalone():
     output = OutputType(
         prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
         prediction_proba=None,
@@ -134,18 +134,18 @@ def model_test_fe():
 
 
 @pytest.fixture()
-def current_dataset_fe(current_test_fe, model_test_fe):
+def current_dataset_abalone(current_test_abalone, model_test_abalone):
     yield CurrentDataset(
-        raw_dataframe=current_test_fe,
-        model=model_test_fe,
+        raw_dataframe=current_test_abalone,
+        model=model_test_abalone,
     )
 
 
 @pytest.fixture()
-def reference_dataset_fe(reference_test_fe, model_test_fe):
+def reference_dataset_abalone(reference_test_abalone, model_test_abalone):
     yield ReferenceDataset(
-        raw_dataframe=reference_test_fe,
-        model=model_test_fe,
+        raw_dataframe=reference_test_abalone,
+        model=model_test_abalone,
     )
 
 
@@ -227,18 +227,20 @@ def test_model_quality(spark_fixture, current_dataset, reference_dataset):
     )
 
 
-def test_model_quality_test_fe(spark_fixture, current_dataset_fe, reference_dataset_fe):
+def test_model_quality_abalone(
+    spark_fixture, current_dataset_abalone, reference_dataset_abalone
+):
     metrics_service = CurrentMetricsRegressionService(
         spark_session=spark_fixture,
-        current=current_dataset_fe,
-        reference=reference_dataset_fe,
+        current=current_dataset_abalone,
+        reference=reference_dataset_abalone,
     )
 
     model_quality = metrics_service.calculate_model_quality()
 
     assert not deepdiff.DeepDiff(
         model_quality,
-        res.test_model_quality_test_fe_res,
+        res.test_model_quality_abalone_res,
         ignore_order=True,
         ignore_type_subclasses=True,
     )
@@ -261,11 +263,13 @@ def test_drift_regression(spark_fixture, current_dataset, reference_dataset):
     )
 
 
-def test_drift_regression_chi(spark_fixture, current_dataset_fe, reference_dataset_fe):
+def test_drift_regression_chi(
+    spark_fixture, current_dataset_abalone, reference_dataset_abalone
+):
     metrics_service = CurrentMetricsRegressionService(
         spark_session=spark_fixture,
-        current=current_dataset_fe,
-        reference=reference_dataset_fe,
+        current=current_dataset_abalone,
+        reference=reference_dataset_abalone,
     )
 
     drift = metrics_service.calculate_drift()
