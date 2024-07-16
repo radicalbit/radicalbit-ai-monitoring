@@ -1,17 +1,20 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import JobStatus from '@Components/JobStatus';
+import PredictedActualChart from '@Components/charts/predicted-actual-chart';
+import ResidualBucketChart from '@Components/charts/residual-bucket-chart';
+import ResidualScatterPlot from '@Components/charts/residual-scatter-plot';
 import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { JOB_STATUS } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { useGetCurrentModelQualityQueryWithPolling } from '@State/models/polling-hook';
+import { faChartArea, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import {
-  Board, DataTable, SectionTitle, Spinner,
+  Board, DataTable, FontAwesomeIcon, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 import { useParams } from 'react-router';
-import { CHART_COLOR } from '@Helpers/common-chart-options';
-import ResidualBucketChart from '@Components/charts/residual-bucket-chart';
-import ResidualScatterPlot from '@Components/charts/residual-scatter-plot';
+import { useSearchParams } from 'react-router-dom';
 import {
   AdjR2Chart,
   MaeChart,
@@ -194,19 +197,9 @@ function BucketChart() {
 }
 
 function ScatterPlot() {
-  const { uuid } = useParams();
-  const { data: model } = useGetModelByUUIDQuery({ uuid });
+  const mode = useGetModeParam();
 
-  const predictionName = model?.outputs.prediction?.name;
-
-  const { data, isLoading, isSuccess } = useGetCurrentModelQualityQueryWithPolling();
-
-  const predictions = data?.modelQuality.globalMetrics.residuals.predictions ?? [];
-  const standardizedResiduals = data?.modelQuality.globalMetrics.residuals.standardizedResiduals ?? [];
-
-  const dataset = predictions.map((p, idx) => ([p, standardizedResiduals[idx]]));
-  const xAxisLabel = `predicted ${predictionName}`;
-  const yAxisLabel = 'standardized residuals';
+  const { isLoading, isSuccess } = useGetCurrentModelQualityQueryWithPolling();
 
   if (isLoading) {
     return <Spinner spinning />;
@@ -216,13 +209,112 @@ function ScatterPlot() {
     return false;
   }
 
+  if (mode === MODE.TABLE) {
+    return (<ResidualScatterPlotBoard />);
+  }
+
+  return (<PredictedActualBoardChart />);
+}
+
+function ResidualScatterPlotBoard() {
+  const { uuid } = useParams();
+  const { data: model } = useGetModelByUUIDQuery({ uuid });
+
+  const predictionName = model?.outputs.prediction?.name;
+
+  const { data } = useGetCurrentModelQualityQueryWithPolling();
+
+  const predictions = data?.modelQuality.globalMetrics.residuals.predictions ?? [];
+  const standardizedResiduals = data?.modelQuality.globalMetrics.residuals.standardizedResiduals ?? [];
+
+  const dataset = predictions.map((p, idx) => ([p, standardizedResiduals[idx]]));
+  const xAxisLabel = `predicted ${predictionName}`;
+  const yAxisLabel = 'standardized residuals';
   return (
     <Board
-      header={(<SectionTitle size="small" title="Residual plot" />)}
+      header={(
+        <div className="flex flex-row items-center space-between">
+          <SectionTitle size="small" title="Residual plot" />
+
+          <div className="flex">
+            <FaCode />
+          </div>
+
+        </div>
+  )}
       main={(<ResidualScatterPlot color={CHART_COLOR.CURRENT} dataset={dataset} xAxisLabel={xAxisLabel} yAxisLabel={yAxisLabel} />)}
       size="small"
     />
   );
 }
+
+function PredictedActualBoardChart() {
+  const { uuid } = useParams();
+  const { data: model } = useGetModelByUUIDQuery({ uuid });
+
+  const predictionName = model?.outputs.prediction?.name;
+  const targetName = model?.target?.name;
+
+  const xAxisLabel = `predicted values for ${predictionName}`;
+  const yAxisLabel = `Actual values for ${targetName}`;
+
+  const { data } = useGetCurrentModelQualityQueryWithPolling();
+
+  const predictions = data?.modelQuality.globalMetrics.residuals.predictions ?? [];
+  const targets = data?.modelQuality.globalMetrics.residuals.targets ?? [];
+
+  const dataset = predictions.map((p, idx) => ([p, targets[idx]]));
+
+  return (
+    <Board
+      header={(
+        <div className="flex flex-row items-center space-between">
+          <SectionTitle size="small" title="Predicted vs Actual" />
+
+          <div className="flex">
+            <FaCode />
+          </div>
+
+        </div>
+    )}
+      main={(<PredictedActualChart color={CHART_COLOR.CURRENT} dataset={dataset} xAxisLabel={xAxisLabel} yAxisLabel={yAxisLabel} />)}
+      size="small"
+    />
+  );
+}
+
+function FaCode() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const mode = useGetModeParam();
+
+  const handleOnClickCode = () => {
+    searchParams.set('mode', MODE.CHART);
+    setSearchParams(searchParams);
+  };
+
+  const handleOnClickTable = () => {
+    searchParams.set('mode', MODE.TABLE);
+    setSearchParams(searchParams);
+  };
+
+  if (mode === MODE.CHART) {
+    return <FontAwesomeIcon icon={faChartArea} onClick={handleOnClickTable} size="lg" />;
+  }
+
+  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="lg" />;
+}
+
+const useGetModeParam = () => {
+  const [searchParams] = useSearchParams();
+
+  const mode = searchParams.get('mode');
+
+  return mode === MODE.CHART ? MODE.CHART : MODE.TABLE;
+};
+
+const MODE = {
+  CHART: 'table',
+  TABLE: 'chart',
+};
 
 export default memo(RegressionModelQualityMetrics);
