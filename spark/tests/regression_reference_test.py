@@ -35,9 +35,9 @@ def reference_bike_nulls(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
-def reference_test_fe(spark_fixture, test_data_dir):
+def reference_abalone(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/regression/regression_reference_test_FE.csv",
+        f"{test_data_dir}/reference/regression/regression_abalone_reference.csv",
         header=True,
     )
 
@@ -135,7 +135,7 @@ def reference_dataset_nulls(spark_fixture, reference_bike_nulls):
 
 
 @pytest.fixture()
-def reference_dataset_test_fe(spark_fixture, reference_test_fe):
+def reference_dataset_abalone(spark_fixture, reference_abalone):
     output = OutputType(
         prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
         prediction_proba=None,
@@ -173,7 +173,7 @@ def reference_dataset_test_fe(spark_fixture, reference_test_fe):
     )
 
     yield ReferenceDataset(
-        raw_dataframe=reference_test_fe,
+        raw_dataframe=reference_abalone,
         model=model,
     )
 
@@ -192,16 +192,16 @@ def test_model_quality_metrics(reference_dataset):
     )
 
 
-def test_model_quality_fe(reference_dataset_test_fe):
+def test_model_quality_abalone(reference_dataset_abalone):
     metrics_service = ReferenceMetricsRegressionService(
-        reference=reference_dataset_test_fe,
+        reference=reference_dataset_abalone,
     )
 
     model_quality = metrics_service.calculate_model_quality()
 
     assert not deepdiff.DeepDiff(
         model_quality,
-        res.test_model_quality_fe_res,
+        res.test_model_quality_abalone_res,
         ignore_order=True,
         ignore_type_subclasses=True,
     )

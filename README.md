@@ -99,18 +99,18 @@ You can find the following documentation:
 Please join us on our [Discord server](https://discord.gg/x2Ze8TMRsD), to discuss the platform, share ideas, and help shape its future! Get help from experts and fellow users.
 
 ## 📦 Functionalities & Roadmap
-We've released a first dashboard, covering Binary Classification models for tabular data.
+We've released a first few dashboards, covering Classification, both Binary and Multiclass, and Regression models for tabular data.
 Over the coming weeks, we will be adding the following functionalities to the platform:
 
 * **Batch workloads**
   * [x] Binary Classification (Tabular Data)
+  * [x] Multiclass Classification (Tabular Data)
+  * [x] Regression (Tabular Data)
   * [x] LLMs (Data Quality)
   * [ ] LLMs (Model Quality)
-  * [ ] Multiclass Classification (Tabular Data)
-  * [ ] Regression (Tabular Data)
   * [ ] Computer Vision (Images)
   * [ ] Clustering (Tabular Data)
-       
+
 * **Real-Time workloads**
   * [ ] Binary Classification
   * [ ] Multiclass Classification
