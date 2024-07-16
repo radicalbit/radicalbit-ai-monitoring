@@ -701,6 +701,7 @@ test_model_quality_res = {
                 879,
                 1188,
             ],
+            "regression_line": [[0, -3.1084939122534867], [1, -2.245108366586348]],
         },
     },
     "grouped_metrics": {
@@ -10809,6 +10810,7 @@ test_model_quality_test_fe_res = {
                 13,
                 10,
             ],
+            "regression_line": [[0, 2.7121253992013554], [1, 3.5033972777669873]],
         },
     },
     "grouped_metrics": {

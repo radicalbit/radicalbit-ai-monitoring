@@ -6,6 +6,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType, FloatType
 from pyspark.ml.feature import StandardScaler, VectorAssembler, Bucketizer
 from pyspark.ml.stat import KolmogorovSmirnovTest
+from pyspark.ml.regression import LinearRegression
 
 from models.regression_model_quality import (
     RegressionMetricType,
@@ -182,6 +183,29 @@ class ModelQualityRegressionCalculator:
         return Histogram(buckets=buckets_spacing, values=res)
 
     @staticmethod
+    def get_regression_line(model: ModelOut, dataframe: DataFrame):
+        dataframe_clean = dataframe.filter(
+            is_not_null(model.outputs.prediction.name) & is_not_null(model.target.name)
+        ).select(model.outputs.prediction.name, model.target.name)
+
+        va = VectorAssembler(
+            inputCols=[model.outputs.prediction.name], outputCol="features"
+        )
+
+        data_va = va.transform(dataframe_clean)
+
+        train_data = data_va.select("features", model.target.name)
+
+        lr = LinearRegression(labelCol=model.target.name)
+
+        # Fit the model to the data and call this model lrModel
+        lr_model = lr.fit(train_data)
+        c = lr_model.coefficients[0]
+        i = lr_model.intercept
+
+        return [[0, i], [1, c + i]]
+
+    @staticmethod
     def residual_metrics(model: ModelOut, dataframe: DataFrame):
         residual_df_norm = ModelQualityRegressionCalculator.residual_calculation(
             model, dataframe
@@ -209,4 +233,7 @@ class ModelQualityRegressionCalculator:
             "targets": residual_df_norm.select(model.target.name)
             .rdd.flatMap(lambda x: x)
             .collect(),
+            "regression_line": ModelQualityRegressionCalculator.get_regression_line(
+                model, dataframe
+            ),
         }
