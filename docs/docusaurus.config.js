@@ -7,7 +7,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 
 // x-release-please-start-version
-const VERSION = '0.8.2';
+const VERSION = '0.9.0';
 // x-release-please-end
 
 /** @type {import('@docusaurus/types').Config} */
