@@ -160,11 +160,11 @@ const useGetModelQueryWithPolling = () => {
   const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.MODELS));
   const result = useGetModelsQuery({ queryParams });
 
-  const isReferencePending = result.data?.items.every((d) => d.latestReferenceJobStatus === JOB_STATUS.SUCCEEDED);
-  const isCurrentPending = result.data?.items.every((d) => d.latestCurrentJobStatus === JOB_STATUS.SUCCEEDED);
-  const isOperationCompleted = isReferencePending && isCurrentPending;
+  const isReferencePending = result.data?.items.some((d) => d.latestReferenceJobStatus === JOB_STATUS.IMPORTING);
+  const isCurrentPending = result.data?.items.some((d) => d.latestCurrentJobStatus === JOB_STATUS.IMPORTING);
+  const isPending = isReferencePending || isCurrentPending;
 
-  useGetModelsQuery({ queryParams }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: isOperationCompleted });
+  useGetModelsQuery({ queryParams }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isPending });
 
   return result;
 };
