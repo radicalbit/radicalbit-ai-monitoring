@@ -4820,7 +4820,7 @@ test_data_quality_metrics_res = {
     ],
 }
 
-test_model_quality_fe_res = {
+test_model_quality_abalone_res = {
     "mae": 1.9473369239976062,
     "mape": 32.80513741749641,
     "mse": 27.478755236385403,
