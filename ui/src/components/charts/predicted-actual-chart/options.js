@@ -4,9 +4,8 @@ import { numberFormatter } from '@Src/constants';
 
 export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
   const xsortedData = dataset.map((d) => d[0]).sort((a, b) => parseFloat(b) - parseFloat(a));
-  const ysortedData = dataset.map((d) => d[1]).sort((a, b) => parseFloat(b) - parseFloat(a));
   const xMax = xsortedData[0];
-  const yMax = ysortedData[0];
+  const xMin = xsortedData[xsortedData.length - 1];
 
   const options = {
     ...commonChartOptions.gridOptions(CHART_TYPE.SCATTER),
@@ -28,21 +27,13 @@ export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
         ...commonChartOptions.seriesOptions(CHART_TYPE.SCATTER, null, color, dataset),
       },
       {
-        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, CHART_COLOR.RED, [[0, 0], [xMax, yMax]]),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, CHART_COLOR.RED, [[xMin, xMin], [xMax, xMax]]),
       },
     ],
   };
 
-  options.yAxis.scale = false;
-
-  options.xAxis.axisLine = {
-    lineStyle: {
-      width: 2,
-      type: 'dashed',
-    },
-  };
-
-  options.series[1].lineStyle.type = 'dotted';
+  options.yAxis.scale = true;
+  options.xAxis.scale = true;
 
   return options;
 }

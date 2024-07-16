@@ -4,7 +4,7 @@ import ResidualBucketChart from '@Components/charts/residual-bucket-chart';
 import ResidualScatterPlot from '@Components/charts/residual-scatter-plot';
 import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { CHART_COLOR } from '@Helpers/common-chart-options';
-import { JOB_STATUS } from '@Src/constants';
+import { JOB_STATUS, numberFormatter } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
 import { useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import { faChartArea, faChartLine } from '@fortawesome/free-solid-svg-icons';
@@ -23,26 +23,82 @@ import columns from './columns';
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
 function RegressionModelQualityMetrics() {
-  const { data, isLoading } = useGetReferenceModelQualityQueryWithPolling();
+  const { data, isLoading, isSuccess } = useGetReferenceModelQualityQueryWithPolling();
 
   const jobStatus = data?.jobStatus;
 
+  if (isLoading) {
+    return <Spinner spinning />;
+  }
+
+  if (!isSuccess) {
+    return false;
+  }
+
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
-    return (
-      <Spinner spinning={isLoading}>
-        <div className="flex flex-col gap-4 py-4">
-          <PerformanceBoard />
-
-          <ScatterPlot />
-
-          <BucketChart />
-
-        </div>
-      </Spinner>
-    );
+    return (<RegressionModelQualityMetricsInner />);
   }
 
   return (<JobStatus jobStatus={jobStatus} />);
+}
+
+function RegressionModelQualityMetricsInner() {
+  const mode = useGetModeParam();
+
+  if (mode === MODE.TABLE) {
+    return (
+      <div className="flex flex-col gap-4 py-4 h-full">
+        <div>
+          <PerformanceBoard />
+        </div>
+
+        <div className="flex flex-row gap-4">
+
+          <div className="basis-1/5">
+            <CorrelationCoefficientCounter />
+          </div>
+
+          <div className="basis-4/5">
+            <ResidualScatterPlotBoard />
+          </div>
+
+          <FaCode />
+        </div>
+
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-4 py-4 ">
+      <div>
+        <PerformanceBoard />
+      </div>
+
+      <div className="flex flex-row gap-4 h-full">
+        <div className="flex flex-col gap-4 basis-1/5">
+          <KsPValueCounter />
+
+          <KsStatisticsCounter />
+        </div>
+
+        <div className="flex gap-4 basis-4/5">
+          <div className="flex flex-col gap-4 w-full">
+
+            <PredictedActualBoardChart />
+
+            <BucketChart />
+
+          </div>
+
+        </div>
+
+        <FaCode />
+      </div>
+
+    </div>
+
+  );
 }
 
 function PerformanceBoard() {
@@ -125,26 +181,6 @@ function BucketChart() {
   );
 }
 
-function ScatterPlot() {
-  const mode = useGetModeParam();
-
-  const { isLoading, isSuccess } = useGetReferenceModelQualityQueryWithPolling();
-
-  if (isLoading) {
-    return <Spinner spinning />;
-  }
-
-  if (!isSuccess) {
-    return false;
-  }
-
-  if (mode === MODE.TABLE) {
-    return (<ResidualScatterPlotBoard />);
-  }
-
-  return (<PredictedActualBoardChart />);
-}
-
 function ResidualScatterPlotBoard() {
   const { uuid } = useParams();
   const { data: model } = useGetModelByUUIDQuery({ uuid });
@@ -157,21 +193,20 @@ function ResidualScatterPlotBoard() {
   const standardizedResiduals = data?.modelQuality.residuals.standardizedResiduals ?? [];
 
   const dataset = predictions.map((p, idx) => ([p, standardizedResiduals[idx]]));
-  const xAxisLabel = `predicted ${predictionName}`;
+  const xAxisLabel = `${predictionName}`;
   const yAxisLabel = 'standardized residuals';
+
   return (
     <Board
-      header={(
-        <div className="flex flex-row items-center space-between">
-          <SectionTitle size="small" title="Residual plot" />
-
-          <div className="flex">
-            <FaCode />
-          </div>
-
-        </div>
-  )}
-      main={(<ResidualScatterPlot color={CHART_COLOR.REFERENCE} dataset={dataset} xAxisLabel={xAxisLabel} yAxisLabel={yAxisLabel} />)}
+      header={(<SectionTitle size="small" title="Residuals plot" />)}
+      main={(
+        <ResidualScatterPlot
+          color={CHART_COLOR.REFERENCE}
+          dataset={dataset}
+          xAxisLabel={xAxisLabel}
+          yAxisLabel={yAxisLabel}
+        />
+    )}
       size="small"
     />
   );
@@ -184,8 +219,10 @@ function PredictedActualBoardChart() {
   const predictionName = model?.outputs.prediction?.name;
   const targetName = model?.target?.name;
 
-  const xAxisLabel = `predicted values for ${predictionName}`;
-  const yAxisLabel = `Actual values for ${targetName}`;
+  const xAxisLabel = `${targetName}`;
+  const yAxisLabel = `${predictionName}`;
+
+  const title = `${yAxisLabel} vs ${xAxisLabel}`;
 
   const { data } = useGetReferenceModelQualityQueryWithPolling();
 
@@ -196,18 +233,94 @@ function PredictedActualBoardChart() {
 
   return (
     <Board
-      header={(
-        <div className="flex flex-row items-center space-between">
-          <SectionTitle size="small" title="Predicted vs Actual" />
-
-          <div className="flex">
-            <FaCode />
-          </div>
-
-        </div>
+      header={(<SectionTitle size="small" title={title} />)}
+      main={(
+        <PredictedActualChart
+          color={CHART_COLOR.REFERENCE}
+          dataset={dataset}
+          xAxisLabel={xAxisLabel}
+          yAxisLabel={yAxisLabel}
+        />
     )}
-      main={(<PredictedActualChart color={CHART_COLOR.REFERENCE} dataset={dataset} xAxisLabel={xAxisLabel} yAxisLabel={yAxisLabel} />)}
       size="small"
+    />
+  );
+}
+
+function CorrelationCoefficientCounter() {
+  const { uuid } = useParams();
+  const { data: model } = useGetModelByUUIDQuery({ uuid });
+
+  const predictionName = model?.outputs.prediction?.name;
+  const targetName = model?.target?.name;
+
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const correlationCoefficient = data?.modelQuality.residuals.correlationCoefficient;
+  const formattedNumber = correlationCoefficient ? numberFormatter().format(correlationCoefficient) : '--';
+
+  const title = `Correlation ${predictionName}/${targetName}`;
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title={title} />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+          <div className="flex flex-row items-end ">
+            {/* FIXME: inline style */}
+            <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>{formattedNumber}</div>
+          </div>
+        </div>
+      )}
+      modifier="h-[12rem] shadow"
+      size="small"
+      type="secondary"
+    />
+  );
+}
+
+function KsPValueCounter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const ksPvalue = data?.modelQuality.residuals.ks.pValue;
+
+  const formattedNumber = ksPvalue ? Number.parseFloat(ksPvalue).toExponential(2) : '--';
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="KS test of normality for residuals : pValue" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+          <div className="flex flex-row items-end ">
+            {/* FIXME: inline style */}
+            <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>{formattedNumber}</div>
+          </div>
+        </div>
+      )}
+      modifier="h-[12rem] shadow"
+      size="small"
+      type="secondary"
+    />
+  );
+}
+
+function KsStatisticsCounter() {
+  const { data } = useGetReferenceModelQualityQueryWithPolling();
+  const ksStatistics = data?.modelQuality.residuals.ks.statistic;
+  const formattedNumber = ksStatistics ? numberFormatter().format(ksStatistics) : '--';
+
+  return (
+    <Board
+      header={<SectionTitle size="small" title="KS statistics test of normality for residuals" />}
+      main={(
+        <div className="flex flex-col h-full items-center justify-center gap-4">
+          <div className="flex flex-row items-end ">
+            {/* FIXME: inline style */}
+            <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>{formattedNumber}</div>
+          </div>
+        </div>
+      )}
+      modifier="h-[12rem] shadow"
+      size="small"
+      type="secondary"
     />
   );
 }
@@ -227,10 +340,10 @@ function FaCode() {
   };
 
   if (mode === MODE.CHART) {
-    return <FontAwesomeIcon icon={faChartArea} onClick={handleOnClickTable} size="lg" />;
+    return <FontAwesomeIcon icon={faChartArea} onClick={handleOnClickTable} size="xl" />;
   }
 
-  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="lg" />;
+  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="xl" />;
 }
 
 const useGetModeParam = () => {
