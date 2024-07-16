@@ -337,6 +337,7 @@ regression_model_quality_dict = {
         'standardized_residuals': [0.02, 0.03],
         'targets': [1, 2.2, 3],
         'predictions': [1.3, 2, 4.5],
+        'regression_line': [[1.2, 0.3], [1.4, 2.3]],
     },
 }
 
