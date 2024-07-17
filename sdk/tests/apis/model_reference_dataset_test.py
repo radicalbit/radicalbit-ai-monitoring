@@ -352,6 +352,8 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         p_value = 0.2
         statistic = 0.4
         correlation_coefficient = 0.2
+        regression_line_coefficient = 0.7942363125434776
+        regression_line_intercept = 2.8227418911402906
         model_reference_dataset = ModelReferenceDataset(
             base_url,
             model_id,
@@ -392,7 +394,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                             "standardizedResiduals": [0.02, 0.03],
                             "targets": [1, 2.2, 3],
                             "predictions": [1.3, 2, 4.5],
-                            "regression_line": [[1.2, 0.3], [1.4, 2.3]]
+                            "regression_line": {{
+                                "coefficient": {regression_line_coefficient}, 
+                                "intercept": {regression_line_intercept}
+                            }}
                         }}
                     }}
                 }}""",
@@ -411,6 +416,10 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.residuals.correlation_coefficient == correlation_coefficient
         assert metrics.residuals.ks.p_value == p_value
         assert metrics.residuals.ks.statistic == statistic
+        assert (
+            metrics.residuals.regression_line.coefficient == regression_line_coefficient
+        )
+        assert metrics.residuals.regression_line.intercept == regression_line_intercept
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
