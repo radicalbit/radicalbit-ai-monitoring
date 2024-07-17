@@ -126,4 +126,4 @@ class PSI:
             for i in range(0, len(reference_fractions))
         )
 
-        return {"psi_value": psi_value}
+        return {"psi_value": float(psi_value)}
