@@ -253,8 +253,6 @@ def test_drift_regression(spark_fixture, current_dataset, reference_dataset):
 
     drift = metrics_service.calculate_drift()
 
-    print(drift)
-
     assert not deepdiff.DeepDiff(
         drift,
         res.test_drift_regression_res,
