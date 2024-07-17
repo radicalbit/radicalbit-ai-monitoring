@@ -395,7 +395,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                             "targets": [1, 2.2, 3],
                             "predictions": [1.3, 2, 4.5],
                             "regression_line": {{
-                                "coefficient": {regression_line_coefficient}, 
+                                "coefficient": {regression_line_coefficient},
                                 "intercept": {regression_line_intercept}
                             }}
                         }}
