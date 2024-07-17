@@ -203,7 +203,7 @@ class ModelQualityRegressionCalculator:
         c = lr_model.coefficients[0]
         i = lr_model.intercept
 
-        return [[0, i], [1, c + i]]
+        return [[0, float(i)], [1, float(c + i)]]
 
     @staticmethod
     def residual_metrics(model: ModelOut, dataframe: DataFrame):
