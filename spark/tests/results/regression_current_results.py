@@ -12099,93 +12099,73 @@ test_model_quality_abalone_res = {
 test_drift_regression_res = {
     "feature_metrics": [
         {
+            "feature_name": "weathersit",
+            "drift_calc": {"type": "KS", "value": 0.6219091927, "has_drift": True},
+        },
+        {
+            "feature_name": "temp",
+            "drift_calc": {"type": "KS", "value": 0.5259741552, "has_drift": True},
+        },
+        {
+            "feature_name": "atemp",
+            "drift_calc": {"type": "KS", "value": 0.5322880465, "has_drift": True},
+        },
+        {
+            "feature_name": "hum",
+            "drift_calc": {"type": "KS", "value": 0.2230727748, "has_drift": True},
+        },
+        {
+            "feature_name": "windspeed",
+            "drift_calc": {"type": "KS", "value": 0.2180156245, "has_drift": True},
+        },
+        {
             "feature_name": "season",
             "drift_calc": {
-                "type": "KS",
-                "value": 0.7886320109,
-                "has_drift": True,
+                "type": "CHI2",
+                "value": 0.7058231915368379,
+                "has_drift": False,
             },
         },
         {
             "feature_name": "yr",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.9986320109,
-                "has_drift": True,
-            },
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "mnth",
             "drift_calc": {
-                "type": "KS",
-                "value": 0.7510372975,
-                "has_drift": True,
+                "type": "CHI2",
+                "value": 0.9637289558298074,
+                "has_drift": False,
             },
         },
         {
             "feature_name": "holiday",
             "drift_calc": {
-                "type": "KS",
-                "value": 0.9686320109,
-                "has_drift": True,
+                "type": "CHI2",
+                "value": 0.8374533320041525,
+                "has_drift": False,
             },
         },
         {
             "feature_name": "weekday",
             "drift_calc": {
-                "type": "KS",
-                "value": 0.1475135386,
-                "has_drift": True,
+                "type": "CHI2",
+                "value": 0.5795400085655207,
+                "has_drift": False,
             },
         },
         {
             "feature_name": "workingday",
-            "drift_calc": {"type": "KS", "value": 0.69, "has_drift": True},
-        },
-        {
-            "feature_name": "weathersit",
             "drift_calc": {
-                "type": "KS",
-                "value": 0.6219091927,
-                "has_drift": True,
-            },
-        },
-        {
-            "feature_name": "temp",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.5259741552,
-                "has_drift": True,
-            },
-        },
-        {
-            "feature_name": "atemp",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.5322880465,
-                "has_drift": True,
-            },
-        },
-        {
-            "feature_name": "hum",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.2230727748,
-                "has_drift": True,
-            },
-        },
-        {
-            "feature_name": "windspeed",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.2180156245,
-                "has_drift": True,
+                "type": "CHI2",
+                "value": 0.09216569222802284,
+                "has_drift": False,
             },
         },
     ]
 }
 
-test_drift_regression_chi = {
+test_drift_regression_chi_res = {
     "feature_metrics": [
         {
             "feature_name": "Sex",
