@@ -308,8 +308,12 @@ function PredictedActualBoardChart() {
 
   const predictions = data?.modelQuality.globalMetrics.residuals.predictions ?? [];
   const targets = data?.modelQuality.globalMetrics.residuals.targets ?? [];
+  const regressionLine = data?.modelQuality.globalMetrics.residuals.regressionLine;
 
-  const dataset = predictions.map((p, idx) => ([targets[idx], p]));
+  const dataset = {
+    data: predictions.map((p, idx) => ([targets[idx], p])),
+    regressionLine,
+  };
 
   return (
     <Board
@@ -353,7 +357,7 @@ function CorrelationCoefficientCounter() {
       )}
       modifier="h-[12rem] shadow"
       size="small"
-      type="secondary"
+      type="primary-light"
     />
   );
 }
@@ -377,7 +381,7 @@ function KsPValueCounter() {
       )}
       modifier="h-[12rem] shadow"
       size="small"
-      type="secondary"
+      type="primary-light"
     />
   );
 }
@@ -400,7 +404,7 @@ function KsStatisticsCounter() {
       )}
       modifier="h-[12rem] shadow"
       size="small"
-      type="secondary"
+      type="primary-light"
     />
   );
 }

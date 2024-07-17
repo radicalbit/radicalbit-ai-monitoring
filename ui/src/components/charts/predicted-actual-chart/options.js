@@ -3,9 +3,17 @@ import { CHART_TYPE, OPTIONS_TYPE, CHART_COLOR } from '@Helpers/common-chart-opt
 import { numberFormatter } from '@Src/constants';
 
 export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
-  const xsortedData = dataset.map((d) => d[0]).sort((a, b) => parseFloat(b) - parseFloat(a));
+  const xsortedData = dataset.data.map((d) => d[0]).sort((a, b) => parseFloat(b) - parseFloat(a));
   const xMax = xsortedData[0];
   const xMin = xsortedData[xsortedData.length - 1];
+
+  const m = parseFloat(dataset.regressionLine.coefficient);
+  const q = parseFloat(dataset.regressionLine.intercept);
+
+  const regressionLineDataset = [
+    [xMin, (m * xMin) + q],
+    [xMax, (m * xMax) + q],
+  ];
 
   const options = {
     ...commonChartOptions.gridOptions(CHART_TYPE.SCATTER),
@@ -24,10 +32,13 @@ export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
     },
     series: [
       {
-        ...commonChartOptions.seriesOptions(CHART_TYPE.SCATTER, null, color, dataset),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.SCATTER, null, color, dataset.data),
       },
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, CHART_COLOR.RED, [[xMin, xMin], [xMax, xMax]]),
+      },
+      {
+        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, null, regressionLineDataset),
       },
     ],
   };
