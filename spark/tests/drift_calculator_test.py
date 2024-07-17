@@ -438,11 +438,9 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         reference_dataset=reference_dataset,
     )
 
-    print(drift)
-
     assert not deepdiff.DeepDiff(
         drift,
-        res.test_drift_bike_res,
+        res.test_drift_phone_res,
         ignore_order=True,
         significant_digits=6,
     )
