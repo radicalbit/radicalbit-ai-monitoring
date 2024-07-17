@@ -137,6 +137,11 @@ class Histogram(BaseModel):
     values: Optional[List[int]] = None
 
 
+class RegressionLine(BaseModel):
+    coefficient: Optional[float] = None
+    intercept: Optional[float] = None
+
+
 class ResidualsMetrics(BaseModel):
     ks: KsMetrics
     correlation_coefficient: Optional[float] = None
@@ -144,7 +149,7 @@ class ResidualsMetrics(BaseModel):
     standardized_residuals: List[float]
     predictions: List[float]
     targets: List[float]
-    regression_line: List[List[float]]
+    regression_line: RegressionLine
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
