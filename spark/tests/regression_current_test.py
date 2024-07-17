@@ -276,7 +276,7 @@ def test_drift_regression_chi(
 
     assert not deepdiff.DeepDiff(
         drift,
-        res.test_drift_regression_chi,
+        res.test_drift_regression_chi_res,
         ignore_order=True,
         ignore_type_subclasses=True,
     )

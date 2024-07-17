@@ -184,26 +184,29 @@ class ModelQualityRegressionCalculator:
 
     @staticmethod
     def get_regression_line(model: ModelOut, dataframe: DataFrame):
-        dataframe_clean = dataframe.filter(
-            is_not_null(model.outputs.prediction.name) & is_not_null(model.target.name)
-        ).select(model.outputs.prediction.name, model.target.name)
-
-        va = VectorAssembler(
-            inputCols=[model.outputs.prediction.name], outputCol="features"
+        dataframe_clean = (
+            dataframe.filter(
+                is_not_null(model.outputs.prediction.name)
+                & is_not_null(model.target.name)
+            )
+            .select(model.outputs.prediction.name, model.target.name)
+            .withColumnRenamed(model.outputs.prediction.name, "regr_pred")
         )
+
+        va = VectorAssembler(inputCols=[model.target.name], outputCol="features")
 
         data_va = va.transform(dataframe_clean)
 
-        train_data = data_va.select("features", model.target.name)
+        train_data = data_va.select("features", "regr_pred")
 
-        lr = LinearRegression(labelCol=model.target.name)
+        lr = LinearRegression(labelCol="regr_pred")
 
         # Fit the model to the data and call this model lrModel
         lr_model = lr.fit(train_data)
         c = lr_model.coefficients[0]
         i = lr_model.intercept
 
-        return [[0, float(i)], [1, float(c + i)]]
+        return {"coefficient": float(c), "intercept": float(i)}
 
     @staticmethod
     def residual_metrics(model: ModelOut, dataframe: DataFrame):
