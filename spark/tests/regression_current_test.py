@@ -253,6 +253,8 @@ def test_drift_regression(spark_fixture, current_dataset, reference_dataset):
 
     drift = metrics_service.calculate_drift()
 
+    print(drift)
+
     assert not deepdiff.DeepDiff(
         drift,
         res.test_drift_regression_res,
@@ -272,7 +274,7 @@ def test_drift_regression_chi(spark_fixture, current_dataset_fe, reference_datas
 
     assert not deepdiff.DeepDiff(
         drift,
-        res.test_drift_regression_chi,
+        res.test_drift_regression_chi_res,
         ignore_order=True,
         ignore_type_subclasses=True,
     )
