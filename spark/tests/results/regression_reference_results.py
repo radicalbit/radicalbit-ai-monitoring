@@ -2236,7 +2236,7 @@ test_model_quality_metrics_res = {
             364,
             439,
         ],
-        "regression_line": [[0, -50.98458354056082], [1, -49.937933802846935]],
+        "regression_line": {"coefficient": 0.874412098939795, "intercept": 117.42919788186754},
     },
 }
 
@@ -4460,7 +4460,7 @@ test_model_quality_metrics_nulls_res = {
             364,
             439,
         ],
-        "regression_line": [[0, -50.81086101642703], [1, -49.764259329725434]],
+        "regression_line": {"coefficient": 0.874332261401738, "intercept": 117.50898234893108},
     },
 }
 
@@ -14879,6 +14879,6 @@ test_model_quality_abalone_res = {
             13,
             10,
         ],
-        "regression_line": [[0, 2.7121253992013554], [1, 3.5033972777669873]],
+        "regression_line": {"coefficient": 0.7942363125434776, "intercept": 2.8227418911402906},
     },
 }
