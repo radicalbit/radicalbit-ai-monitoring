@@ -58,18 +58,18 @@ function RegressionModelQualityMetricsInner() {
 
   if (mode === MODE.TABLE) {
     return (
-      <div className="flex flex-col gap-4 py-4 ">
+      <div className="flex flex-col gap-4 py-4 h-full">
         <div>
           <PerformanceBoard />
         </div>
 
         <div className="flex flex-row gap-4">
 
-          <div className="basis-1/5">
+          <div className="basis-1/6">
             <CorrelationCoefficientCounter />
           </div>
 
-          <div className="basis-4/5">
+          <div className="basis-5/6">
             <ResidualScatterPlotBoard />
           </div>
 
@@ -97,24 +97,23 @@ function RegressionModelQualityMetricsInner() {
   }
 
   return (
-    <div className="flex flex-col gap-4 py-4 ">
-      <PerformanceBoard />
+    <div className="flex flex-col gap-4 py-4 h-full w-full">
+      <div>
+        <PerformanceBoard />
 
-      <div className="flex flex-row gap-4 h-full">
-        <div className="flex flex-col gap-4 basis-1/5">
+      </div>
+
+      <div className="flex flex-row gap-4">
+
+        <div className="flex flex-col gap-4 ">
           <KsPValueCounter />
 
           <KsStatisticsCounter />
         </div>
 
-        <div className="flex gap-4 basis-4/5">
-          <div className="flex flex-col gap-4 w-full">
+        <div className="basis-5/6">
 
-            <PredictedActualBoardChart />
-
-            <BucketChart />
-
-          </div>
+          <PredictedActualBoardChart />
 
         </div>
 
@@ -122,6 +121,8 @@ function RegressionModelQualityMetricsInner() {
       </div>
 
       <div className="flex flex-col gap-4">
+        <BucketChart />
+
         <MseChart />
 
         <RmseChart />
