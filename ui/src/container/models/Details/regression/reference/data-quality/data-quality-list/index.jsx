@@ -28,8 +28,7 @@ function DataQualityList() {
   }
 
   return (
-    <Spinner fullHeight fullWidth>
-      <CountLabel />
+    <Spinner className="mb-16" fullHeight fullWidth>
 
       <Virtuoso
         data={items}
@@ -48,17 +47,6 @@ function DataQualityList() {
         totalCount={items.length}
       />
     </Spinner>
-  );
-}
-
-function CountLabel() {
-  const items = useGetFilteredFeatures();
-  const label = items.length <= 1 ? 'Record' : 'Records';
-
-  return (
-    <label>
-      {`${label} ${items.length}`}
-    </label>
   );
 }
 
