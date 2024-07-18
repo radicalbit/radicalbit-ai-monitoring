@@ -19,38 +19,8 @@ import logging
 from utils.reference_multiclass import ReferenceMetricsMulticlassService
 
 
-def main(
-    spark_session: SparkSession,
-    model: ModelOut,
-    reference_dataset_path: str,
-    reference_uuid: str,
-    table_name: str,
-):
-    spark_context = spark_session.sparkContext
-
-    spark_context._jsc.hadoopConfiguration().set(
-        "fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID")
-    )
-    spark_context._jsc.hadoopConfiguration().set(
-        "fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY")
-    )
-    spark_context._jsc.hadoopConfiguration().set(
-        "fs.s3a.endpoint.region", os.getenv("AWS_REGION")
-    )
-    if os.getenv("S3_ENDPOINT_URL"):
-        spark_context._jsc.hadoopConfiguration().set(
-            "fs.s3a.endpoint", os.getenv("S3_ENDPOINT_URL")
-        )
-        spark_context._jsc.hadoopConfiguration().set("fs.s3a.path.style.access", "true")
-        spark_context._jsc.hadoopConfiguration().set(
-            "fs.s3a.connection.ssl.enabled", "false"
-        )
-
-    raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_dataframe)
-
-    complete_record = {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
-
+def compute_metrics(reference_dataset, model):
+    complete_record = {}
     match model.model_type:
         case ModelType.BINARY:
             metrics_service = ReferenceMetricsService(reference=reference_dataset)
@@ -99,6 +69,44 @@ def main(
             complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
+    return complete_record
+
+
+def main(
+    spark_session: SparkSession,
+    model: ModelOut,
+    reference_dataset_path: str,
+    reference_uuid: str,
+    table_name: str,
+):
+    spark_context = spark_session.sparkContext
+
+    spark_context._jsc.hadoopConfiguration().set(
+        "fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID")
+    )
+    spark_context._jsc.hadoopConfiguration().set(
+        "fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY")
+    )
+    spark_context._jsc.hadoopConfiguration().set(
+        "fs.s3a.endpoint.region", os.getenv("AWS_REGION")
+    )
+    if os.getenv("S3_ENDPOINT_URL"):
+        spark_context._jsc.hadoopConfiguration().set(
+            "fs.s3a.endpoint", os.getenv("S3_ENDPOINT_URL")
+        )
+        spark_context._jsc.hadoopConfiguration().set("fs.s3a.path.style.access", "true")
+        spark_context._jsc.hadoopConfiguration().set(
+            "fs.s3a.connection.ssl.enabled", "false"
+        )
+
+    raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_dataframe)
+
+    complete_record = compute_metrics(reference_dataset, model)
+
+    complete_record.update(
+        {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
+    )
 
     schema = StructType(
         [

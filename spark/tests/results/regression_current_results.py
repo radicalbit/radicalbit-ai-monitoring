@@ -701,7 +701,10 @@ test_model_quality_res = {
                 879,
                 1188,
             ],
-            "regression_line": {"coefficient": 1.0043705635148725, "intercept": 48.00912425270233},
+            "regression_line": {
+                "coefficient": 1.0043705635148725,
+                "intercept": 48.00912425270233,
+            },
         },
     },
     "grouped_metrics": {
@@ -12061,7 +12064,10 @@ test_model_quality_abalone_res = {
                 18,
                 23,
             ],
-            "regression_line": {"coefficient": 0.7957916804773302, "intercept": 2.7608502737828453},
+            "regression_line": {
+                "coefficient": 0.7957916804773302,
+                "intercept": 2.7608502737828453,
+            },
         },
     },
     "grouped_metrics": {
