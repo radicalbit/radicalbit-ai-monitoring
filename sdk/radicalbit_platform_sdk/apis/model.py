@@ -149,7 +149,7 @@ class Model:
         :param bucket: The name of the S3 bucket.
         :param object_name: The optional name of the object uploaded to S3. Default value is None.
         :param aws_credentials: AWS credentials used to connect to S3 bucket. Default value is None.
-        :param separator: Optional value to define separator used inside CSV file. Default falue is ","
+        :param separator: Optional value to define separator used inside CSV file. Default value is ","
         :return: An instance of `ModelReferenceDataset` representing the reference dataset
         """
 
@@ -222,11 +222,11 @@ class Model:
         aws_credentials: Optional[AwsCredentials] = None,
         separator: str = ',',
     ) -> ModelReferenceDataset:
-        """Bind an existing reference dataset file already uploded to S3 to a `Model`
+        """Bind an existing reference dataset file already uploaded to S3 to a `Model`
 
         :param dataset_url: The url of the file already uploaded inside S3
         :param aws_credentials: AWS credentials used to connect to S3 bucket. Default value is None.
-        :param separator: Optional value to define separator used inside CSV file. Default falue is ","
+        :param separator: Optional value to define separator used inside CSV file. Default value is ","
         :return: An instance of `ModelReferenceDataset` representing the reference dataset
         """
 
@@ -298,7 +298,7 @@ class Model:
         :param correlation_id_column: The name of the column used for correlation id
         :param object_name: The optional name of the object uploaded to S3. Default value is None.
         :param aws_credentials: AWS credentials used to connect to S3 bucket. Default value is None.
-        :param separator: Optional value to define separator used inside CSV file. Default falue is ","
+        :param separator: Optional value to define separator used inside CSV file. Default value is ","
         :return: An instance of `ModelReferenceDataset` representing the reference dataset
         """
 
@@ -375,12 +375,12 @@ class Model:
         aws_credentials: Optional[AwsCredentials] = None,
         separator: str = ',',
     ) -> ModelCurrentDataset:
-        """Bind an existing current dataset file already uploded to S3 to a `Model`
+        """Bind an existing current dataset file already uploaded to S3 to a `Model`
 
         :param dataset_url: The url of the file already uploaded inside S3
         :param correlation_id_column: The name of the column used for correlation id
         :param aws_credentials: AWS credentials used to connect to S3 bucket. Default value is None.
-        :param separator: Optional value to define separator used inside CSV file. Default falue is ","
+        :param separator: Optional value to define separator used inside CSV file. Default value is ","
         :return: An instance of `ModelReferenceDataset` representing the reference dataset
         """
 
