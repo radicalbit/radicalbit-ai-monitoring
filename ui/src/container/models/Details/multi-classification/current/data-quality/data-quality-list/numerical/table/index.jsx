@@ -8,21 +8,21 @@ function NumericalTable({ data }) {
   }
 
   const leftTableData = (el) => [
-    { label: 'AVG', value: el.mean },
-    { label: 'STD', value: el.std },
+    { label: 'Avg', value: el.mean },
+    { label: 'Std', value: el.std },
     { label: 'Min', value: el.min },
     { label: 'Max', value: el.max },
   ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' }));
 
   const centerTableData = (el) => [
-    { label: 'Perc_25', value: el.medianMetrics.perc25 },
+    { label: 'Percentile 25', value: el.medianMetrics.perc25 },
     { label: 'Median', value: el.medianMetrics.median },
-    { label: 'Perc_75', value: el.medianMetrics.perc75 },
+    { label: 'Percentile 75', value: el.medianMetrics.perc75 },
   ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' }));
 
   const rigthTableData = (el) => [
-    { label: 'Miss_val', value: el.missingValue.count },
-    { label: '%_miss_val', value: el.missingValue.percentage },
+    { label: 'Missing values', value: el.missingValue.count },
+    { label: 'Missing values %', value: el.missingValue.percentage },
   ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' }));
 
   return (
