@@ -59,7 +59,7 @@ class ModelCurrentDataset:
         return self.__status
 
     def statistics(self) -> Optional[DatasetStats]:
-        """Get statistics about the current dataset
+        """Get statistics about the actual dataset
 
         :return: The `DatasetStats` if exists
         """
@@ -85,6 +85,8 @@ class ModelCurrentDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__statistics = None
+            case JobStatus.MISSING_CURRENT:
+                self.__statistics = None
             case JobStatus.SUCCEEDED:
                 if self.__statistics is None:
                     _, stats = invoke(
@@ -107,7 +109,7 @@ class ModelCurrentDataset:
         return self.__statistics
 
     def drift(self) -> Optional[Drift]:
-        """Get drift about the current dataset
+        """Get drift about the actual dataset
 
         :return: The `Drift` if exists
         """
@@ -133,6 +135,8 @@ class ModelCurrentDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__drift = None
+            case JobStatus.MISSING_CURRENT:
+                self.__drift = None
             case JobStatus.SUCCEEDED:
                 if self.__drift is None:
                     _, drift = invoke(
@@ -155,7 +159,7 @@ class ModelCurrentDataset:
         return self.__drift
 
     def data_quality(self) -> Optional[DataQuality]:
-        """Get data quality metrics about the current dataset
+        """Get data quality metrics about the actual dataset
 
         :return: The `DataQuality` if exists
         """
@@ -196,6 +200,8 @@ class ModelCurrentDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__data_metrics = None
+            case JobStatus.MISSING_CURRENT:
+                self.__data_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__data_metrics is None:
                     _, metrics = invoke(
@@ -218,7 +224,7 @@ class ModelCurrentDataset:
         return self.__data_metrics
 
     def model_quality(self) -> Optional[ModelQuality]:
-        """Get model quality metrics about the current dataset
+        """Get model quality metrics about the actual dataset
 
         :return: The `ModelQuality` if exists
         """
@@ -265,6 +271,8 @@ class ModelCurrentDataset:
 
         match self.__status:
             case JobStatus.ERROR:
+                self.__model_metrics = None
+            case JobStatus.MISSING_CURRENT:
                 self.__model_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__model_metrics is None:
