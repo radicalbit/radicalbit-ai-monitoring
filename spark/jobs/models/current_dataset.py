@@ -1,6 +1,5 @@
 from typing import List
 
-from pyspark.ml.feature import StringIndexer
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DoubleType, StructField, StructType
 import pyspark.sql.functions as F
@@ -128,13 +127,46 @@ class CurrentDataset:
             .union(predictions_df_reference)
             .union(target_df_reference)
         ).dropna()
-        classes_index_df = prediction_target_df.select('classes').distinct() \
-            .withColumn('classes_index', (F.row_number().over(Window.partitionBy(F.lit("A")).orderBy('classes')) - 1).cast(DoubleType()))
-        indexed_prediction_df = self.current.join(classes_index_df, self.current[self.model.outputs.prediction.name]==classes_index_df["classes"], how="inner").withColumnRenamed('classes_index', f"{self.model.outputs.prediction.name}-idx").drop("classes")
-        indexed_target_df = indexed_prediction_df.join(classes_index_df, indexed_prediction_df[self.model.target.name]==classes_index_df["classes"], how="inner").withColumnRenamed('classes_index', f"{self.model.target.name}-idx").drop("classes")
+        classes_index_df = (
+            prediction_target_df.select("classes")
+            .distinct()
+            .withColumn(
+                "classes_index",
+                (
+                    F.row_number().over(
+                        Window.partitionBy(F.lit("A")).orderBy("classes")
+                    )
+                    - 1
+                ).cast(DoubleType()),
+            )
+        )
+        indexed_prediction_df = (
+            self.current.join(
+                classes_index_df,
+                self.current[self.model.outputs.prediction.name]
+                == classes_index_df["classes"],
+                how="inner",
+            )
+            .withColumnRenamed(
+                "classes_index", f"{self.model.outputs.prediction.name}-idx"
+            )
+            .drop("classes")
+        )
+        indexed_target_df = (
+            indexed_prediction_df.join(
+                classes_index_df,
+                indexed_prediction_df[self.model.target.name]
+                == classes_index_df["classes"],
+                how="inner",
+            )
+            .withColumnRenamed("classes_index", f"{self.model.target.name}-idx")
+            .drop("classes")
+        )
 
         index_label_map = {
-            str(float(row.__getitem__('classes_index'))): str(row.__getitem__('classes'))
+            str(float(row.__getitem__("classes_index"))): str(
+                row.__getitem__("classes")
+            )
             for row in classes_index_df.collect()
         }
         return index_label_map, indexed_target_df
