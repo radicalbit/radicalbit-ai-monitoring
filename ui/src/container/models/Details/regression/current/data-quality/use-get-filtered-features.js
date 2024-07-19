@@ -48,9 +48,8 @@ export default () => {
 
         return {
           ...m,
-          frequency: Math.floor(m.frequency * 100),
           referenceCount: rFounded?.count,
-          referenceFrequency: (rFounded?.frequency) ? Math.floor(rFounded.frequency * 100) : 0,
+          referenceFrequency: rFounded?.frequency,
         };
       });
 

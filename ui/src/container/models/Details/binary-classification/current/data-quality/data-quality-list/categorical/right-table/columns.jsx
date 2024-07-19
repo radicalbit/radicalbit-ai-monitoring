@@ -9,18 +9,17 @@ const columns = [
   {
     title: 'Count',
     key: 'count',
-    width: '8rem',
+    width: '6rem',
     dataIndex: 'count',
   },
   {
     title: '',
     key: 'frequency',
-    width: '8rem',
-
-    render: (data) => {
-      const formattedFrequency = Math.floor(data.frequency * 100);
-      const formattedReferenceFrequency = (data.referenceFrequency) ? Math.floor(data.referenceFrequency * 100) : 0;
-
+    width: '5rem',
+    align: 'right',
+    render: ({ frequency, referenceFrequency }) => {
+      const formattedFrequency = Math.floor(frequency * 100);
+      const formattedReferenceFrequency = (referenceFrequency) ? Math.floor(referenceFrequency * 100) : 0;
       return (
         <div className="flex flex-col items-end gap-1">
           <div>
@@ -35,14 +34,15 @@ const columns = [
         </div>
       );
     },
+
   },
   {
     title: 'Frequency',
     key: 'frequency',
     width: '12rem',
-    render: (data) => {
-      const formattedFrequency = Math.floor(data.frequency * 100);
-      const formattedReferenceFrequency = (data.referenceFrequency) ? Math.floor(data.referenceFrequency * 100) : 0;
+    render: ({ frequency, referenceFrequency }) => {
+      const formattedFrequency = Math.floor(frequency * 100);
+      const formattedReferenceFrequency = (referenceFrequency) ? Math.floor(referenceFrequency * 100) : 0;
       return (
         <div className="flex flex-col gap-2">
           <BarChart
@@ -59,6 +59,7 @@ const columns = [
         </div>
       );
     },
+
   },
 ];
 
