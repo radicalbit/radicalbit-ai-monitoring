@@ -29,6 +29,7 @@ services:
       DB_USER: "postgres"
       DB_PWD: "postgres"
       DB_NAME: "radicalbit"
+      DB_SCHEMA: "public"
       AWS_ACCESS_KEY_ID: "minio"
       AWS_SECRET_ACCESS_KEY: "minio123"
       AWS_REGION: "us-east-1"
@@ -64,6 +65,7 @@ services:
       DB_USER: "postgres"
       DB_PWD: "postgres"
       DB_NAME: "radicalbit"
+      DB_SCHEMA: "public"
     depends_on:
       postgres:
         condition: service_healthy
@@ -136,12 +138,13 @@ services:
       POSTGRES_DB: radicalbit
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_SCHEMA: public
     volumes:
       - ./init-data/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
     entrypoint: >
       /bin/sh -c "
       sleep 10;
-      PGPASSWORD=postgres psql -h postgres -U postgres -d radicalbit -f /docker-entrypoint-initdb.d/init_db.sql;
+      PGPASSWORD=postgres PGOPTIONS="--search_path=$${POSTGRES_SCHEMA}" psql -h postgres -U postgres -d radicalbit -f /docker-entrypoint-initdb.d/init_db.sql;
       "
 
   minio-mirror:

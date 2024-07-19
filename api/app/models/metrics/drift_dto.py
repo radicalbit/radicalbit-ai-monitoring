@@ -10,6 +10,7 @@ from app.models.job_status import JobStatus
 class DriftAlgorithm(str, Enum):
     KS = 'KS'
     CHI2 = 'CHI2'
+    PSI = 'PSI'
 
 
 class FeatureDriftCalculation(BaseModel):

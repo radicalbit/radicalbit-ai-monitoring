@@ -12,6 +12,7 @@ db_port = os.getenv("POSTGRES_PORT")
 db_name = os.getenv("POSTGRES_DB")
 user = os.getenv("POSTGRES_USER")
 password = os.getenv("POSTGRES_PASSWORD")
+postgres_schema = os.getenv("POSTGRES_SCHEMA")
 
 url = f"jdbc:postgresql://{db_host}:{db_port}/{db_name}"
 
@@ -19,7 +20,12 @@ url = f"jdbc:postgresql://{db_host}:{db_port}/{db_name}"
 def update_job_status(file_uuid: str, status: str, table_name: str):
     # Use psycopg2 to update the job status
     with psycopg2.connect(
-        host=db_host, dbname=db_name, user=user, password=password, port=db_port
+        host=db_host,
+        dbname=db_name,
+        user=user,
+        password=password,
+        port=db_port,
+        options=f"-c search_path=dbo,{postgres_schema}",
     ) as conn:
         with conn.cursor() as cur:
             cur.execute(
@@ -43,4 +49,4 @@ def write_to_db(
         "stringtype", "unspecified"
     ).option("driver", "org.postgresql.Driver").option("user", user).option(
         "password", password
-    ).option("dbtable", table_name).mode("append").save()
+    ).option("dbtable", f'"{postgres_schema}"."{table_name}"').mode("append").save()
