@@ -66,8 +66,8 @@ export const DRIFT_TEST_ENUM = {
 };
 
 export const DRIFT_TEST_ENUM_LABEL = {
-  [DRIFT_TEST_ENUM.KS]: 'Kolmogorov-Smirnov',
-  [DRIFT_TEST_ENUM.CHI2]: 'Chi-Squared Test',
+  [DRIFT_TEST_ENUM.KS]: 'Kolmogorov-Smirnov (statistics)',
+  [DRIFT_TEST_ENUM.CHI2]: 'Chi-Square Test (p-value)',
 };
 
 // FIX: in the future the feature type comes from API

@@ -109,7 +109,7 @@ function DataPointDistributionChart() {
             echarts={echarts}
             onChartReady={handleOnChartReady}
             option={chartOptions(classMetrics, CHART_COLOR.REFERENCE)}
-            style={{ height: '12rem', width: '100%' }}
+            style={{ height: '20rem', width: '100%' }}
           />
         </div>
       )}
