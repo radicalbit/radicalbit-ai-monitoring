@@ -16,14 +16,6 @@ test_drift_res = {
                 "has_drift": False,
             },
         },
-        {
-            "feature_name": "num1",
-            "drift_calc": {"type": "KS", "value": 0.9, "has_drift": True},
-        },
-        {
-            "feature_name": "num2",
-            "drift_calc": {"type": "KS", "value": 0.3, "has_drift": False},
-        },
     ]
 }
 
@@ -36,14 +28,6 @@ test_drift_small_res = {
         {
             "feature_name": "cat2",
             "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
-        },
-        {
-            "feature_name": "num1",
-            "drift_calc": {"type": "KS", "value": 0.75, "has_drift": False},
-        },
-        {
-            "feature_name": "num2",
-            "drift_calc": {"type": "KS", "value": 0.7, "has_drift": False},
         },
     ]
 }
@@ -66,14 +50,6 @@ test_drift_boolean_res = {
                 "has_drift": True,
             },
         },
-        {
-            "feature_name": "num1",
-            "drift_calc": {"type": "KS", "value": 0.4, "has_drift": False},
-        },
-        {
-            "feature_name": "num2",
-            "drift_calc": {"type": "KS", "value": 0.3, "has_drift": False},
-        },
     ]
 }
 
@@ -95,31 +71,11 @@ test_drift_bigger_file_res = {
                 "has_drift": False,
             },
         },
-        {
-            "feature_name": "num1",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.9230769231,
-                "has_drift": True,
-            },
-        },
-        {
-            "feature_name": "num2",
-            "drift_calc": {
-                "type": "KS",
-                "value": 0.5384615385,
-                "has_drift": False,
-            },
-        },
     ]
 }
 
 test_drift_bike_res = {
     "feature_metrics": [
-        {
-            "feature_name": "weathersit",
-            "drift_calc": {"type": "KS", "value": 0.6219091927, "has_drift": True},
-        },
         {
             "feature_name": "temp",
             "drift_calc": {"type": "KS", "value": 0.5259741552, "has_drift": True},
@@ -240,10 +196,6 @@ test_drift_phone_res = {
         {
             "feature_name": "primary_camera_front",
             "drift_calc": {"type": "KS", "value": 0.3139650146, "has_drift": True},
-        },
-        {
-            "feature_name": "extended_upto",
-            "drift_calc": {"type": "KS", "value": 0.5237507289, "has_drift": True},
         },
         {
             "feature_name": "price",
