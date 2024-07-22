@@ -15,6 +15,7 @@ class DBConfig(BaseSettings):
     db_user: str = 'postgres'
     db_pwd: str = 'postgres'
     db_name: str = 'postgres'
+    db_schema: str = 'public'
 
 
 class FileUploadConfig(BaseSettings):
@@ -139,4 +140,5 @@ def create_secrets():
         'POSTGRES_PORT': f'{db_config.db_port}',
         'POSTGRES_USER': db_config.db_user,
         'POSTGRES_PASSWORD': db_config.db_pwd,
+        'POSTGRES_SCHEMA': db_config.db_schema,
     }

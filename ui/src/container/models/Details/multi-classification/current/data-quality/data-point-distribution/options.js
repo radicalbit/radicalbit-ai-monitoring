@@ -17,24 +17,15 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
     series: [
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
-        color: CHART_COLOR.REFERENCE_LIGHT,
       },
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, `${title}_current`, CHART_COLOR.CURRENT_LIGHT, currentData),
-        color: CHART_COLOR.CURRENT_LIGHT,
       },
     ],
   };
 
   if (currentData.length >= 20 || referenceData.length >= 20) {
-    options.dataZoom = [
-      {
-        show: true,
-      },
-      {
-        type: 'inside',
-      },
-    ];
+    options.dataZoom = commonChartOptions.dataZoomOptions();
     options.grid.bottom = 40;
   }
 

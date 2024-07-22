@@ -5,6 +5,8 @@ import { useParams } from 'react-router';
 import useModals from '@Hooks/use-modals';
 import { modelsApiSlice } from './api';
 
+const { selectQueryParamsSelector } = contextConfigurationSelectors;
+
 const {
   useGetReferenceImportsQuery,
   useGetReferenceDataQualityQuery,
@@ -16,6 +18,7 @@ const {
   useGetCurrentStatisticsByUUIDQuery,
   useGetCurrentDriftQuery,
   useGetModelByUUIDQuery,
+  useGetModelsQuery,
 } = modelsApiSlice;
 
 const useGetReferenceImportsQueryWithPolling = () => {
@@ -153,6 +156,19 @@ const useGetCurrentDriftQueryWithPolling = () => {
   return result;
 };
 
+const useGetModelQueryWithPolling = () => {
+  const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.MODELS));
+  const result = useGetModelsQuery({ queryParams });
+
+  const isReferencePending = result.data?.items.some((d) => d.latestReferenceJobStatus === JOB_STATUS.IMPORTING);
+  const isCurrentPending = result.data?.items.some((d) => d.latestCurrentJobStatus === JOB_STATUS.IMPORTING);
+  const isPending = isReferencePending || isCurrentPending;
+
+  useGetModelsQuery({ queryParams }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isPending });
+
+  return result;
+};
+
 export {
   useGetCurrentDataQualityQueryWithPolling,
   useGetCurrentDriftQueryWithPolling,
@@ -163,4 +179,5 @@ export {
   useGetReferenceImportsQueryWithPolling,
   useGetReferenceModelQualityQueryWithPolling,
   useGetReferenceStatisticsQueryWithPolling,
+  useGetModelQueryWithPolling,
 };

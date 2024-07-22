@@ -9,18 +9,32 @@ const columns = [
   {
     title: 'Count',
     key: 'count',
-    width: '8rem',
+    width: '6rem',
     dataIndex: 'count',
   },
   {
-    title: 'Frequency (%)',
+    title: '',
+    key: 'frequency',
+    width: '5rem',
+    align: 'right',
+    render: ({ frequency }) => {
+      const formattedFrequency = Math.floor(frequency * 100);
+      return (
+        <div>
+          {formattedFrequency}
+          %
+        </div>
+      );
+    },
+  },
+  {
+    title: 'Frequency',
     key: 'frequency',
     width: '12rem',
     render: ({ frequency }) => {
       const formattedFrequency = Math.floor(frequency * 100);
       return (
         <BarChart
-          content={`${formattedFrequency}%`}
           type="secondary"
           value={formattedFrequency}
           width="100%"

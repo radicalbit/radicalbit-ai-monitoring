@@ -15,7 +15,7 @@ class Reflected(DeferredReflection):
     __abstract__ = True
 
 
-BaseTable = declarative_base(metadata=MetaData())
+BaseTable = declarative_base(metadata=MetaData(schema=get_config().db_config.db_schema))
 
 
 class Database:

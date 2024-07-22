@@ -324,6 +324,24 @@ regression_model_quality_dict = {
     'rmse': 202.23194752188695,
     'adj_r2': 0.9116805380966796,
     'variance': 0.23,
+    'residuals': {
+        'ks': {
+            'p_value': 0.01,
+            'statistic': 0.4,
+        },
+        'histogram': {
+            'values': [1, 2, 3],
+            'buckets': [-3.2, -1, 2.2],
+        },
+        'correlation_coefficient': 0.01,
+        'standardized_residuals': [0.02, 0.03],
+        'targets': [1, 2.2, 3],
+        'predictions': [1.3, 2, 4.5],
+        'regression_line': {
+            'coefficient': 0.7942363125434776,
+            'intercept': 2.8227418911402906,
+        },
+    },
 }
 
 grouped_regression_model_quality_dict = {

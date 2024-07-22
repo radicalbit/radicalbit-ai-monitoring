@@ -107,11 +107,11 @@ function DataPointDistributionChart() {
             echarts={echarts}
             onChartReady={handleOnChartReady}
             option={chartOptions(dataset, CHART_COLOR.REFERENCE, CHART_COLOR.CURRENT)}
-            style={{ height: '100%' }}
+            style={{ height: '20rem', width: '100%' }}
           />
         </div>
       )}
-      modifier="w-full h-full shadow"
+      modifier="w-full h-full shadow overflow-auto max-w-full "
       size="small"
     />
   );

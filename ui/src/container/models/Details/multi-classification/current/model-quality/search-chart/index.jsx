@@ -24,7 +24,23 @@ function SearchChart() {
             mode="multiple"
             onChange={handleOnSelect}
             options={options}
-            placeholder={<FontAwesomeIcon icon={faSearch} />}
+            placeholder={(
+              <div className="flex flex-row items-center justify-between gap-4">
+                <div>
+                  Please select one or more of the
+                  {' '}
+
+                  {items.length}
+
+                  {' '}
+                  available class
+
+                </div>
+
+                <FontAwesomeIcon icon={faSearch} />
+
+              </div>
+            )}
           />
         </FormField>
       </div>

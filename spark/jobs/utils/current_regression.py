@@ -40,6 +40,11 @@ class CurrentMetricsRegressionService:
         metrics["grouped_metrics"] = (
             self.calculate_regression_model_quality_group_by_timestamp()
         )
+        metrics["global_metrics"]["residuals"] = (
+            ModelQualityRegressionCalculator.residual_metrics(
+                model=self.current.model, dataframe=self.current.current
+            )
+        )
         return metrics
 
     def calculate_regression_model_quality_group_by_timestamp(self):

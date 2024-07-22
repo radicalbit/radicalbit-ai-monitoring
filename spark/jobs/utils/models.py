@@ -51,6 +51,12 @@ class ColumnDefinition(BaseModel):
     def is_numerical(self) -> bool:
         return self.type == SupportedTypes.float or self.type == SupportedTypes.int
 
+    def is_float(self) -> bool:
+        return self.type == SupportedTypes.float
+
+    def is_int(self) -> bool:
+        return self.type == SupportedTypes.int
+
     def is_categorical(self) -> bool:
         return self.type == SupportedTypes.string or self.type == SupportedTypes.bool
 
@@ -97,6 +103,12 @@ class ModelOut(BaseModel):
 
     def get_numerical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_numerical()]
+
+    def get_float_features(self) -> List[ColumnDefinition]:
+        return [feature for feature in self.features if feature.is_float()]
+
+    def get_int_features(self) -> List[ColumnDefinition]:
+        return [feature for feature in self.features if feature.is_int()]
 
     def get_categorical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_categorical()]
