@@ -38,7 +38,7 @@ class DriftCalculator:
                 reference_dataset.reference_count > 5
                 and current_dataset.current_count > 5
             ):
-                result_tmp = chi2.test(column, column)
+                result_tmp = chi2.test_goodness_fit(column, column)
                 feature_dict_to_append["drift_calc"]["value"] = float(
                     result_tmp["pValue"]
                 )
@@ -90,7 +90,7 @@ class DriftCalculator:
                     reference_dataset.reference_count > 5
                     and current_dataset.current_count > 5
                 ):
-                    result_tmp = chi2.test(column, column)
+                    result_tmp = chi2.test_goodness_fit(column, column)
                     feature_dict_to_append["drift_calc"]["value"] = float(
                         result_tmp["pValue"]
                     )
@@ -109,7 +109,7 @@ class DriftCalculator:
                 feature_dict_to_append["drift_calc"]["has_drift"] = bool(
                     result_tmp["ks_statistic"] > result_tmp["critical_value"]
                 )
-                drift_result["feature_metrics"].append(feature_dict_to_append)
+            drift_result["feature_metrics"].append(feature_dict_to_append)
 
         int_features = [
             int_f.name for int_f in reference_dataset.model.get_int_features()
@@ -149,7 +149,7 @@ class DriftCalculator:
                     reference_dataset.reference_count > 5
                     and current_dataset.current_count > 5
                 ):
-                    result_tmp = chi2.test(column, column)
+                    result_tmp = chi2.test_goodness_fit(column, column)
                     feature_dict_to_append["drift_calc"]["value"] = float(
                         result_tmp["pValue"]
                     )
