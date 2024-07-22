@@ -35,12 +35,16 @@ export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
         ...commonChartOptions.seriesOptions(CHART_TYPE.SCATTER, null, color, dataset.data),
       },
       {
-        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, CHART_COLOR.RED, [[xMin, xMin], [xMax, xMax]]),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, 'Diagonal line', CHART_COLOR.DIAGONAL_LINE, [[xMin, xMin], [xMax, xMax]]),
       },
       {
-        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, null, null, regressionLineDataset),
+        ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, 'Regression line', CHART_COLOR.REGRESSION_LINE, regressionLineDataset),
       },
     ],
+    legend: {
+      show: true,
+      right: 0,
+    },
   };
 
   options.yAxis.scale = true;

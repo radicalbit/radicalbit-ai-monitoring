@@ -17,7 +17,7 @@ export default function lineChartOptions(title, color, currentDataset, reference
       endLabel: {
         show: true,
         color: CHART_COLOR.REFERENCE,
-        formatter: ({ value }) => `Reference\n${value[1]}`,
+        formatter: ({ value }) => `${value[1]}`,
       },
       color: CHART_COLOR.REFERENCE,
     };
@@ -34,6 +34,10 @@ export default function lineChartOptions(title, color, currentDataset, reference
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.TIME),
     ...commonChartOptions.gridOptions(CHART_TYPE.LINE),
     series,
+    legend: {
+      show: true,
+      right: 0,
+    },
   };
 
   options.xAxis.scale = true;

@@ -53,7 +53,7 @@ class ModelReferenceDataset:
         return self.__status
 
     def statistics(self) -> Optional[DatasetStats]:
-        """Get statistics about the current dataset
+        """Get statistics about the actual dataset
 
         :return: The `DatasetStats` if exists
         """
@@ -78,6 +78,8 @@ class ModelReferenceDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__statistics = None
+            case JobStatus.MISSING_REFERENCE:
+                self.__statistics = None
             case JobStatus.SUCCEEDED:
                 if self.__statistics is None:
                     _, stats = invoke(
@@ -100,7 +102,7 @@ class ModelReferenceDataset:
         return self.__statistics
 
     def data_quality(self) -> Optional[DataQuality]:
-        """Get data quality metrics about the current dataset
+        """Get data quality metrics about the actual dataset
 
         :return: The `DataQuality` if exists
         """
@@ -141,6 +143,8 @@ class ModelReferenceDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__data_metrics = None
+            case JobStatus.MISSING_REFERENCE:
+                self.__data_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__data_metrics is None:
                     _, metrics = invoke(
@@ -163,7 +167,7 @@ class ModelReferenceDataset:
         return self.__data_metrics
 
     def model_quality(self) -> Optional[ModelQuality]:
-        """Get model quality metrics about the current dataset
+        """Get model quality metrics about the actual dataset
 
         :return: The `ModelQuality` if exists
         """
@@ -210,6 +214,8 @@ class ModelReferenceDataset:
 
         match self.__status:
             case JobStatus.ERROR:
+                self.__model_metrics = None
+            case JobStatus.MISSING_REFERENCE:
                 self.__model_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__model_metrics is None:
