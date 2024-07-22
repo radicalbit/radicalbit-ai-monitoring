@@ -1,3 +1,4 @@
+import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import {
   fa1, faC,
@@ -11,8 +12,8 @@ import {
   Spinner,
   Tag,
 } from '@radicalbit/radicalbit-design-system';
+import React from 'react';
 import { Virtuoso } from 'react-virtuoso';
-import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 import CategoricalLeftTable from './categorical/left-table/index';
 import CategoricalRightTable from './categorical/right-table';
@@ -28,7 +29,6 @@ function DataQualityList() {
 
   return (
     <Spinner className="mb-16" fullHeight fullWidth>
-      <CountLabel />
 
       <Virtuoso
         data={items}
@@ -44,20 +44,9 @@ function DataQualityList() {
               return false;
           }
         }}
-        totalCount={items.length}
+
       />
     </Spinner>
-  );
-}
-
-function CountLabel() {
-  const items = useGetFilteredFeatures();
-  const label = items.length <= 1 ? 'Record' : 'Records';
-
-  return (
-    <label>
-      {`${label} ${items.length}`}
-    </label>
   );
 }
 
@@ -104,7 +93,7 @@ function NumericalFeature({ item }) {
 
         </div>
       )}
-      modifier="my-4 min-h-70"
+      modifier="my-4 h-[20rem]"
       size="small"
     />
   );
@@ -145,13 +134,13 @@ function CategoricalFeature({ item }) {
               <CategoricalLeftTable data={item} />
             </div>
 
-            <div className="basis-3/5">
+            <div className="basis-3/5 ">
               <CategoricalRightTable data={dataset} />
             </div>
           </div>
         </div>
       )}
-      modifier="my-4 min-h-70"
+      modifier="my-4 h-[20rem]"
       size="small"
     />
   );

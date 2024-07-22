@@ -25,25 +25,12 @@ function DataDriftList() {
 
   return (
     <Spinner fullHeight fullWidth>
-      <CountLabel />
-
       <Virtuoso
         data={items}
         itemContent={(idx, item) => (<FeatureRow key={idx} item={item} />)}
         totalCount={items.length}
       />
     </Spinner>
-  );
-}
-
-function CountLabel() {
-  const items = useGetFilteredFeatures();
-  const label = items.length <= 1 ? 'Record' : 'Records';
-
-  return (
-    <label>
-      {`${label} ${items.length}`}
-    </label>
   );
 }
 
