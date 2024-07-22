@@ -18,12 +18,13 @@ function NumericalTable({ data }) {
     { label: 'Percentile 25', value: el?.medianMetrics?.perc25 ?? '--' },
     { label: 'Median', value: el?.medianMetrics?.median ?? '--' },
     { label: 'Percentile 75', value: el?.medianMetrics?.perc75 ?? '--' },
-  ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' }));
-
-  const rigthTableData = (el) => [
-    { label: 'Missing values', value: el?.missingValue?.count ?? '--' },
-    { label: 'Missing values %', value: el?.missingValue?.percentage ?? '--' },
-  ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' }));
+    { label: 'Missing values', value: `${numberFormatter().format(el?.missingValue?.count)} (${numberFormatter().format(el?.missingValue?.percentage)}%)` },
+  ].map((o) => {
+    if (o.label === 'Missing values') {
+      return o;
+    }
+    return { ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' };
+  });
 
   return (
     <div className="flex flex-row gap-4">
@@ -41,7 +42,7 @@ function NumericalTable({ data }) {
       <DataTable
         columns={columns}
         dataSource={centerTableData(data)}
-        modifier="basis-1/3"
+        modifier="basis-2/3"
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
@@ -49,16 +50,6 @@ function NumericalTable({ data }) {
         size="small"
       />
 
-      <DataTable
-        columns={columns}
-        dataSource={rigthTableData(data)}
-        modifier="basis-1/3"
-        noHead
-        pagination={false}
-        rowClassName={DataTable.ROW_NOT_CLICKABLE}
-        rowKey={({ label }) => label}
-        size="small"
-      />
     </div>
   );
 }

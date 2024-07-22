@@ -31,7 +31,7 @@ function NumericalTable({ data }) {
       <DataTable
         columns={columns}
         dataSource={leftTableData(data)}
-        modifier="basis-2/5"
+        modifier="basis-1/3"
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
@@ -42,7 +42,7 @@ function NumericalTable({ data }) {
       <DataTable
         columns={columns}
         dataSource={centerTableData(data)}
-        modifier="basis-3/5"
+        modifier="basis-2/3"
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
