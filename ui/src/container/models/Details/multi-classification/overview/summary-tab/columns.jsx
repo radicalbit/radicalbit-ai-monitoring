@@ -59,12 +59,12 @@ const leftDataSourceTable = ({ reference, current }) => [
     currentValue: current ? current.statistics?.nObservations : undefined,
   },
   {
-    label: 'Missing cells',
+    label: 'Missing values',
     referenceValue: reference ? reference.statistics.missingCells : undefined,
     currentValue: current ? current.statistics?.missingCells : undefined,
   },
   {
-    label: 'Missing cells (%)',
+    label: 'Missing values (%)',
     referenceValue: reference ? reference.statistics.missingCellsPerc : undefined,
     currentValue: current ? current.statistics?.missingCellsPerc : undefined,
   },

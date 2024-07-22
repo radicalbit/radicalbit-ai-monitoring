@@ -2,6 +2,7 @@ import ReactEchartsCore from 'echarts-for-react/lib/core';
 import { ScatterChart } from 'echarts/charts';
 import {
   GridComponent,
+  LegendComponent,
   MarkLineComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/lib/echarts';
@@ -12,6 +13,7 @@ echarts.use([
   GridComponent,
   ScatterChart,
   MarkLineComponent,
+  LegendComponent,
 ]);
 
 function PredictedActualChart({
