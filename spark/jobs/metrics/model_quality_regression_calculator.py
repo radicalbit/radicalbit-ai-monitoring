@@ -16,6 +16,7 @@ from models.regression_model_quality import (
 from utils.models import ModelOut
 from pyspark.ml.evaluation import RegressionEvaluator
 from utils.spark import is_not_null
+from utils.misc import rbit_prefix
 
 
 class ModelQualityRegressionCalculator:
@@ -49,7 +50,7 @@ class ModelQualityRegressionCalculator:
                     # Source: https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
                     # mape = 100 * (abs(actual - predicted) / actual) / n
                     _dataframe = dataframe.withColumn(
-                        "mape",
+                        f"{rbit_prefix}mape",
                         F.abs(
                             (
                                 F.col(model.outputs.prediction.name)
@@ -58,7 +59,10 @@ class ModelQualityRegressionCalculator:
                             / F.col(model.target.name)
                         ),
                     )
-                    return _dataframe.agg({"mape": "avg"}).collect()[0][0] * 100
+                    return (
+                        _dataframe.agg({f"{rbit_prefix}mape": "avg"}).collect()[0][0]
+                        * 100
+                    )
                 case RegressionMetricType.VAR:
                     return RegressionEvaluator(
                         metricName="var",
@@ -115,16 +119,19 @@ class ModelQualityRegressionCalculator:
             is_not_null(model.outputs.prediction.name) & is_not_null(model.target.name)
         ).select(model.outputs.prediction.name, model.target.name)
         dataframe_clean = dataframe_clean.withColumn(
-            "residual", F.col(model.target.name) - F.col(model.outputs.prediction.name)
+            f"{rbit_prefix}residual",
+            F.col(model.target.name) - F.col(model.outputs.prediction.name),
         )
         va = (
-            VectorAssembler().setInputCols(["residual"]).setOutputCol("residual_vector")
+            VectorAssembler()
+            .setInputCols([f"{rbit_prefix}residual"])
+            .setOutputCol(f"{rbit_prefix}residual_vector")
         )
         data_va = va.transform(dataframe_clean)
 
         residual_scaler = StandardScaler(
-            inputCol="residual_vector",
-            outputCol="std_residual_vector",
+            inputCol=f"{rbit_prefix}residual_vector",
+            outputCol=f"{rbit_prefix}std_residual_vector",
             withMean=True,
             withStd=True,
         )
@@ -133,7 +140,8 @@ class ModelQualityRegressionCalculator:
 
         vector2list = F.udf(lambda x: x.toArray().tolist(), ArrayType(FloatType()))
         data_norm = data_scaled.withColumn(
-            "std_residual", vector2list(F.col("std_residual_vector")).getItem(0)
+            f"{rbit_prefix}std_residual",
+            vector2list(F.col(f"{rbit_prefix}std_residual_vector")).getItem(0),
         )
         return data_norm
 
@@ -190,16 +198,16 @@ class ModelQualityRegressionCalculator:
                 & is_not_null(model.target.name)
             )
             .select(model.outputs.prediction.name, model.target.name)
-            .withColumnRenamed(model.outputs.prediction.name, "regr_pred")
+            .withColumnRenamed(model.outputs.prediction.name, f"{rbit_prefix}regr_pred")
         )
 
         va = VectorAssembler(inputCols=[model.target.name], outputCol="features")
 
         data_va = va.transform(dataframe_clean)
 
-        train_data = data_va.select("features", "regr_pred")
+        train_data = data_va.select("features", f"{rbit_prefix}regr_pred")
 
-        lr = LinearRegression(labelCol="regr_pred")
+        lr = LinearRegression(labelCol=f"{rbit_prefix}regr_pred")
 
         # Fit the model to the data and call this model lrModel
         lr_model = lr.fit(train_data)
@@ -214,7 +222,7 @@ class ModelQualityRegressionCalculator:
             model, dataframe
         )
         ks_result = KolmogorovSmirnovTest.test(
-            residual_df_norm, "residual", "norm", 0.0, 1.0
+            residual_df_norm, f"{rbit_prefix}residual", "norm", 0.0, 1.0
         ).first()
         return {
             "ks": {
@@ -225,9 +233,11 @@ class ModelQualityRegressionCalculator:
                 model.outputs.prediction.name, model.target.name
             ),
             "histogram": ModelQualityRegressionCalculator.create_histogram(
-                residual_df_norm, "residual"
+                residual_df_norm, f"{rbit_prefix}residual"
             ).model_dump(serialize_as_any=True),
-            "standardized_residuals": residual_df_norm.select("std_residual")
+            "standardized_residuals": residual_df_norm.select(
+                f"{rbit_prefix}std_residual"
+            )
             .rdd.flatMap(lambda x: x)
             .collect(),
             "predictions": residual_df_norm.select(model.outputs.prediction.name)

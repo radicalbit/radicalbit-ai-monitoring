@@ -19,7 +19,7 @@ from models.data_quality import (
     BinaryClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
-from .misc import create_time_format
+from .misc import create_time_format, rbit_prefix
 from .models import Granularity
 from .spark import is_not_null
 
@@ -255,6 +255,7 @@ class CurrentMetricsService:
         if self.current.model.granularity == Granularity.WEEK:
             dataset_with_group = current_df_clean.select(
                 [
+                    self.current.model.outputs.prediction.name,
                     self.current.model.outputs.prediction_proba.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -279,6 +280,7 @@ class CurrentMetricsService:
         else:
             dataset_with_group = current_df_clean.select(
                 [
+                    self.current.model.outputs.prediction.name,
                     self.current.model.outputs.prediction_proba.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -301,11 +303,20 @@ class CurrentMetricsService:
             .collect()
         )
         array_of_groups = [
+            dataset_with_group.select(
+                [
+                    self.current.model.outputs.prediction_proba.name,
+                    self.current.model.target.name,
+                ]
+            ).where(F.col("time_group") == x)
+            for x in list_of_time_group
+        ]
+        array_of_groups_with_pred = [
             dataset_with_group.where(F.col("time_group") == x)
             for x in list_of_time_group
         ]
 
-        return {
+        res = {
             label: [
                 {
                     "timestamp": group,
@@ -315,6 +326,20 @@ class CurrentMetricsService:
             ]
             for name, label in self.model_quality_binary_classificator.items()
         }
+
+        log_loss_res = {
+            "log_loss": [
+                {
+                    "timestamp": group,
+                    "value": self.__calculate_log_loss(group_dataset),
+                }
+                for group, group_dataset in zip(
+                    list_of_time_group, array_of_groups_with_pred
+                )
+            ]
+        }
+        res.update(log_loss_res)
+        return res
 
     def calculate_confusion_matrix(self) -> dict[str, float]:
         prediction_and_label = (
@@ -358,15 +383,15 @@ class CurrentMetricsService:
             "false_negative_count": fn,
         }
 
-    def __calculate_log_loss(self) -> dict[str, float]:
+    def __calculate_log_loss(self, current_df) -> float:
         dataset_with_proba = (
-            self.current.current.filter(
+            current_df.filter(
                 is_not_null(self.current.model.outputs.prediction.name)
                 & is_not_null(self.current.model.target.name)
                 & is_not_null(self.current.model.outputs.prediction_proba.name)
             )
             .withColumn(
-                "prediction_proba_class0",
+                f"{rbit_prefix}prediction_proba_class0",
                 F.when(
                     F.col(self.current.model.outputs.prediction.name) == 0,
                     F.col(self.current.model.outputs.prediction_proba.name),
@@ -375,7 +400,7 @@ class CurrentMetricsService:
                 ),
             )
             .withColumn(
-                "prediction_proba_class1",
+                f"{rbit_prefix}prediction_proba_class1",
                 F.when(
                     F.col(self.current.model.outputs.prediction.name) == 1,
                     F.col(self.current.model.outputs.prediction_proba.name),
@@ -383,7 +408,7 @@ class CurrentMetricsService:
                     1 - F.col(self.current.model.outputs.prediction_proba.name)
                 ),
             )
-            .withColumn("weight_logloss_def", F.lit(1.0))
+            .withColumn(f"{rbit_prefix}weight_logloss_def", F.lit(1.0))
             .withColumn(
                 self.current.model.outputs.prediction.name,
                 F.col(self.current.model.outputs.prediction.name).cast(DoubleType()),
@@ -397,14 +422,15 @@ class CurrentMetricsService:
         dataset_proba_vector = dataset_with_proba.select(
             self.current.model.outputs.prediction.name,
             self.current.model.target.name,
-            "weight_logloss_def",
+            f"{rbit_prefix}weight_logloss_def",
             F.array(
-                F.col("prediction_proba_class0"), F.col("prediction_proba_class1")
-            ).alias("prediction_proba_vector"),
+                F.col(f"{rbit_prefix}prediction_proba_class0"),
+                F.col(f"{rbit_prefix}prediction_proba_class1"),
+            ).alias(f"{rbit_prefix}prediction_proba_vector"),
         ).rdd
 
         metrics = MulticlassMetrics(dataset_proba_vector)
-        return {"log_loss": metrics.logLoss()}
+        return metrics.logLoss()
 
     # FIXME use pydantic struct like data quality
     def calculate_model_quality_with_group_by_timestamp(self):
@@ -416,7 +442,9 @@ class CurrentMetricsService:
         metrics["global_metrics"].update(self.calculate_confusion_matrix())
         if self.current.model.outputs.prediction_proba is not None:
             metrics["global_metrics"].update(self.__calc_bc_metrics())
-            metrics["global_metrics"].update(self.__calculate_log_loss())
+            metrics["global_metrics"]["log_loss"] = self.__calculate_log_loss(
+                self.current.current
+            )
             binary_class_metrics = (
                 self.calculate_binary_class_model_quality_group_by_timestamp()
             )

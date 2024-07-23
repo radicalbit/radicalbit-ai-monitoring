@@ -18,6 +18,7 @@ from models.data_quality import (
 )
 from models.reference_dataset import ReferenceDataset
 from .spark import is_not_null
+from .misc import rbit_prefix
 
 
 class ReferenceMetricsService:
@@ -160,7 +161,7 @@ class ReferenceMetricsService:
                 & is_not_null(self.reference.model.outputs.prediction_proba.name)
             )
             .withColumn(
-                "prediction_proba_class0",
+                f"{rbit_prefix}prediction_proba_class0",
                 F.when(
                     F.col(self.reference.model.outputs.prediction.name) == 0,
                     F.col(self.reference.model.outputs.prediction_proba.name),
@@ -169,7 +170,7 @@ class ReferenceMetricsService:
                 ),
             )
             .withColumn(
-                "prediction_proba_class1",
+                f"{rbit_prefix}prediction_proba_class1",
                 F.when(
                     F.col(self.reference.model.outputs.prediction.name) == 1,
                     F.col(self.reference.model.outputs.prediction_proba.name),
@@ -177,7 +178,7 @@ class ReferenceMetricsService:
                     1 - F.col(self.reference.model.outputs.prediction_proba.name)
                 ),
             )
-            .withColumn("weight_logloss_def", F.lit(1.0))
+            .withColumn(f"{rbit_prefix}weight_logloss_def", F.lit(1.0))
             .withColumn(
                 self.reference.model.outputs.prediction.name,
                 F.col(self.reference.model.outputs.prediction.name).cast(DoubleType()),
@@ -191,10 +192,11 @@ class ReferenceMetricsService:
         dataset_proba_vector = dataset_with_proba.select(
             self.reference.model.outputs.prediction.name,
             self.reference.model.target.name,
-            "weight_logloss_def",
+            f"{rbit_prefix}weight_logloss_def",
             F.array(
-                F.col("prediction_proba_class0"), F.col("prediction_proba_class1")
-            ).alias("prediction_proba_vector"),
+                F.col(f"{rbit_prefix}prediction_proba_class0"),
+                F.col(f"{rbit_prefix}prediction_proba_class1"),
+            ).alias(f"{rbit_prefix}prediction_proba_vector"),
         ).rdd
 
         metrics = MulticlassMetrics(dataset_proba_vector)

@@ -1,6 +1,9 @@
 from utils.models import Granularity
 
 
+rbit_prefix = "rbit_spark_"
+
+
 def split_dict(dictionary):
     cleaned_dict = dict()
     for k, v in dictionary.items():
