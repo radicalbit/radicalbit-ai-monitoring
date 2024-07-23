@@ -16,7 +16,7 @@ from models.data_quality import (
     MultiClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
-from utils.misc import create_time_format
+from utils.misc import create_time_format, rbit_prefix
 from utils.models import Granularity
 
 
@@ -79,8 +79,8 @@ class CurrentMetricsMulticlassService:
         if self.current.model.granularity == Granularity.WEEK:
             dataset_with_group = self.indexed_current.select(
                 [
-                    f"{self.reference.model.outputs.prediction.name}-idx",
-                    f"{self.current.model.target.name}-idx",
+                    f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
+                    f"{rbit_prefix}_{self.current.model.target.name}-idx",
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -105,8 +105,8 @@ class CurrentMetricsMulticlassService:
         else:
             dataset_with_group = self.indexed_current.select(
                 [
-                    f"{self.reference.model.outputs.prediction.name}-idx",
-                    f"{self.current.model.target.name}-idx",
+                    f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
+                    f"{rbit_prefix}_{self.current.model.target.name}-idx",
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -169,8 +169,8 @@ class CurrentMetricsMulticlassService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=f"{self.current.model.outputs.prediction.name}-idx",
-                labelCol=f"{self.current.model.target.name}-idx",
+                predictionCol=f"{rbit_prefix}_{self.current.model.outputs.prediction.name}-idx",
+                labelCol=f"{rbit_prefix}_{self.current.model.target.name}-idx",
                 metricLabel=class_index,
             ).evaluate(dataset)
         except Exception:
@@ -190,8 +190,8 @@ class CurrentMetricsMulticlassService:
     def __calc_confusion_matrix(self):
         prediction_and_labels = self.indexed_current.select(
             *[
-                f"{self.reference.model.outputs.prediction.name}-idx",
-                f"{self.reference.model.target.name}-idx",
+                f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
+                f"{rbit_prefix}_{self.reference.model.target.name}-idx",
             ]
         ).rdd
         multiclass_metrics_calculator = MulticlassMetrics(prediction_and_labels)

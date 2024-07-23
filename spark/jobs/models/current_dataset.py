@@ -8,6 +8,7 @@ from pyspark.sql.window import Window
 from models.reference_dataset import ReferenceDataset
 from utils.models import ModelOut, ModelType, ColumnDefinition
 from utils.spark import apply_schema_to_dataframe
+from utils.misc import rbit_prefix
 
 
 class CurrentDataset:
@@ -148,7 +149,8 @@ class CurrentDataset:
                 how="inner",
             )
             .withColumnRenamed(
-                "classes_index", f"{self.model.outputs.prediction.name}-idx"
+                "classes_index",
+                f"{rbit_prefix}_{self.model.outputs.prediction.name}-idx",
             )
             .drop("classes")
         )
@@ -159,7 +161,9 @@ class CurrentDataset:
                 == classes_index_df["classes"],
                 how="inner",
             )
-            .withColumnRenamed("classes_index", f"{self.model.target.name}-idx")
+            .withColumnRenamed(
+                "classes_index", f"{rbit_prefix}_{self.model.target.name}-idx"
+            )
             .drop("classes")
         )
 
