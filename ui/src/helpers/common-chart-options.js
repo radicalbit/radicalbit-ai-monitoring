@@ -133,7 +133,7 @@ const barGridOptions = () => ({
 const lineGridOptions = () => ({
   grid: {
     bottom: 0,
-    top: 16,
+    top: 32,
     left: 0,
     right: 64,
     containLabel: true,
@@ -154,7 +154,7 @@ const scatterGridOptions = () => ({
     left: 20,
     right: 0,
     bottom: 50,
-    top: 10,
+    top: 24,
     containLabel: true,
   },
 });
@@ -257,6 +257,7 @@ const lineSeriesOptions = (title, color, data) => {
 
   if (color !== null) {
     options.lineStyle.color = color;
+    options.itemStyle = { color };
   }
 
   return options;
@@ -394,6 +395,8 @@ const CHART_COLOR = {
   WHITE: '#FFFFFF',
   LINE_CHART_COLOR: '#73B2E0',
   RED: '#ff0000',
+  REGRESSION_LINE: '#8D6ECF',
+  DIAGONAL_LINE: '#FFC000',
 };
 
 const OPTIONS_TYPE = {

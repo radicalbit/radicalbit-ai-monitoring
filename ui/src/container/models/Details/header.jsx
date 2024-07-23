@@ -107,7 +107,11 @@ function Framework() {
   const { uuid } = useParams();
 
   const { data } = useGetModelByUUIDQuery({ uuid });
-  const framework = data?.frameworks ?? '--';
+  const framework = data?.frameworks;
+
+  if (!framework) {
+    return false;
+  }
 
   if (framework.length > STATUS_SELECTOR_MAX_LEN) {
     return (
@@ -130,7 +134,11 @@ function Algorithm() {
   const { uuid } = useParams();
 
   const { data } = useGetModelByUUIDQuery({ uuid });
-  const algorithm = data?.algorithm ?? '--';
+  const algorithm = data?.algorithm;
+
+  if (!algorithm) {
+    return false;
+  }
 
   if (algorithm.length > STATUS_SELECTOR_MAX_LEN) {
     return (

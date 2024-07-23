@@ -1,4 +1,5 @@
 import { DataTable } from '@radicalbit/radicalbit-design-system';
+import { memo } from 'react';
 import columns from './columns';
 
 function CategoricalRightTable({ data }) {
@@ -20,4 +21,4 @@ function CategoricalRightTable({ data }) {
   );
 }
 
-export default CategoricalRightTable;
+export default memo(CategoricalRightTable);

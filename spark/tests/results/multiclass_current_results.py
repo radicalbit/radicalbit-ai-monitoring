@@ -1101,3 +1101,136 @@ test_calculation_dataset_with_nulls_res = {
         ],
     },
 }
+
+test_calculation_dataset_indexing_res = {
+    "classes": ["0", "1", "2", "3", "11"],
+    "class_metrics": [
+        {
+            "class_name": "0",
+            "metrics": {
+                "true_positive_rate": 0.6666666666666666,
+                "false_positive_rate": 0.0,
+                "precision": 1.0,
+                "recall": 0.6666666666666666,
+                "f_measure": 0.8,
+            },
+            "grouped_metrics": {
+                "true_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.6666666666666666}
+                ],
+                "false_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
+                ],
+                "precision": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
+                "recall": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.6666666666666666}
+                ],
+                "f_measure": [{"timestamp": "2024-06-16 00:00:00", "value": 0.8}],
+            },
+        },
+        {
+            "class_name": "1",
+            "metrics": {
+                "true_positive_rate": 1.0,
+                "false_positive_rate": 0.1111111111111111,
+                "precision": 0.5,
+                "recall": 1.0,
+                "f_measure": 0.6666666666666666,
+            },
+            "grouped_metrics": {
+                "true_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
+                ],
+                "false_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.1111111111111111}
+                ],
+                "precision": [{"timestamp": "2024-06-16 00:00:00", "value": 0.5}],
+                "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
+                "f_measure": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.6666666666666666}
+                ],
+            },
+        },
+        {
+            "class_name": "2",
+            "metrics": {
+                "true_positive_rate": 0.3333333333333333,
+                "false_positive_rate": 0.14285714285714285,
+                "precision": 0.5,
+                "recall": 0.3333333333333333,
+                "f_measure": 0.4,
+            },
+            "grouped_metrics": {
+                "true_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.3333333333333333}
+                ],
+                "false_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.14285714285714285}
+                ],
+                "precision": [{"timestamp": "2024-06-16 00:00:00", "value": 0.5}],
+                "recall": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.3333333333333333}
+                ],
+                "f_measure": [{"timestamp": "2024-06-16 00:00:00", "value": 0.4}],
+            },
+        },
+        {
+            "class_name": "3",
+            "metrics": {
+                "true_positive_rate": 0.0,
+                "false_positive_rate": 0.2222222222222222,
+                "precision": 0.0,
+                "recall": 0.0,
+                "f_measure": 0.0,
+            },
+            "grouped_metrics": {
+                "true_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
+                ],
+                "false_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.2222222222222222}
+                ],
+                "precision": [{"timestamp": "2024-06-16 00:00:00", "value": 0.0}],
+                "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 0.0}],
+                "f_measure": [{"timestamp": "2024-06-16 00:00:00", "value": 0.0}],
+            },
+        },
+        {
+            "class_name": "11",
+            "metrics": {
+                "true_positive_rate": 1.0,
+                "false_positive_rate": 0.0,
+                "precision": 1.0,
+                "recall": 1.0,
+                "f_measure": 1.0,
+            },
+            "grouped_metrics": {
+                "true_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 1.0}
+                ],
+                "false_positive_rate": [
+                    {"timestamp": "2024-06-16 00:00:00", "value": 0.0}
+                ],
+                "precision": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
+                "recall": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
+                "f_measure": [{"timestamp": "2024-06-16 00:00:00", "value": 1.0}],
+            },
+        },
+    ],
+    "global_metrics": {
+        "f1": 0.6266666666666667,
+        "accuracy": 0.6,
+        "weighted_precision": 0.7,
+        "weighted_recall": 0.6000000000000001,
+        "weighted_true_positive_rate": 0.6000000000000001,
+        "weighted_false_positive_rate": 0.0761904761904762,
+        "weighted_f_measure": 0.6266666666666667,
+        "confusion_matrix": [
+            [2.0, 0.0, 1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 2.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 2.0],
+        ],
+    },
+}

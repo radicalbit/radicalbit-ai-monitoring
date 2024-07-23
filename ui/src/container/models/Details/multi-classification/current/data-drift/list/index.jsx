@@ -25,25 +25,12 @@ function DataDriftList() {
 
   return (
     <Spinner fullHeight fullWidth>
-      <CountLabel />
-
       <Virtuoso
         data={items}
         itemContent={(idx, item) => (<FeatureRow key={idx} item={item} />)}
         totalCount={items.length}
       />
     </Spinner>
-  );
-}
-
-function CountLabel() {
-  const items = useGetFilteredFeatures();
-  const label = items.length <= 1 ? 'Record' : 'Records';
-
-  return (
-    <label>
-      {`${label} ${items.length}`}
-    </label>
   );
 }
 
@@ -60,7 +47,7 @@ function FeatureRow({ item }) {
         <NewHeader
           details={{
             one: (
-              <div className="flex gap-4 justify-start">
+              <div className="flex gap-4 justify-start items-center">
 
                 {DRIFT_TEST_ENUM_LABEL[item.driftCalc.type]}
 
@@ -91,7 +78,12 @@ function FeatureRow({ item }) {
               <SectionTitle
                 size="small"
                 title={item.featureName}
-                titleSuffix={<Tag mode="text" type="secondary-light">{DRIFT_FEATURE_TYPE_ENUM[item.driftCalc.type].toUpperCase()}</Tag>}
+                titleSuffix={(
+                  <Tag mode="text" type="secondary-light">
+                    {DRIFT_FEATURE_TYPE_ENUM[item.driftCalc.type].toUpperCase()}
+
+                  </Tag>
+)}
               />
             </div>
           )}
