@@ -4,7 +4,9 @@ from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
+from pyspark.mllib.evaluation import MulticlassMetrics
 from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql.types import DoubleType
 import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
@@ -356,6 +358,54 @@ class CurrentMetricsService:
             "false_negative_count": fn,
         }
 
+    def __calculate_log_loss(self) -> dict[str, float]:
+        dataset_with_proba = (
+            self.current.current.filter(
+                is_not_null(self.current.model.outputs.prediction.name)
+                & is_not_null(self.current.model.target.name)
+                & is_not_null(self.current.model.outputs.prediction_proba.name)
+            )
+            .withColumn(
+                "prediction_proba_class0",
+                F.when(
+                    F.col(self.current.model.outputs.prediction.name) == 0,
+                    F.col(self.current.model.outputs.prediction_proba.name),
+                ).otherwise(
+                    1 - F.col(self.current.model.outputs.prediction_proba.name)
+                ),
+            )
+            .withColumn(
+                "prediction_proba_class1",
+                F.when(
+                    F.col(self.current.model.outputs.prediction.name) == 1,
+                    F.col(self.current.model.outputs.prediction_proba.name),
+                ).otherwise(
+                    1 - F.col(self.current.model.outputs.prediction_proba.name)
+                ),
+            )
+            .withColumn("weight_logloss_def", F.lit(1.0))
+            .withColumn(
+                self.current.model.outputs.prediction.name,
+                F.col(self.current.model.outputs.prediction.name).cast(DoubleType()),
+            )
+            .withColumn(
+                self.current.model.target.name,
+                F.col(self.current.model.target.name).cast(DoubleType()),
+            )
+        )
+
+        dataset_proba_vector = dataset_with_proba.select(
+            self.current.model.outputs.prediction.name,
+            self.current.model.target.name,
+            "weight_logloss_def",
+            F.array(
+                F.col("prediction_proba_class0"), F.col("prediction_proba_class1")
+            ).alias("prediction_proba_vector"),
+        ).rdd
+
+        metrics = MulticlassMetrics(dataset_proba_vector)
+        return {"log_loss": metrics.logLoss()}
+
     # FIXME use pydantic struct like data quality
     def calculate_model_quality_with_group_by_timestamp(self):
         metrics = dict()
@@ -366,6 +416,7 @@ class CurrentMetricsService:
         metrics["global_metrics"].update(self.calculate_confusion_matrix())
         if self.current.model.outputs.prediction_proba is not None:
             metrics["global_metrics"].update(self.__calc_bc_metrics())
+            metrics["global_metrics"].update(self.__calculate_log_loss())
             binary_class_metrics = (
                 self.calculate_binary_class_model_quality_group_by_timestamp()
             )
