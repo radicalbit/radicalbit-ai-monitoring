@@ -62,7 +62,6 @@ function TransfertList() {
         showSearch
         style={{ height }}
         targetKeys={outputKeys}
-        titles={[<h4><b>Variables</b></h4>, <h4><b>Outputs</b></h4>]}
         type="right-secondary"
       />
 

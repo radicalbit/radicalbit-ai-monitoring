@@ -13,9 +13,20 @@ function VariablesTab() {
 
   const features = data?.features ?? [];
   const target = data?.target ?? [];
-  const variables = [target].concat(features).map((f) => ({
+  const timestamp = data?.timestamp;
+  const variables = [target, timestamp].concat(features).map((f) => ({
     ...f,
-    rowType: f.name === target.name ? OVERVIEW_ROW_TYPE.GROUND_TRUTH : '',
+    rowType: (function getLabel() {
+      switch (f.name) {
+        case target.name:
+          return OVERVIEW_ROW_TYPE.GROUND_TRUTH;
+        case timestamp.name:
+          return OVERVIEW_ROW_TYPE.TIMESTAMP;
+        default:
+          return '';
+      }
+    }()),
+
   }));
 
   const handleRowClassName = ({ rowType }) => rowType.length > 0 ? DataTable.ROW_PRIMARY_LIGHT : '';
