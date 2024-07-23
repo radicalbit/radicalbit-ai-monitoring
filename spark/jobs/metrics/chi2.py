@@ -3,6 +3,9 @@ import pyspark.sql
 from pyspark.ml.stat import ChiSquareTest
 from pyspark.ml.feature import VectorAssembler, StringIndexer
 from pyspark.ml import Pipeline
+import pyspark.sql.functions as F
+import numpy as np
+from scipy.stats import chisquare
 
 
 class Chi2Test:
@@ -144,7 +147,9 @@ class Chi2Test:
         - pyspark.sql.DataFrame: The DataFrame with the current column data converted to a vector.
         """
         vector_assembler = VectorAssembler(
-            inputCols=[current_column], outputCol=f"{current_column}_vector"
+            inputCols=[current_column],
+            outputCol=f"{current_column}_vector",
+            handleInvalid="skip",
         )
         return vector_assembler.transform(data).select(
             reference_column, f"{current_column}_vector"
@@ -173,7 +178,44 @@ class Chi2Test:
         )
         return vector_data.select(reference_column, f"{current_column}_vector")
 
-    def test(self, reference_column, current_column) -> Dict:
+    def __concatenate_dfs(self) -> pyspark.sql.DataFrame:
+        """
+        Concatenates the reference and current dataframes if they have the same size or creates subsamples to make them
+         of equal size.
+
+        Returns:
+        - pyspark.sql.DataFrame: The concatenated DataFrame.
+        """
+
+        self.current = self.current.withColumn("type", F.lit("current"))
+        self.reference = self.reference.withColumn("type", F.lit("reference"))
+
+        if self.__have_same_size():
+            concatenated_data = self.current.unionByName(self.reference)
+
+        else:
+            max_size = max(self.reference_size, self.current_size)
+
+            if self.reference_size == max_size:
+                # create a reference subsample with a size equal to the current
+                subsample_reference = self.spark_session.createDataFrame(
+                    self.reference.rdd.takeSample(
+                        withReplacement=True, num=self.current_size, seed=1990
+                    )
+                )
+                concatenated_data = self.current.unionByName(subsample_reference)
+            else:
+                # create a current subsample with a size equal to the reference
+                subsample_current = self.spark_session.createDataFrame(
+                    self.current.rdd.takeSample(
+                        withReplacement=True, num=self.reference_size, seed=1990
+                    )
+                )
+                concatenated_data = subsample_current.unionByName(self.reference)
+
+        return concatenated_data
+
+    def test_independence(self, reference_column, current_column) -> Dict:
         """
         Performs the chi-square test of independence.
 
@@ -212,3 +254,46 @@ class Chi2Test:
             "degreesOfFreedom": result.select("degreesOfFreedom").collect()[0][0],
             "statistic": result.select("statistic").collect()[0][0],
         }
+
+    def test_goodness_fit(self, reference_column, current_column) -> Dict:
+        """
+        Performs the chi-square goodness of fit test.
+
+        Returns:
+        - dict: A dictionary containing the test results including p-value and statistic.
+        """
+
+        self.reference = (
+            self.reference_data.select(reference_column)
+            .withColumnRenamed(reference_column, "value")
+            .na.drop()
+        )
+        self.current = (
+            self.current_data.select(current_column)
+            .withColumnRenamed(current_column, "value")
+            .na.drop()
+        )
+        self.reference_size = self.reference.count()
+        self.current_size = self.current.count()
+
+        concatenated_data = self.__concatenate_dfs()
+
+        def cnt_cond(cond):
+            return F.sum(F.when(cond, 1).otherwise(0))
+
+        ref_fr = np.array(
+            concatenated_data.groupBy("value")
+            .agg(cnt_cond(F.col("type") == "reference").alias("count"))
+            .select("count")
+            .rdd.flatMap(lambda x: x)
+            .collect()
+        )
+        cur_fr = np.array(
+            concatenated_data.groupBy("value")
+            .agg(cnt_cond(F.col("type") == "current").alias("count"))
+            .select("count")
+            .rdd.flatMap(lambda x: x)
+            .collect()
+        )
+        res = chisquare(ref_fr, cur_fr)
+        return {"pValue": float(res[1]), "statistic": float(res[0])}

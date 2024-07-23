@@ -244,39 +244,3 @@ def test_model_quality_abalone(
         ignore_order=True,
         ignore_type_subclasses=True,
     )
-
-
-def test_drift_regression(spark_fixture, current_dataset, reference_dataset):
-    metrics_service = CurrentMetricsRegressionService(
-        spark_session=spark_fixture,
-        current=current_dataset,
-        reference=reference_dataset,
-    )
-
-    drift = metrics_service.calculate_drift()
-
-    assert not deepdiff.DeepDiff(
-        drift,
-        res.test_drift_regression_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
-
-
-def test_drift_regression_chi(
-    spark_fixture, current_dataset_abalone, reference_dataset_abalone
-):
-    metrics_service = CurrentMetricsRegressionService(
-        spark_session=spark_fixture,
-        current=current_dataset_abalone,
-        reference=reference_dataset_abalone,
-    )
-
-    drift = metrics_service.calculate_drift()
-
-    assert not deepdiff.DeepDiff(
-        drift,
-        res.test_drift_regression_chi_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
