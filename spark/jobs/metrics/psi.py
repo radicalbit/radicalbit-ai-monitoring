@@ -3,6 +3,7 @@ from math import inf
 import pyspark.sql.functions as F
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql.types import IntegerType
+from utils.misc import rbit_prefix
 
 
 class PSI:
@@ -41,12 +42,14 @@ class PSI:
     def calculate_psi(self, feature) -> dict:
         # first compute bucket as a list from 0 to 10 (or distinct().count() of the values in columns)
 
-        current = self.current_data.withColumn("type", F.lit("current"))
-        reference = self.reference_data.withColumn("type", F.lit("reference"))
+        current = self.current_data.withColumn(f"{rbit_prefix}type", F.lit("current"))
+        reference = self.reference_data.withColumn(
+            f"{rbit_prefix}type", F.lit("reference")
+        )
 
         reference_and_current = (
-            current.select([feature, "type"])
-            .unionByName(reference.select([feature, "type"]))
+            current.select([feature, f"{rbit_prefix}type"])
+            .unionByName(reference.select([feature, f"{rbit_prefix}type"]))
             .dropna()
         )
 
@@ -92,12 +95,12 @@ class PSI:
         result = bucketizer.setHandleInvalid("keep").transform(reference_and_current)
 
         current_df = (
-            result.filter(F.col("type") == "current")
+            result.filter(F.col(f"{rbit_prefix}type") == "current")
             .groupBy("bucket")
             .agg(F.count(F.col(feature)).alias("curr_count"))
         )
         reference_df = (
-            result.filter(F.col("type") == "reference")
+            result.filter(F.col(f"{rbit_prefix}type") == "reference")
             .groupBy("bucket")
             .agg(F.count(F.col(feature)).alias("ref_count"))
         )
