@@ -667,7 +667,8 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             "trueNegativeCount": 820,
                             "falseNegativeCount": 180,
                             "areaUnderRoc": 0.92,
-                            "areaUnderPr": 0.91
+                            "areaUnderPr": 0.91,
+                            "logLoss": "0.71"
                         },
                         "groupedMetrics": {
                             "f1": [
@@ -725,6 +726,10 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             "areaUnderPr": [
                                 {"timestamp": "2024-01-01T00:00:00Z", "value": 0.91},
                                 {"timestamp": "2024-02-01T00:00:00Z", "value": 0.92}
+                            ],
+                            "logLoss": [
+                                {"timestamp": "2024-01-01T00:00:00Z", "value": 0.71},
+                                {"timestamp": "2024-02-01T00:00:00Z", "value": 0.72}
                             ]
                         }
                     }
