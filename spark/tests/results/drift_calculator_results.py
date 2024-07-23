@@ -2,19 +2,23 @@ test_drift_res = {
     "feature_metrics": [
         {
             "feature_name": "cat1",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.0004993992273872871,
-                "has_drift": True,
-            },
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "cat2",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.49015296041582523,
-                "has_drift": False,
+                "value": 3.4671076872696563e-05,
+                "has_drift": True,
             },
+        },
+        {
+            "feature_name": "num1",
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+        },
+        {
+            "feature_name": "num2",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
     ]
 }
@@ -29,6 +33,14 @@ test_drift_small_res = {
             "feature_name": "cat2",
             "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
         },
+        {
+            "feature_name": "num1",
+            "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
+        },
+        {
+            "feature_name": "num2",
+            "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
+        },
     ]
 }
 
@@ -36,19 +48,19 @@ test_drift_boolean_res = {
     "feature_metrics": [
         {
             "feature_name": "cat1",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.0012340980408668267,
-                "has_drift": True,
-            },
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "bool1",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.002699796063260207,
-                "has_drift": True,
-            },
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+        },
+        {
+            "feature_name": "num1",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+        },
+        {
+            "feature_name": "num2",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
     ]
 }
@@ -57,25 +69,37 @@ test_drift_bigger_file_res = {
     "feature_metrics": [
         {
             "feature_name": "cat1",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.26994857272252293,
-                "has_drift": False,
-            },
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
         },
         {
             "feature_name": "cat2",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.3894236957350261,
+                "value": 0.052807511416113395,
                 "has_drift": False,
             },
+        },
+        {
+            "feature_name": "num1",
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+        },
+        {
+            "feature_name": "num2",
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
         },
     ]
 }
 
 test_drift_bike_res = {
     "feature_metrics": [
+        {
+            "feature_name": "weathersit",
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.002631773674724352,
+                "has_drift": True,
+            },
+        },
         {
             "feature_name": "temp",
             "drift_calc": {"type": "KS", "value": 0.5259741552, "has_drift": True},
@@ -94,37 +118,25 @@ test_drift_bike_res = {
         },
         {
             "feature_name": "season",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.7058231915368379,
-                "has_drift": False,
-            },
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
         },
         {
             "feature_name": "yr",
-            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
         },
         {
             "feature_name": "mnth",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.9637289558298074,
-                "has_drift": False,
-            },
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
         },
         {
             "feature_name": "holiday",
-            "drift_calc": {
-                "type": "CHI2",
-                "value": 0.8374533320041525,
-                "has_drift": False,
-            },
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "weekday",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.5795400085655207,
+                "value": 0.7855334068007708,
                 "has_drift": False,
             },
         },
@@ -132,7 +144,7 @@ test_drift_bike_res = {
             "feature_name": "workingday",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.09216569222802284,
+                "value": 0.6625205835400574,
                 "has_drift": False,
             },
         },
@@ -143,35 +155,35 @@ test_drift_phone_res = {
     "feature_metrics": [
         {
             "feature_name": "brand_name",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "model",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+        },
+        {
+            "feature_name": "has_5g",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.23967523584300998,
+                "value": 0.6528883189652503,
                 "has_drift": False,
             },
         },
         {
-            "feature_name": "has_5g",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
-        },
-        {
             "feature_name": "has_nfc",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
-        },
-        {
-            "feature_name": "has_ir_blaster",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
-        },
-        {
-            "feature_name": "processor_brand",
             "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
-            "feature_name": "os",
+            "feature_name": "has_ir_blaster",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+        },
+        {
+            "feature_name": "processor_brand",
             "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+        },
+        {
+            "feature_name": "os",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "rating",
@@ -198,12 +210,16 @@ test_drift_phone_res = {
             "drift_calc": {"type": "KS", "value": 0.3139650146, "has_drift": True},
         },
         {
+            "feature_name": "extended_upto",
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+        },
+        {
             "feature_name": "price",
             "drift_calc": {"type": "PSI", "value": 0.0, "has_drift": False},
         },
         {
             "feature_name": "num_cores",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "battery_capacity",
@@ -211,31 +227,39 @@ test_drift_phone_res = {
         },
         {
             "feature_name": "fast_charging_available",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "ram_capacity",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "internal_memory",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.9999999717288575,
+                "has_drift": False,
+            },
         },
         {
             "feature_name": "refresh_rate",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.9997655785111437,
+                "has_drift": False,
+            },
         },
         {
             "feature_name": "num_rear_cameras",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "num_front_cameras",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "extended_memory_available",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
         },
         {
             "feature_name": "resolution_width",
