@@ -13,6 +13,7 @@ from models.data_quality import (
     ClassMetrics,
     MultiClassDataQuality,
 )
+from utils.misc import rbit_prefix
 
 
 class ReferenceMetricsMulticlassService:
@@ -44,8 +45,8 @@ class ReferenceMetricsMulticlassService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=f"{self.reference.model.outputs.prediction.name}-idx",
-                labelCol=f"{self.reference.model.target.name}-idx",
+                predictionCol=f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
+                labelCol=f"{rbit_prefix}_{self.reference.model.target.name}-idx",
                 metricLabel=class_index,
             ).evaluate(dataset)
         except Exception:
@@ -109,8 +110,8 @@ class ReferenceMetricsMulticlassService:
             )
             .select(
                 *[
-                    f"{self.reference.model.outputs.prediction.name}-idx",
-                    f"{self.reference.model.target.name}-idx",
+                    f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
+                    f"{rbit_prefix}_{self.reference.model.target.name}-idx",
                 ]
             )
             .rdd
