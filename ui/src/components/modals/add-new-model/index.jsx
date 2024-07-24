@@ -78,7 +78,7 @@ function Header() {
 
         <Step title="Schema" />
 
-        <Step title="Output" />
+        <Step title="Fields" />
 
         <Step title="Target" />
       </Steps>
@@ -110,14 +110,15 @@ function Subtitles() {
 
               {' '}
 
-              columns in your schema
+              columns in
               <br />
-              the variables you are interested in
+
+              your schema the variables you are interested in
             </div>
           </div>
 
           <div className="flex items-center justify-center basis-1/2">
-            <div>
+            <div className="text-center">
               <strong>Check</strong>
 
               {' '}
@@ -125,7 +126,7 @@ function Subtitles() {
               that this section contains
               <br />
 
-              <strong>features, target and predictions</strong>
+              <strong>features, target, predictions and timestamp</strong>
             </div>
 
           </div>
