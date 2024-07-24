@@ -11,6 +11,7 @@ from app.models.job_status import JobStatus
 from app.models.model_dto import (
     ColumnDefinition,
     DataType,
+    FieldType,
     Granularity,
     ModelIn,
     ModelType,
@@ -31,14 +32,24 @@ def get_sample_model(
     model_type: str = ModelType.BINARY.value,
     data_type: str = DataType.TEXT.value,
     granularity: str = Granularity.DAY.value,
-    features: List[Dict] = [{'name': 'feature1', 'type': 'string'}],
+    features: List[Dict] = [
+        {'name': 'feature1', 'type': 'string', 'fieldType': 'categorical'}
+    ],
     outputs: Dict = {
-        'prediction': {'name': 'pred1', 'type': 'int'},
-        'prediction_proba': {'name': 'prob1', 'type': 'float'},
-        'output': [{'name': 'output1', 'type': 'string'}],
+        'prediction': {'name': 'pred1', 'type': 'int', 'fieldType': 'numerical'},
+        'prediction_proba': {
+            'name': 'prob1',
+            'type': 'float',
+            'fieldType': 'numerical',
+        },
+        'output': [{'name': 'output1', 'type': 'string', 'fieldType': 'categorical'}],
     },
-    target: Dict = {'name': 'target1', 'type': 'string'},
-    timestamp: Dict = {'name': 'timestamp', 'type': 'datetime'},
+    target: Dict = {'name': 'target1', 'type': 'string', 'fieldType': 'categorical'},
+    timestamp: Dict = {
+        'name': 'timestamp',
+        'type': 'datetime',
+        'fieldType': 'datetime',
+    },
     frameworks: Optional[str] = None,
     algorithm: Optional[str] = None,
 ) -> Model:
@@ -68,18 +79,32 @@ def get_sample_model_in(
     data_type: str = DataType.TEXT.value,
     granularity: str = Granularity.DAY.value,
     features: List[ColumnDefinition] = [
-        ColumnDefinition(name='feature1', type=SupportedTypes.string)
+        ColumnDefinition(
+            name='feature1',
+            type=SupportedTypes.string,
+            field_type=FieldType.categorical,
+        )
     ],
     outputs: OutputType = OutputType(
-        prediction=ColumnDefinition(name='pred1', type=SupportedTypes.int),
-        prediction_proba=ColumnDefinition(name='prob1', type=SupportedTypes.float),
-        output=[ColumnDefinition(name='output1', type=SupportedTypes.string)],
+        prediction=ColumnDefinition(
+            name='pred1', type=SupportedTypes.int, field_type=FieldType.numerical
+        ),
+        prediction_proba=ColumnDefinition(
+            name='prob1', type=SupportedTypes.float, field_type=FieldType.numerical
+        ),
+        output=[
+            ColumnDefinition(
+                name='output1',
+                type=SupportedTypes.string,
+                field_type=FieldType.categorical,
+            )
+        ],
     ),
     target: ColumnDefinition = ColumnDefinition(
-        name='target1', type=SupportedTypes.int
+        name='target1', type=SupportedTypes.int, field_type=FieldType.numerical
     ),
     timestamp: ColumnDefinition = ColumnDefinition(
-        name='timestamp', type=SupportedTypes.datetime
+        name='timestamp', type=SupportedTypes.datetime, field_type=FieldType.datetime
     ),
     frameworks: Optional[str] = None,
     algorithm: Optional[str] = None,

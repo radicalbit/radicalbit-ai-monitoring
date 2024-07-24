@@ -9,7 +9,7 @@ from pydantic.alias_generators import to_camel
 from app.db.dao.current_dataset_dao import CurrentDataset
 from app.db.dao.model_dao import Model
 from app.db.dao.reference_dataset_dao import ReferenceDataset
-from app.models.inferred_schema_dto import SupportedTypes
+from app.models.inferred_schema_dto import FieldType, SupportedTypes
 from app.models.job_status import JobStatus
 from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
 
@@ -36,9 +36,34 @@ class Granularity(str, Enum):
 class ColumnDefinition(BaseModel, validate_assignment=True):
     name: str
     type: SupportedTypes
+    field_type: FieldType
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
     def to_dict(self):
         return self.model_dump()
+
+    @model_validator(mode='after')
+    def validate_field_type(self) -> Self:
+        match (self.type, self.field_type):
+            case (SupportedTypes.datetime, FieldType.datetime):
+                return self
+            case (SupportedTypes.string, FieldType.categorical):
+                return self
+            case (SupportedTypes.bool, FieldType.categorical):
+                return self
+            case (SupportedTypes.int, FieldType.categorical):
+                return self
+            case (SupportedTypes.float, FieldType.categorical):
+                return self
+            case (SupportedTypes.int, FieldType.numerical):
+                return self
+            case (SupportedTypes.float, FieldType.numerical):
+                return self
+            case _:
+                raise ValueError(
+                    f'column {self.name} with type {self.type} can not have filed type {self.field_type}'
+                )
 
 
 class OutputType(BaseModel, validate_assignment=True):

@@ -5,6 +5,7 @@ from fastapi import UploadFile
 import pandas as pd
 
 from app.models.inferred_schema_dto import (
+    FieldType,
     InferredSchemaDTO,
     SchemaEntry,
     SupportedTypes,
@@ -28,16 +29,52 @@ def get_dataframe_with_sep(sep: str) -> pd.DataFrame:
 
 def correct_schema() -> InferredSchemaDTO:
     schema = [
-        {'name': 'Name', 'type': SupportedTypes.string},
-        {'name': 'Age', 'type': SupportedTypes.int},
-        {'name': 'City', 'type': SupportedTypes.string},
-        {'name': 'Salary', 'type': SupportedTypes.float},
-        {'name': 'String', 'type': SupportedTypes.string},
-        {'name': 'Float/Int', 'type': SupportedTypes.float},
-        {'name': 'Boolean', 'type': SupportedTypes.bool},
-        {'name': 'Datetime', 'type': SupportedTypes.datetime},
-        {'name': 'Datetime2', 'type': SupportedTypes.datetime},
-        {'name': 'Datetime3', 'type': SupportedTypes.datetime},
+        {
+            'name': 'Name',
+            'type': SupportedTypes.string,
+            'fieldType': FieldType.categorical,
+        },
+        {'name': 'Age', 'type': SupportedTypes.int, 'fieldType': FieldType.numerical},
+        {
+            'name': 'City',
+            'type': SupportedTypes.string,
+            'fieldType': FieldType.categorical,
+        },
+        {
+            'name': 'Salary',
+            'type': SupportedTypes.float,
+            'fieldType': FieldType.numerical,
+        },
+        {
+            'name': 'String',
+            'type': SupportedTypes.string,
+            'fieldType': FieldType.categorical,
+        },
+        {
+            'name': 'Float/Int',
+            'type': SupportedTypes.float,
+            'fieldType': FieldType.numerical,
+        },
+        {
+            'name': 'Boolean',
+            'type': SupportedTypes.bool,
+            'fieldType': FieldType.categorical,
+        },
+        {
+            'name': 'Datetime',
+            'type': SupportedTypes.datetime,
+            'fieldType': FieldType.datetime,
+        },
+        {
+            'name': 'Datetime2',
+            'type': SupportedTypes.datetime,
+            'fieldType': FieldType.datetime,
+        },
+        {
+            'name': 'Datetime3',
+            'type': SupportedTypes.datetime,
+            'fieldType': FieldType.datetime,
+        },
     ]
     schema = [SchemaEntry(**entry) for entry in schema]
     return InferredSchemaDTO(inferred_schema=schema)
