@@ -12,6 +12,8 @@ function Target() {
 
   const targets = useGetTargets();
   const timestampName = form?.timestamp?.name;
+  const predictionName = form?.prediction?.name;
+  const predictionProbaName = form?.predictionProba?.name;
   const value = form?.target?.name;
 
   const handleOnChange = (val) => {
@@ -38,31 +40,55 @@ function Target() {
         {targets.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = timestampName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as timestamp">
+          switch (name) {
+            case timestampName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as timestamp">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current timestamp`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as prediction">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current prediction`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionProbaName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as probability">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current probability`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current timestamp`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -75,6 +101,8 @@ function Timestamp() {
 
   const validTimestampFeatures = useGetTimestapValidFeatures();
   const targetName = form?.target?.name;
+  const predictionName = form?.prediction?.name;
+  const predictionProbaName = form?.predictionProba?.name;
   const value = form?.timestamp?.name;
 
   const handleOnChange = (val) => {
@@ -101,31 +129,55 @@ function Timestamp() {
         {validTimestampFeatures.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = targetName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as target">
+          switch (name) {
+            case targetName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as target">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current target`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as prediction">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current prediction`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionProbaName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as probability">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current probability`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current target`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -139,6 +191,8 @@ function Prediction() {
   const predictions = useGetPredictions();
   const value = form?.prediction?.name;
   const predictionProbaName = form?.predictionProba?.name;
+  const timestampName = form?.timestamp?.name;
+  const targetName = form?.target?.name;
 
   const handleOnChange = (val) => {
     try {
@@ -164,31 +218,55 @@ function Prediction() {
         {predictions.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = predictionProbaName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as probability">
+          switch (name) {
+            case targetName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as target">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current target`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case timestampName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as timestamp">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current timestamp`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionProbaName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as probability">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current probability`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current probability`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -203,6 +281,8 @@ function Probability() {
   } = useFormbit;
   const probabilities = useGetProbabilities();
   const predictionName = form?.prediction?.name;
+  const timestampName = form?.timestamp?.name;
+  const targetName = form?.target?.name;
   const value = form?.predictionProba?.name;
 
   const { form: formStepOne } = useFormbitStepOne;
@@ -245,31 +325,55 @@ function Probability() {
         {probabilities.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = predictionName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as prediction">
+          switch (name) {
+            case targetName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as target">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current target`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case timestampName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as timestamp">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current timestamp`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as prediction">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current prediction`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current prediction`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -288,7 +392,7 @@ const useGetTargets = () => {
   const { form: formStepOne } = useFormbitStepOne;
   const { modelType } = formStepOne;
 
-  return form.features.filter(({ type }) => targetValidTypes[modelType].includes(type));
+  return form.outputs.filter(({ type }) => targetValidTypes[modelType].includes(type));
 };
 
 const predictionValidTypes = {
@@ -333,7 +437,7 @@ const useGetTimestapValidFeatures = () => {
   const { form: formStepOne } = useFormbitStepOne;
   const { modelType } = formStepOne;
 
-  return form?.features.filter(({ type }) => timestampValidTypes[modelType].includes(type));
+  return form?.outputs.filter(({ type }) => timestampValidTypes[modelType].includes(type));
 };
 
 export {

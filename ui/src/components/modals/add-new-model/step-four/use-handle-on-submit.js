@@ -25,15 +25,20 @@ export default () => {
 
     submitForm(async ({
       form: {
-        features, outputs, prediction, predictionProba, target, timestamp,
+        outputs, prediction, predictionProba, target, timestamp,
       },
     }, setError) => {
       const {
         name, algorithm, frameworks, modelType, dataType, granularity,
       } = formStepOne;
 
-      const featuresWithoutTarget = features.filter((f) => f.name !== target.name);
-      const featuresWithoutTimestamp = featuresWithoutTarget.filter((f) => f.name !== timestamp.name);
+      const variables = predictionProba
+        ? outputs.filter((f) => f.name !== target.name && f.name !== timestamp.name && f.name !== prediction.name && f.name !== predictionProba.name)
+        : outputs.filter((f) => f.name !== target.name && f.name !== timestamp.name && f.name !== prediction.name);
+
+      const realOutput = predictionProba
+        ? outputs.filter((f) => f.name === prediction.name || f.name === predictionProba.name)
+        : outputs.filter((f) => f.name === prediction.name);
 
       const response = await triggerAddNewModel({
         name,
@@ -42,11 +47,11 @@ export default () => {
         granularity,
         algorithm,
         frameworks,
-        features: featuresWithoutTimestamp,
+        features: variables,
         outputs: {
           prediction,
           predictionProba,
-          output: outputs,
+          output: realOutput,
         },
         timestamp,
         target,

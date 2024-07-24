@@ -1,3 +1,4 @@
+import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
 import { Tag } from '@radicalbit/radicalbit-design-system';
 
 const featuresColumns = (dataSource) => [
@@ -19,11 +20,12 @@ const featuresColumns = (dataSource) => [
     title: '',
     dataIndex: 'type',
     key: 'type',
-    render: (_, record) => {
-      if (record.rowType) {
+    render: (_, { rowType }) => {
+      if (rowType) {
+        const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH ? 'full' : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP ? 'light' : '';
         return (
           <div className="flex justify-end">
-            <Tag type="full">{record.rowType}</Tag>
+            <Tag type={tagType}>{rowType}</Tag>
           </div>
         );
       }
