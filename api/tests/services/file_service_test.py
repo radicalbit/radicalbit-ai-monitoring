@@ -188,14 +188,22 @@ class FileServiceTest(unittest.TestCase):
     def test_upload_current_file_ok(self):
         file = csv.get_current_sample_csv_file()
         model = db_mock.get_sample_model(
-            features=[{'name': 'num1', 'type': 'int'}],
+            features=[{'name': 'num1', 'type': 'int', 'fieldType': 'numerical'}],
             outputs={
-                'prediction': {'name': 'prediction', 'type': 'int'},
-                'prediction_proba': {'name': 'prediction_proba', 'type': 'int'},
-                'output': [{'name': 'num2', 'type': 'int'}],
+                'prediction': {
+                    'name': 'prediction',
+                    'type': 'int',
+                    'fieldType': 'numerical',
+                },
+                'prediction_proba': {
+                    'name': 'prediction_proba',
+                    'type': 'int',
+                    'fieldType': 'numerical',
+                },
+                'output': [{'name': 'num2', 'type': 'int', 'fieldType': 'numerical'}],
             },
-            target={'name': 'target', 'type': 'int'},
-            timestamp={'name': 'datetime', 'type': 'datetime'},
+            target={'name': 'target', 'type': 'int', 'fieldType': 'numerical'},
+            timestamp={'name': 'datetime', 'type': 'datetime', 'fieldType': 'datetime'},
         )
         object_name = f'{str(model.uuid)}/current/{file.filename}'
         path = f's3://bucket/{object_name}'

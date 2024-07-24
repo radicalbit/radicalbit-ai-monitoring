@@ -9,7 +9,7 @@ from pydantic.alias_generators import to_camel
 from app.db.dao.current_dataset_dao import CurrentDataset
 from app.db.dao.model_dao import Model
 from app.db.dao.reference_dataset_dao import ReferenceDataset
-from app.models.inferred_schema_dto import SupportedTypes
+from app.models.inferred_schema_dto import FieldType, SupportedTypes
 from app.models.job_status import JobStatus
 from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
 
@@ -36,6 +36,9 @@ class Granularity(str, Enum):
 class ColumnDefinition(BaseModel, validate_assignment=True):
     name: str
     type: SupportedTypes
+    field_type: FieldType
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
     def to_dict(self):
         return self.model_dump()
