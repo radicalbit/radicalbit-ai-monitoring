@@ -193,8 +193,31 @@ function AreaUnderPrChart() {
   return false;
 }
 
+function LogLossChart() {
+  const { uuid } = useParams();
+  const { data: currentData } = useGetCurrentModelQualityQueryWithPolling();
+  const { data: referenceData } = useGetReferenceModelQualityQuery({ uuid });
+
+  const referenceAreaUnderPr = referenceData?.modelQuality?.logLoss;
+  const currentSeries = currentData?.modelQuality?.groupedMetrics?.logLoss;
+
+  if (currentSeries && currentSeries !== null) {
+    const referenceSeries = currentSeries.map((o) => ({ ...o, value: referenceAreaUnderPr }));
+
+    return (
+      <LineChart
+        color={CHART_COLOR.CURRENT}
+        currentData={currentSeries}
+        referenceData={referenceSeries}
+        title={MODEL_QUALITY_FIELD.LOG_LOSS}
+      />
+    );
+  }
+  return false;
+}
+
 export {
   AccuracyChart, AreaUnderPrChart, AreaUnderRocChart, F1Chart,
   FalsePositiveRateChart, PrecisionChart,
-  RecallChart, TruePositiveRateChart,
+  RecallChart, TruePositiveRateChart, LogLossChart,
 };

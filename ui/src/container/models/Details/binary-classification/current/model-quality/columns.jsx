@@ -12,7 +12,7 @@ export default [
     key: 'currentValue',
     dataIndex: 'currentValue',
     align: 'right',
-    render: (currentValue) => numberFormatter().format(currentValue),
+    render: (currentValue) => (currentValue) ? numberFormatter().format(currentValue) : '--',
   },
   {
     title: 'Reference',
