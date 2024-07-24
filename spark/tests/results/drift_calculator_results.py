@@ -8,7 +8,7 @@ test_drift_res = {
             "feature_name": "cat2",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 3.4671076872696563e-05,
+                "value": 2.5396285894708634e-10,
                 "has_drift": True,
             },
         },
@@ -27,19 +27,31 @@ test_drift_small_res = {
     "feature_metrics": [
         {
             "feature_name": "cat1",
-            "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.7788007830714049,
+                "has_drift": False,
+            },
         },
         {
             "feature_name": "cat2",
-            "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.007660761135179449,
+                "has_drift": True,
+            },
         },
         {
             "feature_name": "num1",
-            "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
+            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
         },
         {
             "feature_name": "num2",
-            "drift_calc": {"type": "CHI2", "value": None, "has_drift": False},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.4158801869955079,
+                "has_drift": False,
+            },
         },
     ]
 }
@@ -69,14 +81,18 @@ test_drift_bigger_file_res = {
     "feature_metrics": [
         {
             "feature_name": "cat1",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.7074036474040617,
+                "has_drift": False,
+            },
         },
         {
             "feature_name": "cat2",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.052807511416113395,
-                "has_drift": False,
+                "value": 1.3668274623882378e-07,
+                "has_drift": True,
             },
         },
         {
@@ -85,7 +101,11 @@ test_drift_bigger_file_res = {
         },
         {
             "feature_name": "num2",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.9282493523958153,
+                "has_drift": False,
+            },
         },
     ]
 }
@@ -96,8 +116,8 @@ test_drift_bike_res = {
             "feature_name": "weathersit",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.002631773674724352,
-                "has_drift": True,
+                "value": 0.5328493415823949,
+                "has_drift": False,
             },
         },
         {
@@ -118,25 +138,41 @@ test_drift_bike_res = {
         },
         {
             "feature_name": "season",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 1.5727996539817032e-36,
+                "has_drift": True,
+            },
         },
         {
             "feature_name": "yr",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 1.3270931223367946e-23,
+                "has_drift": True,
+            },
         },
         {
             "feature_name": "mnth",
-            "drift_calc": {"type": "CHI2", "value": 0.0, "has_drift": True},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 1.1116581506687278e-44,
+                "has_drift": True,
+            },
         },
         {
             "feature_name": "holiday",
-            "drift_calc": {"type": "CHI2", "value": 1.0, "has_drift": False},
+            "drift_calc": {
+                "type": "CHI2",
+                "value": 0.6115640463654775,
+                "has_drift": False,
+            },
         },
         {
             "feature_name": "weekday",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.7855334068007708,
+                "value": 0.9998169413361089,
                 "has_drift": False,
             },
         },
@@ -144,7 +180,7 @@ test_drift_bike_res = {
             "feature_name": "workingday",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.6625205835400574,
+                "value": 0.730645812540401,
                 "has_drift": False,
             },
         },
@@ -165,7 +201,7 @@ test_drift_phone_res = {
             "feature_name": "has_5g",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.6528883189652503,
+                "value": 0.652356328876868,
                 "has_drift": False,
             },
         },
@@ -237,7 +273,7 @@ test_drift_phone_res = {
             "feature_name": "internal_memory",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.9999999717288575,
+                "value": 0.9999999710826085,
                 "has_drift": False,
             },
         },
@@ -245,7 +281,7 @@ test_drift_phone_res = {
             "feature_name": "refresh_rate",
             "drift_calc": {
                 "type": "CHI2",
-                "value": 0.9997655785111437,
+                "value": 0.9997690818736329,
                 "has_drift": False,
             },
         },
