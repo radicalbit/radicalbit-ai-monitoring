@@ -391,7 +391,7 @@ class CurrentMetricsService:
                 & is_not_null(self.current.model.outputs.prediction_proba.name)
             )
             .withColumn(
-                f"{rbit_prefix}prediction_proba_class0",
+                f"{rbit_prefix}_prediction_proba_class0",
                 F.when(
                     F.col(self.current.model.outputs.prediction.name) == 0,
                     F.col(self.current.model.outputs.prediction_proba.name),
@@ -400,7 +400,7 @@ class CurrentMetricsService:
                 ),
             )
             .withColumn(
-                f"{rbit_prefix}prediction_proba_class1",
+                f"{rbit_prefix}_prediction_proba_class1",
                 F.when(
                     F.col(self.current.model.outputs.prediction.name) == 1,
                     F.col(self.current.model.outputs.prediction_proba.name),
@@ -408,7 +408,7 @@ class CurrentMetricsService:
                     1 - F.col(self.current.model.outputs.prediction_proba.name)
                 ),
             )
-            .withColumn(f"{rbit_prefix}weight_logloss_def", F.lit(1.0))
+            .withColumn(f"{rbit_prefix}_weight_logloss_def", F.lit(1.0))
             .withColumn(
                 self.current.model.outputs.prediction.name,
                 F.col(self.current.model.outputs.prediction.name).cast(DoubleType()),
@@ -422,11 +422,11 @@ class CurrentMetricsService:
         dataset_proba_vector = dataset_with_proba.select(
             self.current.model.outputs.prediction.name,
             self.current.model.target.name,
-            f"{rbit_prefix}weight_logloss_def",
+            f"{rbit_prefix}_weight_logloss_def",
             F.array(
-                F.col(f"{rbit_prefix}prediction_proba_class0"),
-                F.col(f"{rbit_prefix}prediction_proba_class1"),
-            ).alias(f"{rbit_prefix}prediction_proba_vector"),
+                F.col(f"{rbit_prefix}_prediction_proba_class0"),
+                F.col(f"{rbit_prefix}_prediction_proba_class1"),
+            ).alias(f"{rbit_prefix}_prediction_proba_vector"),
         ).rdd
 
         metrics = MulticlassMetrics(dataset_proba_vector)
