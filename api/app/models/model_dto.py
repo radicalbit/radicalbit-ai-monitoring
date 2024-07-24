@@ -43,6 +43,28 @@ class ColumnDefinition(BaseModel, validate_assignment=True):
     def to_dict(self):
         return self.model_dump()
 
+    @model_validator(mode='after')
+    def validate_field_type(self) -> Self:
+        match (self.type, self.field_type):
+            case (SupportedTypes.datetime, FieldType.datetime):
+                return self
+            case (SupportedTypes.string, FieldType.categorical):
+                return self
+            case (SupportedTypes.bool, FieldType.categorical):
+                return self
+            case (SupportedTypes.int, FieldType.categorical):
+                return self
+            case (SupportedTypes.float, FieldType.categorical):
+                return self
+            case (SupportedTypes.int, FieldType.numerical):
+                return self
+            case (SupportedTypes.float, FieldType.numerical):
+                return self
+            case _:
+                raise ValueError(
+                    f'column {self.name} with type {self.type} can not have filed type {self.field_type}'
+                )
+
 
 class OutputType(BaseModel, validate_assignment=True):
     prediction: ColumnDefinition
