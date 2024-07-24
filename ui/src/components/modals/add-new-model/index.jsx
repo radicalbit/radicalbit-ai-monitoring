@@ -100,7 +100,7 @@ function Subtitles() {
       return (
         <div className="flex justify-between">
           <div className="flex items-center justify-center basis-1/2">
-            <div>
+            <div className="text-center">
               <strong>
                 Select from the
                 {' '}
@@ -110,7 +110,7 @@ function Subtitles() {
 
               {' '}
 
-              in your schema
+              columns in your schema
               <br />
               the variables you are interested in
             </div>
