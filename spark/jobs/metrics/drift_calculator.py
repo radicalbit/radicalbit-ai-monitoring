@@ -34,20 +34,12 @@ class DriftCalculator:
                     "type": "CHI2",
                 },
             }
-            if (
-                reference_dataset.reference_count > 5
-                and current_dataset.current_count > 5
-            ):
-                result_tmp = chi2.test_goodness_fit(column, column)
-                feature_dict_to_append["drift_calc"]["value"] = float(
-                    result_tmp["pValue"]
-                )
-                feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                    result_tmp["pValue"] <= 0.05
-                )
-            else:
-                feature_dict_to_append["drift_calc"]["value"] = None
-                feature_dict_to_append["drift_calc"]["has_drift"] = False
+            feature_dict_to_append["drift_calc"]["type"] = "CHI2"
+            result_tmp = chi2.test_goodness_fit(column, column)
+            feature_dict_to_append["drift_calc"]["value"] = float(result_tmp["pValue"])
+            feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+                result_tmp["pValue"] <= 0.05
+            )
             drift_result["feature_metrics"].append(feature_dict_to_append)
 
         float_features = [
@@ -86,20 +78,13 @@ class DriftCalculator:
             ]
             if len(unique_values_tot) < 15:
                 feature_dict_to_append["drift_calc"]["type"] = "CHI2"
-                if (
-                    reference_dataset.reference_count > 5
-                    and current_dataset.current_count > 5
-                ):
-                    result_tmp = chi2.test_goodness_fit(column, column)
-                    feature_dict_to_append["drift_calc"]["value"] = float(
-                        result_tmp["pValue"]
-                    )
-                    feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                        result_tmp["pValue"] <= 0.05
-                    )
-                else:
-                    feature_dict_to_append["drift_calc"]["value"] = None
-                    feature_dict_to_append["drift_calc"]["has_drift"] = False
+                result_tmp = chi2.test_goodness_fit(column, column)
+                feature_dict_to_append["drift_calc"]["value"] = float(
+                    result_tmp["pValue"]
+                )
+                feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+                    result_tmp["pValue"] <= 0.05
+                )
             else:
                 feature_dict_to_append["drift_calc"]["type"] = "KS"
                 result_tmp = ks.test(column, column)
@@ -145,20 +130,14 @@ class DriftCalculator:
             ]
             if len(unique_values_tot) < 15:
                 feature_dict_to_append["drift_calc"]["type"] = "CHI2"
-                if (
-                    reference_dataset.reference_count > 5
-                    and current_dataset.current_count > 5
-                ):
-                    result_tmp = chi2.test_goodness_fit(column, column)
-                    feature_dict_to_append["drift_calc"]["value"] = float(
-                        result_tmp["pValue"]
-                    )
-                    feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                        result_tmp["pValue"] <= 0.05
-                    )
-                else:
-                    feature_dict_to_append["drift_calc"]["value"] = None
-                    feature_dict_to_append["drift_calc"]["has_drift"] = False
+                feature_dict_to_append["drift_calc"]["type"] = "CHI2"
+                result_tmp = chi2.test_goodness_fit(column, column)
+                feature_dict_to_append["drift_calc"]["value"] = float(
+                    result_tmp["pValue"]
+                )
+                feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+                    result_tmp["pValue"] <= 0.05
+                )
             else:
                 feature_dict_to_append["drift_calc"]["type"] = "PSI"
                 result_tmp = psi_obj.calculate_psi(column)
@@ -166,7 +145,7 @@ class DriftCalculator:
                     result_tmp["psi_value"]
                 )
                 feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-                    result_tmp["psi_value"] >= 0.2
+                    result_tmp["psi_value"] >= 0.1
                 )
             drift_result["feature_metrics"].append(feature_dict_to_append)
 

@@ -178,43 +178,6 @@ class Chi2Test:
         )
         return vector_data.select(reference_column, f"{current_column}_vector")
 
-    def __concatenate_dfs(self) -> pyspark.sql.DataFrame:
-        """
-        Concatenates the reference and current dataframes if they have the same size or creates subsamples to make them
-         of equal size.
-
-        Returns:
-        - pyspark.sql.DataFrame: The concatenated DataFrame.
-        """
-
-        self.current = self.current.withColumn("type", F.lit("current"))
-        self.reference = self.reference.withColumn("type", F.lit("reference"))
-
-        if self.__have_same_size():
-            concatenated_data = self.current.unionByName(self.reference)
-
-        else:
-            max_size = max(self.reference_size, self.current_size)
-
-            if self.reference_size == max_size:
-                # create a reference subsample with a size equal to the current
-                subsample_reference = self.spark_session.createDataFrame(
-                    self.reference.rdd.takeSample(
-                        withReplacement=True, num=self.current_size, seed=1990
-                    )
-                )
-                concatenated_data = self.current.unionByName(subsample_reference)
-            else:
-                # create a current subsample with a size equal to the reference
-                subsample_current = self.spark_session.createDataFrame(
-                    self.current.rdd.takeSample(
-                        withReplacement=True, num=self.reference_size, seed=1990
-                    )
-                )
-                concatenated_data = subsample_current.unionByName(self.reference)
-
-        return concatenated_data
-
     def test_independence(self, reference_column, current_column) -> Dict:
         """
         Performs the chi-square test of independence.
@@ -276,7 +239,10 @@ class Chi2Test:
         self.reference_size = self.reference.count()
         self.current_size = self.current.count()
 
-        concatenated_data = self.__concatenate_dfs()
+        self.current = self.current.withColumn("type", F.lit("current"))
+        self.reference = self.reference.withColumn("type", F.lit("reference"))
+
+        concatenated_data = self.current.unionByName(self.reference)
 
         def cnt_cond(cond):
             return F.sum(F.when(cond, 1).otherwise(0))
@@ -295,5 +261,7 @@ class Chi2Test:
             .rdd.flatMap(lambda x: x)
             .collect()
         )
-        res = chisquare(ref_fr, cur_fr)
+        proportion = sum(cur_fr) / sum(ref_fr)
+        ref_fr = ref_fr * proportion
+        res = chisquare(cur_fr, ref_fr)
         return {"pValue": float(res[1]), "statistic": float(res[0])}
