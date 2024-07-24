@@ -157,6 +157,7 @@ model_quality_base_dict = {
     'falsePositiveRate': 0.13,
     'areaUnderRoc': 0.92,
     'areaUnderPr': 0.91,
+    'logLoss': 0.71,
 }
 
 binary_model_quality_dict = {
@@ -223,6 +224,10 @@ grouped_metrics_dict = {
     'areaUnderPr': [
         {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.91},
         {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.92},
+    ],
+    'logLoss': [
+        {'timestamp': '2024-01-01T00:00:00Z', 'value': 0.70},
+        {'timestamp': '2024-02-01T00:00:00Z', 'value': 0.72},
     ],
 }
 

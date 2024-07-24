@@ -48,6 +48,7 @@ class AdditionalMetrics(BaseModel):
     weighted_false_positive_rate: Optional[float] = None
     area_under_roc: Optional[float] = None
     area_under_pr: Optional[float] = None
+    log_loss: Optional[float] = None
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
@@ -64,6 +65,7 @@ class AdditionalGroupedMetrics(GroupedBaseClassificationMetrics):
     weighted_false_positive_rate: List[Distribution]
     area_under_roc: Optional[List[Distribution]] = None
     area_under_pr: Optional[List[Distribution]] = None
+    log_loss: Optional[List[Distribution]] = None
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()

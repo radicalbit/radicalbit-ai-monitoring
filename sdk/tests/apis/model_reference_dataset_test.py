@@ -152,6 +152,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         f_measure = 9.33
         area_under_roc = 45.2
         area_under_pr = 32.9
+        log_loss = 0.71
         true_positive_count = 10
         false_positive_count = 5
         true_negative_count = 2
@@ -190,6 +191,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
                         "falsePositiveRate": {false_positive_rate},
                         "areaUnderRoc": {area_under_roc},
                         "areaUnderPr": {area_under_pr},
+                        "logLoss": {log_loss},
                         "truePositiveCount": {true_positive_count},
                         "falsePositiveCount": {false_positive_count},
                         "trueNegativeCount": {true_negative_count},
@@ -220,6 +222,7 @@ class ModelReferenceDatasetTest(unittest.TestCase):
         assert metrics.f_measure == f_measure
         assert metrics.area_under_roc == area_under_roc
         assert metrics.area_under_pr == area_under_pr
+        assert metrics.log_loss == log_loss
         assert model_reference_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
