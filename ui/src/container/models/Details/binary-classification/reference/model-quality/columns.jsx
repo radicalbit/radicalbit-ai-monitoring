@@ -12,6 +12,6 @@ export default [
     key: 'value',
     dataIndex: 'value',
     align: 'right',
-    render: (value) => numberFormatter().format(value),
+    render: (value) => (value) ? numberFormatter().format(value) : '--',
   },
 ];
