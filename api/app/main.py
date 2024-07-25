@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 import logging
+from logging.config import dictConfig
 
 import boto3
 from fastapi import FastAPI
@@ -35,6 +36,7 @@ from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
 from app.services.spark_k8s_service import SparkK8SService
 
+dictConfig(get_config().log_config.model_dump())
 logger = logging.getLogger(get_config().log_config.logger_name)
 
 database = Database(get_config().db_config)
