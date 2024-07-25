@@ -3,6 +3,7 @@ import { useParams } from 'react-router';
 import { memo } from 'react';
 import { modelsApiSlice } from '@Store/state/models/api';
 import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
+import { FormbitContextProvider } from '@radicalbit/formbit';
 import featuresColumns from './columns';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
@@ -32,13 +33,15 @@ function VariablesTab() {
   const handleRowClassName = ({ rowType }) => rowType.length > 0 ? DataTable.ROW_PRIMARY_LIGHT : '';
 
   return (
-    <DataTable
-      columns={featuresColumns(variables)}
-      dataSource={variables.sort((a, b) => b.rowType.length - a.rowType.length)}
-      pagination={{ pageSize: 200, hideOnSinglePage: true }}
-      rowClassName={handleRowClassName}
-      rowKey={({ name }) => name}
-    />
+    <FormbitContextProvider initialValues={{ __metadata: { variables } }}>
+      <DataTable
+        columns={featuresColumns(variables)}
+        dataSource={variables.sort((a, b) => b.rowType.length - a.rowType.length)}
+        pagination={{ pageSize: 200, hideOnSinglePage: true }}
+        rowClassName={handleRowClassName}
+        rowKey={({ name }) => name}
+      />
+    </FormbitContextProvider>
   );
 }
 
