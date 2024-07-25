@@ -80,8 +80,7 @@ class ModelQualityRegressionCalculator:
                         labelCol=model.target.name,
                         predictionCol=model.outputs.prediction.name,
                     ).evaluate(dataframe)
-        except Exception as e:
-            print(e)
+        except Exception:
             return float("nan")
 
     @staticmethod

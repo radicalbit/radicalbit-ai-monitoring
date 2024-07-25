@@ -13,6 +13,7 @@ from jobs.utils.models import (
     OutputType,
     ColumnDefinition,
     SupportedTypes,
+    FieldTypes,
     Granularity,
 )
 from tests.utils.pytest_utils import my_approx
@@ -62,18 +63,38 @@ def dataset_indexing(spark_fixture, test_data_dir):
 
 def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction=ColumnDefinition(
+            name="prediction", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -121,18 +142,40 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
 
 def test_calculation_dataset_target_string(spark_fixture, dataset_target_string):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.string),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.string)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.string,
+                field_type=FieldTypes.categorical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.string)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.string, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -182,18 +225,40 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
 
 def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_classes):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.string),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.string)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.string,
+                field_type=FieldTypes.categorical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.string)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.string, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -243,18 +308,40 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
 
 def test_calculation_dataset_with_nulls(spark_fixture, dataset_with_nulls):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.string),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.string)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.string,
+                field_type=FieldTypes.categorical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.string)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.string, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -290,18 +377,38 @@ def test_calculation_dataset_with_nulls(spark_fixture, dataset_with_nulls):
 
 def test_calculation_dataset_indexing(spark_fixture, dataset_indexing):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction=ColumnDefinition(
+            name="prediction", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
