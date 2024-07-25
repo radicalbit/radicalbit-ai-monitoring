@@ -27,6 +27,22 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
     }),
 
+    editModel: builder.mutation({
+      invalidatesTags: (result, __, { uuid }) => {
+        if (result) {
+          return [{ type: API_TAGS.MODEL, id: uuid }];
+        }
+        return [];
+      },
+      query: (data) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: '/models/edit',
+        method: 'post',
+        data,
+      }),
+
+    }),
+
     inferSchema: builder.mutation({
       query: ({ file, separator }) => {
         const data = new FormData();
