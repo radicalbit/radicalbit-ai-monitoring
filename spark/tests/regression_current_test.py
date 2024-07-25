@@ -275,7 +275,6 @@ def test_data_quality(spark_fixture, current_dataset, reference_dataset):
 
     computed_features = computed["feature_metrics"]
     computed_target = computed["target_metrics"]
-    print(computed)
 
     assert not deepdiff.DeepDiff(
         computed_features,

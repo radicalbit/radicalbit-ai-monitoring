@@ -1209,8 +1209,6 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
         significant_digits=6,
     )
 
-    print(data_quality.model_dump(serialize_as_any=True, exclude_none=True))
-
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
         res.test_calculation_for_month_dq_res,
