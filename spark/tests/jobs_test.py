@@ -15,6 +15,7 @@ from utils.models import (
     ModelType,
     OutputType,
     SupportedTypes,
+    FieldTypes,
 )
 import tests.results.jobs_results as res
 
@@ -80,23 +81,63 @@ def bc_reference_joined(spark_fixture, test_data_dir):
 @pytest.fixture()
 def reg_model_abalone():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction=ColumnDefinition(
+            name="prediction", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="timestamp", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.MONTH
     features = [
-        ColumnDefinition(name="Sex", type=SupportedTypes.string),
-        ColumnDefinition(name="Length", type=SupportedTypes.float),
-        ColumnDefinition(name="Diameter", type=SupportedTypes.float),
-        ColumnDefinition(name="Height", type=SupportedTypes.float),
-        ColumnDefinition(name="Whole_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Shucked_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Viscera_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Shell_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="pred_id", type=SupportedTypes.string),
+        ColumnDefinition(
+            name="Sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="Length", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Diameter", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Height", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Whole_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Shucked_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Viscera_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Shell_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="pred_id",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
@@ -119,18 +160,40 @@ def reg_model_abalone():
 @pytest.fixture()
 def mc_model_target_string():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.string),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.string)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.string,
+                field_type=FieldTypes.categorical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.string)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.string, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
@@ -153,30 +216,82 @@ def mc_model_target_string():
 @pytest.fixture()
 def bc_model_joined():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="age", type=SupportedTypes.int),
-        ColumnDefinition(name="sex", type=SupportedTypes.string),
-        ColumnDefinition(name="chest_pain_type", type=SupportedTypes.int),
-        ColumnDefinition(name="resting_blood_pressure", type=SupportedTypes.int),
-        ColumnDefinition(name="cholesterol", type=SupportedTypes.int),
-        ColumnDefinition(name="fasting_blood_sugar", type=SupportedTypes.int),
-        ColumnDefinition(name="resting_ecg", type=SupportedTypes.int),
-        ColumnDefinition(name="max_heart_rate_achieved", type=SupportedTypes.int),
-        ColumnDefinition(name="exercise_induced_angina", type=SupportedTypes.int),
-        ColumnDefinition(name="st_depression", type=SupportedTypes.float),
-        ColumnDefinition(name="st_slope", type=SupportedTypes.int),
+        ColumnDefinition(
+            name="age", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="chest_pain_type",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="resting_blood_pressure",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="cholesterol", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="fasting_blood_sugar",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="resting_ecg", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="max_heart_rate_achieved",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="exercise_induced_angina",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="st_depression",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="st_slope", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),

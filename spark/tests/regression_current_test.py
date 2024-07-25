@@ -15,6 +15,7 @@ from utils.models import (
     ModelType,
     OutputType,
     SupportedTypes,
+    FieldTypes,
 )
 import tests.results.regression_current_results as res
 
@@ -56,25 +57,65 @@ def reference_test_abalone(spark_fixture, test_data_dir):
 @pytest.fixture()
 def model():
     output = OutputType(
-        prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="predictions",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="predictions", type=SupportedTypes.float)],
+        output=[
+            ColumnDefinition(
+                name="predictions",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="dteday", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="dteday", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.MONTH
     features = [
-        ColumnDefinition(name="season", type=SupportedTypes.int),
-        ColumnDefinition(name="yr", type=SupportedTypes.int),
-        ColumnDefinition(name="mnth", type=SupportedTypes.int),
-        ColumnDefinition(name="holiday", type=SupportedTypes.int),
-        ColumnDefinition(name="weekday", type=SupportedTypes.int),
-        ColumnDefinition(name="workingday", type=SupportedTypes.int),
-        ColumnDefinition(name="weathersit", type=SupportedTypes.float),
-        ColumnDefinition(name="temp", type=SupportedTypes.float),
-        ColumnDefinition(name="atemp", type=SupportedTypes.float),
-        ColumnDefinition(name="hum", type=SupportedTypes.float),
-        ColumnDefinition(name="windspeed", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="season", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="yr", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="mnth", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="holiday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="weekday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="workingday",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="weathersit",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="temp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="atemp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="hum", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="windspeed", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
@@ -97,23 +138,63 @@ def model():
 @pytest.fixture()
 def model_test_abalone():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction=ColumnDefinition(
+            name="prediction", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="timestamp", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.MONTH
     features = [
-        ColumnDefinition(name="Sex", type=SupportedTypes.string),
-        ColumnDefinition(name="Length", type=SupportedTypes.float),
-        ColumnDefinition(name="Diameter", type=SupportedTypes.float),
-        ColumnDefinition(name="Height", type=SupportedTypes.float),
-        ColumnDefinition(name="Whole_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Shucked_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Viscera_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Shell_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="pred_id", type=SupportedTypes.string),
+        ColumnDefinition(
+            name="Sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="Length", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Diameter", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Height", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Whole_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Shucked_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Viscera_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Shell_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="pred_id",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
@@ -194,6 +275,7 @@ def test_data_quality(spark_fixture, current_dataset, reference_dataset):
 
     computed_features = computed["feature_metrics"]
     computed_target = computed["target_metrics"]
+    print(computed)
 
     assert not deepdiff.DeepDiff(
         computed_features,
