@@ -51,12 +51,12 @@ jobs:
     if: github.event_name != 'pull_request'
     uses: radicalbit/radicalbit-github-workflows/.github/workflows/docker.yaml@v1
     with:
-      push: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      push: ${{ github.event_name != 'pull_request' }}
       context: ./spark
       image: radicalbit-spark-py
-      tag: github.ref_name
+      tag: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'develop' }}
       dockerhub_shortdesc: "Radicalbit AI Monitoring - Apache Spark jobs"
-      dockerhub_push_latest: true
+      dockerhub_push_latest: ${{ startsWith(github.ref, 'refs/tags/v') }}
     secrets:
       USERNAME: ${{ secrets.DOCKER_HUB_USER }}
       PASSWORD: ${{ secrets.DOCKER_HUB_PAT }}
