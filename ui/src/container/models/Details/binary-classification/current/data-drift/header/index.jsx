@@ -1,4 +1,4 @@
-import { DRIFT_TEST_ENUM } from '@Src/constants';
+import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 
@@ -74,8 +74,8 @@ function CategoricalFeaturesCounter() {
   const { data } = useGetCurrentDriftQueryWithPolling();
 
   const featureMetrics = data?.drift.featureMetrics ?? [];
-  const categoricalWithDriftCounter = featureMetrics.filter((feature) => feature.driftCalc.type === DRIFT_TEST_ENUM.CHI2 && feature.driftCalc.hasDrift).length;
-  const categoricalCounter = featureMetrics.filter((feature) => feature.driftCalc.type === DRIFT_TEST_ENUM.CHI2).length;
+  const categoricalWithDriftCounter = featureMetrics.filter(({ fieldType, driftCalc }) => fieldType === FEATURE_TYPE.CATEGORICAL && driftCalc.hasDrift).length;
+  const categoricalCounter = featureMetrics.filter(({ fieldType }) => fieldType === FEATURE_TYPE.CATEGORICAL).length;
 
   if (categoricalCounter === 0) {
     return (
@@ -128,8 +128,8 @@ function NumericalFeaturesCounter() {
 
   const featureMetrics = data?.drift.featureMetrics ?? [];
 
-  const numericalWithDriftCounter = featureMetrics.filter((feature) => feature.driftCalc.type === DRIFT_TEST_ENUM.KS && feature.driftCalc.hasDrift).length;
-  const numericalCounter = featureMetrics.filter((feature) => feature.driftCalc.type === DRIFT_TEST_ENUM.KS).length;
+  const numericalWithDriftCounter = featureMetrics.filter(({ fieldType, driftCalc }) => fieldType === FEATURE_TYPE.NUMERICAL && driftCalc.hasDrift).length;
+  const numericalCounter = featureMetrics.filter(({ fieldType }) => fieldType === FEATURE_TYPE.NUMERICAL).length;
 
   if (numericalCounter === 0) {
     return (
