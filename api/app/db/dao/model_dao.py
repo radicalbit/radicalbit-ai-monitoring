@@ -32,6 +32,16 @@ class ModelDAO:
                 .one_or_none()
             )
 
+    def update(self, uuid: UUID, model: Model):
+        with self.db.begin_session() as session:
+            query = (
+                sqlalchemy.update(Model)
+                .where(Model.uuid == uuid)
+                .values(**model.attributes())
+            )
+            return session.execute(query).rowcount
+
+
     def delete(self, uuid: UUID) -> int:
         with self.db.begin_session() as session:
             deleted_at = datetime.datetime.now(tz=datetime.UTC)

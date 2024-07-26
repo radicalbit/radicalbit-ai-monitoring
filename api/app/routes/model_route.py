@@ -1,6 +1,7 @@
 import logging
 from typing import Annotated, List, Optional
 from uuid import UUID
+from requests import Response
 
 from fastapi import APIRouter
 from fastapi.params import Query
@@ -50,5 +51,12 @@ class ModelRoute:
             model = model_service.delete_model(model_uuid)
             logger.info('Model %s with name %s deleted.', model.uuid, model.name)
             return model
+
+        @router.post('/{model_uuid}', status_code=200)
+        def update_model_by_uuid(model_uuid: UUID, model_in: ModelIn):
+            if model_service.update_model_by_uuid(model_uuid, model_in):
+                return Response(status_code=200)
+            else:
+                return Response(status_code=404)
 
         return router

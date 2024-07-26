@@ -46,6 +46,15 @@ class ModelService:
             latest_current_dataset=latest_current_dataset,
         )
 
+    def update_model_by_uuid(self, model_uuid: UUID, model_in: ModelIn) -> bool:
+        try:
+            to_update = model_in.to_model()
+            return self.model_dao.update(model_uuid, to_update) > 0
+        except Exception as e:
+            raise ModelInternalError(
+                f'An error occurred while updating the model: {e}'
+            ) from e
+
     def delete_model(self, model_uuid: UUID) -> Optional[ModelOut]:
         model = self.check_and_get_model(model_uuid)
         self.model_dao.delete(model_uuid)
