@@ -8,7 +8,9 @@ import { useModalContext } from '../modal-context-provider';
 
 function Target() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
+  const {
+    form, error, write, remove,
+  } = useFormbit;
 
   const targets = useGetTargets();
   const timestampName = form?.timestamp?.name;
@@ -17,6 +19,11 @@ function Target() {
   const value = form?.target?.name;
 
   const handleOnChange = (val) => {
+    if (!val) {
+      remove('target');
+      return;
+    }
+
     try {
       write('target', JSON.parse(val));
     } catch (e) {
@@ -97,7 +104,9 @@ function Target() {
 
 function Timestamp() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
+  const {
+    form, error, write, remove,
+  } = useFormbit;
 
   const validTimestampFeatures = useGetTimestapValidFeatures();
   const targetName = form?.target?.name;
@@ -106,6 +115,11 @@ function Timestamp() {
   const value = form?.timestamp?.name;
 
   const handleOnChange = (val) => {
+    if (!val) {
+      remove('timestamp');
+      return;
+    }
+
     try {
       write('timestamp', JSON.parse(val));
     } catch (e) {
@@ -186,7 +200,9 @@ function Timestamp() {
 
 function Prediction() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
+  const {
+    form, error, write, remove,
+  } = useFormbit;
 
   const predictions = useGetPredictions();
   const value = form?.prediction?.name;
@@ -195,6 +211,11 @@ function Prediction() {
   const targetName = form?.target?.name;
 
   const handleOnChange = (val) => {
+    if (!val) {
+      remove('prediction');
+      return;
+    }
+
     try {
       write('prediction', JSON.parse(val));
     } catch (e) {
@@ -289,7 +310,7 @@ function Probability() {
   const { modelType } = formStepOne;
 
   const handleOnChange = (val) => {
-    if (val === undefined) {
+    if (!val) {
       remove('predictionProba');
       return;
     }
@@ -388,11 +409,18 @@ const targetValidTypes = {
 const useGetTargets = () => {
   const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
+  const predictionType = form?.prediction?.type;
 
   const { form: formStepOne } = useFormbitStepOne;
   const { modelType } = formStepOne;
 
-  return form.outputs.filter(({ type }) => targetValidTypes[modelType].includes(type));
+  return form.outputs.filter(({ type }) => {
+    if (predictionType) {
+      return type === predictionType;
+    }
+
+    return targetValidTypes[modelType].includes(type);
+  });
 };
 
 const predictionValidTypes = {
@@ -403,11 +431,18 @@ const predictionValidTypes = {
 const useGetPredictions = () => {
   const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
+  const targetType = form?.target?.type;
 
   const { form: formStepOne } = useFormbitStepOne;
   const { modelType } = formStepOne;
 
-  return form.outputs.filter(({ type }) => predictionValidTypes[modelType].includes(type));
+  return form.outputs.filter(({ type }) => {
+    if (targetType) {
+      return type === targetType;
+    }
+
+    return predictionValidTypes[modelType].includes(type);
+  });
 };
 
 const probabilityValidTypes = {
