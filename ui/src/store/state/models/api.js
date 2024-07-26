@@ -36,7 +36,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
       },
       query: (data) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: '/models/edit',
+        url: `/models/${data.uuid}`,
         method: 'post',
         data,
       }),

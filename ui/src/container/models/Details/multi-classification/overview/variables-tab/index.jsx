@@ -52,6 +52,7 @@ function VariablesTabInner() {
   const handleRowClassName = ({ rowType }) => rowType.length > 0 ? DataTable.ROW_PRIMARY_LIGHT : '';
 
   const [handleOnSubmit, { isLoading }] = useHandleOnSubmit();
+
   return (
     <div className="flex flex-col mt-4">
       {isMissingReference && (
