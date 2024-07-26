@@ -1,9 +1,8 @@
 import logging
 from typing import Annotated, List, Optional
 from uuid import UUID
-from requests import Response
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from fastapi.params import Query
 from fastapi_pagination import Page, Params
 
@@ -56,7 +55,6 @@ class ModelRoute:
         def update_model_by_uuid(model_uuid: UUID, model_in: ModelIn):
             if model_service.update_model_by_uuid(model_uuid, model_in):
                 return Response(status_code=200)
-            else:
-                return Response(status_code=404)
+            return Response(status_code=404)
 
         return router

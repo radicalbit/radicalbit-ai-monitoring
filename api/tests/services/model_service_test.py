@@ -66,6 +66,20 @@ class ModelServiceTest(unittest.TestCase):
         )
         self.model_dao.get_by_uuid.assert_called_once()
 
+    def test_update_model_ok(self):
+        model_in = db_mock.get_sample_model_in()
+        self.model_dao.update = MagicMock(return_value=1)
+        res = self.model_service.update_model_by_uuid(model_uuid, model_in)
+
+        assert res is True
+
+    def test_update_model_ko(self):
+        model_in = db_mock.get_sample_model_in()
+        self.model_dao.update = MagicMock(return_value=0)
+        res = self.model_service.update_model_by_uuid(model_uuid, model_in)
+
+        assert res is False
+
     def test_delete_model_ok(self):
         model = db_mock.get_sample_model()
         self.model_dao.get_by_uuid = MagicMock(return_value=model)

@@ -27,6 +27,16 @@ class ModelDAOTest(DatabaseIntegration):
         retrieved = self.model_dao.get_by_uuid(uuid.uuid4())
         assert retrieved is None
 
+    def test_update(self):
+        model = db_mock.get_sample_model()
+        self.model_dao.insert(model)
+        model_to_update = model
+        model_to_update.name = 'updated_name'
+        rows = self.model_dao.update(model.uuid, model_to_update)
+        retrieved = self.model_dao.get_by_uuid(model.uuid)
+        assert rows == 1
+        assert retrieved.name == 'updated_name'
+
     def test_delete(self):
         model = db_mock.get_sample_model()
         self.model_dao.insert(model)

@@ -41,7 +41,6 @@ class ModelDAO:
             )
             return session.execute(query).rowcount
 
-
     def delete(self, uuid: UUID) -> int:
         with self.db.begin_session() as session:
             deleted_at = datetime.datetime.now(tz=datetime.UTC)
