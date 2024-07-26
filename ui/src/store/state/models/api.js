@@ -194,6 +194,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
         url: `/models/${uuid}/current/${currentUUID}/drift`,
         method: 'get',
       }),
+
     }),
 
   }),
