@@ -577,7 +577,7 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
             field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
-            name="num_cores", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name="num_cores", type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
             name="processor_speed",
@@ -592,7 +592,7 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         ColumnDefinition(
             name="fast_charging_available",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="fast_charging",
@@ -602,12 +602,12 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         ColumnDefinition(
             name="ram_capacity",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="internal_memory",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="screen_size",
@@ -622,12 +622,12 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         ColumnDefinition(
             name="num_rear_cameras",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="num_front_cameras",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="os", type=SupportedTypes.string, field_type=FieldTypes.categorical
@@ -645,22 +645,22 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         ColumnDefinition(
             name="extended_memory_available",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="extended_upto",
             type=SupportedTypes.float,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="resolution_width",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
             name="resolution_height",
             type=SupportedTypes.int,
-            field_type=FieldTypes.numerical,
+            field_type=FieldTypes.categorical,
         ),
     ]
     model = ModelOut(
