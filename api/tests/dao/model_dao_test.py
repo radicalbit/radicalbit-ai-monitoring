@@ -27,6 +27,18 @@ class ModelDAOTest(DatabaseIntegration):
         retrieved = self.model_dao.get_by_uuid(uuid.uuid4())
         assert retrieved is None
 
+    def test_update(self):
+        model = db_mock.get_sample_model()
+        self.model_dao.insert(model)
+        new_features = [
+            {'name': 'feature1', 'type': 'string', 'fieldType': 'categorical'},
+            {'name': 'feature2', 'type': 'int', 'fieldType': 'numerical'},
+        ]
+        updated_rows = self.model_dao.update_features(model.uuid, new_features)
+        retrieved = self.model_dao.get_by_uuid(model.uuid)
+        assert updated_rows == 1
+        assert retrieved.features == new_features
+
     def test_delete(self):
         model = db_mock.get_sample_model()
         self.model_dao.insert(model)

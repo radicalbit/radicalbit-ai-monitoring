@@ -9,8 +9,8 @@ from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_table import ReferenceDataset
-from app.models.exceptions import ModelInternalError, ModelNotFoundError
-from app.models.model_dto import ModelIn, ModelOut
+from app.models.exceptions import ModelError, ModelInternalError, ModelNotFoundError
+from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
 from app.models.model_order import OrderType
 
 
@@ -44,6 +44,23 @@ class ModelService:
             model=model,
             latest_reference_dataset=latest_reference_dataset,
             latest_current_dataset=latest_current_dataset,
+        )
+
+    def update_model_features_by_uuid(
+        self, model_uuid: UUID, model_features: ModelFeatures
+    ) -> bool:
+        last_reference = self.rd_dao.get_latest_reference_dataset_by_model_uuid(
+            model_uuid
+        )
+        if last_reference is not None:
+            raise ModelError(
+                'Model already has a reference dataset, could not be updated', 400
+            ) from None
+        return (
+            self.model_dao.update_features(
+                model_uuid, [feature.to_dict() for feature in model_features.features]
+            )
+            > 0
         )
 
     def delete_model(self, model_uuid: UUID) -> Optional[ModelOut]:

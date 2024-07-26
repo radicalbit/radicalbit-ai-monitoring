@@ -8,7 +8,7 @@ import pytest
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
-from app.models.exceptions import ModelNotFoundError
+from app.models.exceptions import ModelError, ModelNotFoundError
 from app.models.model_dto import ModelOut
 from app.models.model_order import OrderType
 from app.services.model_service import ModelService
@@ -65,6 +65,56 @@ class ModelServiceTest(unittest.TestCase):
             ModelNotFoundError, self.model_service.get_model_by_uuid, model_uuid
         )
         self.model_dao.get_by_uuid.assert_called_once()
+
+    def test_update_model_ok(self):
+        model_features = db_mock.get_sample_model_features()
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+        self.model_dao.update_features = MagicMock(return_value=1)
+        res = self.model_service.update_model_features_by_uuid(
+            model_uuid, model_features
+        )
+        feature_dict = [feature.to_dict() for feature in model_features.features]
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+        self.model_dao.update_features.assert_called_once_with(model_uuid, feature_dict)
+
+        assert res is True
+
+    def test_update_model_ko(self):
+        model_features = db_mock.get_sample_model_features()
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+        self.model_dao.update_features = MagicMock(return_value=0)
+        res = self.model_service.update_model_features_by_uuid(
+            model_uuid, model_features
+        )
+        feature_dict = [feature.to_dict() for feature in model_features.features]
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+        self.model_dao.update_features.assert_called_once_with(model_uuid, feature_dict)
+
+        assert res is False
+
+    def test_update_model_freezed(self):
+        model_features = db_mock.get_sample_model_features()
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
+            return_value=db_mock.get_sample_reference_dataset()
+        )
+        self.model_dao.update_features = MagicMock(return_value=0)
+        with pytest.raises(ModelError):
+            self.model_service.update_model_features_by_uuid(model_uuid, model_features)
+            feature_dict = [feature.to_dict() for feature in model_features.features]
+            self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
+                model_uuid
+            )
+            self.model_dao.update_features.assert_called_once_with(
+                model_uuid, feature_dict
+            )
 
     def test_delete_model_ok(self):
         model = db_mock.get_sample_model()

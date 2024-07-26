@@ -13,6 +13,7 @@ from app.models.model_dto import (
     DataType,
     FieldType,
     Granularity,
+    ModelFeatures,
     ModelIn,
     ModelType,
     OutputType,
@@ -70,6 +71,18 @@ def get_sample_model(
         created_at=datetime.datetime.now(tz=datetime.UTC),
         updated_at=datetime.datetime.now(tz=datetime.UTC),
     )
+
+
+def get_sample_model_features(
+    features: List[ColumnDefinition] = [
+        ColumnDefinition(
+            name='feature1',
+            type=SupportedTypes.string,
+            field_type=FieldType.categorical,
+        )
+    ],
+):
+    return ModelFeatures(features=features)
 
 
 def get_sample_model_in(
