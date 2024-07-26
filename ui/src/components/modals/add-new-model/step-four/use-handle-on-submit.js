@@ -1,6 +1,8 @@
 import { modelsApiSlice } from '@State/models/api';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
+import { ModelTypeEnum } from '@State/models/constants';
+import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import { useModalContext } from '../modal-context-provider';
 
 const { useAddNewModelMutation } = modelsApiSlice;
@@ -40,6 +42,21 @@ export default () => {
         ? outputs.filter((f) => f.name === prediction.name || f.name === predictionProba.name)
         : outputs.filter((f) => f.name === prediction.name);
 
+      const updatedTarget = {
+        ...target,
+        fieldType: (function getTargetFieldType(type) {
+          switch (type) {
+            case ModelTypeEnum.BINARY_CLASSIFICATION:
+            case ModelTypeEnum.MULTI_CLASSIFICATION:
+              return FEATURE_TYPE.CATEGORICAL;
+            case ModelTypeEnum.REGRESSION:
+              return FEATURE_TYPE.NUMERICAL;
+            default:
+              return '';
+          }
+        }(modelType)),
+      };
+
       const response = await triggerAddNewModel({
         name,
         dataType,
@@ -54,7 +71,7 @@ export default () => {
           output: realOutput,
         },
         timestamp,
-        target,
+        target: updatedTarget,
       });
 
       if (response.error) {

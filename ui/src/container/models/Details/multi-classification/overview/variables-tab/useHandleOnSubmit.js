@@ -8,32 +8,36 @@ export default () => {
   const { uuid } = useParams();
   const { data } = useGetModelByUUIDQuery({ uuid });
 
-  const { resetForm, setError, form } = useFormbitContext();
+  const { isDirty, submitForm } = useFormbitContext();
 
   const [triggerEditModel, args] = useEditModelMutation();
 
+  const isSubmitDisabled = !isDirty;
+
   const handleOnSubmit = async () => {
-    if (args.isLoading) {
-      return;
-    }
-    const variables = form?.__metadata.variables ?? [];
-    const filteredVariables = variables.filter(({ rowType }) => rowType === '');
-
-    const updatedData = {
-      ...data,
-      features: filteredVariables,
-    };
-
-    const response = await triggerEditModel({ data: updatedData });
-
-    if (response.error) {
-      console.error(response.error);
-      setError('silent.backed', response.error);
+    if (isSubmitDisabled || args.isLoading) {
       return;
     }
 
-    resetForm();
+    submitForm(async ({ form: { variables } }, setError, clearIsDirty) => {
+      const filteredVariables = variables.filter(({ rowType }) => rowType === '');
+
+      const updatedData = {
+        ...data,
+        features: filteredVariables,
+      };
+
+      const response = await triggerEditModel({ data: updatedData, successMessage: 'Model updated' });
+
+      if (response.error) {
+        console.error(response.error);
+        setError('silent.backed', response.error);
+        return;
+      }
+
+      clearIsDirty();
+    });
   };
 
-  return [handleOnSubmit, args];
+  return [handleOnSubmit, args, isSubmitDisabled];
 };

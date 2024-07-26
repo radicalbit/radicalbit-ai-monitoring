@@ -7,6 +7,7 @@ import { FormbitContextProvider, useFormbitContext } from '@radicalbit/formbit';
 import { JOB_STATUS } from '@Src/constants';
 import { featuresColumns, featuresColumnsWithSelection } from './columns';
 import useHandleOnSubmit from './useHandleOnSubmit';
+import schema from './schema';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
@@ -32,7 +33,7 @@ function VariablesTab() {
   }));
 
   return (
-    <FormbitContextProvider initialValues={{ __metadata: { variables } }}>
+    <FormbitContextProvider initialValues={{ variables }} schema={schema}>
       <VariablesTabInner />
     </FormbitContextProvider>
   );
@@ -43,7 +44,7 @@ function VariablesTabInner() {
   const { data } = useGetModelByUUIDQuery({ uuid });
   const { form } = useFormbitContext();
 
-  const variables = form?.__metadata.variables ?? [];
+  const variables = form?.variables ?? [];
 
   const referenceJobStatus = data?.latestReferenceJobStatus;
   const isMissingReference = referenceJobStatus === JOB_STATUS.MISSING_REFERENCE;
@@ -51,13 +52,14 @@ function VariablesTabInner() {
 
   const handleRowClassName = ({ rowType }) => rowType.length > 0 ? DataTable.ROW_PRIMARY_LIGHT : '';
 
-  const [handleOnSubmit, { isLoading }] = useHandleOnSubmit();
+  const [handleOnSubmit, { isLoading }, isSubmitDisabled] = useHandleOnSubmit();
 
   return (
     <div className="flex flex-col mt-4">
       {isMissingReference && (
       <div className="flex justify-end">
         <Button
+          disabled={isSubmitDisabled}
           loading={isLoading}
           onClick={handleOnSubmit}
           type="primary"

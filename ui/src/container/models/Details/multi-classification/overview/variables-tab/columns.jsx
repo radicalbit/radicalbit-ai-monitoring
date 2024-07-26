@@ -94,7 +94,7 @@ function FieldTypeSelection({ variableIdx }) {
   const [, { isLoading }] = useHandleOnSubmit();
 
   const { form, write } = useFormbitContext();
-  const variables = form?.__metadata.variables;
+  const variables = form?.variables;
 
   const fieldType = variables[variableIdx]?.fieldType;
   const type = variables[variableIdx]?.type;
@@ -106,7 +106,7 @@ function FieldTypeSelection({ variableIdx }) {
   ];
 
   const handleOnChange = (valueSelected) => {
-    write(`__metadata.variables[${variableIdx}]`, { ...variables[variableIdx], fieldType: valueSelected });
+    write(`variables[${variableIdx}]`, { ...variables[variableIdx], fieldType: valueSelected });
   };
 
   if (typeNotEditable.includes(`${type}`) || rowType !== '') {
