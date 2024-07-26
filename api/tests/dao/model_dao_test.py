@@ -1,4 +1,3 @@
-from typing import Dict, List
 import uuid
 
 from app.db.dao.model_dao import ModelDAO
@@ -31,7 +30,7 @@ class ModelDAOTest(DatabaseIntegration):
     def test_update(self):
         model = db_mock.get_sample_model()
         self.model_dao.insert(model)
-        new_features = List[Dict] = [
+        new_features = [
             {'name': 'feature1', 'type': 'string', 'fieldType': 'categorical'},
             {'name': 'feature2', 'type': 'int', 'fieldType': 'numerical'},
         ]
