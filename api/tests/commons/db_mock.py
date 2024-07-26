@@ -475,14 +475,17 @@ drift_dict = {
     'featureMetrics': [
         {
             'featureName': 'gender',
+            'fieldType': 'categorical',
             'driftCalc': {'type': 'CHI2', 'value': 0.87, 'hasDrift': True},
         },
         {
             'featureName': 'city',
+            'fieldType': 'categorical',
             'driftCalc': {'type': 'CHI2', 'value': 0.12, 'hasDrift': False},
         },
         {
             'featureName': 'age',
+            'fieldType': 'numerical',
             'driftCalc': {'type': 'KS', 'value': 0.92, 'hasDrift': True},
         },
     ]

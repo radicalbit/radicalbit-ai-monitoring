@@ -14,6 +14,7 @@ from radicalbit_platform_sdk.models import (
     CurrentRegressionModelQuality,
     Drift,
     DriftAlgorithm,
+    FieldType,
     JobStatus,
     ModelType,
     RegressionDataQuality,
@@ -166,14 +167,17 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                         "featureMetrics": [
                             {
                                 "featureName": "gender",
+                                "fieldType": "categorical",
                                 "driftCalc": {"type": "CHI2", "value": 0.87, "hasDrift": true}
                             },
                             {
                                 "featureName": "city",
+                                "fieldType": "categorical",
                                 "driftCalc": {"type": "CHI2", "value": 0.12, "hasDrift": false}
                             },
                             {
                                 "featureName": "age",
+                                "fieldType": "numerical",
                                 "driftCalc": {"type": "KS", "value": 0.92, "hasDrift": true}
                             }
                         ]
@@ -187,10 +191,12 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
         assert len(drift.feature_metrics) == 3
         assert drift.feature_metrics[1].feature_name == 'city'
+        assert drift.feature_metrics[1].field_type == FieldType.categorical
         assert drift.feature_metrics[1].drift_calc.type == DriftAlgorithm.CHI2
         assert drift.feature_metrics[1].drift_calc.value == 0.12
         assert drift.feature_metrics[1].drift_calc.has_drift is False
         assert drift.feature_metrics[2].feature_name == 'age'
+        assert drift.feature_metrics[2].field_type == FieldType.numerical
         assert drift.feature_metrics[2].drift_calc.type == DriftAlgorithm.KS
         assert drift.feature_metrics[2].drift_calc.value == 0.92
         assert drift.feature_metrics[2].drift_calc.has_drift is True
