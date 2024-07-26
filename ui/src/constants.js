@@ -63,15 +63,18 @@ export const numberFormatter = (options = defaultNumberFormatter) => new Intl.Nu
 export const DRIFT_TEST_ENUM = {
   KS: 'KS',
   CHI2: 'CHI2',
+  PSI: 'PSI',
 };
 
 export const DRIFT_TEST_ENUM_LABEL = {
   [DRIFT_TEST_ENUM.KS]: 'Kolmogorov-Smirnov (statistics)',
   [DRIFT_TEST_ENUM.CHI2]: 'Chi-Square Test (p-value)',
+  [DRIFT_TEST_ENUM.PSI]: 'Population Stability Index',
 };
 
 // FIX: in the future the feature type comes from API
 export const DRIFT_FEATURE_TYPE_ENUM = {
   [DRIFT_TEST_ENUM.KS]: FEATURE_TYPE.NUMERICAL,
   [DRIFT_TEST_ENUM.CHI2]: FEATURE_TYPE.CATEGORICAL,
+  [DRIFT_TEST_ENUM.PSI]: FEATURE_TYPE.NUMERICAL,
 };

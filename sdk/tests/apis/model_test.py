@@ -13,12 +13,14 @@ from radicalbit_platform_sdk.models import (
     ColumnDefinition,
     CurrentFileUpload,
     DataType,
+    FieldType,
     Granularity,
     JobStatus,
     ModelDefinition,
     ModelType,
     OutputType,
     ReferenceFileUpload,
+    SupportedTypes,
 )
 
 
@@ -27,7 +29,9 @@ class ModelTest(unittest.TestCase):
     def test_delete_model(self):
         base_url = 'http://api:9000'
         model_id = uuid.uuid4()
-        column_def = ColumnDefinition(name='column', type='my_type')
+        column_def = ColumnDefinition(
+            name='column', type=SupportedTypes.string, field_type=FieldType.categorical
+        )
         outputs = OutputType(prediction=column_def, output=[column_def])
         model = Model(
             base_url,
@@ -59,7 +63,9 @@ class ModelTest(unittest.TestCase):
         model_id = uuid.uuid4()
         bucket_name = 'test-bucket'
         file_name = 'test.txt'
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         expected_path = f's3://{bucket_name}/{model_id}/reference/{file_name}'
         conn = boto3.resource('s3', region_name='us-east-1')
         conn.create_bucket(Bucket=bucket_name)
@@ -72,12 +78,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.HOUR,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),
@@ -104,7 +126,9 @@ class ModelTest(unittest.TestCase):
         model_id = uuid.uuid4()
         bucket_name = 'test-bucket'
         file_name = 'test.txt'
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         expected_path = f's3://{bucket_name}/{model_id}/reference/{file_name}'
         conn = boto3.resource('s3', region_name='us-east-1')
         conn.create_bucket(Bucket=bucket_name)
@@ -117,12 +141,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.DAY,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),
@@ -149,7 +189,9 @@ class ModelTest(unittest.TestCase):
         model_id = uuid.uuid4()
         bucket_name = 'test-bucket'
         file_name = 'test.txt'
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         expected_path = f's3://{bucket_name}/{file_name}'
         conn = boto3.resource('s3', region_name='us-east-1')
         conn.create_bucket(Bucket=bucket_name)
@@ -162,12 +204,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.WEEK,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),
@@ -188,7 +246,9 @@ class ModelTest(unittest.TestCase):
         assert response.path() == expected_path
 
     def test_load_reference_dataset_wrong_headers(self):
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         model = Model(
             'http://api:9000',
             ModelDefinition(
@@ -198,12 +258,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.MONTH,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),
@@ -218,7 +294,9 @@ class ModelTest(unittest.TestCase):
         model_id = uuid.uuid4()
         bucket_name = 'test-bucket'
         file_name = 'test.txt'
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         expected_path = f's3://{bucket_name}/{model_id}/reference/{file_name}'
         conn = boto3.resource('s3', region_name='us-east-1')
         conn.create_bucket(Bucket=bucket_name)
@@ -231,12 +309,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.DAY,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),
@@ -269,7 +363,9 @@ class ModelTest(unittest.TestCase):
         model_id = uuid.uuid4()
         bucket_name = 'test-bucket'
         file_name = 'test.txt'
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         expected_path = f's3://{bucket_name}/{file_name}'
         conn = boto3.resource('s3', region_name='us-east-1')
         conn.create_bucket(Bucket=bucket_name)
@@ -282,12 +378,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.HOUR,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),
@@ -314,7 +426,9 @@ class ModelTest(unittest.TestCase):
         assert response.path() == expected_path
 
     def test_load_current_dataset_wrong_headers(self):
-        column_def = ColumnDefinition(name='prediction', type='float')
+        column_def = ColumnDefinition(
+            name='prediction', type=SupportedTypes.float, field_type=FieldType.numerical
+        )
         model = Model(
             'http://api:9000',
             ModelDefinition(
@@ -324,12 +438,28 @@ class ModelTest(unittest.TestCase):
                 data_type=DataType.TABULAR,
                 granularity=Granularity.MONTH,
                 features=[
-                    ColumnDefinition(name='first_name', type='str'),
-                    ColumnDefinition(name='age', type='int'),
+                    ColumnDefinition(
+                        name='first_name',
+                        type=SupportedTypes.string,
+                        field_type=FieldType.categorical,
+                    ),
+                    ColumnDefinition(
+                        name='age',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    ),
                 ],
                 outputs=OutputType(prediction=column_def, output=[column_def]),
-                target=ColumnDefinition(name='adult', type='bool'),
-                timestamp=ColumnDefinition(name='created_at', type='str'),
+                target=ColumnDefinition(
+                    name='adult',
+                    type=SupportedTypes.bool,
+                    field_type=FieldType.categorical,
+                ),
+                timestamp=ColumnDefinition(
+                    name='created_at',
+                    type=SupportedTypes.datetime,
+                    field_type=FieldType.datetime,
+                ),
                 created_at=str(time.time()),
                 updated_at=str(time.time()),
             ),

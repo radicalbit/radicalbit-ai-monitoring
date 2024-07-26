@@ -4,6 +4,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
+from app.models.inferred_schema_dto import FieldType
 from app.models.job_status import JobStatus
 
 
@@ -23,6 +24,7 @@ class FeatureDriftCalculation(BaseModel):
 
 class FeatureMetrics(BaseModel):
     feature_name: str
+    field_type: FieldType
     drift_calc: FeatureDriftCalculation
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

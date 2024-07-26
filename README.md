@@ -81,13 +81,13 @@ In order to use a real AWS instead of Minio it is necessary to modify the enviro
 To completely clean up the environment we can use [docker compose](https://docs.docker.com/reference/cli/docker/compose/down/)
 
 ```bash
-docker compose --profile ui --profile k9s down -v --remove-orphans
+docker compose --profile ui --profile k9s --profile init-data down -v --remove-orphans
 ```
 
 To remove everything including container images:
 
 ```bash
-docker compose --profile ui --profile k9s down -v --remove-orphans --rmi all
+docker compose --profile ui --profile k9s --profile init-data down -v --remove-orphans --rmi all
 ```
 
 ## 📖 Documentation

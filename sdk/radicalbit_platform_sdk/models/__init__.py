@@ -30,6 +30,7 @@ from .dataset_model_quality import (
     RegressionModelQuality,
 )
 from .dataset_stats import DatasetStats
+from .field_type import FieldType
 from .file_upload_result import CurrentFileUpload, FileReference, ReferenceFileUpload
 from .job_status import JobStatus
 from .model_definition import (
@@ -39,6 +40,7 @@ from .model_definition import (
     OutputType,
 )
 from .model_type import ModelType
+from .supported_types import SupportedTypes
 
 __all__ = [
     'OutputType',
@@ -76,4 +78,6 @@ __all__ = [
     'CurrentFileUpload',
     'FileReference',
     'AwsCredentials',
+    'SupportedTypes',
+    'FieldType',
 ]

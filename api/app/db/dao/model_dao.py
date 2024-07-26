@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Optional
+from typing import Dict, List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
@@ -31,6 +31,15 @@ class ModelDAO:
                 .where(Model.uuid == uuid, Model.deleted.is_(False))
                 .one_or_none()
             )
+
+    def update_features(self, uuid: UUID, model_features: List[Dict]):
+        with self.db.begin_session() as session:
+            query = (
+                sqlalchemy.update(Model)
+                .where(Model.uuid == uuid)
+                .values(features=model_features)
+            )
+            return session.execute(query).rowcount
 
     def delete(self, uuid: UUID) -> int:
         with self.db.begin_session() as session:

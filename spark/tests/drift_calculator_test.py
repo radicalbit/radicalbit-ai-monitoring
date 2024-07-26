@@ -13,6 +13,7 @@ from jobs.utils.models import (
     OutputType,
     ColumnDefinition,
     SupportedTypes,
+    FieldTypes,
     Granularity,
 )
 from metrics.drift_calculator import DriftCalculator
@@ -87,23 +88,49 @@ def drift_dataset_phone(spark_fixture, test_data_dir):
 
 def test_drift(spark_fixture, drift_dataset):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -144,23 +171,49 @@ def test_drift(spark_fixture, drift_dataset):
 
 def test_drift_small(spark_fixture, drift_small_dataset):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -200,23 +253,49 @@ def test_drift_small(spark_fixture, drift_small_dataset):
 
 def test_drift_boolean(spark_fixture, drift_dataset_bool):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="bool1", type=SupportedTypes.bool),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="bool1", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -256,23 +335,49 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
 
 def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -312,25 +417,65 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
 
 def test_drift_bike(spark_fixture, drift_dataset_bike):
     output = OutputType(
-        prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="predictions",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="predictions", type=SupportedTypes.float)],
+        output=[
+            ColumnDefinition(
+                name="predictions",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="dteday", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="dteday", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="season", type=SupportedTypes.int),
-        ColumnDefinition(name="yr", type=SupportedTypes.int),
-        ColumnDefinition(name="mnth", type=SupportedTypes.int),
-        ColumnDefinition(name="holiday", type=SupportedTypes.int),
-        ColumnDefinition(name="weekday", type=SupportedTypes.int),
-        ColumnDefinition(name="workingday", type=SupportedTypes.int),
-        ColumnDefinition(name="weathersit", type=SupportedTypes.float),
-        ColumnDefinition(name="temp", type=SupportedTypes.float),
-        ColumnDefinition(name="atemp", type=SupportedTypes.float),
-        ColumnDefinition(name="hum", type=SupportedTypes.float),
-        ColumnDefinition(name="windspeed", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="season", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="yr", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="mnth", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="holiday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="weekday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="workingday",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="weathersit",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="temp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="atemp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="hum", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="windspeed", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
@@ -370,45 +515,153 @@ def test_drift_bike(spark_fixture, drift_dataset_bike):
 
 def test_drift_phone(spark_fixture, drift_dataset_phone):
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="timestamp", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.MONTH
     features = [
-        ColumnDefinition(name="brand_name", type=SupportedTypes.string),
-        ColumnDefinition(name="model", type=SupportedTypes.string),
-        ColumnDefinition(name="price", type=SupportedTypes.int),
-        ColumnDefinition(name="rating", type=SupportedTypes.float),
-        ColumnDefinition(name="has_5g", type=SupportedTypes.bool),
-        ColumnDefinition(name="has_nfc", type=SupportedTypes.bool),
-        ColumnDefinition(name="has_ir_blaster", type=SupportedTypes.bool),
-        ColumnDefinition(name="processor_brand", type=SupportedTypes.string),
-        ColumnDefinition(name="num_cores", type=SupportedTypes.int),
-        ColumnDefinition(name="processor_speed", type=SupportedTypes.float),
-        ColumnDefinition(name="battery_capacity", type=SupportedTypes.int),
-        ColumnDefinition(name="fast_charging_available", type=SupportedTypes.int),
-        ColumnDefinition(name="fast_charging", type=SupportedTypes.float),
-        ColumnDefinition(name="ram_capacity", type=SupportedTypes.int),
-        ColumnDefinition(name="internal_memory", type=SupportedTypes.int),
-        ColumnDefinition(name="screen_size", type=SupportedTypes.float),
-        ColumnDefinition(name="refresh_rate", type=SupportedTypes.int),
-        ColumnDefinition(name="num_rear_cameras", type=SupportedTypes.int),
-        ColumnDefinition(name="num_front_cameras", type=SupportedTypes.int),
-        ColumnDefinition(name="os", type=SupportedTypes.string),
-        ColumnDefinition(name="primary_camera_rear", type=SupportedTypes.float),
-        ColumnDefinition(name="primary_camera_front", type=SupportedTypes.float),
-        ColumnDefinition(name="extended_memory_available", type=SupportedTypes.int),
-        ColumnDefinition(name="extended_upto", type=SupportedTypes.float),
-        ColumnDefinition(name="resolution_width", type=SupportedTypes.int),
-        ColumnDefinition(name="resolution_height", type=SupportedTypes.int),
+        ColumnDefinition(
+            name="brand_name",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="model", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="price", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="rating", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="has_5g", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="has_nfc", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="has_ir_blaster",
+            type=SupportedTypes.bool,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="processor_brand",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="num_cores", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="processor_speed",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="battery_capacity",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="fast_charging_available",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="fast_charging",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="ram_capacity",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="internal_memory",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="screen_size",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="refresh_rate",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="num_rear_cameras",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="num_front_cameras",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="os", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="primary_camera_rear",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="primary_camera_front",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="extended_memory_available",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="extended_upto",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="resolution_width",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name="resolution_height",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
