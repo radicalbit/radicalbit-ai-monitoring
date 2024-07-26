@@ -7,7 +7,7 @@ from fastapi.params import Query
 from fastapi_pagination import Page, Params
 
 from app.core import get_config
-from app.models.model_dto import ModelIn, ModelOut
+from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
 from app.models.model_order import OrderType
 from app.services.model_service import ModelService
 
@@ -52,8 +52,10 @@ class ModelRoute:
             return model
 
         @router.post('/{model_uuid}', status_code=200)
-        def update_model_by_uuid(model_uuid: UUID, model_in: ModelIn):
-            if model_service.update_model_by_uuid(model_uuid, model_in):
+        def update_model_features_by_uuid(
+            model_uuid: UUID, model_features: ModelFeatures
+        ):
+            if model_service.update_model_features_by_uuid(model_uuid, model_features):
                 return Response(status_code=200)
             return Response(status_code=404)
 

@@ -1,3 +1,4 @@
+from typing import Dict, List
 import uuid
 
 from app.db.dao.model_dao import ModelDAO
@@ -30,12 +31,14 @@ class ModelDAOTest(DatabaseIntegration):
     def test_update(self):
         model = db_mock.get_sample_model()
         self.model_dao.insert(model)
-        model_to_update = model
-        model_to_update.name = 'updated_name'
-        rows = self.model_dao.update(model.uuid, model_to_update)
+        new_features = List[Dict] = [
+            {'name': 'feature1', 'type': 'string', 'fieldType': 'categorical'},
+            {'name': 'feature2', 'type': 'int', 'fieldType': 'numerical'},
+        ]
+        updated_rows = self.model_dao.update_features(model.uuid, new_features)
         retrieved = self.model_dao.get_by_uuid(model.uuid)
-        assert rows == 1
-        assert retrieved.name == 'updated_name'
+        assert updated_rows == 1
+        assert retrieved.features == new_features
 
     def test_delete(self):
         model = db_mock.get_sample_model()

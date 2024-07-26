@@ -77,6 +77,14 @@ class OutputType(BaseModel, validate_assignment=True):
         return self.model_dump()
 
 
+class ModelFeatures(BaseModel):
+    features: List[ColumnDefinition]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
 class ModelIn(BaseModel, validate_assignment=True):
     name: str
     description: Optional[str] = None

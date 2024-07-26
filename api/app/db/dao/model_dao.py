@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Optional
+from typing import Dict, List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
@@ -32,12 +32,12 @@ class ModelDAO:
                 .one_or_none()
             )
 
-    def update(self, uuid: UUID, model: Model):
+    def update_features(self, uuid: UUID, model_features: List[Dict]):
         with self.db.begin_session() as session:
             query = (
                 sqlalchemy.update(Model)
                 .where(Model.uuid == uuid)
-                .values(**model.attributes())
+                .values(features=model_features)
             )
             return session.execute(query).rowcount
 
