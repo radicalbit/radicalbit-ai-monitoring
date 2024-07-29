@@ -11,6 +11,7 @@ import { notFoundRoute } from './components/ErrorPage';
 initializeFaro({
   // required: the URL of the Grafana collector
   url: 'https://telemetry.oss.radicalbit.ai',
+  apiKey: 'rbitoss-JpIYMVC677edETUbJN9Me3iLS7ngGaE2RYLzQWCOYVljUJh5JJk5o2FE',
 
   // required: the identification label of your application
   app: {
