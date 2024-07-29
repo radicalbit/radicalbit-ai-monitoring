@@ -1,5 +1,8 @@
-# Community Support
+---
+sidebar_position: 1
+---
 
+# Community Support
 
 Welcome to the **Community Support** page! Here, you can find various ways to connect with us and get the help you need. Click on the icons below to reach our pages on different platforms.
 
