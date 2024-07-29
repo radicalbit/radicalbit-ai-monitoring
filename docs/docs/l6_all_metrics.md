@@ -50,6 +50,7 @@ Summary with all variable name and type (float, int, string, datetime).
   * Line chart of accuracy over time
   * Confusion matrix
   * Log loss, *only for binary classification at the moment*
+  * Line chart of log loss over time, *only for binary classification at the moment*
   * For each class:
     * Precision *(for both reference and current for an easy comparison)*
     * Recall *(for both reference and current for an easy comparison)*
