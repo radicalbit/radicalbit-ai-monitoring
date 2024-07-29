@@ -1,3 +1,7 @@
+---
+sidebar_position: 3
+---
+
 # Hands-On Guide
 
 In ths guide we are focusing on how to use the GUI.
