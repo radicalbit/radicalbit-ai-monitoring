@@ -5,6 +5,7 @@ from numpy import dtypes as npy_dtypes
 from pandas.core.arrays import boolean, floating, integer, string_
 from pandas.core.dtypes import dtypes as pd_dtypes
 from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 from app.models.exceptions import UnsupportedSchemaException
 
@@ -34,11 +35,34 @@ class SupportedTypes(str, Enum):
         raise UnsupportedSchemaException(f'Unsupported type: {type(value)}')
 
 
+class FieldType(str, Enum):
+    categorical = 'categorical'
+    numerical = 'numerical'
+    datetime = 'datetime'
+
+    @staticmethod
+    def from_supported_type(value: SupportedTypes) -> 'FieldType':
+        match value:
+            case SupportedTypes.datetime:
+                return FieldType.datetime
+            case SupportedTypes.int:
+                return FieldType.numerical
+            case SupportedTypes.float:
+                return FieldType.numerical
+            case SupportedTypes.bool:
+                return FieldType.categorical
+            case SupportedTypes.string:
+                return FieldType.categorical
+
+
 class SchemaEntry(BaseModel):
     name: str
     type: SupportedTypes
+    field_type: FieldType
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True, populate_by_name=True, alias_generator=to_camel
+    )
 
 
 class InferredSchemaDTO(BaseModel):

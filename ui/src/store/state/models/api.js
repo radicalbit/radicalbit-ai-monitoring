@@ -27,6 +27,17 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
     }),
 
+    editModel: builder.mutation({
+      invalidatesTags: (_, __, { data: { uuid } }) => [{ type: API_TAGS.MODEL, id: uuid }],
+      query: ({ data }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/models/${data.uuid}`,
+        method: 'post',
+        data,
+      }),
+
+    }),
+
     inferSchema: builder.mutation({
       query: ({ file, separator }) => {
         const data = new FormData();
@@ -194,6 +205,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
         url: `/models/${uuid}/current/${currentUUID}/drift`,
         method: 'get',
       }),
+
     }),
 
   }),

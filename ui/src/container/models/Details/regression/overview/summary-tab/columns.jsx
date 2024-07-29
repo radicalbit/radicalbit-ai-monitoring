@@ -49,7 +49,7 @@ const columnsComparison = [{
 
 const leftDataSourceTable = ({ reference, current }) => [
   {
-    label: 'Number of variables',
+    label: 'Number of fields',
     referenceValue: reference ? reference.statistics.nVariables : undefined,
     currentValue: current ? current.statistics?.nVariables : undefined,
   },

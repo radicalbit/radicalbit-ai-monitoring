@@ -50,6 +50,34 @@ class ModelRouteTest(unittest.TestCase):
         assert jsonable_encoder(model_out) == res.json()
         self.model_service.create_model.assert_called_once_with(model_in)
 
+    def test_update_model_ok(self):
+        model_features = db_mock.get_sample_model_features()
+        self.model_service.update_model_features_by_uuid = MagicMock(return_value=True)
+
+        res = self.client.post(
+            f'{self.prefix}/{db_mock.MODEL_UUID}',
+            json=jsonable_encoder(model_features),
+        )
+
+        assert res.status_code == 200
+        self.model_service.update_model_features_by_uuid.assert_called_once_with(
+            db_mock.MODEL_UUID, model_features
+        )
+
+    def test_update_model_ko(self):
+        model_features = db_mock.get_sample_model_features()
+        self.model_service.update_model_features_by_uuid = MagicMock(return_value=False)
+
+        res = self.client.post(
+            f'{self.prefix}/{db_mock.MODEL_UUID}',
+            json=jsonable_encoder(model_features),
+        )
+
+        assert res.status_code == 404
+        self.model_service.update_model_features_by_uuid.assert_called_once_with(
+            db_mock.MODEL_UUID, model_features
+        )
+
     def test_get_model_by_uuid(self):
         model = db_mock.get_sample_model()
         model_out = ModelOut.from_model(model)

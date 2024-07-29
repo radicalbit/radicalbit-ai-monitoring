@@ -17,6 +17,7 @@ import {
   AreaUnderRocChart,
   F1Chart,
   FalsePositiveRateChart,
+  LogLossChart,
   PrecisionChart,
   RecallChart,
   TruePositiveRateChart,
@@ -70,6 +71,8 @@ function BinaryClassificationModelQualityMetrics() {
 
           <FalsePositiveRateChart />
 
+          <LogLossChart />
+
           <ConfusionMatrix
             colors={[CHART_COLOR.WHITE, CHART_COLOR.CURRENT]}
             dataset={confusionMatrixData}
@@ -101,6 +104,7 @@ function PerformanceBoard() {
   const referenceTruePositiveRate = referenceData?.modelQuality?.truePositiveRate;
   const referenceAreaUnderRoc = referenceData?.modelQuality?.areaUnderRoc;
   const referenceAreaUnderPr = referenceData?.modelQuality?.areaUnderPr;
+  const referenceLogLoss = referenceData?.modelQuality?.logLoss;
 
   const leftTableData = currentData ? [
     {
@@ -136,6 +140,12 @@ function PerformanceBoard() {
       referenceValue: referenceTruePositiveRate,
       currentValue: currentData.modelQuality.globalMetrics.truePositiveRate,
     },
+    {
+      label: MODEL_QUALITY_FIELD.LOG_LOSS,
+      referenceValue: referenceLogLoss,
+      currentValue: currentData.modelQuality.globalMetrics.logLoss,
+    },
+
   ] : [];
 
   const rightTableData = currentData ? [

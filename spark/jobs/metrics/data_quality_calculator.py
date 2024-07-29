@@ -15,7 +15,7 @@ from models.data_quality import (
     ClassMetrics,
     NumericalTargetMetrics,
 )
-from utils.misc import split_dict
+from utils.misc import split_dict, rbit_prefix
 from utils.models import ModelOut
 from utils.spark import check_not_null
 
@@ -213,13 +213,15 @@ class DataQualityCalculator:
         spark_session: SparkSession,
         columns: List[str],
     ) -> Dict[str, Histogram]:
-        current = current_dataframe.withColumn("type", F.lit("current"))
-        reference = reference_dataframe.withColumn("type", F.lit("reference"))
+        current = current_dataframe.withColumn(f"{rbit_prefix}_type", F.lit("current"))
+        reference = reference_dataframe.withColumn(
+            f"{rbit_prefix}_type", F.lit("reference")
+        )
 
         def create_histogram(feature: str):
-            reference_and_current = current.select([feature, "type"]).unionByName(
-                reference.select([feature, "type"])
-            )
+            reference_and_current = current.select(
+                [feature, f"{rbit_prefix}_type"]
+            ).unionByName(reference.select([feature, f"{rbit_prefix}_type"]))
 
             max_value = reference_and_current.agg(
                 F.max(
@@ -258,12 +260,12 @@ class DataQualityCalculator:
             )
 
             current_df = (
-                result.filter(F.col("type") == "current")
+                result.filter(F.col(f"{rbit_prefix}_type") == "current")
                 .groupBy("bucket")
                 .agg(F.count(F.col(feature)).alias("curr_count"))
             )
             reference_df = (
-                result.filter(F.col("type") == "reference")
+                result.filter(F.col(f"{rbit_prefix}_type") == "reference")
                 .groupBy("bucket")
                 .agg(F.count(F.col(feature)).alias("ref_count"))
             )

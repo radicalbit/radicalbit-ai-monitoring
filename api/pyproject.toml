@@ -21,7 +21,7 @@ psycopg2 = "^2.9.9"
 alembic = "^1.13.2"
 pandas = "^2.2.2"
 fastapi-pagination = "^0.12.24"
-spark-on-k8s = "^0.7.2"
+spark-on-k8s = "^0.10.0"
 boto3 = "^1.34.144"
 
 

@@ -15,22 +15,9 @@ from utils.models import (
     ModelType,
     OutputType,
     SupportedTypes,
+    FieldTypes,
 )
 import tests.results.jobs_results as res
-
-
-@pytest.fixture()
-def reg_current_bike_dataframe(spark_fixture, test_data_dir):
-    yield spark_fixture.read.csv(
-        f"{test_data_dir}/current/regression/bike.csv", header=True
-    )
-
-
-@pytest.fixture()
-def reg_reference_bike_dataframe(spark_fixture, test_data_dir):
-    yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/regression/reference_bike.csv", header=True
-    )
 
 
 @pytest.fixture()
@@ -48,26 +35,6 @@ def reg_reference_test_abalone(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
             f"{test_data_dir}/reference/regression/regression_abalone_reference.csv",
-            header=True,
-        )
-    )
-
-
-@pytest.fixture()
-def mc_reference_target_int(spark_fixture, test_data_dir):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_data_dir}/reference/multiclass/dataset_target_int.csv",
-            header=True,
-        )
-    )
-
-
-@pytest.fixture()
-def mc_current_target_int(spark_fixture, test_data_dir):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_data_dir}/current/multiclass/dataset_target_int.csv",
             header=True,
         )
     )
@@ -94,24 +61,6 @@ def mc_current_target_string(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
-def bc_current_complete(spark_fixture, test_data_dir):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_data_dir}/current/complete_dataset.csv", header=True
-        )
-    )
-
-
-@pytest.fixture()
-def bc_reference_complete(spark_fixture, test_data_dir):
-    yield (
-        spark_fixture.read.csv(
-            f"{test_data_dir}/reference/complete_dataset.csv", header=True
-        )
-    )
-
-
-@pytest.fixture()
 def bc_current_joined(spark_fixture, test_data_dir):
     yield (
         spark_fixture.read.csv(
@@ -130,106 +79,71 @@ def bc_reference_joined(spark_fixture, test_data_dir):
 
 
 @pytest.fixture()
-def reg_bike_model():
-    output = OutputType(
-        prediction=ColumnDefinition(name="predictions", type=SupportedTypes.float),
-        prediction_proba=None,
-        output=[ColumnDefinition(name="predictions", type=SupportedTypes.float)],
-    )
-    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="dteday", type=SupportedTypes.datetime)
-    granularity = Granularity.MONTH
-    features = [
-        ColumnDefinition(name="season", type=SupportedTypes.int),
-        ColumnDefinition(name="yr", type=SupportedTypes.int),
-        ColumnDefinition(name="mnth", type=SupportedTypes.int),
-        ColumnDefinition(name="holiday", type=SupportedTypes.int),
-        ColumnDefinition(name="weekday", type=SupportedTypes.int),
-        ColumnDefinition(name="workingday", type=SupportedTypes.int),
-        ColumnDefinition(name="weathersit", type=SupportedTypes.float),
-        ColumnDefinition(name="temp", type=SupportedTypes.float),
-        ColumnDefinition(name="atemp", type=SupportedTypes.float),
-        ColumnDefinition(name="hum", type=SupportedTypes.float),
-        ColumnDefinition(name="windspeed", type=SupportedTypes.float),
-    ]
-    yield ModelOut(
-        uuid=uuid.uuid4(),
-        name="regression model",
-        description="description",
-        model_type=ModelType.REGRESSION,
-        data_type=DataType.TABULAR,
-        timestamp=timestamp,
-        granularity=granularity,
-        outputs=output,
-        target=target,
-        features=features,
-        frameworks="framework",
-        algorithm="algorithm",
-        created_at=str(datetime.datetime.now()),
-        updated_at=str(datetime.datetime.now()),
-    )
-
-
-@pytest.fixture()
 def reg_model_abalone():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
+        prediction=ColumnDefinition(
+            name="prediction", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.numerical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="ground_truth", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="timestamp", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.MONTH
     features = [
-        ColumnDefinition(name="Sex", type=SupportedTypes.string),
-        ColumnDefinition(name="Length", type=SupportedTypes.float),
-        ColumnDefinition(name="Diameter", type=SupportedTypes.float),
-        ColumnDefinition(name="Height", type=SupportedTypes.float),
-        ColumnDefinition(name="Whole_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Shucked_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Viscera_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="Shell_weight", type=SupportedTypes.float),
-        ColumnDefinition(name="pred_id", type=SupportedTypes.string),
+        ColumnDefinition(
+            name="Sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="Length", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Diameter", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Height", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="Whole_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Shucked_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Viscera_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="Shell_weight",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="pred_id",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
         name="regression model",
         description="description",
         model_type=ModelType.REGRESSION,
-        data_type=DataType.TABULAR,
-        timestamp=timestamp,
-        granularity=granularity,
-        outputs=output,
-        target=target,
-        features=features,
-        frameworks="framework",
-        algorithm="algorithm",
-        created_at=str(datetime.datetime.now()),
-        updated_at=str(datetime.datetime.now()),
-    )
-
-
-@pytest.fixture()
-def mc_model_target_int():
-    output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.int),
-        prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.int)],
-    )
-    target = ColumnDefinition(name="target", type=SupportedTypes.int)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
-    granularity = Granularity.HOUR
-    features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
-    ]
-    yield ModelOut(
-        uuid=uuid.uuid4(),
-        name="model",
-        description="description",
-        model_type=ModelType.MULTI_CLASS,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
         granularity=granularity,
@@ -246,18 +160,40 @@ def mc_model_target_int():
 @pytest.fixture()
 def mc_model_target_string():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.string),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
         prediction_proba=None,
-        output=[ColumnDefinition(name="prediction", type=SupportedTypes.string)],
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.string,
+                field_type=FieldTypes.categorical,
+            )
+        ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.string)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.string, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
+        ColumnDefinition(
+            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
@@ -278,71 +214,84 @@ def mc_model_target_string():
 
 
 @pytest.fixture()
-def bc_model_complete():
-    output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
-        prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
-        ),
-        output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
-        ],
-    )
-    target = ColumnDefinition(name="target", type=SupportedTypes.bool)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
-    granularity = Granularity.HOUR
-    features = [
-        ColumnDefinition(name="cat1", type=SupportedTypes.string),
-        ColumnDefinition(name="cat2", type=SupportedTypes.string),
-        ColumnDefinition(name="num1", type=SupportedTypes.float),
-        ColumnDefinition(name="num2", type=SupportedTypes.float),
-    ]
-    yield ModelOut(
-        uuid=uuid.uuid4(),
-        name="model",
-        description="description",
-        model_type=ModelType.BINARY,
-        data_type=DataType.TABULAR,
-        timestamp=timestamp,
-        granularity=granularity,
-        outputs=output,
-        target=target,
-        features=features,
-        frameworks="framework",
-        algorithm="algorithm",
-        created_at=str(datetime.datetime.now()),
-        updated_at=str(datetime.datetime.now()),
-    )
-
-
-@pytest.fixture()
 def bc_model_joined():
     output = OutputType(
-        prediction=ColumnDefinition(name="prediction", type=SupportedTypes.float),
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba", type=SupportedTypes.float
+            name="prediction_proba",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
         ),
         output=[
-            ColumnDefinition(name="prediction", type=SupportedTypes.float),
-            ColumnDefinition(name="prediction_proba", type=SupportedTypes.float),
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name="prediction_proba",
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
         ],
     )
-    target = ColumnDefinition(name="target", type=SupportedTypes.float)
-    timestamp = ColumnDefinition(name="datetime", type=SupportedTypes.datetime)
+    target = ColumnDefinition(
+        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
     granularity = Granularity.HOUR
     features = [
-        ColumnDefinition(name="age", type=SupportedTypes.int),
-        ColumnDefinition(name="sex", type=SupportedTypes.string),
-        ColumnDefinition(name="chest_pain_type", type=SupportedTypes.int),
-        ColumnDefinition(name="resting_blood_pressure", type=SupportedTypes.int),
-        ColumnDefinition(name="cholesterol", type=SupportedTypes.int),
-        ColumnDefinition(name="fasting_blood_sugar", type=SupportedTypes.int),
-        ColumnDefinition(name="resting_ecg", type=SupportedTypes.int),
-        ColumnDefinition(name="max_heart_rate_achieved", type=SupportedTypes.int),
-        ColumnDefinition(name="exercise_induced_angina", type=SupportedTypes.int),
-        ColumnDefinition(name="st_depression", type=SupportedTypes.float),
-        ColumnDefinition(name="st_slope", type=SupportedTypes.int),
+        ColumnDefinition(
+            name="age", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name="chest_pain_type",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="resting_blood_pressure",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="cholesterol", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="fasting_blood_sugar",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="resting_ecg", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name="max_heart_rate_achieved",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="exercise_induced_angina",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="st_depression",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="st_slope", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
     ]
     yield ModelOut(
         uuid=uuid.uuid4(),
@@ -359,22 +308,6 @@ def bc_model_joined():
         algorithm="algorithm",
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
-    )
-
-
-@pytest.fixture()
-def reg_current_dataset_bike(reg_current_bike_dataframe, reg_bike_model):
-    yield CurrentDataset(
-        raw_dataframe=reg_current_bike_dataframe,
-        model=reg_bike_model,
-    )
-
-
-@pytest.fixture()
-def reg_reference_dataset_bike(reg_reference_bike_dataframe, reg_bike_model):
-    yield ReferenceDataset(
-        raw_dataframe=reg_reference_bike_dataframe,
-        model=reg_bike_model,
     )
 
 
@@ -391,22 +324,6 @@ def reg_reference_dataset_abalone(reg_reference_test_abalone, reg_model_abalone)
     yield ReferenceDataset(
         raw_dataframe=reg_reference_test_abalone,
         model=reg_model_abalone,
-    )
-
-
-@pytest.fixture()
-def mc_current_dataset_target_int(mc_current_target_int, mc_model_target_int):
-    yield CurrentDataset(
-        raw_dataframe=mc_current_target_int,
-        model=mc_model_target_int,
-    )
-
-
-@pytest.fixture()
-def mc_reference_dataset_target_int(mc_reference_target_int, mc_model_target_int):
-    yield ReferenceDataset(
-        raw_dataframe=mc_reference_target_int,
-        model=mc_model_target_int,
     )
 
 
@@ -429,22 +346,6 @@ def mc_reference_dataset_target_string(
 
 
 @pytest.fixture()
-def bc_current_dataset_complete(bc_current_complete, bc_model_complete):
-    yield CurrentDataset(
-        raw_dataframe=bc_current_complete,
-        model=bc_model_complete,
-    )
-
-
-@pytest.fixture()
-def bc_reference_dataset_complete(bc_reference_complete, bc_model_complete):
-    yield ReferenceDataset(
-        raw_dataframe=bc_reference_complete,
-        model=bc_model_complete,
-    )
-
-
-@pytest.fixture()
 def bc_current_dataset_joined(bc_current_joined, bc_model_joined):
     yield CurrentDataset(
         raw_dataframe=bc_current_joined,
@@ -457,32 +358,6 @@ def bc_reference_dataset_joined(bc_reference_joined, bc_model_joined):
     yield ReferenceDataset(
         raw_dataframe=bc_reference_joined,
         model=bc_model_joined,
-    )
-
-
-def test_reg_bike(
-    spark_fixture, reg_current_dataset_bike, reg_reference_dataset_bike, reg_bike_model
-):
-    cur_record = cur_compute_metrics(
-        spark_fixture,
-        reg_current_dataset_bike,
-        reg_reference_dataset_bike,
-        reg_bike_model,
-    )
-    ref_record = ref_compute_metrics(reg_reference_dataset_bike, reg_bike_model)
-
-    assert not deepdiff.DeepDiff(
-        cur_record,
-        res.test_reg_bike_current_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
-
-    assert not deepdiff.DeepDiff(
-        ref_record,
-        res.test_reg_bike_reference_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
     )
 
 
@@ -515,37 +390,6 @@ def test_reg_abalone(
     )
 
 
-def test_mc_target_int(
-    spark_fixture,
-    mc_current_dataset_target_int,
-    mc_reference_dataset_target_int,
-    mc_model_target_int,
-):
-    cur_record = cur_compute_metrics(
-        spark_fixture,
-        mc_current_dataset_target_int,
-        mc_reference_dataset_target_int,
-        mc_model_target_int,
-    )
-    ref_record = ref_compute_metrics(
-        mc_reference_dataset_target_int, mc_model_target_int
-    )
-
-    assert not deepdiff.DeepDiff(
-        cur_record,
-        res.test_mc_target_int_current_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
-
-    assert not deepdiff.DeepDiff(
-        ref_record,
-        res.test_mc_target_int_reference_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
-
-
 def test_mc_target_string(
     spark_fixture,
     mc_current_dataset_target_string,
@@ -572,35 +416,6 @@ def test_mc_target_string(
     assert not deepdiff.DeepDiff(
         ref_record,
         res.test_mc_target_string_reference_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
-
-
-def test_bc_complete(
-    spark_fixture,
-    bc_current_dataset_complete,
-    bc_reference_dataset_complete,
-    bc_model_complete,
-):
-    cur_record = cur_compute_metrics(
-        spark_fixture,
-        bc_current_dataset_complete,
-        bc_reference_dataset_complete,
-        bc_model_complete,
-    )
-    ref_record = ref_compute_metrics(bc_reference_dataset_complete, bc_model_complete)
-
-    assert not deepdiff.DeepDiff(
-        cur_record,
-        res.test_bc_complete_current_res,
-        ignore_order=True,
-        ignore_type_subclasses=True,
-    )
-
-    assert not deepdiff.DeepDiff(
-        ref_record,
-        res.test_bc_complete_reference_res,
         ignore_order=True,
         ignore_type_subclasses=True,
     )

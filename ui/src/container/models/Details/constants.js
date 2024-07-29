@@ -21,6 +21,7 @@ export const OVERVIEW_ROW_TYPE = {
   PROBABILITY: 'PROBABILITY',
   PREDICTION: 'PREDICTION',
   GROUND_TRUTH: 'GROUND TRUTH',
+  TIMESTAMP: 'TIMESTAMP',
 };
 
 export const FEATURE_TYPE = {
@@ -44,6 +45,7 @@ export const MODEL_QUALITY_FIELD = {
   R2: 'R-squared',
   ADJ_R2: 'Adjusted R-squared',
   VARIANCE: 'Variance',
+  LOG_LOSS: 'Log loss',
 };
 
 export const TABLE_COLOR = {

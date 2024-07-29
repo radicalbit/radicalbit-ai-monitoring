@@ -104,24 +104,25 @@ test_calculation_dq_res = {
 }
 
 test_calculation_mq_res = {
-    "accuracy": 0.9,
-    "area_under_pr": 0.5652116402116403,
-    "area_under_roc": 0.41666666666666663,
     "f1": 0.901010101010101,
-    "f_measure": 0.9090909090909091,
-    "false_positive_rate": 0.0,
-    "precision": 1.0,
-    "recall": 0.8333333333333334,
-    "true_positive_rate": 0.8333333333333334,
-    "weighted_f_measure": 0.901010101010101,
-    "weighted_false_positive_rate": 0.06666666666666667,
+    "accuracy": 0.9,
     "weighted_precision": 0.9199999999999999,
     "weighted_recall": 0.9,
     "weighted_true_positive_rate": 0.9,
+    "weighted_false_positive_rate": 0.06666666666666667,
+    "weighted_f_measure": 0.901010101010101,
+    "true_positive_rate": 0.8333333333333334,
+    "false_positive_rate": 0.0,
+    "precision": 1.0,
+    "recall": 0.8333333333333334,
+    "f_measure": 0.9090909090909091,
     "true_positive_count": 5,
     "false_positive_count": 0,
     "true_negative_count": 4,
     "false_negative_count": 1,
+    "area_under_roc": 0.41666666666666663,
+    "area_under_pr": 0.5652116402116403,
+    "log_loss": 0.17660917224794848,
 }
 
 test_calculation_reference_joined_stats_res = {
@@ -451,24 +452,25 @@ test_calculation_reference_joined_dq_res = {
 }
 
 test_calculation_reference_joined_mq_res = {
-    "accuracy": 0.9495798319327731,
-    "area_under_pr": 0.48119821761196413,
-    "area_under_roc": 0.4314403938075195,
     "f1": 0.949532986436427,
-    "f_measure": 0.9545454545454546,
-    "false_positive_rate": 0.06542056074766354,
-    "precision": 0.9473684210526315,
-    "recall": 0.9618320610687023,
-    "true_positive_rate": 0.9618320610687023,
-    "weighted_f_measure": 0.949532986436427,
-    "weighted_false_positive_rate": 0.053168331611734364,
+    "accuracy": 0.9495798319327731,
     "weighted_precision": 0.9496219540447758,
     "weighted_recall": 0.9495798319327731,
     "weighted_true_positive_rate": 0.9495798319327731,
+    "weighted_false_positive_rate": 0.053168331611734364,
+    "weighted_f_measure": 0.949532986436427,
+    "true_positive_rate": 0.9618320610687023,
+    "false_positive_rate": 0.06542056074766354,
+    "precision": 0.9473684210526315,
+    "recall": 0.9618320610687023,
+    "f_measure": 0.9545454545454546,
     "true_positive_count": 126,
     "false_positive_count": 7,
     "true_negative_count": 100,
     "false_negative_count": 5,
+    "area_under_roc": 0.43144039380751953,
+    "area_under_pr": 0.4811982176119641,
+    "log_loss": 0.23320784540174666,
 }
 
 test_calculation_complete_stats_res = {
@@ -556,24 +558,25 @@ test_calculation_complete_dq_res = {
 }
 
 test_calculation_complete_mq_res = {
-    "accuracy": 1.0,
-    "area_under_pr": 1.0,
-    "area_under_roc": 1.0,
     "f1": 1.0,
-    "f_measure": 1.0,
-    "false_positive_rate": float("nan"),
-    "precision": 1.0,
-    "recall": 1.0,
-    "true_positive_rate": 1.0,
-    "weighted_f_measure": 1.0,
-    "weighted_false_positive_rate": float("nan"),
+    "accuracy": 1.0,
     "weighted_precision": 1.0,
     "weighted_recall": 1.0,
     "weighted_true_positive_rate": 1.0,
+    "weighted_false_positive_rate": float("nan"),
+    "weighted_f_measure": 1.0,
+    "true_positive_rate": 1.0,
+    "false_positive_rate": float("nan"),
+    "precision": 1.0,
+    "recall": 1.0,
+    "f_measure": 1.0,
     "true_positive_count": 7,
     "false_positive_count": 0,
     "true_negative_count": 0,
     "false_negative_count": 0,
+    "area_under_roc": 1.0,
+    "area_under_pr": 1.0,
+    "log_loss": 1.0000000000000007e-15,
 }
 
 test_calculation_easy_dataset_stats_res = {
@@ -661,8 +664,6 @@ test_calculation_easy_dataset_dq_res = {
 }
 
 test_calculation_easy_dataset_mq_res = {
-    "area_under_roc": 0.5,
-    "area_under_pr": 0.8571428571428572,
     "f1": 0.7142857142857143,
     "accuracy": 0.7142857142857143,
     "weighted_precision": 0.7142857142857143,
@@ -679,6 +680,9 @@ test_calculation_easy_dataset_mq_res = {
     "false_positive_count": 1,
     "true_negative_count": 0,
     "false_negative_count": 1,
+    "area_under_roc": 0.5,
+    "area_under_pr": 0.8571428571428571,
+    "log_loss": 9.868221827117338,
 }
 
 test_calculation_dataset_cat_missing_stats_res = {
@@ -805,6 +809,7 @@ test_calculation_dataset_cat_missing_mq_res = {
     "false_negative_count": 1,
     "area_under_roc": 0.41666666666666663,
     "area_under_pr": 0.5652116402116403,
+    "log_loss": 0.17660917224794848,
 }
 
 test_calculation_dataset_with_datetime_stats_res = {
@@ -913,24 +918,25 @@ test_calculation_dataset_with_datetime_dq_res = {
 }
 
 test_calculation_dataset_with_datetime_mq_res = {
-    "accuracy": 0.9,
-    "area_under_pr": 0.5652116402116403,
-    "area_under_roc": 0.41666666666666663,
     "f1": 0.901010101010101,
-    "f_measure": 0.9090909090909091,
-    "false_positive_rate": 0.0,
-    "precision": 1.0,
-    "recall": 0.8333333333333334,
-    "true_positive_rate": 0.8333333333333334,
-    "weighted_f_measure": 0.901010101010101,
-    "weighted_false_positive_rate": 0.06666666666666667,
+    "accuracy": 0.9,
     "weighted_precision": 0.9199999999999999,
     "weighted_recall": 0.9,
     "weighted_true_positive_rate": 0.9,
+    "weighted_false_positive_rate": 0.06666666666666667,
+    "weighted_f_measure": 0.901010101010101,
+    "true_positive_rate": 0.8333333333333334,
+    "false_positive_rate": 0.0,
+    "precision": 1.0,
+    "recall": 0.8333333333333334,
+    "f_measure": 0.9090909090909091,
     "true_positive_count": 5,
     "false_positive_count": 0,
     "true_negative_count": 4,
     "false_negative_count": 1,
+    "area_under_roc": 0.41666666666666663,
+    "area_under_pr": 0.5652116402116403,
+    "log_loss": 0.17660917224794848,
 }
 
 test_calculation_enhanced_data_stats_res = {
@@ -1420,6 +1426,7 @@ test_calculation_enhanced_data_mq_res = {
     "false_negative_count": 0,
     "area_under_roc": 0.4979357845301016,
     "area_under_pr": 0.24960748683012762,
+    "log_loss": 0.6931483707818052,
 }
 
 test_calculation_dataset_bool_missing_stats_res = {
@@ -1546,6 +1553,7 @@ test_calculation_dataset_bool_missing_mq_res = {
     "false_negative_count": 1,
     "area_under_roc": 0.41666666666666663,
     "area_under_pr": 0.5652116402116403,
+    "log_loss": 0.17660917224794848,
 }
 
 test_model_quality_nulls_res = {
@@ -1567,4 +1575,5 @@ test_model_quality_nulls_res = {
     "false_negative_count": 0,
     "area_under_roc": 0.4,
     "area_under_pr": 0.38630952380952377,
+    "log_loss": 0.02237911572076884,
 }

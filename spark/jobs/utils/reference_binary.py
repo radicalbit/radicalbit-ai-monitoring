@@ -5,6 +5,8 @@ from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
+from pyspark.mllib.evaluation import MulticlassMetrics
+from pyspark.sql.types import DoubleType
 import pyspark.sql.functions as F
 
 from metrics.data_quality_calculator import DataQualityCalculator
@@ -16,6 +18,7 @@ from models.data_quality import (
 )
 from models.reference_dataset import ReferenceDataset
 from .spark import is_not_null
+from .misc import rbit_prefix
 
 
 class ReferenceMetricsService:
@@ -102,6 +105,7 @@ class ReferenceMetricsService:
         metrics.update(self.calculate_confusion_matrix())
         if self.reference.model.outputs.prediction_proba is not None:
             metrics.update(self.__calc_bc_metrics())
+            metrics.update(self.__calculate_log_loss())
 
         return metrics
 
@@ -148,6 +152,55 @@ class ReferenceMetricsService:
             "true_negative_count": tn,
             "false_negative_count": fn,
         }
+
+    def __calculate_log_loss(self) -> dict[str, float]:
+        dataset_with_proba = (
+            self.reference.reference.filter(
+                is_not_null(self.reference.model.outputs.prediction.name)
+                & is_not_null(self.reference.model.target.name)
+                & is_not_null(self.reference.model.outputs.prediction_proba.name)
+            )
+            .withColumn(
+                f"{rbit_prefix}_prediction_proba_class0",
+                F.when(
+                    F.col(self.reference.model.outputs.prediction.name) == 0,
+                    F.col(self.reference.model.outputs.prediction_proba.name),
+                ).otherwise(
+                    1 - F.col(self.reference.model.outputs.prediction_proba.name)
+                ),
+            )
+            .withColumn(
+                f"{rbit_prefix}_prediction_proba_class1",
+                F.when(
+                    F.col(self.reference.model.outputs.prediction.name) == 1,
+                    F.col(self.reference.model.outputs.prediction_proba.name),
+                ).otherwise(
+                    1 - F.col(self.reference.model.outputs.prediction_proba.name)
+                ),
+            )
+            .withColumn(f"{rbit_prefix}_weight_logloss_def", F.lit(1.0))
+            .withColumn(
+                self.reference.model.outputs.prediction.name,
+                F.col(self.reference.model.outputs.prediction.name).cast(DoubleType()),
+            )
+            .withColumn(
+                self.reference.model.target.name,
+                F.col(self.reference.model.target.name).cast(DoubleType()),
+            )
+        )
+
+        dataset_proba_vector = dataset_with_proba.select(
+            self.reference.model.outputs.prediction.name,
+            self.reference.model.target.name,
+            f"{rbit_prefix}_weight_logloss_def",
+            F.array(
+                F.col(f"{rbit_prefix}_prediction_proba_class0"),
+                F.col(f"{rbit_prefix}_prediction_proba_class1"),
+            ).alias(f"{rbit_prefix}_prediction_proba_vector"),
+        ).rdd
+
+        metrics = MulticlassMetrics(dataset_proba_vector)
+        return {"log_loss": metrics.logLoss()}
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.numerical_metrics(

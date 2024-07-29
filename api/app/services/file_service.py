@@ -31,6 +31,7 @@ from app.models.exceptions import (
     ModelNotFoundError,
 )
 from app.models.inferred_schema_dto import (
+    FieldType,
     InferredSchemaDTO,
     SchemaEntry,
     SupportedTypes,
@@ -419,7 +420,11 @@ class FileService:
         data = data.loc[:, ~data.columns.str.contains('Unnamed')]
         return InferredSchemaDTO(
             inferred_schema=[
-                SchemaEntry(name=name.strip(), type=SupportedTypes.cast(type))
+                SchemaEntry(
+                    name=name.strip(),
+                    type=SupportedTypes.cast(type),
+                    field_type=FieldType.from_supported_type(SupportedTypes.cast(type)),
+                )
                 for name, type in data.convert_dtypes(infer_objects=True).dtypes.items()
             ]
         )

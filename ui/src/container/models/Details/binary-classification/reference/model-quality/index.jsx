@@ -26,6 +26,7 @@ function BinaryClassificationModelQualityMetrics() {
     const centerTableData = data ? [
       { label: 'False positive rate', value: data.modelQuality.falsePositiveRate },
       { label: 'True positive rate', value: data.modelQuality.truePositiveRate },
+      { label: 'Log loss', value: data.modelQuality.logLoss },
     ] : [];
 
     const rightTableData = data ? [
