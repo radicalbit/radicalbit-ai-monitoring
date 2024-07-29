@@ -1,23 +1,123 @@
 {
-    "jobStatus": "IMPORTING",
-    "dataQuality": {
+  "jobStatus": "SUCCEEDED",
+  "drift": {
       "featureMetrics": [
-        {
-          "featureName": "age",
-          "driftCalc": {
-            "type": "CHI2",
-            "value": 0,
-            "hasDrift": false
+          {
+              "featureName": "oldpeak",
+              "fieldType": "categorical",
+              "driftCalc": {
+                  "type": "KS",
+                  "value": 0.3226553723,
+                  "hasDrift": true
+              }
+          },
+          {
+              "featureName": "age",
+              "fieldType": "categorical",
+              "driftCalc": {
+                  "type": "PSI",
+                  "value": 0.003064672855764477,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "sex",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.34295395464207873,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "cp",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.7556705171039132,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "trestbps",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "PSI",
+                  "value": 0.005996789913952326,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "chol",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "PSI",
+                  "value": 0.008528057532426737,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "fbs",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.6072475954383919,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "restecg",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.4621125396510629,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "thalach",
+              "driftCalc": {
+                  "type": "PSI",
+                  "value": 0.008253582030879024,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "exang",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.28364125139310137,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "slope",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.5933111482421309,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "ca",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.2019584367039731,
+                  "hasDrift": false
+              }
+          },
+          {
+              "featureName": "thal",
+              "fieldType": "numerical",
+              "driftCalc": {
+                  "type": "CHI2",
+                  "value": 0.7559824202388957,
+                  "hasDrift": false
+              }
           }
-        },
-        {
-          "featureName": "name",
-          "driftCalc": {
-            "type": "KS",
-            "value": 502.7,
-            "hasDrift": true
-          }
-        }
       ]
-    }
   }
+}

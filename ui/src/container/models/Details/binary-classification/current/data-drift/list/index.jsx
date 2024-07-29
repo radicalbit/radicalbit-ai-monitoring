@@ -1,5 +1,8 @@
+import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
+import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import {
-  DRIFT_FEATURE_TYPE_ENUM, DRIFT_TEST_ENUM, DRIFT_TEST_ENUM_LABEL, numberFormatter,
+  DRIFT_FEATURE_TYPE_ENUM,
+  DRIFT_TEST_ENUM_LABEL, numberFormatter,
 } from '@Src/constants';
 import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -13,7 +16,6 @@ import {
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
-import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 
 function DataDriftList() {
@@ -38,7 +40,7 @@ function FeatureRow({ item }) {
   const pinType = (item.driftCalc.hasDrift) ? 'filled-error' : 'filled';
   const isError = (item.driftCalc.hasDrift) ? 'is-error' : '';
   const value = (item.driftCalc.value > 0) ? numberFormatter().format(item.driftCalc.value) : '--';
-  const buttonIcon = getButtonIcon(item.driftCalc.type);
+  const buttonIcon = getButtonIcon(item.fieldType);
 
   return (
     <Board
@@ -92,10 +94,10 @@ function FeatureRow({ item }) {
 
 const getButtonIcon = (value) => {
   switch (value) {
-    case DRIFT_TEST_ENUM.KS:
+    case FEATURE_TYPE.NUMERICAL:
       return fa1;
 
-    case DRIFT_TEST_ENUM.CHI2:
+    case FEATURE_TYPE.CATEGORICAL:
       return faC;
 
     default:

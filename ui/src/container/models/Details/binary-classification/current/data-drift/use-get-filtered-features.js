@@ -1,5 +1,5 @@
-import { DRIFT_TEST_ENUM } from '@Src/constants';
-import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { FEATURE_TYPE } from '@Container/models/Details/constants';
+import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
 import { useFormbitContext } from '@radicalbit/formbit';
 
 export default () => {
@@ -17,16 +17,16 @@ export default () => {
   }
 
   return selectedFeatures?.length > 0
-    ? items.filter(({ featureName, driftCalc: { type } }) => {
+    ? items.filter(({ featureName, fieldType }) => {
       const isSelected = selectedFeatures.includes(featureName);
-      const isNumerical = isNumericalSelected && type === DRIFT_TEST_ENUM.KS;
-      const isCategorical = isCategoricalSelected && type === DRIFT_TEST_ENUM.CHI2;
+      const isNumerical = isNumericalSelected && fieldType === FEATURE_TYPE.NUMERICAL;
+      const isCategorical = isCategoricalSelected && fieldType === FEATURE_TYPE.CATEGORICAL;
 
       return isSelected && (isNumerical || isCategorical);
     })
-    : items.filter(({ driftCalc: { type } }) => {
-      const isNumerical = isNumericalSelected && type === DRIFT_TEST_ENUM.KS;
-      const isCategorical = isCategoricalSelected && type === DRIFT_TEST_ENUM.CHI2;
+    : items.filter(({ fieldType }) => {
+      const isNumerical = isNumericalSelected && fieldType === FEATURE_TYPE.NUMERICAL;
+      const isCategorical = isCategoricalSelected && fieldType === FEATURE_TYPE.CATEGORICAL;
 
       return isNumerical || isCategorical;
     });
