@@ -83,7 +83,7 @@ To infer the model schema you have to upload a sample dataset. Please download a
 
 Since in the CSV file there might be useless fields, e.g. some uuid which would be pointless to analyse, choose which fields you want to carry over: in the case select all of them, click on the arrow to transfer them, and then click on the *Next* button.
 
-![Alt text](/img/quickstart/new-model-modal-s1_extra.png "Fields transfer")
+![Alt text](/img/quickstart/new-model-modal-s2_extra.png "Fields transfer")
 
 Once you have defined the model schema, select the output fields from the variables. Choose `model_answer` and `prediction`, move them to the right, and click on the *Next* button.
 
