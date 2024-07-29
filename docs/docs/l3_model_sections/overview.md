@@ -26,7 +26,8 @@ The **Summary** table provides a side-by-side comparison of key metrics between 
 
 ## Variables
 
-The **Variables** table lists all the columns flagged as `feature` or `ground truth`. That's the reason why we've chosen this name. Each field presents with its own type while the `ground truth` is flagged properly.
+The **Variables** table lists all the columns flagged as `feature` or `ground truth`. That's the reason why we have chosen this name. Each field presents with its own type while the `ground truth` is flagged properly.
+For the meaning of the column `Field Type` see the *Hands-On Guide*.
 
 ![Alt text](/img/overview/overview-variables.png "Overview Variables")
 
