@@ -19,6 +19,7 @@ from radicalbit_platform_sdk.models import (
     FileReference,
     Granularity,
     ModelDefinition,
+    ModelFeatures,
     ModelType,
     OutputType,
     ReferenceFileUpload,
@@ -76,6 +77,18 @@ class Model:
 
     def algorithm(self) -> Optional[str]:
         return self.__algorithm
+
+    def update_features(self, features: List[ColumnDefinition]) -> None:
+        def __callback(_: requests.Response) -> None:
+            self.__features = features
+
+        invoke(
+            method='POST',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}',
+            valid_response_code=200,
+            data=ModelFeatures(features=features).model_dump_json(),
+            func=__callback,
+        )
 
     def delete(self) -> None:
         """Delete the actual `Model` from the platform

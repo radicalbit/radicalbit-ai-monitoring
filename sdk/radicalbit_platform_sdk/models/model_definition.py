@@ -25,6 +25,12 @@ class Granularity(str, Enum):
     MONTH = 'MONTH'
 
 
+class ModelFeatures(BaseModel):
+    features: List[ColumnDefinition]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
 class BaseModelDefinition(BaseModel):
     """A base class for model definition.
 
