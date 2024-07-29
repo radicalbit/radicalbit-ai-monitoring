@@ -22,6 +22,13 @@ click on the plus sign in the top right corner.
 
 * Next choose your `Target`, `Prediction`, `Timestamp` and, if present, `Prediction Probability` fields.
 
+## Change field type
+
+In your CSV file there might be some numerical variables which are actually categorical: for instance you might have the feature `Gender` which has values `{0,1}`: so we automatically infer it as an integer variables but clearly it makes no sense to compute numerical statistics on it, ince it is clearly the representation of a categorical feature. \
+Hence, **as long as no reference dataset has been loaded yet**, in the `Overview` section, `Variables` tab, you are allowed to change the field type of any numerical feature to categorical.
+![Alt text](/img/how_to/set_field_type.png "Set field type")
+
+Please note that as soon as a reference dataset is loaded into the platform **this option is no longer available** because we are starting right away computing statistics and metrics on the variables according to their type.
 
 ## Load a reference dataset
 
