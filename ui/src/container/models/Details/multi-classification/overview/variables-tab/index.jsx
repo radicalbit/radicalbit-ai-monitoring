@@ -64,7 +64,7 @@ function VariablesTabInner() {
           onClick={handleOnSubmit}
           type="primary"
         >
-          Update
+          Update Field Types
         </Button>
       </div>
       )}
