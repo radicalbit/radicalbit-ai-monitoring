@@ -1,23 +1,15 @@
+import { initializeFaro, withFaroRouterInstrumentation } from '@grafana/faro-react';
 import React, { StrictMode, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
-import { initializeFaro, withFaroRouterInstrumentation } from '@grafana/faro-react';
-import { store } from './store/configureStore';
-import { modelsRoutes } from './container/models/routes';
-import App from './container/app';
+import { getCookieConsentValue } from 'react-cookie-consent';
 import { notFoundRoute } from './components/ErrorPage';
+import App from './container/app';
+import { modelsRoutes } from './container/models/routes';
+import { store } from './store/configureStore';
 
-initializeFaro({
-  // required: the URL of the Grafana collector
-  url: 'https://telemetry.oss.radicalbit.ai',
-  apiKey: 'rbitoss-JpIYMVC677edETUbJN9Me3iLS7ngGaE2RYLzQWCOYVljUJh5JJk5o2FE',
-
-  // required: the identification label of your application
-  app: {
-    name: 'radicalbit-ai-monitoring',
-  },
-});
+const enableGrafanaTracking = getCookieConsentValue('rbit-tracking');
 
 const router = createBrowserRouter([
   {
@@ -30,7 +22,20 @@ const router = createBrowserRouter([
   },
 ]);
 
-const browserRouter = withFaroRouterInstrumentation(router);
+if (enableGrafanaTracking === 'true') {
+  initializeFaro({
+    // required: the URL of the Grafana collector
+    url: 'https://telemetry.oss.radicalbit.ai',
+    apiKey: 'rbitoss-JpIYMVC677edETUbJN9Me3iLS7ngGaE2RYLzQWCOYVljUJh5JJk5o2FE',
+
+    // required: the identification label of your application
+    app: {
+      name: 'radicalbit-ai-monitoring',
+    },
+  });
+}
+
+const browserRouter = (enableGrafanaTracking === 'true') ? withFaroRouterInstrumentation(router) : router;
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

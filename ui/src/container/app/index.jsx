@@ -9,12 +9,14 @@ import '@Styles/tailwind.less';
 import { Layout } from '@radicalbit/radicalbit-design-system';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import CookieConsent from 'react-cookie-consent';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { createRoutes } from '../layout';
 import { useLayoutProvider } from '../layout/layout-provider';
+import BottomMenu from './bottom-menu';
 import MainHeaderContentSwitch from './content-switch/header';
 import SecondaryContentSwitch from './content-switch/secondary-column/content';
 import SecondaryHeaderContentSwitch from './content-switch/secondary-column/header';
-import BottomMenu from './bottom-menu';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -57,6 +59,10 @@ export default function App() {
     navigate('/');
   };
 
+  const handleOnAccept = () => {
+    window.location.reload();
+  };
+
   return (
     <>
 
@@ -96,6 +102,23 @@ export default function App() {
       />
 
       <ModalsProvider />
+
+      <CookieConsent
+        buttonStyle={{ color: CHART_COLOR.WHITE, background: CHART_COLOR.CURRENT_DARK, borderRadius: 50 }}
+        buttonText="Accept"
+        cookieName="rbit-tracking"
+        declineButtonStyle={{ color: CHART_COLOR.WHITE, background: CHART_COLOR.CURRENT_DARK, borderRadius: 50 }}
+        declineButtonText="Decline"
+        enableDeclineButton
+        expires={150}
+        location="bottom"
+        onAccept={handleOnAccept}
+      >
+        This website uses cookies to enhance the user experience.
+        {' '}
+
+        <span style={{ fontSize: '10px' }}>This bit of text is smaller :O</span>
+      </CookieConsent>
     </>
   );
 }
