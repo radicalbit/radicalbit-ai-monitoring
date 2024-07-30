@@ -103,11 +103,11 @@ export default function App() {
       <ModalsProvider />
 
       <CookieConsent
-        buttonClasses="ant-btn ant-btn-primary m-button w-[140px] p-4"
+        buttonClasses="ant-btn ant-btn-primary m-button px-8"
         buttonText="Allow anonymous"
-        buttonWrapperClasses="flex gap-4 mr-3"
+        buttonWrapperClasses="flex gap-8 mr-3"
         cookieName="rbit-tracking"
-        declineButtonClasses="ant-btn ant-btn-primary-light m-button w-[140px] p-4"
+        declineButtonClasses="ant-btn ant-btn-primary-light m-button px-16"
         declineButtonText="Do not allow"
         disableButtonStyles
         enableDeclineButton
@@ -120,6 +120,7 @@ export default function App() {
 
         <p>
           We collect anonymous usage data to improve our software. This information helps us understand how the software is used and identify areas for improvement.
+          <br />
           No personally identifiable information is collected.
         </p>
 
