@@ -105,7 +105,7 @@ export default function App() {
       <CookieConsent
         buttonClasses="ant-btn ant-btn-primary m-button px-8"
         buttonText="Allow anonymous"
-        buttonWrapperClasses="flex gap-8 mr-3"
+        buttonWrapperClasses="flex gap-8 mr-5"
         cookieName="rbit-tracking"
         declineButtonClasses="ant-btn ant-btn-primary-light m-button px-16"
         declineButtonText="Do not allow"
