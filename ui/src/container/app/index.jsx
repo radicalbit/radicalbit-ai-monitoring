@@ -7,10 +7,9 @@ import { actions as layoutActions, selectors as layoutSelectors } from '@State/l
 import '@Styles/index.less';
 import '@Styles/tailwind.less';
 import { Layout } from '@radicalbit/radicalbit-design-system';
+import CookieConsent from 'react-cookie-consent';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import CookieConsent from 'react-cookie-consent';
-import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { createRoutes } from '../layout';
 import { useLayoutProvider } from '../layout/layout-provider';
 import BottomMenu from './bottom-menu';
@@ -104,20 +103,26 @@ export default function App() {
       <ModalsProvider />
 
       <CookieConsent
-        buttonStyle={{ color: CHART_COLOR.WHITE, background: CHART_COLOR.CURRENT_DARK, borderRadius: 50 }}
-        buttonText="Accept"
+        buttonClasses="ant-btn ant-btn-primary m-button w-[140px] p-4"
+        buttonText="Allow anonymous"
+        buttonWrapperClasses="flex gap-4 mr-3"
         cookieName="rbit-tracking"
-        declineButtonStyle={{ color: CHART_COLOR.WHITE, background: CHART_COLOR.CURRENT_DARK, borderRadius: 50 }}
-        declineButtonText="Decline"
+        declineButtonClasses="ant-btn ant-btn-primary-light m-button w-[140px] p-4"
+        declineButtonText="Do not allow"
+        disableButtonStyles
         enableDeclineButton
-        expires={150}
+        expires={365}
         location="bottom"
         onAccept={handleOnAccept}
+        style={{ alignItems: 'center' }}
       >
-        This website uses cookies to enhance the user experience.
-        {' '}
+        <h3>We Value Your Privacy</h3>
 
-        <span style={{ fontSize: '10px' }}>This bit of text is smaller :O</span>
+        <p>
+          We collect anonymous usage data to improve our software. This information helps us understand how the software is used and identify areas for improvement.
+          No personally identifiable information is collected.
+        </p>
+
       </CookieConsent>
     </>
   );
