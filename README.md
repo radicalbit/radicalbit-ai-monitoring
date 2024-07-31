@@ -74,7 +74,7 @@ Copy the above file and modify `https://k3s:6443` with `https://127.0.0.1:6443` 
 
 ### Real AWS
 
-In order to use a real AWS instead of Minio it is necessary to modify the environment variables of the api container, putting real `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` and `S3_BUCKET_NAME` and removing `S3_ENDPOINT_URL`.
+In order to use a real AWS instead of MinIO it is necessary to modify the environment variables of the api container, putting real `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION` and `S3_BUCKET_NAME` and removing `S3_ENDPOINT_URL`.
 
 ### Teardown
 
