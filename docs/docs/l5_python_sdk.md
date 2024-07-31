@@ -24,82 +24,82 @@ The available methods of a client instance are:
 
 * **`create_model(model: CreateModel)`**: it is used to create a brand new model inside the platform.
 
-It requires a [CreateModel](#createmodel) instance and returns the created [Model](#model).
+	It requires a [CreateModel](#createmodel) instance and returns the created [Model](#model).
 
-```python
-from radicalbit_platform_sdk.models import (
-	CreateModel,
-	DataType,
-	FieldType,
-	ModelType,
-	ColumnDefinition,
-	OutputType,
-	Granularity,
-	SupportedTypes,
-) 
+	```python
+	from radicalbit_platform_sdk.models import (
+		CreateModel,
+		DataType,
+		FieldType,
+		ModelType,
+		ColumnDefinition,
+		OutputType,
+		Granularity,
+		SupportedTypes,
+	)
 
-model_definition = CreateModel(
-	name="My model",
-	modelType=ModelType.BINARY,
-	dataType=DataType.TABULAR,
-	granularity=Granularity.HOUR,
-	features=[
-		ColumnDefinition(
-			name="first_name", 
-			type=SupportedTypes.string, 
-			field_type=FieldType.categorical
-		),
-		ColumnDefinition(
-			name="last_name",
-			type=SupportedTypes.string,
-			field_type=FieldType.categorical
-		),
-		ColumnDefinition(
-			name="age",
-			type=SupportedTypes.int,
-			field_type=FieldType.numerical
-		),
-	],
-	outputs=OutputType(
-		prediction=ColumnDefinition(
-			name="prediction", 
-			type=SupportedTypes.float, 
-			field_type=FieldType.numerical
-		),
-		output=[
+	model_definition = CreateModel(
+		name="My model",
+		modelType=ModelType.BINARY,
+		dataType=DataType.TABULAR,
+		granularity=Granularity.HOUR,
+		features=[
 			ColumnDefinition(
-				name="adult", 
-				type=SupportedTypes.string, 
+				name="first_name",
+				type=SupportedTypes.string,
 				field_type=FieldType.categorical
-			)
+			),
+			ColumnDefinition(
+				name="last_name",
+				type=SupportedTypes.string,
+				field_type=FieldType.categorical
+			),
+			ColumnDefinition(
+				name="age",
+				type=SupportedTypes.int,
+				field_type=FieldType.numerical
+			),
 		],
-	),
-	target=ColumnDefinition(
-		name="prediction", 
-		type=SupportedTypes.float, 
-		field_type=FieldType.numerical
-	),
-	timestamp=ColumnDefinition(
-		name="prediction_timestamp", 
-		type=SupportedTypes.datetime, 
-		field_type=FieldType.datetime
-	),
-) 
+		outputs=OutputType(
+			prediction=ColumnDefinition(
+				name="prediction",
+				type=SupportedTypes.float,
+				field_type=FieldType.numerical
+			),
+			output=[
+				ColumnDefinition(
+					name="adult",
+					type=SupportedTypes.string,
+					field_type=FieldType.categorical
+				)
+			],
+		),
+		target=ColumnDefinition(
+			name="prediction",
+			type=SupportedTypes.float,
+			field_type=FieldType.numerical
+		),
+		timestamp=ColumnDefinition(
+			name="prediction_timestamp",
+			type=SupportedTypes.datetime,
+			field_type=FieldType.datetime
+		),
+	)
 
-model = client.create_model(model_definition)
-```
+	model = client.create_model(model_definition)
+	```
 
 * **`get_model()`**: It gets a specific and existing model by its identifier. It requires the id of an existing model and returns the [Model](#model) instance.
 
-```python
-model = client.get_model(model_uuid)
-```
+	```python
+	model = client.get_model(model_uuid)
+	```
 
 * **`search_models()`**: It gets a list of models. It returns a list of [Model](#model).
 
-```python
-models = client.search_models()
-```
+	```python
+	models = client.search_models()
+	```
 
 
 ### Model
@@ -124,66 +124,66 @@ The available methods of a model instance are:
 * **`update_features(features: List[ColumnDefinition])`**: Update the model features definition if reference dataset is not provided.
 * **`load_reference_dataset(file_name: str, bucket: str, object_name: Optional[str] = None, aws_credentials: Optional[AwsCredentials] = None, separator: str = ‘,’)`**: It uploads a reference dataset file to an S3 bucket and then binds it to the model. It returns a [ModelReferenceDataset](#modelreferencedataset). 
 
-Method properties are:
-* **`file_name`**: The name of the reference file
-* **`bucket`**: The name of the S3 bucket.
-* **`object_name`**: The optional name of the object uploaded to S3. Default value is None.
-* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
-* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
+	Method properties are:
+	* **`file_name`**: The name of the reference file
+	* **`bucket`**: The name of the S3 bucket.
+	* **`object_name`**: The optional name of the object uploaded to S3. Default value is None.
+	* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
+	* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
 
-```python
-reference_dataset = model.load_reference_dataset(
-	file_name="reference.csv", bucket="my-bucket"
-)
-``` 
+	```python
+	reference_dataset = model.load_reference_dataset(
+		file_name="reference.csv", bucket="my-bucket"
+	)
+	```
  
 * **`bind_reference_dataset(dataset_url: str, aws_credentials: Optional[AwsCredentials] = None, separator: str = ‘,’)`**: It binds an existing reference dataset file already uploded to S3 to the model. It returns a [ModelReferenceDataset](#modelreferencedataset). 
 
-Method properties are:
+	Method properties are:
 
-* **`dataset_url`**: The url of the file already uploaded inside S3
-* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
-* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
+	* **`dataset_url`**: The url of the file already uploaded inside S3
+	* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
+	* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
 
-```python
-reference_dataset = model.bind_reference_dataset(
-	dataset_url="s3://my-bucket/reference.csv"
-)
-```
+	```python
+	reference_dataset = model.bind_reference_dataset(
+		dataset_url="s3://my-bucket/reference.csv"
+	)
+	```
 
 * **`load_current_dataset(file_name: str, bucket: str, correlation_id_column: Optional[str] = None, object_name: Optional[str] = None, aws_credentials: Optional[AwsCredentials] = None, separator: str = ‘,’)`**: It uploads a current dataset file to an S3 bucket and then bind it to the model. 
 It returns a [ModelCurrentDataset](#modelcurrentdataset). 
 
-Method properties are:
-* **`file_name`**: The name of the reference file
-* **`bucket`**: The name of the S3 bucket.
-* **`correlation_id_column`**: The name of the column used for correlation id
-* **`object_name`**: The optional name of the object uploaded to S3. Default value is None.
-* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
-* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
+	Method properties are:
+	* **`file_name`**: The name of the reference file
+	* **`bucket`**: The name of the S3 bucket.
+	* **`correlation_id_column`**: The name of the column used for correlation id
+	* **`object_name`**: The optional name of the object uploaded to S3. Default value is None.
+	* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
+	* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
 
-```python
-current_dataset = model.load_current_dataset(
-file_name="reference.csv",
-bucket="my-bucket",
-correlation_id_column="prediction_identifier"
-)
-``` 
+	```python
+	current_dataset = model.load_current_dataset(
+		file_name="reference.csv",
+		bucket="my-bucket",
+		correlation_id_column="prediction_identifier"
+	)
+	```
  
 * **`bind_current_dataset(dataset_url: str, correlation_id_column: str, aws_credentials: Optional[AwsCredentials] = None, separator: str = ‘,’)`**: It binds an existing current dataset file already uploded to S3 to the model. It returns a [ModelCurrentDataset](#modelcurrentdataset). 
 
-Method properties are:
-* **`dataset_url`**: The url of the file already uploaded inside S3
-* **`correlation_id_column`**: The name of the column used for correlation id
-* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
-* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
+	Method properties are:
+	* **`dataset_url`**: The url of the file already uploaded inside S3
+	* **`correlation_id_column`**: The name of the column used for correlation id
+	* **`aws_credentials`**: [AwsCredentials](#awscredentials) used to connect to S3 bucket. Default value is None.
+	* **`separator`**: Optional value to define separator used inside CSV file. Default value is ","
 
-```python
-current_dataset = model.bind_current_dataset(
-	dataset_url="s3://my-bucket/reference.csv",
-	correlation_id_column="prediction_identifier"
-)
-```
+	```python
+	current_dataset = model.bind_current_dataset(
+		dataset_url="s3://my-bucket/reference.csv",
+		correlation_id_column="prediction_identifier"
+	)
+	```
 
 * **`get_reference_datasets()`**: It returns a list of [ModelReferenceDataset](#modelreferencedataset) representing all the current datasets and related metrics
 * **`get_current_datasets()`**: It returns a list of [ModelCurrentDataset](#modelcurrentdataset) representing all the current datasets and related metrics
