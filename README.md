@@ -117,3 +117,8 @@ Over the coming weeks, we will be adding the following functionalities to the pl
   * [ ] Regression
   * [ ] Computer Vision
   * [ ] Clustering
+
+## We Value Your Privacy
+We collect anonymous usage data to improve our software. This information helps us understand how the software is used and identify areas for improvement. No personally identifiable information is collected.
+
+The first time you start using the platform you will be explicitly asked whether you prefer to opt-in or opt-out this anonymous usage data collection.
