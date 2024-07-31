@@ -7,14 +7,15 @@ import { actions as layoutActions, selectors as layoutSelectors } from '@State/l
 import '@Styles/index.less';
 import '@Styles/tailwind.less';
 import { Layout } from '@radicalbit/radicalbit-design-system';
+import CookieConsent from 'react-cookie-consent';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { createRoutes } from '../layout';
 import { useLayoutProvider } from '../layout/layout-provider';
+import BottomMenu from './bottom-menu';
 import MainHeaderContentSwitch from './content-switch/header';
 import SecondaryContentSwitch from './content-switch/secondary-column/content';
 import SecondaryHeaderContentSwitch from './content-switch/secondary-column/header';
-import BottomMenu from './bottom-menu';
 
 export default function App() {
   const dispatch = useDispatch();
@@ -57,6 +58,10 @@ export default function App() {
     navigate('/');
   };
 
+  const handleOnAccept = () => {
+    window.location.reload();
+  };
+
   return (
     <>
 
@@ -96,6 +101,30 @@ export default function App() {
       />
 
       <ModalsProvider />
+
+      <CookieConsent
+        buttonClasses="ant-btn ant-btn-primary m-button px-8"
+        buttonText="Allow anonymous"
+        buttonWrapperClasses="flex gap-8 mr-5"
+        cookieName="rbit-tracking"
+        declineButtonClasses="ant-btn ant-btn-primary-light m-button px-16"
+        declineButtonText="Do not allow"
+        disableButtonStyles
+        enableDeclineButton
+        expires={365}
+        location="bottom"
+        onAccept={handleOnAccept}
+        style={{ alignItems: 'center' }}
+      >
+        <h3>We Value Your Privacy</h3>
+
+        <p>
+          We collect anonymous usage data to improve our software. This information helps us understand how the software is used and identify areas for improvement.
+          <br />
+          No personally identifiable information is collected.
+        </p>
+
+      </CookieConsent>
     </>
   );
 }
