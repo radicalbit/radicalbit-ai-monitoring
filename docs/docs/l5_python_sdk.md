@@ -122,7 +122,6 @@ The available methods of a model instance are:
 * **`algorithm()`**: It returns the used algorithm, if defined
 * **`delete()`**: It deletes the actual model from the platform
 * **`update_features(features: List[ColumnDefinition])`**: Update the model features definition if reference dataset is not provided.
-* 
 * **`load_reference_dataset(file_name: str, bucket: str, object_name: Optional[str] = None, aws_credentials: Optional[AwsCredentials] = None, separator: str = ‘,’)`**: It uploads a reference dataset file to an S3 bucket and then binds it to the model. It returns a [ModelReferenceDataset](#modelreferencedataset). 
 
 Method properties are:
