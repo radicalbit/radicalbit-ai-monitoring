@@ -6,8 +6,20 @@
 
 import {themes as prismThemes} from 'prism-react-renderer';
 
+import versions from './versions.json';
+
 function getNextVersionName() {
   return 'Develop';
+}
+
+function getLastVersion() {
+  return versions[0];
+}
+
+// By customizing this function it is possible to restrict
+// the number of versions included
+function getIncludedVersions() {
+  return ['current', ...versions];
 }
 
 /** @type {import('@docusaurus/types').Config} */
@@ -52,6 +64,8 @@ const config = {
               label: `${getNextVersionName()} 🚧`,
             },
           },
+          lastVersion: getLastVersion(),
+          onlyIncludeVersions: getIncludedVersions(),
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl: '',
