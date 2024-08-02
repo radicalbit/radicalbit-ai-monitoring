@@ -6,6 +6,10 @@
 
 import {themes as prismThemes} from 'prism-react-renderer';
 
+function getNextVersionName() {
+  return 'Develop';
+}
+
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'Radicalbit AI Monitoring',
@@ -43,6 +47,11 @@ const config = {
         docs: {
           routeBasePath: '/',
           sidebarPath: './sidebars.js',
+          versions: {
+            current: {
+              label: `${getNextVersionName()} 🚧`,
+            },
+          },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl: '',
