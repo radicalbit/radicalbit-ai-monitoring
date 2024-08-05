@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.10.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.9.0...v0.10.0) (2024-08-05)
+## [1.0.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.9.0...v1.0.0) (2024-08-05)
 
 
 ### Features

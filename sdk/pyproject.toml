@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "radicalbit-platform-sdk"
 # x-release-please-start-version
-version = "0.10.0"
+version = "1.0.0"
 # x-release-please-end
 description = ""
 authors = ["dev.team <devs@radicalbit.io>"]
