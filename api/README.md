@@ -95,3 +95,48 @@ By default, the PostgreSQL schema that is used in the platform and in the migrat
 store data and use another schema, you need to modify the environment variables of the schema in
 the `docker-compose.yaml` accordingly, and you have to either manually modify migrations script or re-create the
 migrations with above commands.
+
+## Spark tuning
+
+### Overview
+
+When a reference or current dataset file is uploaded, the platform calculates all available metrics using a Spark job deployed in a Kubernetes cluster. The platform utilizes the [spark-on-k8s](https://github.com/hussein-awala/spark-on-k8s) library to initiate Spark jobs.
+
+### Spark Job structure
+
+A Spark job consists of two main components:
+
+1. **Spark Driver**: Manages the job execution
+2. **Spark Executors**: Instances that perform the actual calculations
+
+### Default configuration
+
+In the platform, the default resources configuration for Spark jobs is as follows:
+
+- Spark Driver CPUs: 1
+- Spark Driver Memory: 1024 (in MB)
+- Spark Driver Memory overhead: 512 (in MB)
+- Spark Executor CPUs: 1
+- Spark Executor Memory: 1024 (in MB)
+- Spark Executor Memory overhead: 512 (in MB)
+- Spark Executor Initial instances: 2
+- Spark Executor Min instances: 2
+- Spark Executor Max instances: 2
+
+### Resources tuning
+
+To optimize performance for larger files or to accelerate computations, you can adjust the following environment variables in the backend container:
+
+```
+SPARK_ON_K8S_DRIVER_CPU: 1
+SPARK_ON_K8S_DRIVER_MEMORY: 1024
+SPARK_ON_K8S_DRIVER_MEMORY_OVERHEAD: 512
+SPARK_ON_K8S_EXECUTOR_CPU: 1
+SPARK_ON_K8S_EXECUTOR_MEMORY: 1024
+SPARK_ON_K8S_EXECUTOR_MEMORY_OVERHEAD: 512
+SPARK_ON_K8S_EXECUTOR_INITIAL_INSTANCES: 2
+SPARK_ON_K8S_EXECUTOR_MIN_INSTANCES: 2
+SPARK_ON_K8S_EXECUTOR_MAX_INSTANCES: 2
+```
+
+Adjust these variables as needed to allocate more resources or modify the number of executor instances for your specific use case.

@@ -29,3 +29,7 @@ See [README file](https://github.com/radicalbit/radicalbit-ai-monitoring/blob/ma
   ```
 
 After all the containers are up & running, you can go to [http://localhost:5173](http://127.0.0.1:5173/) and play with the platform.
+
+## Spark tuning
+
+We use Spark jobs to calculate metrics: if you need to tune Spark configuration in order to optimize performance for large files or accelerate computations, please refer to the corresponding section of this [README file](https://github.com/radicalbit/radicalbit-ai-monitoring/blob/main/api/README.md).
