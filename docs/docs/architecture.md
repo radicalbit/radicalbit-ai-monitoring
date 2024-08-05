@@ -4,7 +4,7 @@ sidebar_position: 6
 
 # Architecture
 
-In this section we'll explore the architecture of the Radicalbit AI platform.
+In this section we explore the architecture of the Radicalbit AI platform.
 The image below shows all the components of the platform:
 
 ![Alt text](/img/architecture/architecture.png "Architecture")
@@ -19,9 +19,9 @@ REST APIs could be used via user interface or using the provided Python SDK.
 ## UI
 
 To use REST APIs with a human friendly interface, a UI is provided.
-It covers all the implemented APIs, starting from models creation and ending with all metrics visualization.
+It covers all the implemented APIs, starting from model creation and ending with all metrics visualization.
 
 ## SDK
 
-To interact with API programmatically, a Python SDK is provided.
+To interact with API programmatically, a [_Python SDK_](/python-sdk) is provided.
 The SDK implements all functionalities exposed via REST API.
