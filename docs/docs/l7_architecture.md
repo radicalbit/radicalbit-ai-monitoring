@@ -5,7 +5,7 @@ sidebar_position: 1
 # Architecture
 
 In this section we'll explore the architecture of the Radicalbit AI platform.
-The image below show all the components of the platform:
+The image below shows all the components of the platform:
 
 ![Alt text](/img/architecture/architecture.png "Architecture")
 
@@ -13,7 +13,7 @@ The image below show all the components of the platform:
 
 API is the core of the platform, it exposes all the functionalities via REST APIs.
 It requires a PostgreSQL database to store data and a Kubernetes cluster to run Spark jobs for metrics evaluations.
-To store all dataset files a distributes storage is used.
+To store all dataset files a distributed storage is used.
 REST APIs could be used via user interface or using the provided Python SDK.
 
 ## UI
