@@ -1,17 +1,16 @@
 name: Prepare Docs for next release
 
-on: [workflow_dispatch]
-
-
-inputs:
-  version:
-    description: "The next version we're going to release (must be in the form vX.Y.Z)"
-    required: true
-    default: 'v1.0.0'
-  release-branch:
-    description: "The name of the release branch where we'll create the new Docusaurus documentation versioned"
-    required: true
-    default: 'release-please--branches--main'
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "The next version we're going to release (must be in the form vX.Y.Z)"
+        required: true
+        default: 'v1.0.0'
+      release-branch:
+        description: "The name of the release branch where we'll create the new Docusaurus documentation versioned"
+        required: true
+        default: 'release-please--branches--main'
 
 jobs:
   run-versioning-command:
