@@ -12,7 +12,7 @@ The image below show all the components of the platform:
 ## API
 
 API is the core of the platform, it exposes all the functionalities via REST APIs.
-It require a PostgreSQL database to store data and a Kubernetes cluster to run Spark jobs for metrics evaluations.
+It requires a PostgreSQL database to store data and a Kubernetes cluster to run Spark jobs for metrics evaluations.
 To store all dataset files a distributes storage is used.
 REST APIs could be used via user interface or using the provided Python SDK.
 
