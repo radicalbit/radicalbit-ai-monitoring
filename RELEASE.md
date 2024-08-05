@@ -13,7 +13,7 @@ We use the [release-please](https://github.com/googleapis/release-please-action)
 
 Manually invoke the release-please [workflow](https://github.com/radicalbit/radicalbit-ai-monitoring/actions/workflows/release-please.yaml). The outcome will be the creation of a release PR, that will include the updates to be released, along with the updated [CHANGELOG.md](./CHANGELOG.md) file.
 
-![alt text](manually-invoke-release-please.png)  
+![manually-invoke-release-please](https://github.com/user-attachments/assets/d0245757-c9fc-44b0-bb59-8d91ec23ec1b)
 
 The new release will follow the [semver](https://semver.org) specificationRelease plese will determine the upcoming version bump by parsing the githistoryof the `main` branch, looking for [Conventional Commits](https:/wwwconventionalcommits.org/) messages.
 
@@ -22,7 +22,7 @@ We use [Docusaurus](https://docusaurus.io) for our documentation. If needed, we 
 
 For example, if we were going to release the `v1.2.3` version of the application along updates to its documentation, we would have to release a `v1.2.3` documentation version that will be included into the docs site "version dropdown"
 
-![alt text](image.png)
+![image](https://github.com/user-attachments/assets/e60a4108-8b7d-424a-b11e-a8e44437b258)
 
 To create a new documentation version, please manually invoke the corresponding [workflow](https://github.com/radicalbit/radicalbit-ai-monitoring/actions/workflows/prepare-docs-for-release.yaml) passing two params:
 
