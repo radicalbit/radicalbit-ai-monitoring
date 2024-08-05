@@ -92,8 +92,12 @@ docker compose --profile ui --profile k9s --profile init-data down -v --remove-o
 
 ## 📖 Documentation
 You can find the following documentation:
-* An extensive [step-by-step guide](https://docs.oss-monitoring.radicalbit.ai/user-guide/installation) to install the development/testing version of the platform.
-* A [guide](https://docs.oss-monitoring.radicalbit.ai/user-guide/quickstart) that walks users through creating dashboards on the platform.
+* An extensive [step-by-step guide](https://docs.oss-monitoring.radicalbit.ai/l2_user_guide/user-guide-installation) to install the development/testing version of the platform, followed by all [key concepts](https://docs.oss-monitoring.radicalbit.ai/l2_user_guide/user-guide-keyconcepts) and a [hands-on guide](https://docs.oss-monitoring.radicalbit.ai/l2_user_guide/how_to) on how to use the GUI.
+* A practical [guide](https://docs.oss-monitoring.radicalbit.ai/l1_quickstart) that walks users through monitoring an AI solution on the platform.
+* A detailed [explanation](https://docs.oss-monitoring.radicalbit.ai/category/model-sections) on the three main model sections.
+* An exhaustive [description](https://docs.oss-monitoring.radicalbit.ai/l5_python_sdk) of all classes implemented inside the Python SDK.
+* A list of [all available metrics and charts](https://docs.oss-monitoring.radicalbit.ai/l6_all_metrics).
+* A [community support](https://docs.oss-monitoring.radicalbit.ai/l7_support) page.
 
 ## 🤝 Community
 Please join us on our [Discord server](https://discord.gg/x2Ze8TMRsD), to discuss the platform, share ideas, and help shape its future! Get help from experts and fellow users.
