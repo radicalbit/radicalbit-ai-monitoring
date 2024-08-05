@@ -1,5 +1,52 @@
 # Changelog
 
+## [1.0.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.9.0...v1.0.0) (2024-08-05)
+
+
+### Features
+
+* add check ([#145](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/145)) ([ba65d21](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/ba65d210ccf9637aa7d77f038a2453d700e4f081))
+* add log loss property for classification models ([#131](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/131)) ([d744235](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d744235c5df742114474f53cf9c559f3f1dec5c8))
+* add regression line to residuals metric ([#111](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/111)) ([c2f5437](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/c2f54377c36c395b0daea351d31b6b86ace1cb99))
+* added CHI2 drift to float columns when cardinality &lt; 15 ([#121](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/121)) ([62f3852](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/62f3852cece909311e145fa6e1e5a16ee249e094))
+* added field type in drift return, removes threshold of 15 for numerical vatriables ([#141](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/141)) ([b08e97d](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/b08e97d722f65cc956c54f5c3d41925109c4d699))
+* added field type inside drift data ([#142](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/142)) ([a19cd20](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/a19cd20249beee7a2ddb73930401a29c970d9cfe))
+* added new log loss metric for binary - current and reference ([#129](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/129)) ([52fe9a7](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/52fe9a7cc86f46090c3f16c102740691bd3cb6f9))
+* added PSI drift method to int columns ([#114](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/114)) ([07746f5](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/07746f5d3abb639c8227e1ed106c3510731a6641))
+* added regression line calculation ([#109](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/109)) ([c5511ed](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/c5511edd9ef32a3d5cbdf7b51356dcbc076eead3))
+* align demo data ([#136](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/136)) ([039960b](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/039960b0e23eb7b883f65ee2eb371d0fbef01c19))
+* **api:** add field type as column definition property ([#133](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/133)) ([92342b9](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/92342b9c4ad57b047174682d72442c4f12a4074e))
+* **api:** add update model features API ([#143](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/143)) ([80875c2](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/80875c25f6dc013478571b8d6ad6b484d8e6eaa4))
+* **api:** bump libraries and fix log ([#139](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/139)) ([1bd820d](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/1bd820df4090b20c44f3918434429e2150654535))
+* changed indexing method, removed job tests ([#126](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/126)) ([a2aa7c5](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/a2aa7c5633d60c8bed3a6490989d76d6b83ea8a4))
+* improve chi2 ([#128](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/128)) ([ce76c86](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/ce76c86c5dc59afe5d338d3164db8f352c08818b))
+* new field_type added, fixed all tests accordingly ([#140](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/140)) ([dd6e85b](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/dd6e85bb42c1bd32b42991bea13b8d411f4bf795))
+* new PSI value, chi2 new method fixed ([#134](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/134)) ([d59f33c](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d59f33c109e8a33adcad5a921a1414c582e56904))
+* refactor jobs to test output ([#120](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/120)) ([67e94e9](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/67e94e9da3e44b9f79f4cd27db38552d0decda81))
+* **sdk:** added update model features ([#146](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/146)) ([f439c17](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/f439c17596534bbb6f76382ef725942afc2bc042))
+* **sdk:** improved column definition class ([#138](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/138)) ([d126e15](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d126e15d94103de9bdcece79b85e377e71539ac5))
+* **ui:** add grafana faro on UI ([#149](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/149)) ([eb440ec](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/eb440ec0755263ebd02be1f31025991dd1aa6b3c))
+* **ui:** add logLoss to modelQuality binary ([#135](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/135)) ([c9d407a](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/c9d407ac47f2f0611d80ea8f00bfe3582f70d9d6))
+* **ui:** add PSI label ([#137](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/137)) ([3c5e0a6](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/3c5e0a61b355278dc3c5f1d6ea0c86f96fd18f81))
+* **ui:** Edit fieldType in Overview -&gt; variables section ([#147](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/147)) ([3f228b2](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/3f228b2eac1559deef09a1efb5f96e59716472a4))
+* **ui:** improve regression section and add residuals charts ([#118](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/118)) ([ffa9947](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/ffa994700ee8820ab2c1e2d74c19817fe0eb0648))
+* **ui:** refactor drift section with field type ([#148](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/148)) ([433f8bd](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/433f8bdd2c8d69fe021f04c09714c639b7495dd7))
+* **ui:** remove counterLabel and hide element in header ([#123](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/123)) ([c3a744c](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/c3a744cb7c6cbb40e6d5935fc1fa823165b00052))
+* **ui:** update label and add legend on chart ([#127](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/127)) ([762e1ac](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/762e1acb0e2799c8ae1932728aba79d94b947f7b))
+* **ui:** use step 3 to select targets,features and predictions ([#130](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/130)) ([7eeedae](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/7eeedae8ce785cf50c9127bf4e325a22769aa8ac))
+
+
+### Bug Fixes
+
+* add schema in postgres ([#122](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/122)) ([e8e143c](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/e8e143c77203da15887529c73522b27f0c37cd9b))
+* added psi to enum drift dto ([#124](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/124)) ([e601c2d](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/e601c2dd116858e3173d845da4ae7157843364e4))
+* edit regression line structure in model quality dto ([#117](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/117)) ([bf9d612](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/bf9d612f9a04aeef42cf28411ed698d48b101061))
+* finished refactoring for withcolumn prefix ([#132](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/132)) ([48c1730](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/48c17305738dd47e8f80b40d0b88faea5e164d96))
+* return value for regression line casted to float ([#115](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/115)) ([d5d862d](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d5d862deb02354112cafa15552ffc7973d451452))
+* return values for regression line changed from points to coefficients ([#116](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/116)) ([e475478](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/e475478926b86d8fbe7cbb3703e9be23cedb88bb))
+* **sdk:** fix documentation typos ([#125](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/125)) ([92ade35](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/92ade35e0436cb3e18981ab754b966ebd4664034))
+* **ui:** fix regression resize chart ([#119](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/119)) ([43fc389](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/43fc389e8c5ac9319aab419590944821213ed0c3))
+
 ## [0.9.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.8.2...v0.9.0) (2024-07-16)
 
 
