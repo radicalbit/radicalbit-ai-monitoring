@@ -19,9 +19,9 @@ REST APIs could be used via user interface or using the provided Python SDK.
 ## UI
 
 To use REST APIs with a human friendly interface, a UI is provided.
-It covers all the implemented APIs, starting from models creation ending with all metrics visualization.
+It covers all the implemented APIs, starting from models creation and ending with all metrics visualization.
 
 ## SDK
 
 To interact with API programmatically, a Python SDK is provided.
-SDK implements all functionalities exposed via REST API.
+The SDK implements all functionalities exposed via REST API.
