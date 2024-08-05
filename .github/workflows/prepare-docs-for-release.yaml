@@ -57,5 +57,5 @@ jobs:
       - name: Commit versioned docs change
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          branch: ${{ github.event.inputs.release-branch }}"
+          branch: ${{ github.event.inputs.release-branch }}
           commit_message: "docs: added ${{ github.event.inputs.version }} version to docs"
