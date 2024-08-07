@@ -86,6 +86,7 @@ class ModelFeatures(BaseModel):
 
 
 class ModelIn(BaseModel, validate_assignment=True):
+    uuid: Optional[UUID] = None
     name: str
     description: Optional[str] = None
     model_type: ModelType
@@ -179,6 +180,7 @@ class ModelIn(BaseModel, validate_assignment=True):
     def to_model(self) -> Model:
         now = datetime.datetime.now(tz=datetime.UTC)
         return Model(
+            uuid=self.uuid,
             name=self.name,
             description=self.description,
             model_type=self.model_type.value,
