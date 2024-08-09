@@ -9,7 +9,28 @@ import App from './container/app';
 import { modelsRoutes } from './container/models/routes';
 import { store } from './store/configureStore';
 
+const getGrafanaTracking = (enableGrafanaTracking) => {
+  let tracking;
+
+  if (enableGrafanaTracking === 'true') {
+    if (tracking === undefined) {
+      tracking = initializeFaro({
+        url: 'https://telemetry.oss.radicalbit.ai',
+        apiKey: 'rbitoss-JpIYMVC677edETUbJN9Me3iLS7ngGaE2RYLzQWCOYVljUJh5JJk5o2FE',
+        app: { name: 'radicalbit-ai-monitoring' },
+        sessionTracking: {
+          enabled: true,
+          persistent: true,
+          maxSessionPersistenceTime: 31540000000, // 1 year
+        },
+      });
+    }
+  }
+  return tracking;
+};
+
 const enableGrafanaTracking = getCookieConsentValue('rbit-tracking');
+export const grafanaTracking = getGrafanaTracking(enableGrafanaTracking);
 
 const router = createBrowserRouter([
   {
@@ -21,19 +42,6 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
-if (enableGrafanaTracking === 'true') {
-  initializeFaro({
-    // required: the URL of the Grafana collector
-    url: 'https://telemetry.oss.radicalbit.ai',
-    apiKey: 'rbitoss-JpIYMVC677edETUbJN9Me3iLS7ngGaE2RYLzQWCOYVljUJh5JJk5o2FE',
-
-    // required: the identification label of your application
-    app: {
-      name: 'radicalbit-ai-monitoring',
-    },
-  });
-}
 
 const browserRouter = (enableGrafanaTracking === 'true') ? withFaroRouterInstrumentation(router) : router;
 
