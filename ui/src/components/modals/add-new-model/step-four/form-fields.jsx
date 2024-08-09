@@ -4,6 +4,7 @@ import {
   Select,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
+import { grafanaTracking } from '@Src/main';
 import { useModalContext } from '../modal-context-provider';
 
 function Target() {
@@ -28,6 +29,7 @@ function Target() {
       write('target', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 
@@ -124,6 +126,7 @@ function Timestamp() {
       write('timestamp', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 
@@ -220,6 +223,7 @@ function Prediction() {
       write('prediction', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 
@@ -319,6 +323,7 @@ function Probability() {
       write('predictionProba', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 

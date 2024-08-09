@@ -1,3 +1,5 @@
+import { grafanaTracking } from '@Src/main';
+
 const qs = (param) => new URLSearchParams(window.location.search).get(param);
 
 const qsContextConfiguration = () => {
@@ -26,6 +28,7 @@ const qsEncode64JSON = (search, param) => {
     return JSON.parse(qsAtob);
   } catch (e) {
     console.warn('Error in parsing qsEncode64JSON: ', e);
+    grafanaTracking?.api.pushError(e);
     return {};
   }
 };

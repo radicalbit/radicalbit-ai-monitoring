@@ -3,6 +3,7 @@ import { qsSetEncode64JSON } from '@Helpers/queryParams';
 import { actions as notificationActions } from '@State/notification';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { isEqual } from 'lodash';
+import { grafanaTracking } from '@Src/main';
 import contextConfigurationSelectors from './selectors';
 
 const { selectContextConfiguration } = contextConfigurationSelectors;
@@ -42,6 +43,7 @@ const changeContextConfiguration = createAsyncThunk(
       return fulfillWithValue(newConfiguration);
     } catch (e) {
       console.error(e);
+      grafanaTracking?.api.pushError(e);
       const notificationMessage = notificationErrorJson(e);
       dispatch(setNotificationMessage(notificationMessage));
 
