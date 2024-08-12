@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { getCookieConsentValue } from 'react-cookie-consent';
+import { v4 as uuidv4 } from 'uuid';
 import { notFoundRoute } from './components/ErrorPage';
 import App from './container/app';
 import { modelsRoutes } from './container/models/routes';
@@ -14,16 +15,17 @@ const getGrafanaTracking = (enableGrafanaTracking) => {
 
   if (enableGrafanaTracking === 'true') {
     if (tracking === undefined) {
+      console.debug(localStorage.getItem('radicalbit_user_uuid'));
+      const userUUID = localStorage.getItem('radicalbit_user_uuid') === null ? uuidv4() : localStorage.getItem('radicalbit_user_uuid');
+      localStorage.setItem('radicalbit_user_uuid', userUUID);
+
       tracking = initializeFaro({
         url: 'https://telemetry.oss.radicalbit.ai',
         apiKey: 'rbitoss-JpIYMVC677edETUbJN9Me3iLS7ngGaE2RYLzQWCOYVljUJh5JJk5o2FE',
         app: { name: 'radicalbit-ai-monitoring' },
-        sessionTracking: {
-          enabled: true,
-          persistent: true,
-          maxSessionPersistenceTime: 31540000000, // 1 year
-        },
+        sessionTracking: { enabled: true },
       });
+      tracking.api.setSession({ id: userUUID });
     }
   }
   return tracking;
