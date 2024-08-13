@@ -140,3 +140,12 @@ SPARK_ON_K8S_EXECUTOR_MAX_INSTANCES: 2
 ```
 
 Adjust these variables as needed to allocate more resources or modify the number of executor instances for your specific use case.
+
+### Pods annotations
+
+If you need for some reasons to add annotations to driver and executor pods, you can adjust the following environment variables in the backend container passing a valid json as in the example:
+
+```
+SPARK_ON_K8S_SPARK_DRIVER_ANNOTATIONS: '{"my.annotation/driver": "my-value"}'
+SPARK_ON_K8S_SPARK_EXECUTOR_ANNOTATIONS: '{"my.annotation/executor": "my-value"}'
+```
