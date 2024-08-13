@@ -1,3 +1,4 @@
+import { grafanaTracking } from '@Src/main';
 import axios from 'axios';
 
 export const customBaseQuery = () => async ({
@@ -23,6 +24,7 @@ export const customBaseQuery = () => async ({
     return { data: result.data };
   } catch (axiosError) {
     const err = axiosError;
+    grafanaTracking?.api.pushError(axiosError);
 
     return {
       error: { status: err.response?.status, data: err.response?.data },

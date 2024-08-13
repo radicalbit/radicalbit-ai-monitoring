@@ -1,5 +1,6 @@
 import { modelsApiSlice } from '@State/models/api';
 import { useCallback } from 'react';
+import { grafanaTracking } from '@Src/main';
 import { useModalContext } from '../modal-context-provider';
 
 const { useInferSchemaMutation } = modelsApiSlice;
@@ -66,6 +67,7 @@ export default () => {
       } catch (e) {
         const parsedErrorMessage = parseErrorMessage(e);
         console.error(e);
+        grafanaTracking?.api.pushError(e);
 
         setError('silent.backend', parsedErrorMessage);
         write('file', { ...form.file, status: 'error', response: parsedErrorMessage });
