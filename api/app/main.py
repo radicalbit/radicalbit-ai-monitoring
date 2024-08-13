@@ -29,7 +29,6 @@ from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
 from app.routes.metrics_route import MetricsRoute
 from app.routes.model_route import ModelRoute
-from app.routes.spark_job_route import SparkJobRoute
 from app.routes.upload_dataset_route import UploadDatasetRoute
 from app.services.file_service import FileService
 from app.services.metrics_service import MetricsService
@@ -122,7 +121,6 @@ app.include_router(ModelRoute.get_router(model_service), prefix='/api/models')
 app.include_router(UploadDatasetRoute.get_router(file_service), prefix='/api/models')
 app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schema')
 app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
-app.include_router(SparkJobRoute.get_router(spark_k8s_service), prefix='/api/jobs')
 
 app.include_router(HealthcheckRoute.get_healthcheck_route())
 
