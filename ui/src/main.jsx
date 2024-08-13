@@ -15,7 +15,6 @@ const getGrafanaTracking = (enableGrafanaTracking) => {
 
   if (enableGrafanaTracking === 'true') {
     if (tracking === undefined) {
-      console.debug(localStorage.getItem('radicalbit_user_uuid'));
       const userUUID = localStorage.getItem('radicalbit_user_uuid') === null ? uuidv4() : localStorage.getItem('radicalbit_user_uuid');
       localStorage.setItem('radicalbit_user_uuid', userUUID);
 
