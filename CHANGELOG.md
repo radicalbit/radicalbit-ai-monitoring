@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.0.0...v1.1.0) (2024-08-20)
+
+
+### Features
+
+* add modelUUID as optional value ([#163](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/163)) ([672d6b4](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/672d6b4af0b181131b7957c471ad92338eededf5))
+* **api:** add ability to use environment variables to set spark annotations and resources ([#165](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/165)) ([c0843b3](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/c0843b35804d0b1c7f9cdf93150884830d6876b8))
+* **ui:** grafana improvement ([#164](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/164)) ([022e94c](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/022e94c722d711e691ee2cec6b9d98f2a1c14ef9))
+
 ## [1.0.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v0.9.0...v1.0.0) (2024-08-05)
 
 
