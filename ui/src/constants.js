@@ -22,6 +22,9 @@ export const PathsEnum = {
 
 export const ExternalPathsEnum = {
   DOCUMENTATION: 'https://docs.oss-monitoring.radicalbit.ai',
+  QUICKSTART: 'https://docs.oss-monitoring.radicalbit.ai/quickstart',
+  IFRAME_VIDEO: 'https://www.youtube.com/embed/9eYH8i_ZCbE',
+  FREE_TRIAL: 'https://platform.radicalbit.ai/signUp/freemium',
 };
 
 export const PageEventsEnum = {
