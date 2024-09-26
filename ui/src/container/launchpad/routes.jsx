@@ -1,8 +1,7 @@
-import { PathsEnum } from '@Src/constants';
 import Launchpad from '.';
 
 export const launchpadRoutes = {
-  path: `${PathsEnum.LAUNCHPAD}`,
+  path: '/',
   children: [
     { path: '', element: <Launchpad /> },
   ],

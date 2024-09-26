@@ -15,10 +15,10 @@ const getLink = (pathname, search) => <Link to={{ pathname, search }} />;
 const allRoutes = [
   {
     position: 1,
-    title: 'Welcome',
+    title: 'Launchpad',
     icon: <FontAwesomeIcon icon={faTachometer} />,
     key: PathsEnum.LAUNCHPAD,
-    link: getLink(`/${PathsEnum.LAUNCHPAD}`),
+    link: getLink('/'),
     visibility: [],
   },
   {

@@ -16,7 +16,6 @@ export const ModalsEnum = {
 };
 
 export const PathsEnum = {
-  LAUNCHPAD: 'launchpad',
   MODELS: 'models',
   MODELS_DETAIL: 'models/:uuid',
 };
