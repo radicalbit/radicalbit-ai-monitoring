@@ -6,7 +6,7 @@ import { DETAIL_LAYOUT_CONFIGURATION, MAIN_LAYOUT_CONFIGURATION, NOT_FOUND_CONFI
 
 const allRoutes = [
   {
-    key: '/',
+    key: `/${PathsEnum.LAUNCHPAD}`,
     layout: MAIN_LAYOUT_CONFIGURATION,
   },
   {

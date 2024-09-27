@@ -16,12 +16,16 @@ export const ModalsEnum = {
 };
 
 export const PathsEnum = {
+  LAUNCHPAD: 'launchpad',
   MODELS: 'models',
   MODELS_DETAIL: 'models/:uuid',
 };
 
 export const ExternalPathsEnum = {
   DOCUMENTATION: 'https://docs.oss-monitoring.radicalbit.ai',
+  QUICKSTART: 'https://docs.oss-monitoring.radicalbit.ai/quickstart',
+  IFRAME_VIDEO: 'https://www.youtube.com/embed/ujwyS8qGeaA?list=PLHWiJP04eQdoYLIO5kioLrO0Z7gIvEo3_',
+  FREE_TRIAL: 'https://platform.radicalbit.ai/signUp/freemium',
 };
 
 export const PageEventsEnum = {
