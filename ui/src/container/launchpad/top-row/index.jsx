@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.5fr,1.5fr,1fr,1fr] gap-4">
+    <div className="grid grid-cols-[1.5fr,1.5fr,1fr,1.5fr] gap-4 max-h-[185px]">
 
       <QuickStartBoard />
 
@@ -38,21 +38,17 @@ function QuickStartBoard() {
         />
         )}
       main={(
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-4 leading-snug">
           <div className="flex flex-col items-start">
-            <SectionTitle
-              title="Get Up and Running in Minutes"
-              titleWeight="normal"
-              wrapTitle
-            />
+            <p className="font-bold text-">Get Up and Running in Minutes</p>
 
-            <div>A step-by-step guide to quickly setting up and using our AI monitoring platform</div>
+            <p>A step-by-step guide to quickly setting up and using our AI monitoring platform</p>
 
           </div>
 
           <Link onClick={handleOnclick}>
             <div className="text-xl">
-              Get Started
+              {'Get Started >>'}
             </div>
           </Link>
 
@@ -83,22 +79,20 @@ function DocumentationHubBoard() {
         />
         )}
       main={(
-        <div className="flex flex-col items-start gap-4">
+        <div className="flex flex-col items-start gap-4 leading-snug">
           <div className="flex flex-col items-start">
-            <SectionTitle
-              title="Your Complete Resource"
-              titleWeight="normal"
-            />
+            <p className="font-bold text-">Your Complete Resource</p>
 
-            <div>From setup to advanced configurations, find everything you need to navigate our platform</div>
+            <p>From setup to advanced configurations, find everything you need to navigate our platform</p>
 
           </div>
 
           <Link onClick={handleOnclick}>
             <div className="text-xl">
-              Get Started
+              {'Get Started >>'}
             </div>
           </Link>
+
         </div>
       )}
       onClick={handleOnclick}
@@ -110,12 +104,14 @@ function YoutubeVideoBoard() {
   return (
 
     <iframe
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowFullScreen
       frameBorder="0"
-      height="100%"
+      height="182px"
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
-      style={{ borderRadius: '20px' }}
-      title="Radicalbit in Action: Introducing Open Source AI Monitoring"
+      style={{ borderRadius: '1rem', minWidth: '325px' }}
+      title="Radicalbit in Action: Open Source AI Monitoring for Regression Models"
       width="100%"
     />
   );
@@ -132,19 +128,19 @@ function TrialBoard() {
         <div className="flex flex-col items-start gap-2">
           <SectionTitle title="Unlock the Full Potential" />
 
-          <div>Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</div>
+          <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
 
           <SectionTitle
-            modifier="whitespace-normal"
             size="large"
             style={{ color: 'var(--coo-highlight)' }}
             title="Start your free trial today!"
+            titleWeight="bold"
             wrapTitle
           />
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="h-full shadow light border-none"
       onClick={handleOnclick}
       type="primary"
     />
