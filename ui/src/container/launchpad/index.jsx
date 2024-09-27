@@ -1,3 +1,5 @@
+import Right from './right';
+
 export default function Launchpad() {
   return (
     <div className="grid grid-rows-2">
@@ -43,6 +45,6 @@ function CentralTable() {
 
 function RightColumn() {
   return (
-    'RightColumn'
+    <Right />
   );
 }
