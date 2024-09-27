@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 export const createRoutes = ({ currentPath }) => {
   const routeToCheck = currentPath.split('/')[1];
-  const selectedItem = allRoutes.find(({ key }) => (routeToCheck && routeToCheck.includes(key)))?.position;
+  const selectedItem = routeToCheck ? allRoutes.find(({ key }) => (routeToCheck && routeToCheck.includes(key)))?.position : 1;
 
   return { selectedItem, items: allRoutes };
 };
