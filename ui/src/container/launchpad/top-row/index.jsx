@@ -25,6 +25,13 @@ function QuickStartBoard() {
 
   return (
     <Board
+      footer={(
+        <Link onClick={handleOnclick}>
+          <div className="text-xl">
+            {'Get Started >>'}
+          </div>
+        </Link>
+        )}
       header={(
         <NewHeader
           details={{ one: (<span aria-label="tada" role="img">🎉</span>) }}
@@ -40,18 +47,10 @@ function QuickStartBoard() {
       main={(
         <div className="flex flex-col items-start gap-4 leading-snug">
           <div className="flex flex-col items-start">
-            <p className="font-bold text-">Get Up and Running in Minutes</p>
+            <strong>Get Up and Running in Minutes</strong>
 
             <p>A step-by-step guide to quickly setting up and using our AI monitoring platform</p>
-
           </div>
-
-          <Link onClick={handleOnclick}>
-            <div className="text-xl">
-              {'Get Started >>'}
-            </div>
-          </Link>
-
         </div>
       )}
       onClick={handleOnclick}
@@ -66,6 +65,13 @@ function DocumentationHubBoard() {
 
   return (
     <Board
+      footer={(
+        <Link onClick={handleOnclick}>
+          <div className="text-xl">
+            {'Get Started >>'}
+          </div>
+        </Link>
+      )}
       header={(
         <NewHeader
           details={{ one: (<span aria-label="man" role="img">👨</span>) }}
@@ -81,17 +87,11 @@ function DocumentationHubBoard() {
       main={(
         <div className="flex flex-col items-start gap-4 leading-snug">
           <div className="flex flex-col items-start">
-            <p className="font-bold text-">Your Complete Resource</p>
+            <strong>Your Complete Resource</strong>
 
             <p>From setup to advanced configurations, find everything you need to navigate our platform</p>
 
           </div>
-
-          <Link onClick={handleOnclick}>
-            <div className="text-xl">
-              {'Get Started >>'}
-            </div>
-          </Link>
 
         </div>
       )}
@@ -102,7 +102,6 @@ function DocumentationHubBoard() {
 
 function YoutubeVideoBoard() {
   return (
-
     <iframe
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowFullScreen
@@ -133,7 +132,14 @@ function TrialBoard() {
           <SectionTitle
             size="large"
             style={{ color: 'var(--coo-highlight)' }}
-            title="Start your free trial today!"
+            title={(
+              <div>
+                Start your free trial
+                <br />
+                today!
+              </div>
+
+          )}
             titleWeight="bold"
             wrapTitle
           />
