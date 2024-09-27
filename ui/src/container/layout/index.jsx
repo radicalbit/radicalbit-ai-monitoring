@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 export const createRoutes = ({ currentPath }) => {
   const routeToCheck = currentPath.split('/')[1];
-  const selectedItem = routeToCheck ? allRoutes.find(({ key }) => (routeToCheck && routeToCheck.includes(key)))?.position : 1;
+  const selectedItem = allRoutes.find(({ key }) => (routeToCheck === key))?.position;
 
   return { selectedItem, items: allRoutes };
 };
@@ -18,7 +18,7 @@ const allRoutes = [
     title: 'Launchpad',
     icon: <FontAwesomeIcon icon={faTachometer} />,
     key: PathsEnum.LAUNCHPAD,
-    link: getLink('/'),
+    link: getLink(`/${PathsEnum.LAUNCHPAD}`),
     visibility: [],
   },
   {
