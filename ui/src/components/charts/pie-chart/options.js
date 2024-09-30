@@ -7,10 +7,10 @@ export default function pieChartOptions({ currentData, referenceData }) {
       {
         percentPrecision: 2,
         type: 'pie',
-        radius: ['65%', '95%'],
+        radius: ['50%', '80%'],
         label: {
           show: true,
-          fontSize: '20',
+          fontSize: '14',
           fontWeight: 'bold',
           color: CHART_COLOR.WHITE,
           position: 'center',

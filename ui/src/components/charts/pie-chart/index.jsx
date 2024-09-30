@@ -20,9 +20,7 @@ echarts.use([
   TooltipComponent,
 ]);
 
-function PieChart({
-  title, currentData, referenceData,
-}) {
+function PieChart({ title, data }) {
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
     // and the echart graph will render immediately.
@@ -30,6 +28,9 @@ function PieChart({
   };
 
   const splittedTitle = title.split(' ');
+
+  const currentData = data?.current;
+  const referenceData = data?.reference;
 
   return (
     <div className="flex flex-row items-center gap-2">
