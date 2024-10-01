@@ -3,9 +3,11 @@ import { ExternalPathsEnum } from '@Src/constants';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
+const ROW_HEIGHT = '152px';
+
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.5fr,1.5fr,1fr,1.5fr] gap-4 h-[185px]">
+    <div className={`grid grid-cols-[1.5fr,1.5fr,1fr,1.5fr] gap-4 h-[${ROW_HEIGHT}]`}>
 
       <QuickStartBoard />
 
@@ -54,6 +56,7 @@ function QuickStartBoard() {
         </div>
       )}
       onClick={handleOnclick}
+      size="small"
     />
   );
 }
@@ -96,6 +99,7 @@ function DocumentationHubBoard() {
         </div>
       )}
       onClick={handleOnclick}
+      size="small"
     />
   );
 }
@@ -106,7 +110,7 @@ function YoutubeVideoBoard() {
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowFullScreen
       frameBorder="0"
-      height="182px"
+      height={`${ROW_HEIGHT}`}
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
       style={{ borderRadius: '1rem', minWidth: '325px' }}
@@ -148,6 +152,7 @@ function TrialBoard() {
       )}
       modifier="h-full shadow light border-none"
       onClick={handleOnclick}
+      size="small"
       type="primary"
     />
   );
