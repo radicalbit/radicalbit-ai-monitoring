@@ -3,11 +3,9 @@ import { ExternalPathsEnum } from '@Src/constants';
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 
-const ROW_HEIGHT = '152px';
-
 function TopRow() {
   return (
-    <div className={`grid grid-cols-[1.5fr,1.5fr,1fr,1.5fr] gap-4 h-[${ROW_HEIGHT}]`}>
+    <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1fr] gap-4 h-[175px]">
 
       <QuickStartBoard />
 
@@ -110,10 +108,10 @@ function YoutubeVideoBoard() {
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowFullScreen
       frameBorder="0"
-      height={`${ROW_HEIGHT}`}
+      height="175px"
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
-      style={{ borderRadius: '1rem', minWidth: '325px' }}
+      style={{ borderRadius: '1rem', minWidth: '270px' }}
       title="Radicalbit in Action: Open Source AI Monitoring for Regression Models"
       width="100%"
     />
