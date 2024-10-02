@@ -42,6 +42,7 @@ export const SortOrderEnum = {
 };
 
 export const NamespaceEnum = {
+  MODELS_STATS: 'MODELS_STATS',
   MODELS: 'MODELS',
   REFERENCE_IMPORT: 'REFERENCE_IMPORT',
   CURRENT_IMPORT: 'CURRENT_IMPORT',

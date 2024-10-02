@@ -1,30 +1,19 @@
 import TopRow from './top-row';
+import ModelStatsList from './central-row';
 
 export default function Launchpad() {
   return (
-    <div className="grid grid-rows-2 p-4 gap-8">
+    <div className="flex flex-col p-4 gap-4">
       <TopRow />
 
-      <CentralRow />
-    </div>
-  );
-}
+      <div className="grid grid-cols-4 h-full">
+        <div className="col-span-3">
+          <ModelStatsList />
+        </div>
 
-function CentralRow() {
-  return (
-    <div className="grid grid-cols-4 h-full">
-      <div className="col-span-3">
-        <CentralTable />
+        <RightColumn />
       </div>
-
-      <RightColumn />
     </div>
-  );
-}
-
-function CentralTable() {
-  return (
-    'CentralTable'
   );
 }
 

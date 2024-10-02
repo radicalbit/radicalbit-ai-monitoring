@@ -1,0 +1,122 @@
+{
+    "overallStats": {
+      "dataQuality": { "reference": 25.7, "current": 84.3 },
+      "modelQuality": { "reference": 27.3, "current": 72.7 },
+      "dataDrift": { "reference": 96.3, "current": 3.7 }
+    },
+    "modelStats": {
+      "items":[
+        {
+          "uuid": "81ed92ce-e076-4235-8045-96b13ec67ba2",
+          "dataQuality": { "reference": 2, "current": 98 },
+          "modelQuality": { "reference": 60, "current": 40 },
+          "dataDrift": { "reference": 20, "current": null },
+          "latestCurrentJobStatus":"SUCCEEDED",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "Binary",
+          "modelType": "BINARY",
+          "updatedAt": "2024-06-16 00:00:00"
+        },
+        {
+          "uuid": "5448a888-79e2-4d4b-884d-54f85022e819",
+          "dataQuality": { "reference": 25, "current": 75 },
+          "modelQuality": { "reference": 10, "current": 90 },
+          "dataDrift": { "reference": 97, "current": 3 },
+          "latestCurrentJobStatus":"ERROR",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "Regression",
+          "modelType": "REGRESSION",
+          "updatedAt": "2024-09-30 00:00:00"
+        },
+        {
+          "uuid": "b57c5a0c-73ab-4431-ae01-2c526d72298f",
+          "dataQuality": { "reference": 20, "current": 80 },
+          "modelQuality": { "reference": 12, "current": 88 },
+          "dataDrift": { "reference": 92, "current": 8 },
+          "latestCurrentJobStatus":"IMPORTING",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "testUpload",
+          "modelType": "MULTI_CLASS",
+          "updatedAt": "2024-09-30 00:00:00"
+        },
+        {
+          "uuid": "81ed92ce-e076-4235-8045-96b13ec67ba3",
+          "dataQuality": { "reference": 2, "current": 98 },
+          "modelQuality": { "reference": 60, "current": 40 },
+          "dataDrift": { "reference": 20, "current": null },
+          "latestCurrentJobStatus":"SUCCEEDED",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "Binary2",
+          "modelType": "BINARY",
+          "updatedAt": "2024-06-16 00:00:00"
+        },
+        {
+          "uuid": "5448a888-79e2-4d4b-884d-54f85022e814",
+          "dataQuality": { "reference": 25, "current": 75 },
+          "modelQuality": { "reference": 10, "current": 90 },
+          "dataDrift": { "reference": 97, "current": 3 },
+          "latestCurrentJobStatus":"ERROR",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "Regression2",
+          "modelType": "REGRESSION",
+          "updatedAt": "2024-09-30 00:00:00"
+        },
+        {
+          "uuid": "b57c5a0c-73ab-4431-ae01-2c526d722985",
+          "dataQuality": { "reference": 20, "current": 80 },
+          "modelQuality": { "reference": 12, "current": 88 },
+          "dataDrift": { "reference": 92, "current": 8 },
+          "latestCurrentJobStatus":"IMPORTING",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "testUpload2",
+          "modelType": "MULTI_CLASS",
+          "updatedAt": "2024-09-30 00:00:00"
+        },
+        {
+          "uuid": "81ed92ce-e076-4235-8045-96b13ec67ba6",
+          "dataQuality": { "reference": 2, "current": 98 },
+          "modelQuality": { "reference": 60, "current": 40 },
+          "dataDrift": { "reference": 20, "current": null },
+          "latestCurrentJobStatus":"SUCCEEDED",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "Binary3",
+          "modelType": "BINARY",
+          "updatedAt": "2024-06-16 00:00:00"
+        },
+        {
+          "uuid": "5448a888-79e2-4d4b-884d-54f85022e817",
+          "dataQuality": { "reference": 25, "current": 75 },
+          "modelQuality": { "reference": 10, "current": 90 },
+          "dataDrift": { "reference": 97, "current": 3 },
+          "latestCurrentJobStatus":"ERROR",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "Regression3",
+          "modelType": "REGRESSION",
+          "updatedAt": "2024-09-30 00:00:00"
+        },
+        {
+          "uuid": "b57c5a0c-73ab-4431-ae01-2c526d722988",
+          "dataQuality": { "reference": 20, "current": 80 },
+          "modelQuality": { "reference": 12, "current": 88 },
+          "dataDrift": { "reference": 92, "current": 8 },
+          "latestCurrentJobStatus":"IMPORTING",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "testUpload3",
+          "modelType": "MULTI_CLASS",
+          "updatedAt": "2024-09-30 00:00:00"
+        },
+        {
+          "uuid": "b57c5a0c-73ab-4431-ae01-2c526d722989",
+          "dataQuality": { "reference": 20, "current": 80 },
+          "modelQuality": { "reference": 12, "current": 88 },
+          "dataDrift": { "reference": 92, "current": 8 },
+          "latestCurrentJobStatus":"IMPORTING",
+          "latestReferenceJobStatus":"SUCCEEDED",
+          "name": "testUpload4",
+          "modelType": "MULTI_CLASS",
+          "updatedAt": "2024-09-30 00:00:00"
+        }
+      ],
+      "count":1
+    }
+  }

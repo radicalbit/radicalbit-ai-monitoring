@@ -1,4 +1,5 @@
 import { API_TAGS, apiService } from '@Src/store/apis';
+import overallStats from './mock/overall_stats.json';
 
 export const modelsApiSlice = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -205,7 +206,20 @@ export const modelsApiSlice = apiService.injectEndpoints({
         url: `/models/${uuid}/current/${currentUUID}/drift`,
         method: 'get',
       }),
+    }),
 
+    // TODO replace with correct apiUrl
+    getOverallStats: builder.query({
+      /* providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
+       query: ({ uuid, currentUUID }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/models/${uuid}/current/${currentUUID}/drift`,
+        method: 'get',
+      }), */
+      queryFn: () => {
+        console.debug(overallStats);
+        return { data: overallStats };
+      },
     }),
 
   }),
