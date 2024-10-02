@@ -1,11 +1,12 @@
+import PieChart from '@Components/charts/pie-chart';
+import SmartTable from '@Components/smart-table';
+import useModals from '@Hooks/use-modals';
+import { Button, Spinner } from '@radicalbit/radicalbit-design-system';
+import { ModalsEnum, NamespaceEnum } from '@Src/constants';
+import { modelsApiSlice } from '@Src/store/state/models/api';
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import PieChart from '@Components/charts/pie-chart';
-import SmartTable from '@Components/smart-table';
-import { Spinner } from '@radicalbit/radicalbit-design-system';
-import { NamespaceEnum } from '@Src/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
 import { getColumns } from './columns';
 
 const { useGetOverallStatsQuery } = modelsApiSlice;
@@ -19,7 +20,12 @@ function ModelStatsList() {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <OverallCharts />
+      <div className="flex flex-row justify-between items-end">
+        <OverallCharts />
+
+        <AddNewModel />
+
+      </div>
 
       <OverallList />
     </div>
@@ -71,6 +77,20 @@ function OverallList() {
       recordCount={count}
       rowKey={({ uuid }) => uuid}
     />
+  );
+}
+
+function AddNewModel() {
+  const { showModal } = useModals();
+
+  const onClick = () => {
+    showModal(ModalsEnum.ADD_NEW_MODEL);
+  };
+
+  return (
+    <Button modifier="mb-4" onClick={onClick} type="primary">
+      New Model
+    </Button>
   );
 }
 
