@@ -36,6 +36,7 @@ function SmartTableInner({
   columns: getColumns,
   components,
   dataSource,
+  fixedHeader,
   hasFixedColumn,
   loading,
   modifier,
@@ -93,6 +94,7 @@ function SmartTableInner({
       rowClassName={rowClassName}
       rowKey={rowKey}
       rowSelection={rowSelection}
+      scroll={fixedHeader && { y: fixedHeader }}
     />
   );
 }
