@@ -69,7 +69,7 @@ function OverallList() {
       clickable
       columns={getColumns}
       dataSource={modelStats}
-      fixedHeader="28rem"
+      fixedHeader="30rem"
       namespace={NamespaceEnum.MODELS_STATS}
       onRow={({ uuid }) => ({
         onClick: () => handleOnClick({ uuid }),

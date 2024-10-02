@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1fr] gap-4 h-[175px]">
+    <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1.2fr] gap-4 h-[165px]">
 
       <QuickStartBoard />
 
@@ -108,7 +108,7 @@ function YoutubeVideoBoard() {
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       allowFullScreen
       frameBorder="0"
-      height="175px"
+      height="165px"
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
       style={{ borderRadius: '1rem', minWidth: '270px' }}
