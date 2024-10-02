@@ -1,4 +1,4 @@
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import { modelsApiSlice } from '@State/models/api';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
 import { BarChart } from 'echarts/charts';
 import {

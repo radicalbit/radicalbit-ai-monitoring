@@ -3,7 +3,7 @@ import SmartTable from '@Components/smart-table';
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import useModals from '@Src/hooks/use-modals';
-import { useGetModelQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import { Button, Spinner, Void } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getColumns } from './columns';

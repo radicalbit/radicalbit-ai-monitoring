@@ -1,4 +1,4 @@
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { ModelTypeEnum } from '@State/models/constants';
 import {
   FormField,
   Select,

@@ -1,6 +1,6 @@
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import useModals from '@Src/hooks/use-modals';
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import { modelsApiSlice } from '@State/models/api';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import {

@@ -1,7 +1,7 @@
 import JobStatus from '@Components/JobStatus';
 import { METRICS_TABS } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetReferenceDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetReferenceDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { Tabs } from '@radicalbit/radicalbit-design-system';
 import { useSearchParams } from 'react-router-dom';
 import MultiClassificationDataQualityMetrics from './data-quality';

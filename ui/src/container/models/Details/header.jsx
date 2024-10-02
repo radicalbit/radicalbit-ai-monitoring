@@ -1,6 +1,6 @@
 import JobStatusTag from '@Components/JobStatus/job-status-tag';
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
-import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import truncate from 'lodash/truncate';

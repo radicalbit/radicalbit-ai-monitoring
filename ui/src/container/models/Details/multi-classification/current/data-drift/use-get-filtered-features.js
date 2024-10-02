@@ -1,5 +1,5 @@
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
-import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
 import { useFormbitContext } from '@radicalbit/formbit';
 
 export default () => {

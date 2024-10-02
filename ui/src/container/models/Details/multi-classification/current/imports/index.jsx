@@ -2,7 +2,7 @@ import SmartTable from '@Components/smart-table';
 import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-button';
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { NamespaceEnum } from '@Src/constants';
-import { useGetCurrentImportsQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCurrentImportsQueryWithPolling } from '@State/models/polling-hook';
 import { modelsApiSlice } from '@State/models/api';
 import { Spin, Void } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router';
