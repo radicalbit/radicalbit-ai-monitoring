@@ -34,6 +34,7 @@ function WorkInProgress() {
       <Board
         header="Work in progress"
         main={<SomethingWentWrong size="small" />}
+        size="small"
       />
     );
   }
@@ -56,6 +57,7 @@ function WorkInProgress() {
           size="small"
         />
       )}
+      size="small"
     />
   );
 }

@@ -30,6 +30,7 @@ function Alerts() {
       <Board
         header="Alerts"
         main={<SomethingWentWrong size="small" />}
+        size="small"
       />
     );
   }
@@ -44,6 +45,7 @@ function Alerts() {
           ))}
         </div>
       )}
+      size="small"
     />
   );
 }
