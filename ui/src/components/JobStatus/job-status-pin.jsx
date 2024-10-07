@@ -21,8 +21,12 @@ function JobStatusPin({ jobStatus }) {
       );
     }
 
+    case JOB_STATUS.MISSING_CURRENT: {
+      return <Pin size="small" type="secondary" />;
+    }
+
     case JOB_STATUS.MISSING_REFERENCE: {
-      return false;
+      return <Pin size="small" type="secondary" />;
     }
 
     default: return false;

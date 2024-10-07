@@ -1,8 +1,8 @@
 import SiderBk from '@Img/sider-bk.png';
 import Logo from '@Src/components/Logo';
 import ModalsProvider from '@Src/components/modals/modals-provider';
-import { useContextConfigurationFromUrlEffect } from '@Src/store/state/context-configuration/hooks';
-import { useNotification } from '@Src/store/state/notification/hooks';
+import { useContextConfigurationFromUrlEffect } from '@State/context-configuration/hooks';
+import { useNotification } from '@State/notification/hooks';
 import { actions as layoutActions, selectors as layoutSelectors } from '@State/layout';
 import '@Styles/index.less';
 import '@Styles/tailwind.less';

@@ -1,7 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetModelQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import { selectors as layoutSelectors } from '@State/layout';
 import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useEffect, useState } from 'react';

@@ -1,4 +1,4 @@
-import { useGetReferenceDataQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetReferenceDataQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import { DataTable } from '@radicalbit/radicalbit-design-system';
 import columns from './columns';
 

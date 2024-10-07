@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1fr] gap-4 h-[175px]">
+    <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1.2fr] gap-4 h-[175px]">
 
       <QuickStartBoard />
 
@@ -148,7 +148,7 @@ function TrialBoard() {
 
         </div>
       )}
-      modifier="h-full shadow light border-none"
+      modifier="h-full shadow light border-none ml-4"
       onClick={handleOnclick}
       size="small"
       type="primary"

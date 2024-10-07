@@ -1,4 +1,4 @@
-import { useGetCurrentModelQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCurrentModelQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import { useFormbitContext } from '@radicalbit/formbit';
 
 export default () => {

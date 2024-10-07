@@ -1,5 +1,5 @@
 import { useFormbitContext } from '@radicalbit/formbit';
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import { modelsApiSlice } from '@State/models/api';
 import { useParams } from 'react-router';
 
 const { useEditModelMutation, useGetModelByUUIDQuery } = modelsApiSlice;

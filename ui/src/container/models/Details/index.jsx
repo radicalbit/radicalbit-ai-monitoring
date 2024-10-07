@@ -1,4 +1,4 @@
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { ModelTypeEnum } from '@State/models/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { useParams } from 'react-router-dom';
 import BinaryClassificationMetrics from './binary-classification';

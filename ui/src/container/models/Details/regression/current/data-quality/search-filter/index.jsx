@@ -1,4 +1,4 @@
-import { useGetCurrentDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { fa1, faC, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {
