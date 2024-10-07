@@ -1,4 +1,4 @@
-import { Board, Skeleton } from '@radicalbit/radicalbit-design-system';
+import { Board, SectionTitle, Skeleton } from '@radicalbit/radicalbit-design-system';
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import { alertsApiSlice } from '@State/alerts/api';
 
@@ -11,7 +11,7 @@ function Alerts() {
   if (isLoading) {
     return (
       <Board
-        header="Alerts"
+        header={<SectionTitle size="small" title="Alerts" />}
         main={(
           <div className="flex flex-col gap-2">
             <Skeleton.Input active block />
@@ -28,7 +28,7 @@ function Alerts() {
   if (isError) {
     return (
       <Board
-        header="Alerts"
+        header={<SectionTitle size="small" title="Alerts" />}
         main={<SomethingWentWrong size="small" />}
         size="small"
       />
@@ -37,7 +37,7 @@ function Alerts() {
 
   return (
     <Board
-      header="Alerts"
+      header={<SectionTitle size="small" title="Alerts" />}
       main={(
         <div className="flex flex-col gap-2">
           {data.map((alert) => (
