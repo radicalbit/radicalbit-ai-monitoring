@@ -148,7 +148,7 @@ function TrialBoard() {
 
         </div>
       )}
-      modifier="h-full shadow light border-none"
+      modifier="h-full shadow light border-none ml-4"
       onClick={handleOnclick}
       size="small"
       type="primary"
