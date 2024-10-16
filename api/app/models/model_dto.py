@@ -11,6 +11,7 @@ from app.db.dao.model_dao import Model
 from app.db.dao.reference_dataset_dao import ReferenceDataset
 from app.models.inferred_schema_dto import FieldType, SupportedTypes
 from app.models.job_status import JobStatus
+from app.models.metrics.percentages_dto import Percentages
 from app.models.utils import is_none, is_number, is_number_or_string, is_optional_float
 
 
@@ -216,6 +217,7 @@ class ModelOut(BaseModel):
     latest_current_uuid: Optional[UUID]
     latest_reference_job_status: JobStatus
     latest_current_job_status: JobStatus
+    percentages: Optional[Percentages]
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
@@ -226,6 +228,7 @@ class ModelOut(BaseModel):
         model: Model,
         latest_reference_dataset: Optional[ReferenceDataset] = None,
         latest_current_dataset: Optional[CurrentDataset] = None,
+        percentages: Optional[Percentages] = None,
     ):
         latest_reference_uuid = (
             latest_reference_dataset.uuid if latest_reference_dataset else None
@@ -264,4 +267,5 @@ class ModelOut(BaseModel):
             latest_current_uuid=latest_current_uuid,
             latest_reference_job_status=latest_reference_job_status,
             latest_current_job_status=latest_current_job_status,
+            percentages=percentages,
         )

@@ -6,6 +6,7 @@ from fastapi_pagination import Page, Params
 import pytest
 
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
+from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.models.exceptions import ModelError, ModelNotFoundError
@@ -25,6 +26,9 @@ class ModelServiceTest(unittest.TestCase):
             model_dao=cls.model_dao,
             reference_dataset_dao=cls.rd_dao,
             current_dataset_dao=cls.cd_dao,
+        )
+        cls.current_metrics_dao: CurrentDatasetMetricsDAO = MagicMock(
+            spec_set=CurrentDatasetMetricsDAO
         )
         cls.mocks = [cls.model_dao, cls.rd_dao, cls.cd_dao]
 
@@ -180,6 +184,33 @@ class ModelServiceTest(unittest.TestCase):
         assert result[0].name == 'model1'
         assert result[1].name == 'model2'
         assert result[2].name == 'model3'
+
+    def test_get_last_n_models_percentages(self):
+        model0 = db_mock.get_sample_model()
+        current0 = db_mock.get_sample_current_dataset()
+        metrics0 = db_mock.get_sample_current_metrics(current_uuid=current0.uuid)
+        model1_uuid = uuid.uuid4()
+        model1 = db_mock.get_sample_model(id=2, uuid=model1_uuid, name='first_model')
+        current1_uuid = uuid.uuid4()
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=current1_uuid, model_uuid=model1_uuid
+        )
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+
+        sample = [(model0, metrics0), (model1, metrics1)]
+
+        self.model_dao.get_all_percentages = MagicMock(return_value=sample)
+        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+        self.cd_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+
+        result = self.model_service.get_last_n_models_percentages(2)
+        assert result[0].name == model1.name
+        assert result[1].name == model0.name
+        assert result[1].updated_at < result[0].updated_at
 
 
 model_uuid = db_mock.MODEL_UUID

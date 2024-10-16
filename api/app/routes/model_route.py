@@ -35,6 +35,10 @@ class ModelRoute:
         def get_all_models():
             return model_service.get_all_models()
 
+        @router.get('/last_n', status_code=200, response_model=List[ModelOut])
+        def get_last_n_models(n_models: int):
+            return model_service.get_last_n_models_percentages(n_models)
+
         @router.post('', status_code=201, response_model=ModelOut)
         def create_model(model_in: ModelIn):
             model = model_service.create_model(model_in)

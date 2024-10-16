@@ -6,10 +6,12 @@ from uuid import UUID
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
 import sqlalchemy
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, func
 from sqlalchemy.future import select as future_select
 
 from app.db.database import Database
+from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
+from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.models.model_order import OrderType
 
@@ -56,6 +58,34 @@ class ModelDAO:
     ) -> List[Model]:
         with self.db.begin_session() as session:
             return session.query(Model).where(Model.deleted.is_(False))
+
+    def get_all_percentages(self):
+        with self.db.begin_session() as session:
+            subq = (
+                session.query(
+                    CurrentDataset.model_uuid,
+                    func.max(CurrentDataset.date).label('maxdate'),
+                )
+                .group_by(CurrentDataset.model_uuid)
+                .subquery()
+            )
+            return (
+                session.query(Model, CurrentDatasetMetrics)
+                .join(
+                    CurrentDataset,
+                    CurrentDataset.model_uuid == Model.uuid,
+                )
+                .join(
+                    subq,
+                    (CurrentDataset.model_uuid == subq.c.model_uuid)
+                    & (CurrentDataset.date == subq.c.maxdate),
+                )
+                .join(
+                    CurrentDatasetMetrics,
+                    CurrentDatasetMetrics.current_uuid == CurrentDataset.uuid,
+                )
+                .all()
+            )
 
     def get_all_paginated(
         self,
