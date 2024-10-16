@@ -13,7 +13,6 @@ class CurrentDatasetMetrics(Reflected, BaseTable, BaseDAO):
     uuid = Column(
         'UUID',
         UUID(as_uuid=True),
-        unique=True,
         nullable=False,
         default=uuid4,
         primary_key=True,
