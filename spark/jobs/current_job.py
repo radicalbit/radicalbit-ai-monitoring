@@ -167,6 +167,7 @@ def main(
             StructField("DATA_QUALITY", StringType(), True),
             StructField("MODEL_QUALITY", StringType(), True),
             StructField("DRIFT", StringType(), True),
+            StructField("PERCENTAGES", StringType(), True),
         ]
     )
 
