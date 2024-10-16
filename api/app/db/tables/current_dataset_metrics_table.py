@@ -27,4 +27,3 @@ class CurrentDatasetMetrics(Reflected, BaseTable, BaseDAO):
     data_quality = Column('DATA_QUALITY', JSONEncodedDict, nullable=True)
     drift = Column('DRIFT', JSONEncodedDict, nullable=True)
     statistics = Column('STATISTICS', JSONEncodedDict, nullable=True)
-    percentage = Column('PERCENTAGE', JSONEncodedDict, nullable=True)

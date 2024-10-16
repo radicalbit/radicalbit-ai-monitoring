@@ -1,8 +1,8 @@
 """init db
 
-Revision ID: 470910bd0980
+Revision ID: 6edab3f23907
 Revises: 
-Create Date: 2024-10-16 13:41:50.275559
+Create Date: 2024-10-16 13:50:44.743062
 
 """
 from typing import Sequence, Union, Text
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from app.db.tables.commons.json_encoded_dict import JSONEncodedDict
 
 # revision identifiers, used by Alembic.
-revision: str = '470910bd0980'
+revision: str = '6edab3f23907'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -66,7 +66,6 @@ def upgrade() -> None:
     sa.Column('DATA_QUALITY', JSONEncodedDict(astext_type=Text()), nullable=True),
     sa.Column('DRIFT', JSONEncodedDict(astext_type=Text()), nullable=True),
     sa.Column('STATISTICS', JSONEncodedDict(astext_type=Text()), nullable=True),
-    sa.Column('PERCENTAGE', JSONEncodedDict(astext_type=Text()), nullable=True),
     sa.ForeignKeyConstraint(['CURRENT_UUID'], ['current_dataset.UUID'], name=op.f('fk_current_dataset_metrics_CURRENT_UUID_current_dataset')),
     sa.PrimaryKeyConstraint('UUID', name=op.f('pk_current_dataset_metrics'))
     )
