@@ -52,6 +52,57 @@ export const getColumns = (
   }),
 
   columnFactory({
+    title: 'Data Quality',
+    key: 'dataQuality',
+    activeFilters,
+    activeSorter,
+    align: 'left',
+    width: '10%',
+    render: ({ dataQuality: { current } }) => {
+      const data = (current) ? `${current}%` : '--';
+      return (
+        <div className="font-[var(--coo-font-weight-bold)]">
+          {data}
+        </div>
+      );
+    },
+  }),
+
+  columnFactory({
+    title: 'Model Quality',
+    key: 'modelQuality',
+    activeFilters,
+    activeSorter,
+    align: 'left',
+    width: '10%',
+    render: ({ modelQuality: { current } }) => {
+      const data = (current) ? `${current}%` : '--';
+      return (
+        <div className="font-[var(--coo-font-weight-bold)]">
+          {data}
+        </div>
+      );
+    },
+  }),
+
+  columnFactory({
+    title: 'Drift Quality',
+    key: 'driftQuality',
+    activeFilters,
+    activeSorter,
+    align: 'left',
+    width: '10%',
+    render: ({ dataDrift: { current } }) => {
+      const data = (current) ? `${current}%` : '--';
+      return (
+        <div className="font-[var(--coo-font-weight-bold)]">
+          {data}
+        </div>
+      );
+    },
+  }),
+
+  columnFactory({
     title: 'Created',
     dataIndex: 'createdAt',
     key: 'createdAt',
