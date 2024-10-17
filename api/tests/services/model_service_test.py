@@ -197,9 +197,9 @@ class ModelServiceTest(unittest.TestCase):
         )
         metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
 
-        sample = [(model0, metrics0), (model1, metrics1)]
+        sample = [(model1, metrics1), (model0, metrics0)]
 
-        self.model_dao.get_all_percentages = MagicMock(return_value=sample)
+        self.model_dao.get_last_n_percentages = MagicMock(return_value=sample)
         self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
             return_value=None
         )

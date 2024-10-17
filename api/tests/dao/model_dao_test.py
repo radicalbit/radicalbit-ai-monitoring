@@ -73,7 +73,7 @@ class ModelDAOTest(DatabaseIntegration):
         assert models.items[0].name == model3.name
         assert len(models.items) == 3
 
-    def test_get_all_percentages(self):
+    def test_get_last_n_percentages(self):
         self.model_dao.insert(db_mock.get_sample_model())
         current = db_mock.get_sample_current_dataset()
         self.dataset_dao.insert_current_dataset(current)
@@ -96,7 +96,7 @@ class ModelDAOTest(DatabaseIntegration):
         self.dataset_dao.insert_current_dataset(current2)
         metrics2 = db_mock.get_sample_current_metrics(current_uuid=current2_uuid)
         self.metrics_dao.insert_current_dataset_metrics(metrics2)
-        models = self.model_dao.get_all_percentages()
+        models = self.model_dao.get_last_n_percentages(2)
 
-        assert models[0][1].current_uuid == current.uuid
-        assert models[1][1].current_uuid == current2.uuid
+        assert models[0][1].current_uuid == current2.uuid
+        assert models[1][1].current_uuid == current.uuid

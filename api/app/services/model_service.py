@@ -86,7 +86,7 @@ class ModelService:
         return model_out_list
 
     def get_last_n_models_percentages(self, n_models) -> List[ModelOut]:
-        models = self.model_dao.get_all_percentages()
+        models = self.model_dao.get_last_n_percentages(n_models)
         model_out_list_tmp = []
         for model, metrics in models:
             latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
@@ -99,8 +99,7 @@ class ModelService:
                 percentages=metrics.percentages,
             )
             model_out_list_tmp.append(model_out)
-        model_out_list_tmp.sort(key=lambda m: m.updated_at, reverse=True)
-        return model_out_list_tmp[:n_models]
+        return model_out_list_tmp
 
     def get_all_models_paginated(
         self,

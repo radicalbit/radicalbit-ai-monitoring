@@ -59,7 +59,7 @@ class ModelDAO:
         with self.db.begin_session() as session:
             return session.query(Model).where(Model.deleted.is_(False))
 
-    def get_all_percentages(self):
+    def get_last_n_percentages(self, n_models):
         with self.db.begin_session() as session:
             subq = (
                 session.query(
@@ -84,6 +84,8 @@ class ModelDAO:
                     CurrentDatasetMetrics,
                     CurrentDatasetMetrics.current_uuid == CurrentDataset.uuid,
                 )
+                .order_by(Model.updated_at.desc())
+                .limit(n_models)
                 .all()
             )
 
