@@ -27,13 +27,13 @@ naming_convention = {
 
 # https://github.com/sqlalchemy/alembic/discussions/1351
 # If the schema is the default, Alembic needs None otherwise migrations are messed up
-schema_name = (
+fixed_schema = (
     None
     if get_config().db_config.db_schema == 'public'
     else get_config().db_config.db_schema
 )
 BaseTable = declarative_base(
-    metadata=MetaData(schema=schema_name, naming_convention=naming_convention)
+    metadata=MetaData(schema=fixed_schema, naming_convention=naming_convention)
 )
 
 

@@ -120,6 +120,32 @@ class ModelRouteTest(unittest.TestCase):
             params=Params(page=1, size=50), order=OrderType.ASC, sort=None
         )
 
+    def test_get_last_n_models(self):
+        model0 = db_mock.get_sample_model()
+        current0 = db_mock.get_sample_current_dataset()
+        metrics0 = db_mock.get_sample_current_metrics(current_uuid=current0.uuid)
+        model1_uuid = uuid.uuid4()
+        model1 = db_mock.get_sample_model(id=2, uuid=model1_uuid, name='first_model')
+        current1_uuid = uuid.uuid4()
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=current1_uuid, model_uuid=model1_uuid
+        )
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+
+        sample_models_out = [
+            ModelOut.from_model(model0, percentages=metrics0.percentages),
+            ModelOut.from_model(model1, percentages=metrics1.percentages),
+        ]
+
+        self.model_service.get_last_n_models_percentages = MagicMock(
+            return_value=sample_models_out
+        )
+
+        res = self.client.get(f'{self.prefix}/last_n', params={'n_models': 2})
+        assert res.status_code == 200
+        assert jsonable_encoder(sample_models_out) == res.json()
+        self.model_service.get_last_n_models_percentages.assert_called_once_with(2)
+
     def test_exception_handler_model_internal_error(self):
         model_in = db_mock.get_sample_model_in()
         self.model_service.create_model = MagicMock(
