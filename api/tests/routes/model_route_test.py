@@ -102,11 +102,22 @@ class ModelRouteTest(unittest.TestCase):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
         model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='model2')
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
-
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model1.uuid
+        )
+        current2 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model2.uuid
+        )
+        current3 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model3.uuid
+        )
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+        metrics2 = db_mock.get_sample_current_metrics(current_uuid=current2.uuid)
+        metrics3 = db_mock.get_sample_current_metrics(current_uuid=current3.uuid)
         sample_models_out = [
-            ModelOut.from_model(model1),
-            ModelOut.from_model(model2),
-            ModelOut.from_model(model3),
+            ModelOut.from_model(model1, percentages=metrics1.percentages),
+            ModelOut.from_model(model2, percentages=metrics2.percentages),
+            ModelOut.from_model(model3, percentages=metrics3.percentages),
         ]
         page = Page.create(
             items=sample_models_out, total=len(sample_models_out), params=Params()

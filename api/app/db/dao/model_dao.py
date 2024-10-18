@@ -101,7 +101,31 @@ class ModelDAO:
             )
 
         with self.db.begin_session() as session:
-            stmt = future_select(Model).filter(Model.deleted.is_(False))
+            subq = (
+                session.query(
+                    CurrentDataset.model_uuid,
+                    func.max(CurrentDataset.date).label('maxdate'),
+                )
+                .group_by(CurrentDataset.model_uuid)
+                .subquery()
+            )
+            stmt = (
+                future_select(Model, CurrentDatasetMetrics)
+                .join(
+                    CurrentDataset,
+                    CurrentDataset.model_uuid == Model.uuid,
+                )
+                .join(
+                    subq,
+                    (CurrentDataset.model_uuid == subq.c.model_uuid)
+                    & (CurrentDataset.date == subq.c.maxdate),
+                )
+                .join(
+                    CurrentDatasetMetrics,
+                    CurrentDatasetMetrics.current_uuid == CurrentDataset.uuid,
+                )
+                .filter(Model.deleted.is_(False))
+            )
 
             if sort:
                 stmt = (

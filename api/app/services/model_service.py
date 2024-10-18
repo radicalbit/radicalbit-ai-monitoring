@@ -6,6 +6,7 @@ from fastapi_pagination import Page, Params
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_table import ReferenceDataset
@@ -107,12 +108,11 @@ class ModelService:
         order: OrderType = OrderType.ASC,
         sort: Optional[str] = None,
     ) -> Page[ModelOut]:
-        models: Page[Model] = self.model_dao.get_all_paginated(
+        models: Page[(Model, CurrentDatasetMetrics)] = self.model_dao.get_all_paginated(
             params=params, order=order, sort=sort
         )
-
         _items = []
-        for model in models.items:
+        for model, metrics in models.items:
             latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
                 model.uuid
             )
@@ -120,6 +120,7 @@ class ModelService:
                 model=model,
                 latest_reference_dataset=latest_reference_dataset,
                 latest_current_dataset=latest_current_dataset,
+                percentages=metrics.percentages,
             )
             _items.append(model_out)
 
