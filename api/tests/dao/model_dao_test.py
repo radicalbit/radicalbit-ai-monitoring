@@ -58,8 +58,26 @@ class ModelDAOTest(DatabaseIntegration):
         self.model_dao.insert(model1)
         self.model_dao.insert(model2)
         self.model_dao.insert(model3)
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model1.uuid
+        )
+        current2 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model2.uuid
+        )
+        current3 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model3.uuid
+        )
+        self.dataset_dao.insert_current_dataset(current1)
+        self.dataset_dao.insert_current_dataset(current2)
+        self.dataset_dao.insert_current_dataset(current3)
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+        metrics2 = db_mock.get_sample_current_metrics(current_uuid=current2.uuid)
+        metrics3 = db_mock.get_sample_current_metrics(current_uuid=current3.uuid)
+        self.metrics_dao.insert_current_dataset_metrics(metrics1)
+        self.metrics_dao.insert_current_dataset_metrics(metrics2)
+        self.metrics_dao.insert_current_dataset_metrics(metrics3)
         models = self.model_dao.get_all_paginated()
-        assert models.items[0].uuid == model1.uuid
+        assert models.items[0][0].uuid == model1.uuid
         assert len(models.items) == 3
 
     def test_get_all_paginated_ordered(self):
@@ -69,8 +87,21 @@ class ModelDAOTest(DatabaseIntegration):
         self.model_dao.insert(model1)
         self.model_dao.insert(model2)
         self.model_dao.insert(model3)
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model1.uuid
+        )
+        current2 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model2.uuid
+        )
+        self.dataset_dao.insert_current_dataset(current1)
+        self.dataset_dao.insert_current_dataset(current2)
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+        metrics2 = db_mock.get_sample_current_metrics(current_uuid=current2.uuid)
+        self.metrics_dao.insert_current_dataset_metrics(metrics1)
+        self.metrics_dao.insert_current_dataset_metrics(metrics2)
         models = self.model_dao.get_all_paginated(order=OrderType.DESC, sort='name')
-        assert models.items[0].name == model3.name
+        assert models.items[0][0].name == model3.name
+        assert models.items[0][1] is None
         assert len(models.items) == 3
 
     def test_get_last_n_percentages(self):

@@ -133,7 +133,15 @@ class ModelServiceTest(unittest.TestCase):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
         model2 = db_mock.get_sample_model(id=2, uuid=uuid.uuid4(), name='model2')
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
-        sample_models = [model1, model2, model3]
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model1.uuid
+        )
+        current2 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(), model_uuid=model2.uuid
+        )
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+        metrics2 = db_mock.get_sample_current_metrics(current_uuid=current2.uuid)
+        sample_models = [(model1, metrics1), (model2, metrics2), (model3, None)]
         page = Page.create(
             sample_models,
             total=len(sample_models),
@@ -162,6 +170,9 @@ class ModelServiceTest(unittest.TestCase):
         assert result.items[0].name == 'model1'
         assert result.items[1].name == 'model2'
         assert result.items[2].name == 'model3'
+        assert result.items[0].percentages is not None
+        assert result.items[1].percentages is not None
+        assert result.items[2].percentages is None
 
     def test_get_all_models_ok(self):
         model1 = db_mock.get_sample_model(id=1, uuid=uuid.uuid4(), name='model1')
