@@ -109,20 +109,24 @@ class ModelDAO:
                 .group_by(CurrentDataset.model_uuid)
                 .subquery()
             )
-            stmt = (
-                future_select(Model, CurrentDatasetMetrics)
-                .join(
-                    CurrentDataset,
-                    CurrentDataset.model_uuid == Model.uuid,
-                )
+            subq2 = (
+                session.query(CurrentDataset.uuid, CurrentDataset.model_uuid)
                 .join(
                     subq,
                     (CurrentDataset.model_uuid == subq.c.model_uuid)
                     & (CurrentDataset.date == subq.c.maxdate),
                 )
-                .join(
+                .subquery()
+            )
+            stmt = (
+                future_select(Model, CurrentDatasetMetrics)
+                .outerjoin(
+                    subq2,
+                    subq2.c.model_uuid == Model.uuid,
+                )
+                .outerjoin(
                     CurrentDatasetMetrics,
-                    CurrentDatasetMetrics.current_uuid == CurrentDataset.uuid,
+                    CurrentDatasetMetrics.current_uuid == subq2.c.uuid,
                 )
                 .filter(Model.deleted.is_(False))
             )

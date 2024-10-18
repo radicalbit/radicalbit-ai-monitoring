@@ -120,7 +120,7 @@ class ModelService:
                 model=model,
                 latest_reference_dataset=latest_reference_dataset,
                 latest_current_dataset=latest_current_dataset,
-                percentages=metrics.percentages,
+                percentages=metrics.percentages if metrics else None,
             )
             _items.append(model_out)
 
