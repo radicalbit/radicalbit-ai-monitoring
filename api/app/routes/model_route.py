@@ -1,5 +1,5 @@
 import logging
-from typing import Annotated, List, Optional
+from typing import Annotated, Dict, List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Response
@@ -38,6 +38,10 @@ class ModelRoute:
         @router.get('/last_n', status_code=200, response_model=List[ModelOut])
         def get_last_n_models(n_models: int):
             return model_service.get_last_n_models_percentages(n_models)
+
+        @router.get('/tot_percentages', status_code=200, response_model=Dict)
+        def get_tot_percentages():
+            return model_service.get_summarized_percentages()
 
         @router.post('', status_code=201, response_model=ModelOut)
         def create_model(model_in: ModelIn):

@@ -223,5 +223,25 @@ class ModelServiceTest(unittest.TestCase):
         assert result[1].name == model0.name
         assert result[1].updated_at < result[0].updated_at
 
+    def test_get_summarized_percentages(self):
+        model0 = db_mock.get_sample_model()
+        current0 = db_mock.get_sample_current_dataset()
+        metrics0 = db_mock.get_sample_current_metrics(current_uuid=current0.uuid)
+        model1_uuid = uuid.uuid4()
+        model1 = db_mock.get_sample_model(id=2, uuid=model1_uuid, name='first_model')
+        current1_uuid = uuid.uuid4()
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=current1_uuid, model_uuid=model1_uuid
+        )
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+
+        sample = [(model1, metrics1), (model0, metrics0)]
+
+        self.model_dao.get_last_n_percentages = MagicMock(return_value=sample)
+
+        result = self.model_service.get_summarized_percentages()
+        assert result['data_quality'] == 1.0
+        assert result['model_quality'] == -1
+
 
 model_uuid = db_mock.MODEL_UUID
