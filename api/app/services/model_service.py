@@ -96,30 +96,31 @@ class ModelService:
         for _, metrics in models:
             dq = dq + (
                 metrics.percentages['data_quality']['value']
-                if metrics.percentages['data_quality']['value'] > 0
+                if metrics.percentages['data_quality']['value'] >= 0
                 else 0
             )
-            dq_c = dq_c + (1 if metrics.percentages['data_quality']['value'] > 0 else 0)
+            dq_c = dq_c + (
+                1 if metrics.percentages['data_quality']['value'] >= 0 else 0
+            )
             mq = mq + (
                 metrics.percentages['model_quality']['value']
-                if metrics.percentages['model_quality']['value'] > 0
+                if metrics.percentages['model_quality']['value'] >= 0
                 else 0
             )
             mq_c = mq_c + (
-                1 if metrics.percentages['model_quality']['value'] > 0 else 0
+                1 if metrics.percentages['model_quality']['value'] >= 0 else 0
             )
             dr = dr + (
                 metrics.percentages['drift']['value']
-                if metrics.percentages['drift']['value'] > 0
+                if metrics.percentages['drift']['value'] >= 0
                 else 0
             )
-            dr_c = dr_c + (1 if metrics.percentages['drift']['value'] > 0 else 0)
+            dr_c = dr_c + (1 if metrics.percentages['drift']['value'] >= 0 else 0)
         return {
             'data_quality': dq / dq_c if dq_c > 0 else 0,
             'model_quality': mq / mq_c if mq_c > 0 else -1,
             'drift': dr / dr_c if dr_c > 0 else 0,
         }
-
 
     def get_last_n_models_percentages(self, n_models) -> List[ModelOut]:
         models = self.model_dao.get_last_n_percentages(n_models)
