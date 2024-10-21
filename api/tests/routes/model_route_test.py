@@ -158,7 +158,7 @@ class ModelRouteTest(unittest.TestCase):
         self.model_service.get_last_n_models_percentages.assert_called_once_with(2)
 
     def test_get_tot_percentages(self):
-        sample_tot_percs_out = {'data_quality': 1.0, 'model_quality': 0, 'drift': 0.5}
+        sample_tot_percs_out = {'data_quality': 1.0, 'model_quality': -1, 'drift': 0.5}
 
         self.model_service.get_summarized_percentages = MagicMock(
             return_value=sample_tot_percs_out

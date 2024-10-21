@@ -116,7 +116,7 @@ class ModelService:
             dr_c = dr_c + (1 if metrics.percentages['drift']['value'] > 0 else 0)
         return {
             'data_quality': dq / dq_c if dq_c > 0 else 0,
-            'model_quality': mq / mq_c if mq_c > 0 else 0,
+            'model_quality': mq / mq_c if mq_c > 0 else -1,
             'drift': dr / dr_c if dr_c > 0 else 0,
         }
 

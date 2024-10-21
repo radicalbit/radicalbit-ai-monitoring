@@ -241,7 +241,7 @@ class ModelServiceTest(unittest.TestCase):
 
         result = self.model_service.get_summarized_percentages()
         assert result['data_quality'] == 1.0
-        assert result['model_quality'] == 0
+        assert result['model_quality'] == -1
 
 
 model_uuid = db_mock.MODEL_UUID
