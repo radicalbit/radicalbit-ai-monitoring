@@ -157,6 +157,18 @@ class ModelRouteTest(unittest.TestCase):
         assert jsonable_encoder(sample_models_out) == res.json()
         self.model_service.get_last_n_models_percentages.assert_called_once_with(2)
 
+    def test_get_tot_percentages(self):
+        sample_tot_percs_out = {'data_quality': 1.0, 'model_quality': 0, 'drift': 0.5}
+
+        self.model_service.get_summarized_percentages = MagicMock(
+            return_value=sample_tot_percs_out
+        )
+
+        res = self.client.get(f'{self.prefix}/tot_percentages')
+        assert res.status_code == 200
+        assert jsonable_encoder(sample_tot_percs_out) == res.json()
+        self.model_service.get_summarized_percentages.assert_called_once()
+
     def test_exception_handler_model_internal_error(self):
         model_in = db_mock.get_sample_model_in()
         self.model_service.create_model = MagicMock(
