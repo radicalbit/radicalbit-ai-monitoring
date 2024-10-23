@@ -46,7 +46,7 @@ class PercentagesDTO(BaseModel):
             percentages_data=percentages_data
         )
 
-        return percentages_data(
+        return PercentagesDTO(
             job_status=job_status,
             percentages=percentages,
         )

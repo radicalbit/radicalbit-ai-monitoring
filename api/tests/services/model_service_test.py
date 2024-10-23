@@ -240,8 +240,8 @@ class ModelServiceTest(unittest.TestCase):
         self.model_dao.get_last_n_percentages = MagicMock(return_value=sample)
 
         result = self.model_service.get_summarized_percentages()
-        assert result['data_quality'] == 1.0
-        assert result['model_quality'] == -1
+        assert result.data_quality == 1.0
+        assert result.model_quality == -1
 
     def test_get_last_n_alerts(self):
         model0 = db_mock.get_sample_model()
@@ -261,9 +261,9 @@ class ModelServiceTest(unittest.TestCase):
 
         result = self.model_service.get_last_n_alerts(2)
 
-        assert result[0]['model_uuid'] == model1.uuid
-        assert result[0]['anomaly_type'] == 'drift'
-        assert result[1]['anomaly_features'] == ['num1', 'num2']
+        assert result[0].model_uuid == model1.uuid
+        assert result[0].anomaly_type == 'drift'
+        assert result[1].anomaly_features == ['num1', 'num2']
 
 
 model_uuid = db_mock.MODEL_UUID
