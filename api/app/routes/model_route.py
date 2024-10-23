@@ -39,6 +39,10 @@ class ModelRoute:
         def get_last_n_models(n_models: int):
             return model_service.get_last_n_models_percentages(n_models)
 
+        @router.get('/last_n_alerts', status_code=200, response_model=List[Dict])
+        def get_last_n_alerts(n_alerts: int):
+            return model_service.get_last_n_alerts(n_alerts)
+
         @router.get('/tot_percentages', status_code=200, response_model=Dict)
         def get_tot_percentages():
             return model_service.get_summarized_percentages()

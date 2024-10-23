@@ -122,6 +122,45 @@ class ModelService:
             'drift': dr / dr_c if dr_c > 0 else 0,
         }
 
+    def get_last_n_alerts(self, n_alerts) -> List[Dict]:
+        models: List[(Model, CurrentDatasetMetrics)] = (
+            self.model_dao.get_last_n_percentages()
+        )
+        res = []
+        count_alerts = 0
+        for model, metrics in models:
+            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
+                model.uuid
+            )
+            for perc in ['data_quality', 'model_quality', 'drift']:
+                if count_alerts == n_alerts:
+                    return res
+                if 0 <= metrics.percentages[perc]['value'] < 1:
+                    res.append(
+                        {
+                            'model_uuid': model.uuid,
+                            'reference_uuid': latest_reference_dataset.uuid
+                            if latest_reference_dataset
+                            else None,
+                            'current_uuid': latest_current_dataset.uuid
+                            if latest_current_dataset
+                            else None,
+                            'anomaly_type': perc,
+                            'anomaly_features': [
+                                x['feature_name']
+                                for x in sorted(
+                                    metrics.percentages[perc]['details'],
+                                    key=lambda e: e['score'],
+                                    reverse=True,
+                                )
+                                if x['score'] > 0
+                            ],
+                        }
+                    )
+                    count_alerts += 1
+
+        return res
+
     def get_last_n_models_percentages(self, n_models) -> List[ModelOut]:
         models = self.model_dao.get_last_n_percentages(n_models)
         model_out_list_tmp = []
