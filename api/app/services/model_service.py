@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
@@ -10,7 +10,9 @@ from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_table import ReferenceDataset
+from app.models.alert_dto import AlertDTO, AnomalyType
 from app.models.exceptions import ModelError, ModelInternalError, ModelNotFoundError
+from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
 from app.models.model_order import OrderType
 
@@ -86,7 +88,7 @@ class ModelService:
             model_out_list.append(model_out)
         return model_out_list
 
-    def get_summarized_percentages(self) -> Dict:
+    def get_summarized_percentages(self) -> TotPercentagesDTO:
         models: List[(Model, CurrentDatasetMetrics)] = (
             self.model_dao.get_last_n_percentages()
         )
@@ -116,11 +118,54 @@ class ModelService:
                 else 0
             )
             dr_c = dr_c + (1 if metrics.percentages['drift']['value'] >= 0 else 0)
-        return {
-            'data_quality': dq / dq_c if dq_c > 0 else 0,
-            'model_quality': mq / mq_c if mq_c > 0 else -1,
-            'drift': dr / dr_c if dr_c > 0 else 0,
-        }
+        return TotPercentagesDTO.from_dict(
+            {
+                'data_quality': dq / dq_c if dq_c > 0 else 0,
+                'model_quality': mq / mq_c if mq_c > 0 else -1,
+                'drift': dr / dr_c if dr_c > 0 else 0,
+            }
+        )
+
+    def get_last_n_alerts(self, n_alerts) -> List[AlertDTO]:
+        models: List[(Model, CurrentDatasetMetrics)] = (
+            self.model_dao.get_last_n_percentages()
+        )
+        res = []
+        count_alerts = 0
+        for model, metrics in models:
+            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
+                model.uuid
+            )
+            for perc in ['data_quality', 'model_quality', 'drift']:
+                if count_alerts == n_alerts:
+                    return res
+                if 0 <= metrics.percentages[perc]['value'] < 1:
+                    res.append(
+                        AlertDTO.from_dict(
+                            {
+                                'model_uuid': model.uuid,
+                                'reference_uuid': latest_reference_dataset.uuid
+                                if latest_reference_dataset
+                                else None,
+                                'current_uuid': latest_current_dataset.uuid
+                                if latest_current_dataset
+                                else None,
+                                'anomaly_type': AnomalyType[perc.upper()],
+                                'anomaly_features': [
+                                    x['feature_name']
+                                    for x in sorted(
+                                        metrics.percentages[perc]['details'],
+                                        key=lambda e: e['score'],
+                                        reverse=True,
+                                    )
+                                    if x['score'] > 0
+                                ],
+                            }
+                        )
+                    )
+                    count_alerts += 1
+
+        return res
 
     def get_last_n_models_percentages(self, n_models) -> List[ModelOut]:
         models = self.model_dao.get_last_n_percentages(n_models)

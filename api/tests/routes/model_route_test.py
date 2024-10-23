@@ -7,6 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
+from app.models.alert_dto import AlertDTO, AnomalyType
 from app.models.exceptions import (
     ErrorOut,
     ModelError,
@@ -14,6 +15,7 @@ from app.models.exceptions import (
     ModelNotFoundError,
     model_exception_handler,
 )
+from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelOut
 from app.models.model_order import OrderType
 from app.routes.model_route import ModelRoute
@@ -157,8 +159,48 @@ class ModelRouteTest(unittest.TestCase):
         assert jsonable_encoder(sample_models_out) == res.json()
         self.model_service.get_last_n_models_percentages.assert_called_once_with(2)
 
+    def test_get_last_n_alerts(self):
+        model0 = db_mock.get_sample_model()
+        current0 = db_mock.get_sample_current_dataset()
+        model1_uuid = uuid.uuid4()
+        model1 = db_mock.get_sample_model(id=2, uuid=model1_uuid, name='first_model')
+        current1_uuid = uuid.uuid4()
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=current1_uuid, model_uuid=model1_uuid
+        )
+
+        sample_alerts_out = [
+            AlertDTO.from_dict(
+                {
+                    'model_uuid': model1.uuid,
+                    'reference_uuid': None,
+                    'current_uuid': current1.uuid,
+                    'anomaly_type': AnomalyType.DRIFT,
+                    'anomaly_features': ['num1', 'num2'],
+                }
+            ),
+            AlertDTO.from_dict(
+                {
+                    'model_uuid': model0.uuid,
+                    'reference_uuid': None,
+                    'current_uuid': current0.uuid,
+                    'anomaly_type': AnomalyType.DRIFT,
+                    'anomaly_features': ['num1', 'num2'],
+                }
+            ),
+        ]
+
+        self.model_service.get_last_n_alerts = MagicMock(return_value=sample_alerts_out)
+
+        res = self.client.get(f'{self.prefix}/last_n_alerts', params={'n_alerts': 2})
+        assert res.status_code == 200
+        assert jsonable_encoder(sample_alerts_out) == res.json()
+        self.model_service.get_last_n_alerts.assert_called_once_with(2)
+
     def test_get_tot_percentages(self):
-        sample_tot_percs_out = {'data_quality': 1.0, 'model_quality': -1, 'drift': 0.5}
+        sample_tot_percs_out = TotPercentagesDTO.from_dict(
+            {'data_quality': 1.0, 'model_quality': -1, 'drift': 0.5}
+        )
 
         self.model_service.get_summarized_percentages = MagicMock(
             return_value=sample_tot_percs_out

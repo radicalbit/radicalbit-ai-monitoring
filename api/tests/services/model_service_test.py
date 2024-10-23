@@ -9,6 +9,7 @@ from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.models.alert_dto import AnomalyType
 from app.models.exceptions import ModelError, ModelNotFoundError
 from app.models.model_dto import ModelOut
 from app.models.model_order import OrderType
@@ -240,8 +241,30 @@ class ModelServiceTest(unittest.TestCase):
         self.model_dao.get_last_n_percentages = MagicMock(return_value=sample)
 
         result = self.model_service.get_summarized_percentages()
-        assert result['data_quality'] == 1.0
-        assert result['model_quality'] == -1
+        assert result.data_quality == 1.0
+        assert result.model_quality == -1
+
+    def test_get_last_n_alerts(self):
+        model0 = db_mock.get_sample_model()
+        current0 = db_mock.get_sample_current_dataset()
+        metrics0 = db_mock.get_sample_current_metrics(current_uuid=current0.uuid)
+        model1_uuid = uuid.uuid4()
+        model1 = db_mock.get_sample_model(id=2, uuid=model1_uuid, name='first_model')
+        current1_uuid = uuid.uuid4()
+        current1 = db_mock.get_sample_current_dataset(
+            uuid=current1_uuid, model_uuid=model1_uuid
+        )
+        metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1.uuid)
+
+        sample = [(model1, metrics1), (model0, metrics0)]
+
+        self.model_dao.get_last_n_percentages = MagicMock(return_value=sample)
+
+        result = self.model_service.get_last_n_alerts(2)
+
+        assert result[0].model_uuid == model1.uuid
+        assert result[0].anomaly_type == AnomalyType.DRIFT
+        assert result[1].anomaly_features == ['num1', 'num2']
 
 
 model_uuid = db_mock.MODEL_UUID
