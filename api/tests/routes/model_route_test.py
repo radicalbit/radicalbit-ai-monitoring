@@ -7,7 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
-from app.models.alert_dto import AlertDTO
+from app.models.alert_dto import AlertDTO, AnomalyType
 from app.models.exceptions import (
     ErrorOut,
     ModelError,
@@ -175,7 +175,7 @@ class ModelRouteTest(unittest.TestCase):
                     'model_uuid': model1.uuid,
                     'reference_uuid': None,
                     'current_uuid': current1.uuid,
-                    'anomaly_type': 'drift',
+                    'anomaly_type': AnomalyType.DRIFT,
                     'anomaly_features': ['num1', 'num2'],
                 }
             ),
@@ -184,7 +184,7 @@ class ModelRouteTest(unittest.TestCase):
                     'model_uuid': model0.uuid,
                     'reference_uuid': None,
                     'current_uuid': current0.uuid,
-                    'anomaly_type': 'drift',
+                    'anomaly_type': AnomalyType.DRIFT,
                     'anomaly_features': ['num1', 'num2'],
                 }
             ),

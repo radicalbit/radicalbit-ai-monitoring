@@ -10,7 +10,7 @@ from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_table import ReferenceDataset
-from app.models.alert_dto import AlertDTO
+from app.models.alert_dto import AlertDTO, AnomalyType
 from app.models.exceptions import ModelError, ModelInternalError, ModelNotFoundError
 from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
@@ -150,7 +150,7 @@ class ModelService:
                                 'current_uuid': latest_current_dataset.uuid
                                 if latest_current_dataset
                                 else None,
-                                'anomaly_type': perc,
+                                'anomaly_type': AnomalyType[perc.upper()],
                                 'anomaly_features': [
                                     x['feature_name']
                                     for x in sorted(

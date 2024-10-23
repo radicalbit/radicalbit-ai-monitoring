@@ -7,9 +7,9 @@ from pydantic.alias_generators import to_camel
 
 
 class AnomalyType(str, Enum):
-    data_quality = 'data_quality'
-    model_quality = 'model_quality'
-    drift = 'drift'
+    DATA_QUALITY = 'DATA_QUALITY'
+    MODEL_QUALITY = 'MODEL_QUALITY'
+    DRIFT = 'DRIFT'
 
 
 class AlertDTO(BaseModel):
@@ -29,6 +29,6 @@ class AlertDTO(BaseModel):
     def from_dict(
         alert_data: Optional[Dict],
     ) -> 'AlertDTO':
-        """Create a PercentagesDTO from a dictionary of data."""
+        """Create a AlertDTO from a dictionary of data."""
 
         return AlertDTO.model_validate(alert_data)

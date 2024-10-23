@@ -9,6 +9,7 @@ from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.models.alert_dto import AnomalyType
 from app.models.exceptions import ModelError, ModelNotFoundError
 from app.models.model_dto import ModelOut
 from app.models.model_order import OrderType
@@ -262,7 +263,7 @@ class ModelServiceTest(unittest.TestCase):
         result = self.model_service.get_last_n_alerts(2)
 
         assert result[0].model_uuid == model1.uuid
-        assert result[0].anomaly_type == 'drift'
+        assert result[0].anomaly_type == AnomalyType.DRIFT
         assert result[1].anomaly_features == ['num1', 'num2']
 
 
