@@ -50,8 +50,8 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ dataQuality: { current } }) => {
-      const data = (current) ? `${current}%` : '--';
+    render: ({ percentages: { dataQuality: { value } } }) => {
+      const data = (value) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
           {data}
@@ -67,8 +67,8 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ modelQuality: { current } }) => {
-      const data = (current) ? `${current}%` : '--';
+    render: ({ percentages: { modelQuality: { value } } }) => {
+      const data = (value) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
           {data}
@@ -84,8 +84,8 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ dataDrift: { current } }) => {
-      const data = (current) ? `${current}%` : '--';
+    render: ({ percentages: { drift: { value } } }) => {
+      const data = (value) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
           {data}

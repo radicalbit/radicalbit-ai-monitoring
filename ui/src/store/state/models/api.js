@@ -1,5 +1,5 @@
 import { API_TAGS, apiService } from '@Src/store/apis';
-import overallStats from './mock/overall_stats.json';
+// import overallStats from './mock/overall_stats.json';
 
 export const modelsApiSlice = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -208,20 +208,23 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
     }),
 
-    // TODO replace with correct apiUrl
     getOverallStats: builder.query({
-      /* providesTags: (_, __, { uuid }) => [{ type: API_TAGS.CURRENT_IMPORT, id: uuid }],
-       query: ({ uuid, currentUUID }) => ({
+      providesTags: () => [{ type: API_TAGS.MODELS }],
+      query: () => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}/current/${currentUUID}/drift`,
+        url: '/models/tot_percentages',
         method: 'get',
-      }), */
-      queryFn: () => {
-        console.debug(overallStats);
-        return { data: overallStats };
-      },
+      }),
     }),
 
+    getOverallModelList: builder.query({
+      providesTags: () => [{ type: API_TAGS.MODELS }],
+      query: () => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: '/models/last_n?n_models=10',
+        method: 'get',
+      }),
+    }),
   }),
 
 });

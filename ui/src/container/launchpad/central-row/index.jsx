@@ -4,6 +4,7 @@ import useModals from '@Hooks/use-modals';
 import { Button, Spinner } from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
+import { useGetOverallModelListQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
@@ -35,9 +36,9 @@ function ModelStatsList() {
 function OverallCharts() {
   const { data } = useGetOverallStatsQuery();
 
-  const dataQualityStats = data?.overallStats.dataQuality;
-  const modelQualityStats = data?.overallStats.modelQuality;
-  const dataDriftStats = data?.overallStats.dataDrift;
+  const dataQualityStats = data?.dataQuality;
+  const modelQualityStats = data?.modelQuality;
+  const dataDriftStats = data?.drift;
 
   return (
     <div className="flex flex-row gap-16 items-start justify-start ">
@@ -55,10 +56,8 @@ function OverallList() {
   const { search } = useSearchParams();
   const navigate = useNavigate();
 
-  const { data } = useGetOverallStatsQuery();
-
-  const modelStats = data?.modelStats.items;
-  const count = data?.modelStats.count;
+  const { data } = useGetOverallModelListQueryWithPolling();
+  const count = data?.length;
 
   const handleOnClick = ({ uuid }) => {
     navigate({ pathname: `/models/${uuid}`, search });
@@ -68,7 +67,7 @@ function OverallList() {
     <SmartTable
       clickable
       columns={getColumns}
-      dataSource={modelStats}
+      dataSource={data}
       fixedHeader="30rem"
       namespace={NamespaceEnum.MODELS_STATS}
       onRow={({ uuid }) => ({

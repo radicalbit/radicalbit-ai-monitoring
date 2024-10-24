@@ -5,8 +5,7 @@ import { alertsApiSlice } from '@State/alerts/api';
 const { useGetAlertsQuery } = alertsApiSlice;
 
 function Alerts() {
-  const { data = [undefined, undefined], isLoading, isError } = useGetAlertsQuery();
-  console.debug(data);
+  const { data = [], isLoading, isError } = useGetAlertsQuery();
 
   if (isLoading) {
     return (
@@ -51,17 +50,18 @@ function Alerts() {
 }
 
 function Main({ alert }) {
-  const alertType = alert?.alertType || 'Foo';
-  const fieldsInError = alert?.fieldsInError || 'Bar';
+  const anomalyType = alert?.anomalyType;
+  const anomalyFeatures = alert?.anomalyFeatures;
 
   return (
     <Board
       borderType="none"
       main={(
         <div>
-          <strong>{alertType}</strong>
+          <strong>{anomalyType}</strong>
 
-          <span>{fieldsInError}</span>
+          {anomalyFeatures.map((anomalyFeature) => (<span>{anomalyFeature}</span>))}
+
         </div>
       )}
       size="small"
