@@ -13,7 +13,6 @@ const columns = [
         ? latestCurrentJobStatus
         : latestReferenceJobStatus;
 
-      console.debug(jobStatus);
       return (
         <JobStatusPin jobStatus={jobStatus} />
       );

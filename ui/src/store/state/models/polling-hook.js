@@ -19,6 +19,7 @@ const {
   useGetCurrentDriftQuery,
   useGetModelByUUIDQuery,
   useGetModelsQuery,
+  useGetOverallModelListQuery,
 } = modelsApiSlice;
 
 const useGetReferenceImportsQueryWithPolling = () => {
@@ -169,6 +170,18 @@ const useGetModelQueryWithPolling = () => {
   return result;
 };
 
+const useGetOverallModelListQueryWithPolling = () => {
+  const result = useGetOverallModelListQuery();
+
+  const isReferencePending = result.data?.some((d) => d.latestReferenceJobStatus === JOB_STATUS.IMPORTING);
+  const isCurrentPending = result.data?.some((d) => d.latestCurrentJobStatus === JOB_STATUS.IMPORTING);
+  const isPending = isReferencePending || isCurrentPending;
+
+  useGetOverallModelListQuery({ pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isPending });
+
+  return result;
+};
+
 export {
   useGetCurrentDataQualityQueryWithPolling,
   useGetCurrentDriftQueryWithPolling,
@@ -180,4 +193,5 @@ export {
   useGetReferenceModelQualityQueryWithPolling,
   useGetReferenceStatisticsQueryWithPolling,
   useGetModelQueryWithPolling,
+  useGetOverallModelListQueryWithPolling,
 };

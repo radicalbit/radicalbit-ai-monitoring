@@ -6,7 +6,7 @@ export const alertsApiSlice = apiService.injectEndpoints({
       providesTags: () => [{ type: API_TAGS.ALERTS }],
       query: () => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: '/alerts',
+        url: '/models/last_n_alerts?n_alerts=10',
         method: 'get',
       }),
     }),
