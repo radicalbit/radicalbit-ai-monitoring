@@ -20,6 +20,7 @@ from radicalbit_platform_sdk.models import (
     ModelType,
     RegressionDataQuality,
 )
+from radicalbit_platform_sdk.models.dataset_percentages import Percentages
 
 
 class ModelCurrentDataset:
@@ -42,6 +43,7 @@ class ModelCurrentDataset:
         self.__model_metrics = None
         self.__data_metrics = None
         self.__drift = None
+        self.__percentages = None
 
     def uuid(self) -> UUID:
         return self.__uuid
@@ -107,6 +109,56 @@ class ModelCurrentDataset:
                 self.__statistics = stats
 
         return self.__statistics
+
+    def percentages(self) -> Optional[Percentages]:
+        """Get percentages about the actual dataset
+
+        :return: The `Percentages` if exists
+        """
+
+        def __callback(
+            response: requests.Response,
+        ) -> tuple[JobStatus, Optional[Percentages]]:
+            try:
+                response_json = response.json()
+                job_status = JobStatus(response_json['jobStatus'])
+                if 'percentages' in response_json:
+                    return (
+                        job_status,
+                        Percentages.model_validate(response_json['percentages']),
+                    )
+            except KeyError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            else:
+                return job_status, None
+
+        match self.__status:
+            case JobStatus.ERROR:
+                self.__percentages = None
+            case JobStatus.MISSING_CURRENT:
+                self.__percentages = None
+            case JobStatus.SUCCEEDED:
+                if self.__percentages is None:
+                    _, percentages = invoke(
+                        method='GET',
+                        url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/percentages',
+                        valid_response_code=200,
+                        func=__callback,
+                    )
+                    self.__percentages = percentages
+            case JobStatus.IMPORTING:
+                status, percentages = invoke(
+                    method='GET',
+                    url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/percentages',
+                    valid_response_code=200,
+                    func=__callback,
+                )
+                self.__status = status
+                self.__percentages = percentages
+
+        return self.__percentages
 
     def drift(self) -> Optional[Drift]:
         """Get drift about the actual dataset
