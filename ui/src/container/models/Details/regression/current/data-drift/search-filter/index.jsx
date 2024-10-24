@@ -1,4 +1,4 @@
-import { useGetCurrentDriftQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCurrentDriftQueryWithPolling } from '@State/models/polling-hook';
 import { fa1, faC, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {

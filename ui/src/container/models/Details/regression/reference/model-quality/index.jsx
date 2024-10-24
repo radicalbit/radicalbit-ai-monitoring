@@ -5,7 +5,7 @@ import ResidualScatterPlot from '@Components/charts/residual-scatter-plot';
 import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { CHART_COLOR } from '@Helpers/common-chart-options';
 import { JOB_STATUS, numberFormatter } from '@Src/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import { modelsApiSlice } from '@State/models/api';
 import { useGetReferenceModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import { faChartArea, faChartLine } from '@fortawesome/free-solid-svg-icons';
 import {

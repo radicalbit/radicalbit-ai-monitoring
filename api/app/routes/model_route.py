@@ -7,6 +7,8 @@ from fastapi.params import Query
 from fastapi_pagination import Page, Params
 
 from app.core import get_config
+from app.models.alert_dto import AlertDTO
+from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
 from app.models.model_order import OrderType
 from app.services.model_service import ModelService
@@ -34,6 +36,20 @@ class ModelRoute:
         @router.get('/all', status_code=200, response_model=List[ModelOut])
         def get_all_models():
             return model_service.get_all_models()
+
+        @router.get('/last_n', status_code=200, response_model=List[ModelOut])
+        def get_last_n_models(n_models: int):
+            return model_service.get_last_n_models_percentages(n_models)
+
+        @router.get('/last_n_alerts', status_code=200, response_model=List[AlertDTO])
+        def get_last_n_alerts(n_alerts: int):
+            return model_service.get_last_n_alerts(n_alerts)
+
+        @router.get(
+            '/tot_percentages', status_code=200, response_model=TotPercentagesDTO
+        )
+        def get_tot_percentages():
+            return model_service.get_summarized_percentages()
 
         @router.post('', status_code=201, response_model=ModelOut)
         def create_model(model_in: ModelIn):

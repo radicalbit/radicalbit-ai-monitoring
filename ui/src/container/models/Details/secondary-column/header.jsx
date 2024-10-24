@@ -1,5 +1,5 @@
 import { NamespaceEnum } from '@Src/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import { modelsApiSlice } from '@State/models/api';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { useSelector } from 'react-redux';

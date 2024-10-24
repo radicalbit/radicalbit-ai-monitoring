@@ -1,7 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { columnFactory } from '@Src/components/smart-table/utils';
 import { JOB_STATUS } from '@Src/constants';
-import { DataTypeEnumLabel, ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { DataTypeEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { RelativeDateTime } from '@radicalbit/radicalbit-design-system';
 
 export const getColumns = (

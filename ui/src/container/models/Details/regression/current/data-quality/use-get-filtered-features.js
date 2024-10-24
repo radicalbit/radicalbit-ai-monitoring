@@ -1,6 +1,6 @@
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { useGetCurrentDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { modelsApiSlice } from '@State/models/api';
+import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { useFormbitContext } from '@radicalbit/formbit';
 import { useParams } from 'react-router';
 

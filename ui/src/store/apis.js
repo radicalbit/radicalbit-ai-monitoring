@@ -2,6 +2,7 @@ import { customBaseQuery } from '@Api/utils';
 import { createApi } from '@reduxjs/toolkit/query/react';
 
 export const API_TAGS = {
+  ALERTS: 'Alerts',
   MODELS: 'Models',
   MODEL: 'Model',
   REFERENCE_IMPORT: 'REFERENCE_IMPORT',

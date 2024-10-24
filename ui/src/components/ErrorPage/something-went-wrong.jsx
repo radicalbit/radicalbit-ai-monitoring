@@ -2,7 +2,7 @@ import Logo from '@Img/logo.png';
 import { Void } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
 
-function SomethingWentWrong() {
+function SomethingWentWrong({ size }) {
   return (
     <Void
       description={(
@@ -13,6 +13,7 @@ function SomethingWentWrong() {
         </>
       )}
       image={<img alt="500" src={Logo} />}
+      size={size}
       title={(
         <>
           Oh no!

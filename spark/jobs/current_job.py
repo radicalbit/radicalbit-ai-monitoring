@@ -6,6 +6,7 @@ import uuid
 import orjson
 from pyspark.sql.types import StructType, StructField, StringType
 
+from metrics.percentages import PercentageCalculator
 from metrics.statistics import calculate_statistics_current
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
@@ -34,6 +35,14 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model):
                 metrics_service.calculate_model_quality_with_group_by_timestamp()
             )
             drift = metrics_service.calculate_drift()
+            percentages = PercentageCalculator.calculate_percentages(
+                spark_session=spark_session,
+                current_dataset=current_dataset,
+                reference_dataset=reference_dataset,
+                drift=drift,
+                model_quality_current=model_quality,
+                model=model,
+            )
             complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
                 "utf-8"
             )
@@ -44,6 +53,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model):
                 serialize_as_any=True
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+            complete_record["PERCENTAGES"] = orjson.dumps(percentages).decode("utf-8")
         case ModelType.MULTI_CLASS:
             metrics_service = CurrentMetricsMulticlassService(
                 spark_session=spark_session,
@@ -54,6 +64,15 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model):
             data_quality = metrics_service.calculate_data_quality()
             model_quality = metrics_service.calculate_model_quality()
             drift = metrics_service.calculate_drift()
+            percentages = PercentageCalculator.calculate_percentages(
+                spark_session=spark_session,
+                current_dataset=current_dataset,
+                reference_dataset=reference_dataset,
+                drift=drift,
+                model_quality_current=model_quality,
+                model=model,
+            )
+
             complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
@@ -64,6 +83,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model):
                 "utf-8"
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+            complete_record["PERCENTAGES"] = orjson.dumps(percentages).decode("utf-8")
         case ModelType.REGRESSION:
             metrics_service = CurrentMetricsRegressionService(
                 reference=reference_dataset,
@@ -74,6 +94,15 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model):
             data_quality = metrics_service.calculate_data_quality(is_current=True)
             model_quality = metrics_service.calculate_model_quality()
             drift = metrics_service.calculate_drift()
+            percentages = PercentageCalculator.calculate_percentages(
+                spark_session=spark_session,
+                current_dataset=current_dataset,
+                reference_dataset=reference_dataset,
+                drift=drift,
+                model_quality_current=model_quality,
+                model=model,
+            )
+
             complete_record["STATISTICS"] = statistics.model_dump_json(
                 serialize_as_any=True
             )
@@ -84,6 +113,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model):
                 "utf-8"
             )
             complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+            complete_record["PERCENTAGES"] = orjson.dumps(percentages).decode("utf-8")
 
     return complete_record
 
@@ -137,6 +167,7 @@ def main(
             StructField("DATA_QUALITY", StringType(), True),
             StructField("MODEL_QUALITY", StringType(), True),
             StructField("DRIFT", StringType(), True),
+            StructField("PERCENTAGES", StringType(), True),
         ]
     )
 

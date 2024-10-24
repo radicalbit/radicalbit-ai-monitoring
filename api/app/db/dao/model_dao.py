@@ -6,10 +6,12 @@ from uuid import UUID
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
 import sqlalchemy
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, desc, func
 from sqlalchemy.future import select as future_select
 
 from app.db.database import Database
+from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
+from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.models.model_order import OrderType
 
@@ -57,6 +59,37 @@ class ModelDAO:
         with self.db.begin_session() as session:
             return session.query(Model).where(Model.deleted.is_(False))
 
+    def get_last_n_percentages(self, n_models=None):
+        with self.db.begin_session() as session:
+            subq = (
+                session.query(
+                    CurrentDataset.model_uuid,
+                    func.max(CurrentDataset.date).label('maxdate'),
+                )
+                .group_by(CurrentDataset.model_uuid)
+                .subquery()
+            )
+            stmt = (
+                session.query(Model, CurrentDatasetMetrics)
+                .join(
+                    CurrentDataset,
+                    CurrentDataset.model_uuid == Model.uuid,
+                )
+                .join(
+                    subq,
+                    (CurrentDataset.model_uuid == subq.c.model_uuid)
+                    & (CurrentDataset.date == subq.c.maxdate),
+                )
+                .join(
+                    CurrentDatasetMetrics,
+                    CurrentDatasetMetrics.current_uuid == CurrentDataset.uuid,
+                )
+                .order_by(Model.updated_at.desc())
+            )
+            if n_models:
+                stmt = stmt.limit(n_models)
+            return stmt.all()
+
     def get_all_paginated(
         self,
         params: Params = Params(),
@@ -69,7 +102,35 @@ class ModelDAO:
             )
 
         with self.db.begin_session() as session:
-            stmt = future_select(Model).filter(Model.deleted.is_(False))
+            subq = (
+                session.query(
+                    CurrentDataset.model_uuid,
+                    func.max(CurrentDataset.date).label('maxdate'),
+                )
+                .group_by(CurrentDataset.model_uuid)
+                .subquery()
+            )
+            subq2 = (
+                session.query(CurrentDataset.uuid, CurrentDataset.model_uuid)
+                .join(
+                    subq,
+                    (CurrentDataset.model_uuid == subq.c.model_uuid)
+                    & (CurrentDataset.date == subq.c.maxdate),
+                )
+                .subquery()
+            )
+            stmt = (
+                future_select(Model, CurrentDatasetMetrics)
+                .outerjoin(
+                    subq2,
+                    subq2.c.model_uuid == Model.uuid,
+                )
+                .outerjoin(
+                    CurrentDatasetMetrics,
+                    CurrentDatasetMetrics.current_uuid == subq2.c.uuid,
+                )
+                .filter(Model.deleted.is_(False))
+            )
 
             if sort:
                 stmt = (

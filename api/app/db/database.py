@@ -15,7 +15,26 @@ class Reflected(DeferredReflection):
     __abstract__ = True
 
 
-BaseTable = declarative_base(metadata=MetaData(schema=get_config().db_config.db_schema))
+# https://github.com/sqlalchemy/alembic/discussions/1532
+# https://alembic.sqlalchemy.org/en/latest/naming.html
+naming_convention = {
+    'ix': 'ix_%(column_0_label)s',
+    'uq': 'uq_%(table_name)s_%(column_0_name)s',
+    'ck': 'ck_%(table_name)s_%(constraint_name)s',
+    'fk': 'fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s',
+    'pk': 'pk_%(table_name)s',
+}
+
+# https://github.com/sqlalchemy/alembic/discussions/1351
+# If the schema is the default, Alembic needs None otherwise migrations are messed up
+fixed_schema = (
+    None
+    if get_config().db_config.db_schema == 'public'
+    else get_config().db_config.db_schema
+)
+BaseTable = declarative_base(
+    metadata=MetaData(schema=fixed_schema, naming_convention=naming_convention)
+)
 
 
 class Database:

@@ -1,6 +1,6 @@
 import {
   useGetCurrentDataQualityQueryWithPolling, useGetCurrentModelQualityQueryWithPolling, useGetReferenceDataQualityQueryWithPolling, useGetReferenceModelQualityQueryWithPolling,
-} from '@Src/store/state/models/polling-hook';
+} from '@State/models/polling-hook';
 import { DataTable } from '@radicalbit/radicalbit-design-system';
 import columns from './columns';
 

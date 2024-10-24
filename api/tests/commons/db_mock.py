@@ -504,6 +504,26 @@ drift_dict = {
     ]
 }
 
+percentages_dict = {
+    'data_quality': {
+        'value': 1.0,
+        'details': [
+            {'feature_name': 'num1', 'score': 0.0},
+            {'feature_name': 'num2', 'score': 0.0},
+            {'feature_name': 'cat1', 'score': 0.0},
+            {'feature_name': 'cat2', 'score': 0.0},
+        ],
+    },
+    'model_quality': {'value': -1, 'details': []},
+    'drift': {
+        'value': 0.5,
+        'details': [
+            {'feature_name': 'num1', 'score': 1.0},
+            {'feature_name': 'num2', 'score': 1.0},
+        ],
+    },
+}
+
 
 def get_sample_reference_metrics(
     reference_uuid: uuid.UUID = REFERENCE_UUID,
@@ -525,6 +545,7 @@ def get_sample_current_metrics(
     data_quality: Dict = classification_data_quality_dict,
     statistics: Dict = statistics_dict,
     drift: Dict = drift_dict,
+    percentages: Dict = percentages_dict,
 ) -> CurrentDatasetMetrics:
     return CurrentDatasetMetrics(
         current_uuid=current_uuid,
@@ -532,4 +553,5 @@ def get_sample_current_metrics(
         statistics=statistics,
         data_quality=data_quality,
         drift=drift,
+        percentages=percentages,
     )

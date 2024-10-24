@@ -10,8 +10,8 @@ import MultiClassificationDataDriftMetrics from '@Container/models/Details/multi
 import RegressionDataQualityMetrics from '@Container/models/Details/regression/current/data-quality';
 import RegressionModelQualityMetrics from '@Container/models/Details/regression/current/model-quality';
 import RegressionDataDriftMetrics from '@Container/models/Details/regression/current/data-drift';
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { modelsApiSlice } from '@State/models/api';
+import { ModelTypeEnum } from '@State/models/constants';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 

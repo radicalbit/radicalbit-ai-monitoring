@@ -70,9 +70,12 @@ def run_migrations_offline() -> None:
         include_name=include_name
     )
 
+    # Here we need to enforce public if schema target_metadata.schema is None, which is default schema (public for postgres) for alembic
+    target_schema = 'public' if target_metadata.schema is None else target_metadata.schema
+
     with context.begin_transaction():
-        context.execute(f'create schema if not exists "{target_metadata.schema}";')
-        context.execute(f'set search_path to "{target_metadata.schema}"')
+        context.execute(f'create schema if not exists "{target_schema}";')
+        context.execute(f'set search_path to "{target_schema}"')
         context.run_migrations()
 
 
@@ -99,9 +102,12 @@ def run_migrations_online() -> None:
             include_name=include_name
         )
 
+        # Here we need to enforce public if schema target_metadata.schema is None, which is default schema (public for postgres) for alembic
+        target_schema = 'public' if target_metadata.schema is None else target_metadata.schema
+
         with context.begin_transaction():
-            context.execute(f'create schema if not exists "{target_metadata.schema}";')
-            context.execute(f'set search_path to "{target_metadata.schema}"')
+            context.execute(f'create schema if not exists "{target_schema}";')
+            context.execute(f'set search_path to "{target_schema}"')
             context.run_migrations()
 
 

@@ -1,5 +1,5 @@
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { useGetCurrentDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { modelsApiSlice } from '@State/models/api';
+import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import {
   Board,
   SectionTitle,
