@@ -55,8 +55,8 @@ function useGetTabs() {
     case ModelTypeEnum.BINARY_CLASSIFICATION:
       return [
         {
-          label: METRICS_TABS.DATA_QUALITIY,
-          key: METRICS_TABS.DATA_QUALITIY,
+          label: METRICS_TABS.DATA_QUALITY,
+          key: METRICS_TABS.DATA_QUALITY,
           children: <BinaryClassificationDataQualityMetrics />,
         },
         {
@@ -74,8 +74,8 @@ function useGetTabs() {
     case ModelTypeEnum.MULTI_CLASSIFICATION:
       return [
         {
-          label: METRICS_TABS.DATA_QUALITIY,
-          key: METRICS_TABS.DATA_QUALITIY,
+          label: METRICS_TABS.DATA_QUALITY,
+          key: METRICS_TABS.DATA_QUALITY,
           children: <MultiClassificationDataQualityMetrics />,
         },
         {
@@ -93,8 +93,8 @@ function useGetTabs() {
     case ModelTypeEnum.REGRESSION:
       return [
         {
-          label: METRICS_TABS.DATA_QUALITIY,
-          key: METRICS_TABS.DATA_QUALITIY,
+          label: METRICS_TABS.DATA_QUALITY,
+          key: METRICS_TABS.DATA_QUALITY,
           children: <RegressionDataQualityMetrics />,
         },
         {

@@ -5,7 +5,7 @@ export const MODEL_TABS_ENUM = {
 };
 
 export const METRICS_TABS = {
-  DATA_QUALITIY: 'Data Quality',
+  DATA_QUALITY: 'Data Quality',
   MODEL_QUALITY: 'Model Quality',
   DATA_DRIFT: 'Data Drift',
   IMPORT: 'Import',

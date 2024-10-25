@@ -10,8 +10,8 @@ import ModelQualityMetrics from './model-quality';
 
 const tabs = [
   {
-    label: METRICS_TABS.DATA_QUALITIY,
-    key: METRICS_TABS.DATA_QUALITIY,
+    label: METRICS_TABS.DATA_QUALITY,
+    key: METRICS_TABS.DATA_QUALITY,
     children: <DataQualityMetrics />,
   },
   {

@@ -1,6 +1,8 @@
-import { Board, SectionTitle, Skeleton } from '@radicalbit/radicalbit-design-system';
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import { METRICS_TABS, MODEL_TABS_ENUM } from '@Container/models/Details/constants';
+import { Board, SectionTitle, Skeleton } from '@radicalbit/radicalbit-design-system';
 import { alertsApiSlice } from '@State/alerts/api';
+import { useNavigate } from 'react-router';
 
 const { useGetAlertsQuery } = alertsApiSlice;
 
@@ -37,6 +39,7 @@ function Alerts() {
   return (
     <Board
       header={<SectionTitle size="small" title="Alerts" />}
+      height="20rem"
       main={(
         <div className="flex flex-col gap-2">
           {data.map((alert) => (
@@ -44,27 +47,92 @@ function Alerts() {
           ))}
         </div>
       )}
-      modifier="min-h-[20vh]"
+      modifier="overflow-auto"
       size="small"
     />
   );
 }
 
-function Main({ alert }) {
-  const anomalyType = alert?.anomalyType;
-  const anomalyFeatures = alert?.anomalyFeatures;
+function Main({
+  alert: {
+    anomalyType, anomalyFeatures, modelUuid, modelName,
+  },
+}) {
+  const navigate = useNavigate();
+
+  const modelNametest = modelName ?? 'Binary test';
+
+  const anomalyFeaturesJoined = anomalyFeatures.join(', ');
+  const anomalyTypeLabel = METRICS_TABS[`${anomalyType}`];
+
+  console.debug('🚀 ~ Main ~ anomalyTypeLabel:', anomalyTypeLabel);
+  const handleOnClick = () => {
+    navigate(`/models/${modelUuid}?tab=${MODEL_TABS_ENUM.CURRENT_DASHBOARD}&tab-metrics=${anomalyTypeLabel}`);
+  };
+
+  if (anomalyFeaturesJoined.length > 0) {
+    return (
+      <Board
+        main={(
+          <span>
+            The
+            {' '}
+
+            <strong>{anomalyTypeLabel}</strong>
+
+            {' '}
+
+            of
+
+            {' '}
+
+            <strong>{modelNametest}</strong>
+
+            {' '}
+
+            model reports a problem on
+
+            {' '}
+
+            <strong>{anomalyFeaturesJoined}</strong>
+
+            {' '}
+
+            features
+            .
+          </span>
+        )}
+        onClick={handleOnClick}
+        size="small"
+        type="error"
+      />
+    );
+  }
 
   return (
     <Board
-      borderType="none"
       main={(
-        <div>
-          <strong>{anomalyType}</strong>
+        <span>
+          The
 
-          {anomalyFeatures.map((anomalyFeature) => (<span>{anomalyFeature}</span>))}
+          {' '}
 
-        </div>
+          <strong>{anomalyTypeLabel}</strong>
+
+          {' '}
+
+          of
+
+          {' '}
+
+          <strong>{modelNametest}</strong>
+
+          {' '}
+
+          model reports a problem
+        </span>
       )}
+      onClick={handleOnClick}
       size="small"
       type="error"
     />

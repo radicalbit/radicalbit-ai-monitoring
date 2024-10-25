@@ -57,7 +57,7 @@ function WorkInProgress() {
   return (
     <Board
       header={<SectionTitle size="small" title="Work in progress" />}
-      height="300px"
+      height="15rem"
       main={(
         <DataTable
           clickable

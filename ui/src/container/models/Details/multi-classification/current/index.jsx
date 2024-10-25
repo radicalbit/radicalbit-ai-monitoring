@@ -11,8 +11,8 @@ import MultiClassificationDataDriftMetrics from './data-drift';
 
 const tabs = [
   {
-    label: METRICS_TABS.DATA_QUALITIY,
-    key: METRICS_TABS.DATA_QUALITIY,
+    label: METRICS_TABS.DATA_QUALITY,
+    key: METRICS_TABS.DATA_QUALITY,
     children: <MultiClassificationDataQualityMetrics />,
   },
   {
