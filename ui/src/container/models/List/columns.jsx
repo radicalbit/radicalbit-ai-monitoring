@@ -58,8 +58,10 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ percentages: { dataQuality: { value } } }) => {
-      const data = (value) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+    render: ({ percentages }) => {
+      const value = percentages?.dataQuality.value;
+      const data = (value && value !== -1) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
           {data}
@@ -75,8 +77,10 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ percentages: { modelQuality: { value } } }) => {
-      const data = (value) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+    render: ({ percentages }) => {
+      const value = percentages?.modelQuality.value;
+      const data = (value && value !== -1) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
           {data}
@@ -92,8 +96,10 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ percentages: { drift: { value } } }) => {
-      const data = (value) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+    render: ({ percentages }) => {
+      const value = percentages?.drift.value;
+      const data = (value && value !== -1) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
           {data}

@@ -28,8 +28,9 @@ function PieChart({ title, data }) {
   };
 
   const splittedTitle = title.split(' ');
-  const currentData = parseFloat(data).toFixed(4) * 100;
-  const referenceData = (1 - parseFloat(data).toFixed(4)) * 100;
+
+  const currentData = (data * 100).toFixed(2);
+  const referenceData = ((1 - data) * 100).toFixed(2);
 
   return (
     <div className="flex flex-row items-center gap-2">

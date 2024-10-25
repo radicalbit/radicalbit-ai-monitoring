@@ -35,10 +35,9 @@ function ModelStatsList() {
 
 function OverallCharts() {
   const { data } = useGetOverallStatsQuery();
-
-  const dataQualityStats = data?.dataQuality;
-  const modelQualityStats = data?.modelQuality;
-  const dataDriftStats = data?.drift;
+  const dataQualityStats = data?.dataQuality || 0;
+  const modelQualityStats = data?.modelQuality || 0;
+  const dataDriftStats = data?.drift || 0;
 
   return (
     <div className="flex flex-row gap-16 items-start justify-start ">

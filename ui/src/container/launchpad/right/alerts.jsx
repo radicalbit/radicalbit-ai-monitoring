@@ -44,6 +44,7 @@ function Alerts() {
           ))}
         </div>
       )}
+      modifier="min-h-[20vh]"
       size="small"
     />
   );
