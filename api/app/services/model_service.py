@@ -96,28 +96,29 @@ class ModelService:
         mq, mq_c = 0, 0
         dr, dr_c = 0, 0
         for _, metrics in models:
-            dq = dq + (
-                metrics.percentages['data_quality']['value']
-                if metrics.percentages['data_quality']['value'] >= 0
-                else 0
-            )
-            dq_c = dq_c + (
-                1 if metrics.percentages['data_quality']['value'] >= 0 else 0
-            )
-            mq = mq + (
-                metrics.percentages['model_quality']['value']
-                if metrics.percentages['model_quality']['value'] >= 0
-                else 0
-            )
-            mq_c = mq_c + (
-                1 if metrics.percentages['model_quality']['value'] >= 0 else 0
-            )
-            dr = dr + (
-                metrics.percentages['drift']['value']
-                if metrics.percentages['drift']['value'] >= 0
-                else 0
-            )
-            dr_c = dr_c + (1 if metrics.percentages['drift']['value'] >= 0 else 0)
+            if metrics:
+                dq = dq + (
+                    metrics.percentages['data_quality']['value']
+                    if metrics.percentages['data_quality']['value'] >= 0
+                    else 0
+                )
+                dq_c = dq_c + (
+                    1 if metrics.percentages['data_quality']['value'] >= 0 else 0
+                )
+                mq = mq + (
+                    metrics.percentages['model_quality']['value']
+                    if metrics.percentages['model_quality']['value'] >= 0
+                    else 0
+                )
+                mq_c = mq_c + (
+                    1 if metrics.percentages['model_quality']['value'] >= 0 else 0
+                )
+                dr = dr + (
+                    metrics.percentages['drift']['value']
+                    if metrics.percentages['drift']['value'] >= 0
+                    else 0
+                )
+                dr_c = dr_c + (1 if metrics.percentages['drift']['value'] >= 0 else 0)
         return TotPercentagesDTO.from_dict(
             {
                 'data_quality': dq / dq_c if dq_c > 0 else 0,
@@ -136,34 +137,35 @@ class ModelService:
             latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
                 model.uuid
             )
-            for perc in ['data_quality', 'model_quality', 'drift']:
-                if count_alerts == n_alerts:
-                    return res
-                if 0 <= metrics.percentages[perc]['value'] < 1:
-                    res.append(
-                        AlertDTO.from_dict(
-                            {
-                                'model_uuid': model.uuid,
-                                'reference_uuid': latest_reference_dataset.uuid
-                                if latest_reference_dataset
-                                else None,
-                                'current_uuid': latest_current_dataset.uuid
-                                if latest_current_dataset
-                                else None,
-                                'anomaly_type': AnomalyType[perc.upper()],
-                                'anomaly_features': [
-                                    x['feature_name']
-                                    for x in sorted(
-                                        metrics.percentages[perc]['details'],
-                                        key=lambda e: e['score'],
-                                        reverse=True,
-                                    )
-                                    if x['score'] > 0
-                                ],
-                            }
+            if metrics:
+                for perc in ['data_quality', 'model_quality', 'drift']:
+                    if count_alerts == n_alerts:
+                        return res
+                    if 0 <= metrics.percentages[perc]['value'] < 1:
+                        res.append(
+                            AlertDTO.from_dict(
+                                {
+                                    'model_uuid': model.uuid,
+                                    'reference_uuid': latest_reference_dataset.uuid
+                                    if latest_reference_dataset
+                                    else None,
+                                    'current_uuid': latest_current_dataset.uuid
+                                    if latest_current_dataset
+                                    else None,
+                                    'anomaly_type': AnomalyType[perc.upper()],
+                                    'anomaly_features': [
+                                        x['feature_name']
+                                        for x in sorted(
+                                            metrics.percentages[perc]['details'],
+                                            key=lambda e: e['score'],
+                                            reverse=True,
+                                        )
+                                        if x['score'] > 0
+                                    ],
+                                }
+                            )
                         )
-                    )
-                    count_alerts += 1
+                        count_alerts += 1
 
         return res
 
@@ -178,7 +180,7 @@ class ModelService:
                 model=model,
                 latest_reference_dataset=latest_reference_dataset,
                 latest_current_dataset=latest_current_dataset,
-                percentages=metrics.percentages,
+                percentages=metrics.percentages if metrics else None,
             )
             model_out_list_tmp.append(model_out)
         return model_out_list_tmp

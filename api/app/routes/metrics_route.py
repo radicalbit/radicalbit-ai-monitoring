@@ -145,7 +145,7 @@ class MetricsRoute:
             response_model=PercentagesDTO,
         )
         def get_current_percentages_by_model_by_uuid(
-                model_uuid: UUID, current_uuid: UUID
+            model_uuid: UUID, current_uuid: UUID
         ):
             return metrics_service.get_current_percentages_by_model_by_uuid(
                 model_uuid, current_uuid
