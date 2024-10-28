@@ -19,6 +19,7 @@ from radicalbit_platform_sdk.models import (
     ModelType,
     RegressionDataQuality,
 )
+from radicalbit_platform_sdk.models.dataset_percentages import Percentages
 
 
 class ModelCurrentDatasetTest(unittest.TestCase):
@@ -138,6 +139,137 @@ class ModelCurrentDatasetTest(unittest.TestCase):
 
         with pytest.raises(ClientError):
             model_current_dataset.statistics()
+
+    @responses.activate
+    def test_percentages_ok(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_current_dataset = ModelCurrentDataset(
+            base_url,
+            model_id,
+            ModelType.BINARY,
+            CurrentFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/percentages',
+            status=200,
+            body="""{
+                        "jobStatus": "SUCCEEDED",
+                        "percentages": {
+                            "data_quality": {
+                                "value": 0.9,
+                                "details": [
+                                    {
+                                        "feature_name": "num1",
+                                        "score": 0.4
+                                    },
+                                    {
+                                        "feature_name": "num2",
+                                        "score": 0.0
+                                    },
+                                    {
+                                        "feature_name": "cat1",
+                                        "score": 0.0
+                                    },
+                                    {
+                                        "feature_name": "cat2",
+                                        "score": 0.0
+                                    }
+                                ]
+                            },
+                            "model_quality": {
+                                "value": -1,
+                                "details": []
+                            },
+                            "drift": {
+                                "value": 0.75,
+                                "details": [
+                                    {
+                                        "feature_name": "num1",
+                                        "score": 1.0
+                                    }
+                                ]
+                            }
+                        }
+                    }""",
+        )
+
+        percentages = model_current_dataset.percentages()
+
+        assert isinstance(percentages, Percentages)
+
+        assert percentages.data_quality.value == 0.9
+        assert len(percentages.data_quality.details) == 4
+        assert percentages.model_quality.value == -1
+        assert len(percentages.model_quality.details) == 0
+        assert percentages.drift.value == 0.75
+        assert len(percentages.drift.details) == 1
+        assert model_current_dataset.status() == JobStatus.SUCCEEDED
+
+    @responses.activate
+    def test_percentages_validation_error(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_current_dataset = ModelCurrentDataset(
+            base_url,
+            model_id,
+            ModelType.BINARY,
+            CurrentFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/percentages',
+            status=200,
+            body='{"statistics": "wrong"}',
+        )
+
+        with pytest.raises(ClientError):
+            model_current_dataset.percentages()
+
+    @responses.activate
+    def test_percentages_key_error(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        import_uuid = uuid.uuid4()
+        model_current_dataset = ModelCurrentDataset(
+            base_url,
+            model_id,
+            ModelType.BINARY,
+            CurrentFileUpload(
+                uuid=import_uuid,
+                path='s3://bucket/file.csv',
+                date='2014',
+                correlation_id_column='column',
+                status=JobStatus.IMPORTING,
+            ),
+        )
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/models/{str(model_id)}/current/{str(import_uuid)}/percentages',
+            status=200,
+            body='{"wrong": "json"}',
+        )
+
+        with pytest.raises(ClientError):
+            model_current_dataset.percentages()
 
     @responses.activate
     def test_drift_ok(self):

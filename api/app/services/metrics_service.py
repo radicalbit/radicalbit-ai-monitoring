@@ -16,6 +16,7 @@ from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
+from app.models.metrics.percentages_dto import PercentagesDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
 from app.models.model_dto import ModelType
 from app.services.model_service import ModelService
@@ -97,6 +98,18 @@ class MetricsService:
     ) -> DataQualityDTO:
         """Retrieve current data quality for a model by its UUID and an optional current dataset UUID."""
         return self._get_data_quality_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
+                uuid, current_uuid
+            ),
+            missing_status=JobStatus.MISSING_CURRENT,
+        )
+
+    def get_current_percentages_by_model_by_uuid(
+        self, model_uuid: UUID, current_uuid: Optional[UUID]
+    ) -> PercentagesDTO:
+        """Retrieve current data quality for a model by its UUID and an optional current dataset UUID."""
+        return self._get_percentages_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
                 uuid, current_uuid
@@ -222,6 +235,22 @@ class MetricsService:
             missing_status=missing_status,
         )
 
+    def _get_percentages_by_model_uuid(
+        self,
+        model_uuid: UUID,
+        dataset_and_metrics_getter,
+        missing_status,
+    ) -> PercentagesDTO:
+        """Retrieve data quality for a model by its UUID."""
+        model = self.model_service.get_model_by_uuid(model_uuid)
+        dataset, metrics = dataset_and_metrics_getter(model_uuid)
+        return self._create_percentages_dto(
+            model_type=model.model_type,
+            dataset=dataset,
+            metrics=metrics,
+            missing_status=missing_status,
+        )
+
     def _get_drift_by_model_uuid(
         self,
         model_uuid: UUID,
@@ -315,6 +344,29 @@ class MetricsService:
             model_type=model_type,
             job_status=dataset.status,
             data_quality_data=metrics.data_quality,
+        )
+
+    @staticmethod
+    def _create_percentages_dto(
+            model_type: ModelType,
+            dataset: Optional[ReferenceDataset | CurrentDataset],
+            metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+            missing_status,
+    ) -> PercentagesDTO:
+        """Create a PercentagesDTO from the provided dataset and metrics."""
+        if not dataset:
+            return PercentagesDTO.from_dict(
+                job_status=missing_status,
+                percentages_data=None,
+            )
+        if not metrics:
+            return PercentagesDTO.from_dict(
+                job_status=dataset.status,
+                percentages_data=None,
+            )
+        return PercentagesDTO.from_dict(
+            job_status=dataset.status,
+            percentages_data=metrics.percentages,
         )
 
     @staticmethod
