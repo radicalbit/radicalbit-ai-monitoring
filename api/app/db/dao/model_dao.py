@@ -80,10 +80,11 @@ class ModelDAO:
                     (CurrentDataset.model_uuid == subq.c.model_uuid)
                     & (CurrentDataset.date == subq.c.maxdate),
                 )
-                .join(
+                .outerjoin(
                     CurrentDatasetMetrics,
                     CurrentDatasetMetrics.current_uuid == CurrentDataset.uuid,
                 )
+                .filter(Model.deleted.is_(False))
                 .order_by(Model.updated_at.desc())
             )
             if n_models:

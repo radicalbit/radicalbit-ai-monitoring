@@ -108,7 +108,7 @@ class MetricsService:
     def get_current_percentages_by_model_by_uuid(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> PercentagesDTO:
-        """Retrieve current data quality for a model by its UUID and an optional current dataset UUID."""
+        """Retrieve current percentages for a model by its UUID and an optional current dataset UUID."""
         return self._get_percentages_by_model_uuid(
             model_uuid=model_uuid,
             dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_metrics(
@@ -348,10 +348,10 @@ class MetricsService:
 
     @staticmethod
     def _create_percentages_dto(
-            model_type: ModelType,
-            dataset: Optional[ReferenceDataset | CurrentDataset],
-            metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
-            missing_status,
+        model_type: ModelType,
+        dataset: Optional[ReferenceDataset | CurrentDataset],
+        metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        missing_status,
     ) -> PercentagesDTO:
         """Create a PercentagesDTO from the provided dataset and metrics."""
         if not dataset:
