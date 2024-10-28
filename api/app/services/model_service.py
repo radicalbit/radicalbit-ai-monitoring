@@ -143,26 +143,25 @@ class ModelService:
                         return res
                     if 0 <= metrics.percentages[perc]['value'] < 1:
                         res.append(
-                            AlertDTO.from_dict(
-                                {
-                                    'model_uuid': model.uuid,
-                                    'reference_uuid': latest_reference_dataset.uuid
-                                    if latest_reference_dataset
-                                    else None,
-                                    'current_uuid': latest_current_dataset.uuid
-                                    if latest_current_dataset
-                                    else None,
-                                    'anomaly_type': AnomalyType[perc.upper()],
-                                    'anomaly_features': [
-                                        x['feature_name']
-                                        for x in sorted(
-                                            metrics.percentages[perc]['details'],
-                                            key=lambda e: e['score'],
-                                            reverse=True,
-                                        )
-                                        if x['score'] > 0
-                                    ],
-                                }
+                            AlertDTO(
+                                model_name=model.name,
+                                model_uuid=model.uuid,
+                                reference_uuid=latest_reference_dataset.uuid
+                                if latest_reference_dataset
+                                else None,
+                                current_uuid=latest_current_dataset.uuid
+                                if latest_current_dataset
+                                else None,
+                                anomaly_type=AnomalyType[perc.upper()],
+                                anomaly_features=[
+                                    x['feature_name']
+                                    for x in sorted(
+                                        metrics.percentages[perc]['details'],
+                                        key=lambda e: e['score'],
+                                        reverse=True,
+                                    )
+                                    if x['score'] > 0
+                                ],
                             )
                         )
                         count_alerts += 1

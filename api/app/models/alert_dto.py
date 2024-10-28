@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -9,10 +9,11 @@ from pydantic.alias_generators import to_camel
 class AnomalyType(str, Enum):
     DATA_QUALITY = 'DATA_QUALITY'
     MODEL_QUALITY = 'MODEL_QUALITY'
-    DRIFT = 'DRIFT'
+    DRIFT = 'DATA_DRIFT'
 
 
 class AlertDTO(BaseModel):
+    model_name: str
     model_uuid: UUID
     reference_uuid: Optional[UUID]
     current_uuid: Optional[UUID]
@@ -24,11 +25,3 @@ class AlertDTO(BaseModel):
         populate_by_name=True,
         alias_generator=to_camel,
     )
-
-    @staticmethod
-    def from_dict(
-        alert_data: Optional[Dict],
-    ) -> 'AlertDTO':
-        """Create a AlertDTO from a dictionary of data."""
-
-        return AlertDTO.model_validate(alert_data)
