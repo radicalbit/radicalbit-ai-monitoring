@@ -1,6 +1,6 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { columnFactory } from '@Src/components/smart-table/utils';
-import { JOB_STATUS } from '@Src/constants';
+import { JOB_STATUS, numberFormatter } from '@Src/constants';
 import { DataTypeEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { RelativeDateTime } from '@radicalbit/radicalbit-design-system';
 
@@ -60,7 +60,7 @@ export const getColumns = (
     width: '10%',
     render: ({ percentages }) => {
       const value = percentages?.dataQuality.value;
-      const data = (value && value !== -1) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+      const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value).toFixed(4) * 100)}%` : '--';
 
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
@@ -79,7 +79,7 @@ export const getColumns = (
     width: '10%',
     render: ({ percentages }) => {
       const value = percentages?.modelQuality.value;
-      const data = (value && value !== -1) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+      const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value).toFixed(4) * 100)}%` : '--';
 
       return (
         <div className="font-[var(--coo-font-weight-bold)]">
@@ -98,7 +98,7 @@ export const getColumns = (
     width: '10%',
     render: ({ percentages }) => {
       const value = percentages?.drift.value;
-      const data = (value && value !== -1) ? `${parseFloat(value).toFixed(4) * 100}%` : '--';
+      const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value).toFixed(4) * 100)}%` : '--';
 
       return (
         <div className="font-[var(--coo-font-weight-bold)]">

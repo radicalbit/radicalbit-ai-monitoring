@@ -9,6 +9,7 @@ import {
 import { PieChart as PieChartEchart } from 'echarts/charts';
 import * as echarts from 'echarts/lib/echarts';
 
+import { numberFormatter } from '@Src/constants';
 import pieChartOptions from './options';
 
 echarts.use([
@@ -29,8 +30,8 @@ function PieChart({ title, data }) {
 
   const splittedTitle = title.split(' ');
 
-  const currentData = (data * 100).toFixed(2);
-  const referenceData = ((1 - data) * 100).toFixed(2);
+  const currentData = numberFormatter({ maximumSignificantDigits: 4 }).format(data * 100);
+  const referenceData = numberFormatter({ maximumSignificantDigits: 4 }).format((1 - data) * 100);
 
   return (
     <div className="flex flex-row items-center gap-2">

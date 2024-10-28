@@ -60,12 +60,10 @@ function Main({
 }) {
   const navigate = useNavigate();
 
-  const modelNametest = modelName ?? 'Binary test';
-
+  const modelNametest = modelName ?? 'MODEL_NAME';
   const anomalyFeaturesJoined = anomalyFeatures.join(', ');
-  const anomalyTypeLabel = METRICS_TABS[`${anomalyType}`];
+  const anomalyTypeLabel = METRICS_TABS[`${anomalyType}`] ?? 'SECTION';
 
-  console.debug('🚀 ~ Main ~ anomalyTypeLabel:', anomalyTypeLabel);
   const handleOnClick = () => {
     navigate(`/models/${modelUuid}?tab=${MODEL_TABS_ENUM.CURRENT_DASHBOARD}&tab-metrics=${anomalyTypeLabel}`);
   };
