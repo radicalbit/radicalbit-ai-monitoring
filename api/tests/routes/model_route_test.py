@@ -170,23 +170,21 @@ class ModelRouteTest(unittest.TestCase):
         )
 
         sample_alerts_out = [
-            AlertDTO.from_dict(
-                {
-                    'model_uuid': model1.uuid,
-                    'reference_uuid': None,
-                    'current_uuid': current1.uuid,
-                    'anomaly_type': AnomalyType.DRIFT,
-                    'anomaly_features': ['num1', 'num2'],
-                }
+            AlertDTO(
+                model_name=model1.name,
+                model_uuid=model1.uuid,
+                reference_uuid=None,
+                current_uuid=current1.uuid,
+                anomaly_type=AnomalyType.DRIFT,
+                anomaly_features=['num1', 'num2'],
             ),
-            AlertDTO.from_dict(
-                {
-                    'model_uuid': model0.uuid,
-                    'reference_uuid': None,
-                    'current_uuid': current0.uuid,
-                    'anomaly_type': AnomalyType.DRIFT,
-                    'anomaly_features': ['num1', 'num2'],
-                }
+            AlertDTO(
+                model_name=model0.name,
+                model_uuid=model0.uuid,
+                reference_uuid=None,
+                current_uuid=current0.uuid,
+                anomaly_type=AnomalyType.DRIFT,
+                anomaly_features=['num1', 'num2'],
             ),
         ]
 
