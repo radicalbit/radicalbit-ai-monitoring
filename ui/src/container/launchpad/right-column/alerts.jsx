@@ -1,12 +1,11 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import { columnFactory } from '@Components/smart-table/utils';
 import { METRICS_TABS, MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import {
-  Board, DataTable, SectionTitle, Skeleton, Void,
+  Board, DataTable, SectionTitle, Skeleton,
 } from '@radicalbit/radicalbit-design-system';
 import { alertsApiSlice } from '@State/alerts/api';
 import { useNavigate } from 'react-router';
-import LogoSquared from '@Img/logo-collapsed.svg';
-import { columnFactory } from '@Components/smart-table/utils';
 
 const { useGetAlertsQuery } = alertsApiSlice;
 
@@ -41,21 +40,7 @@ function Alerts() {
   }
 
   if (data.length === 0) {
-    return (
-      <Board
-        header={<SectionTitle size="small" title="Alerts" />}
-        height="20rem"
-        main={(
-          <Void
-            description="No alert"
-            image={<LogoSquared />}
-            size="small"
-            title="Empty Models list"
-          />
-        )}
-        modifier="h-full"
-      />
-    );
+    return (false);
   }
 
   return (

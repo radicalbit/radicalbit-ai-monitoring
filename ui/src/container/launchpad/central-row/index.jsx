@@ -8,7 +8,6 @@ import { useGetOverallModelListQueryWithPolling } from '@Src/store/state/models/
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import LogoSquared from '@Img/logo-collapsed.svg';
 import { getColumns } from './columns';
 
 const { useGetOverallStatsQuery } = modelsApiSlice;
@@ -70,8 +69,6 @@ function OverallList() {
       <Void
         actions={<AddNewModel />}
         description="No models are available."
-        image={<LogoSquared />}
-        title="Empty Models list"
       />
     );
   }
