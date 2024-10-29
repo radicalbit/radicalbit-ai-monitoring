@@ -1,5 +1,5 @@
+import { JOB_STATUS } from '@Src/constants';
 import { API_TAGS, apiService } from '@Src/store/apis';
-// import overallStats from './mock/overall_stats.json';
 
 export const modelsApiSlice = apiService.injectEndpoints({
   endpoints: (builder) => ({
@@ -56,7 +56,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
     }),
 
     deleteModel: builder.mutation({
-      invalidatesTags: [API_TAGS.MODELS],
+      invalidatesTags: [API_TAGS.MODELS, API_TAGS.OVERALL_STATS, API_TAGS.ALERTS, API_TAGS.OVERALL_MODELS],
       query: ({ uuid }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/models/${uuid}`,
@@ -193,6 +193,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
             { type: API_TAGS.CURRENT_IMPORT, id: modelUUID },
             { type: API_TAGS.MODEL, id: modelUUID },
             { type: API_TAGS.MODELS },
+            { type: API_TAGS.OVERALL_MODELS },
           ];
         }
         return [];
@@ -209,7 +210,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
     }),
 
     getOverallStats: builder.query({
-      providesTags: () => [{ type: API_TAGS.MODELS }],
+      providesTags: () => [{ type: API_TAGS.OVERALL_STATS }],
       query: () => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: '/models/tot_percentages',
@@ -218,12 +219,26 @@ export const modelsApiSlice = apiService.injectEndpoints({
     }),
 
     getOverallModelList: builder.query({
-      providesTags: () => [{ type: API_TAGS.MODELS }],
-      query: () => ({
+      providesTags: () => [API_TAGS.OVERALL_MODELS],
+      query: ({ limit }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: '/models/last_n?n_models=10',
+        url: `/models/last_n?n_models=${limit}`,
         method: 'get',
       }),
+      onQueryStarted: (async (arg, { queryFulfilled, dispatch }) => {
+        const response = await queryFulfilled;
+
+        if (response.data) {
+          const isReferencePending = response.data.some((d) => d.latestReferenceJobStatus === JOB_STATUS.IMPORTING);
+          const isCurrentPending = response.data.some((d) => d.latestCurrentJobStatus === JOB_STATUS.IMPORTING);
+          const isPending = isReferencePending || isCurrentPending;
+
+          if (!isPending) {
+            dispatch(apiService.util.invalidateTags([API_TAGS.OVERALL_STATS, API_TAGS.ALERTS]));
+          }
+        }
+      }),
+
     }),
   }),
 

@@ -39,8 +39,8 @@ export const getColumns = (
     activeFilters,
     activeSorter,
     align: 'left',
-    width: '23%',
-    render: (type) => <div className="font-[var(--coo-font-weight-bold)]">{ModelTypeEnumLabel[type]}</div>,
+    width: '21%',
+    render: (type) => <div>{ModelTypeEnumLabel[type]}</div>,
   }),
 
   columnFactory({
@@ -55,7 +55,7 @@ export const getColumns = (
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
 
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
+        <div>
           {data}
         </div>
       );
@@ -74,7 +74,7 @@ export const getColumns = (
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
 
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
+        <div>
           {data}
         </div>
       );
@@ -93,7 +93,7 @@ export const getColumns = (
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
 
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
+        <div>
           {data}
         </div>
       );
@@ -108,7 +108,7 @@ export const getColumns = (
     activeSorter,
     sorter: true,
     align: 'right',
-    width: '10%',
+    width: '13%',
     render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,
   }),
 ];

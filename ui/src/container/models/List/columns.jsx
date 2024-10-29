@@ -37,7 +37,7 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: 200,
-    render: (type) => <div className="font-[var(--coo-font-weight-bold)]">{ModelTypeEnumLabel[type]}</div>,
+    render: (type) => <div>{ModelTypeEnumLabel[type]}</div>,
   }),
 
   columnFactory({
@@ -48,7 +48,7 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: 200,
-    render: (type) => <div className="font-[var(--coo-font-weight-bold)]">{DataTypeEnumLabel[type]}</div>,
+    render: (type) => <div>{DataTypeEnumLabel[type]}</div>,
   }),
 
   columnFactory({
@@ -63,9 +63,7 @@ export const getColumns = (
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value).toFixed(4) * 100)}%` : '--';
 
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
-          {data}
-        </div>
+        <div>{data}</div>
       );
     },
   }),
@@ -82,9 +80,7 @@ export const getColumns = (
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value).toFixed(4) * 100)}%` : '--';
 
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
-          {data}
-        </div>
+        <div>{data}</div>
       );
     },
   }),
@@ -101,9 +97,7 @@ export const getColumns = (
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value).toFixed(4) * 100)}%` : '--';
 
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
-          {data}
-        </div>
+        <div>{data}</div>
       );
     },
   }),

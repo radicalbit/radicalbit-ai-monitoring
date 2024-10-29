@@ -1,8 +1,12 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import { METRICS_TABS, MODEL_TABS_ENUM } from '@Container/models/Details/constants';
-import { Board, SectionTitle, Skeleton } from '@radicalbit/radicalbit-design-system';
+import {
+  Board, DataTable, SectionTitle, Skeleton, Void,
+} from '@radicalbit/radicalbit-design-system';
 import { alertsApiSlice } from '@State/alerts/api';
 import { useNavigate } from 'react-router';
+import LogoSquared from '@Img/logo-collapsed.svg';
+import { columnFactory } from '@Components/smart-table/utils';
 
 const { useGetAlertsQuery } = alertsApiSlice;
 
@@ -36,18 +40,39 @@ function Alerts() {
     );
   }
 
+  if (data.length === 0) {
+    return (
+      <Board
+        header={<SectionTitle size="small" title="Alerts" />}
+        height="20rem"
+        main={(
+          <Void
+            description="No alert"
+            image={<LogoSquared />}
+            size="small"
+            title="Empty Models list"
+          />
+        )}
+        modifier="h-full"
+      />
+    );
+  }
+
   return (
     <Board
       header={<SectionTitle size="small" title="Alerts" />}
-      height="20rem"
       main={(
-        <div className="flex flex-col gap-2">
-          {data.map((alert) => (
-            <Main alert={alert} />
-          ))}
-        </div>
+        <DataTable
+          columns={columns}
+          dataSource={data}
+          noHead
+          pagination={false}
+          scroll={{ y: '22rem' }}
+          size="small"
+        />
+
       )}
-      modifier="overflow-auto"
+      modifier="h-full"
       size="small"
     />
   );
@@ -73,14 +98,8 @@ function Main({
       <Board
         main={(
           <span>
-            The
-            {' '}
-
-            <strong>{anomalyTypeLabel}</strong>
-
-            {' '}
-
-            of
+            {anomalyTypeLabel}
+            :
 
             {' '}
 
@@ -96,10 +115,10 @@ function Main({
 
             {' '}
 
-            features
-            .
+            features.
           </span>
         )}
+        modifier="min-h-fit"
         onClick={handleOnClick}
         size="small"
         type="error"
@@ -111,30 +130,33 @@ function Main({
     <Board
       main={(
         <span>
-          The
 
-          {' '}
+          {anomalyTypeLabel}
 
-          <strong>{anomalyTypeLabel}</strong>
-
-          {' '}
-
-          of
+          :
 
           {' '}
 
           <strong>{modelNametest}</strong>
 
           {' '}
-
-          model reports a problem
+          reports a problem
         </span>
       )}
+      modifier="min-h-fit"
       onClick={handleOnClick}
       size="small"
       type="error"
     />
   );
 }
+
+const columns = [
+  columnFactory({
+    key: 'name',
+    render: (data) => <Main alert={data} />,
+  }),
+
+];
 
 export default Alerts;

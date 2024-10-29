@@ -1,19 +1,22 @@
 import PieChart from '@Components/charts/pie-chart';
 import SmartTable from '@Components/smart-table';
 import useModals from '@Hooks/use-modals';
-import { Button, Spinner } from '@radicalbit/radicalbit-design-system';
+import { Button, Spinner, Void } from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
 import { useGetOverallModelListQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
+import LogoSquared from '@Img/logo-collapsed.svg';
 import { getColumns } from './columns';
 
 const { useGetOverallStatsQuery } = modelsApiSlice;
 
 function ModelStatsList() {
   const { isLoading } = useGetOverallStatsQuery();
+  const { data } = useGetOverallModelListQueryWithPolling();
+  const count = data?.length;
 
   if (isLoading) {
     <Spinner spinning />;
@@ -24,7 +27,7 @@ function ModelStatsList() {
       <div className="flex flex-row justify-between items-end">
         <OverallCharts />
 
-        <AddNewModel />
+        {count > 0 && <AddNewModel />}
 
       </div>
 
@@ -61,6 +64,17 @@ function OverallList() {
   const handleOnClick = ({ uuid }) => {
     navigate({ pathname: `/models/${uuid}`, search });
   };
+
+  if (count === 0) {
+    return (
+      <Void
+        actions={<AddNewModel />}
+        description="No models are available."
+        image={<LogoSquared />}
+        title="Empty Models list"
+      />
+    );
+  }
 
   return (
     <SmartTable
