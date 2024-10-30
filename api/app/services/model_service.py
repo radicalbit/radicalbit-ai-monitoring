@@ -96,7 +96,7 @@ class ModelService:
         mq, mq_c = 0, 0
         dr, dr_c = 0, 0
         for _, metrics in models:
-            if metrics:
+            if metrics and metrics.percentages:
                 dq = dq + (
                     metrics.percentages['data_quality']['value']
                     if metrics.percentages['data_quality']['value'] >= 0
