@@ -96,7 +96,7 @@ class ModelService:
         mq, mq_c = 0, 0
         dr, dr_c = 0, 0
         for _, metrics in models:
-            if metrics:
+            if metrics and metrics.percentages:
                 dq = dq + (
                     metrics.percentages['data_quality']['value']
                     if metrics.percentages['data_quality']['value'] >= 0
@@ -137,7 +137,7 @@ class ModelService:
             latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
                 model.uuid
             )
-            if metrics:
+            if metrics and metrics.percentages:
                 for perc in ['data_quality', 'model_quality', 'drift']:
                     if count_alerts == n_alerts:
                         return res
