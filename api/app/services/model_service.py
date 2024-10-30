@@ -137,7 +137,7 @@ class ModelService:
             latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
                 model.uuid
             )
-            if metrics:
+            if metrics and metrics.percentages:
                 for perc in ['data_quality', 'model_quality', 'drift']:
                     if count_alerts == n_alerts:
                         return res
