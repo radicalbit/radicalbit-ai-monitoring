@@ -17,14 +17,6 @@ export function ModelsList() {
   const models = data?.items || [];
   const count = data?.total || 0;
 
-  // TODO we use the following object only for mock purpose. Must be removed when BE are ready
-  const modelsWithMock = models.map(((m) => ({
-    ...m,
-    dataQuality: { current: null, reference: null },
-    modelQuality: { current: null, reference: null },
-    dataDrift: { current: null, reference: null },
-  })));
-
   const modifier = models?.length ? '' : 'c-spinner--centered';
 
   if (isError) {
@@ -51,7 +43,7 @@ export function ModelsList() {
         <SmartTable
           clickable
           columns={getColumns}
-          dataSource={modelsWithMock}
+          dataSource={models}
           namespace={NamespaceEnum.MODELS}
           onRow={({ uuid }) => ({
             onClick: () => navigate({

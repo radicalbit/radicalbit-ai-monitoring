@@ -52,7 +52,6 @@ const xAxisValueType = (xAxisData, xAxisName) => {
   const options = {
     xAxis: {
       type: 'value',
-      boundaryGap: true,
       axisLabel: {
         fontSize: 9,
         color: '#9b99a1',
@@ -76,7 +75,6 @@ const yAxisValueType = (yAxisData, yAxisName) => {
   const options = {
     yAxis: {
       type: 'value',
-      boundaryGap: true,
       axisLabel: {
         fontSize: 9,
         color: '#9b99a1',
@@ -99,7 +97,6 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
   const options = {
     yAxis: {
       type: 'category',
-      boundaryGap: true,
       axisTick: { show: false },
       axisLine: { show: false },
       splitLine: { show: false },
