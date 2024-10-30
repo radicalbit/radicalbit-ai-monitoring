@@ -47,7 +47,7 @@ function Alerts() {
     <Board
       header={<SectionTitle size="small" title="Alerts" />}
       main={(
-        <div className="flex flex-col gap-4 h-full overflow-auto">
+        <div className="flex flex-col gap-4 h-full">
           {data.map((alert) => <Main alert={alert} />)}
         </div>
       )}
