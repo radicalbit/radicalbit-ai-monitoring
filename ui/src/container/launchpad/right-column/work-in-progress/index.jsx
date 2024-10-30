@@ -29,6 +29,7 @@ function WorkInProgress() {
             <Skeleton.Input active block />
           </div>
       )}
+        modifier="h-full"
       />
     );
   }
@@ -38,6 +39,7 @@ function WorkInProgress() {
       <Board
         header={<SectionTitle size="small" title="Work in progress" />}
         main={<SomethingWentWrong size="small" />}
+        modifier="h-full"
         size="small"
       />
     );
@@ -47,8 +49,8 @@ function WorkInProgress() {
     return (
       <Board
         header={<SectionTitle size="small" title="Work in progress" />}
-        height="250px"
         main={(<AddNewModelVoid />)}
+        modifier="h-full"
         size="small"
       />
     );
@@ -57,7 +59,6 @@ function WorkInProgress() {
   return (
     <Board
       header={<SectionTitle size="small" title="Work in progress" />}
-      height="300px"
       main={(
         <DataTable
           clickable
@@ -68,10 +69,11 @@ function WorkInProgress() {
           })}
           pagination={false}
           rowKey={({ uuid }) => uuid}
-          scroll={{ y: '16rem' }}
+          scroll={{ y: '8rem' }}
           size="small"
         />
       )}
+      modifier="h-full"
       size="small"
     />
   );

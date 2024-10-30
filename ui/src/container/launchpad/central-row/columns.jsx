@@ -1,6 +1,6 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { columnFactory } from '@Src/components/smart-table/utils';
-import { JOB_STATUS } from '@Src/constants';
+import { JOB_STATUS, numberFormatter } from '@Src/constants';
 import { ModelTypeEnumLabel } from '@Src/store/state/models/constants';
 import { RelativeDateTime, Truncate } from '@radicalbit/radicalbit-design-system';
 
@@ -39,8 +39,8 @@ export const getColumns = (
     activeFilters,
     activeSorter,
     align: 'left',
-    width: '23%',
-    render: (type) => <div className="font-[var(--coo-font-weight-bold)]">{ModelTypeEnumLabel[type]}</div>,
+    width: '21%',
+    render: (type) => <div>{ModelTypeEnumLabel[type]}</div>,
   }),
 
   columnFactory({
@@ -50,10 +50,12 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ dataQuality: { current } }) => {
-      const data = (current) ? `${current}%` : '--';
+    render: ({ percentages }) => {
+      const value = percentages?.dataQuality.value;
+      const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
+
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
+        <div>
           {data}
         </div>
       );
@@ -67,10 +69,12 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ modelQuality: { current } }) => {
-      const data = (current) ? `${current}%` : '--';
+    render: ({ percentages }) => {
+      const value = percentages?.modelQuality.value;
+      const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
+
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
+        <div>
           {data}
         </div>
       );
@@ -84,10 +88,12 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '10%',
-    render: ({ dataDrift: { current } }) => {
-      const data = (current) ? `${current}%` : '--';
+    render: ({ percentages }) => {
+      const value = percentages?.drift.value;
+      const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
+
       return (
-        <div className="font-[var(--coo-font-weight-bold)]">
+        <div>
           {data}
         </div>
       );
@@ -102,7 +108,7 @@ export const getColumns = (
     activeSorter,
     sorter: true,
     align: 'right',
-    width: '10%',
+    width: '13%',
     render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,
   }),
 ];

@@ -814,10 +814,10 @@
   dependencies:
     yup "^1.4.0"
 
-"@radicalbit/radicalbit-design-system@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@radicalbit/radicalbit-design-system/-/radicalbit-design-system-1.1.0.tgz#2506608ee3b4bfe7cbf6c81da6ea4fba0e0ee76a"
-  integrity sha512-GBX5ch7gXpFU20ZM4YpLjCwhV/e0boRxl5cgXiWuBh+NR6rh7HC2rOfsPPRu/1tuaTUU8vwBD8KImQc9SvVBJQ==
+"@radicalbit/radicalbit-design-system@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@radicalbit/radicalbit-design-system/-/radicalbit-design-system-1.2.0.tgz#11ccee8f19c487240a76afdb02c547a510626e41"
+  integrity sha512-35dJkz/D6Ed8h/IX8QARvjL5lQQta7MM0+OoPIqCY0RI36sE4p6Sgd11UR8kszyu6eLxjWnb5fCYsklHBrsUqQ==
   dependencies:
     "@babel/polyfill" "7.12.1"
     "@fortawesome/fontawesome-svg-core" "^6.5.1"
