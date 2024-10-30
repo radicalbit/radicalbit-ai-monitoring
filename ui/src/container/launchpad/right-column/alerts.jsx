@@ -1,8 +1,8 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
-import { columnFactory } from '@Components/smart-table/utils';
 import { METRICS_TABS, MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import {
-  Board, DataTable, SectionTitle, Skeleton,
+  Board,
+  SectionTitle, Skeleton,
 } from '@radicalbit/radicalbit-design-system';
 import { alertsApiSlice } from '@State/alerts/api';
 import { useNavigate } from 'react-router';
@@ -47,15 +47,9 @@ function Alerts() {
     <Board
       header={<SectionTitle size="small" title="Alerts" />}
       main={(
-        <DataTable
-          columns={columns}
-          dataSource={data}
-          noHead
-          pagination={false}
-          scroll={{ y: '22rem' }}
-          size="small"
-        />
-
+        <div className="flex flex-col gap-4 h-full overflow-auto">
+          {data.map((alert) => <Main alert={alert} />)}
+        </div>
       )}
       modifier="h-full"
       size="small"
@@ -135,13 +129,5 @@ function Main({
     />
   );
 }
-
-const columns = [
-  columnFactory({
-    key: 'name',
-    render: (data) => <Main alert={data} />,
-  }),
-
-];
 
 export default Alerts;
