@@ -51,7 +51,6 @@ function Alerts() {
           {data.map((alert) => <Main alert={alert} />)}
         </div>
       )}
-      modifier="h-full"
       size="small"
     />
   );
