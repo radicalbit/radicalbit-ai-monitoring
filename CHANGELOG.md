@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.1.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.0.1...v1.1.0) (2024-10-31)
+
+
+### Features
+
+* add CTA into WIP &lt;Board/&gt; ([#174](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/174)) ([9580203](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/9580203be453bfe73bde080d67ff026b8356c29c))
+* add percentages dto and endpoint ([#177](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/177)) ([5e61425](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/5e614257b311743588ac2ecd68248f2be094f4f8))
+* added last_n_alerts ([#181](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/181)) ([2072c5f](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/2072c5fc87131a024f2beec192b4f86922e14fae))
+* added percentage to get_models_paginated ([#178](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/178)) ([3c07bf6](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/3c07bf6fbd228a6af07397d8e7620d1880f9ad24))
+* added percentages calculation for drift, dataquality and modelquality ([#175](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/175)) ([6ffebe8](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/6ffebe886cfa5302012b90bc1d1a24d41f13ea75))
+* added percentages dto to sdk ([#183](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/183)) ([8d49b05](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/8d49b051516232916ac6c092d71d1e457d099812))
+* get_summarized_percentages endpoint ([#179](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/179)) ([6a90325](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/6a90325596d39d1c782446a84d67c8551d301a44))
+* **ui:** add new launchPad route and components ([#169](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/169)) ([5814462](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/5814462e19128c4a883cb9db828a47e782f19258))
+* **ui:** add percentage in model list ([#173](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/173)) ([67af031](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/67af031f49c0b187f264426cd05fb67fab777003))
+* **ui:** add topRow in launchPad page ([#170](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/170)) ([0b18946](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/0b18946e70853ddb579894c6249489d07c4ad39b))
+* **ui:** implement central section launchpad ([#171](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/171)) ([c5dcbe4](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/c5dcbe4630ea067136a2368655f2281d1597ffb9))
+* **ui:** implement WIP and alerts board ([#172](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/172)) ([a5c93b8](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/a5c93b8245234627d652a133f2b62e96fa977f0e))
+* update demos percentages ([#182](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/182)) ([a47e2b6](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/a47e2b606b6fba25f3af027071edd8572e798612))
+* updated alerts ([#186](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/186)) ([2d2a015](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/2d2a015fcb21b30351d6534809362fc4165eb74f))
+
+
+### Bug Fixes
+
+* fix and improve alembic migrations ([#176](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/176)) ([9a66dc7](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/9a66dc70b7eca7998c1ced95e739efc9dc8cfa96))
+* fix get percentages models ([#185](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/185)) ([b422cb3](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/b422cb35313ec7251701cfbf84f2264fbcdb2e41))
+* fixed alerts for retrocompatibility ([#189](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/189)) ([d83d8d2](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d83d8d2cd19a6233b85510dc8a664839ce5db8ed))
+* fixed comparison in summarized percentages ([#180](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/180)) ([48573c9](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/48573c93fe3f5cbcdca21a621f27465474c67217))
+* fixed demo data after percentages ([#184](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/184)) ([82eea2b](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/82eea2bcf71461b78a8f5e04c1c784791a5c3599))
+* **ui:** minor fixies ([#187](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/187)) ([85570bc](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/85570bcc15f12634b383d80526566b033bbddd45))
+* **ui:** remove datatable for alerts list visualization ([#188](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/188)) ([f36fa4a](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/f36fa4ad447abc8c8fc3dd895aa09ad92c5ebb2c))
+* **ui:** remove overflow on alerts list ([#190](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/190)) ([b245ce7](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/b245ce78ebdd5b1bd97e349f34a232e5b652c871))
+
 ## [1.0.1](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.0.0...v1.0.1) (2024-08-20)
 
 
