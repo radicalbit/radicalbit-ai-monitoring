@@ -14,6 +14,8 @@
 
 # Radicalbit AI Monitoring
 
+![Alt text](/img/launchpad/launchpad.png "Launchpad")
+
 # 👋 Welcome!
 The **Radicalbit AI Monitoring Platform** provides a comprehensive solution for monitoring your Machine Learning and Large Language models in production.
 
