@@ -21,6 +21,9 @@ Begin by manually triggering the release-please [workflow](https://github.com/ra
 
 The new release will adhere to the [semver](https://semver.org) specification: release-please will determine the upcoming version bump by parsing the git history of the `main` branch, looking for [Conventional Commits](https:/wwwconventionalcommits.org/) messages.
 
+## (Optional) Update semver version to release
+If for some reason there is the need to change the semver version that is going to be released, it's sufficient to update the content of the release PR with the desired semver version and adapt the changelog accordingly.
+
 ## (Optional) Update docs version
 We use [Docusaurus](https://docusaurus.io) for our documentation. If necessary, add a new [documentation version](https://docusaurus.io/docs/versioning) corresponding to the same semver tag as the upcoming release.
 
