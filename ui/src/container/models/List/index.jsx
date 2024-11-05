@@ -1,26 +1,18 @@
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import SmartTable from '@Components/smart-table';
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import useModals from '@Src/hooks/use-modals';
-import { modelsApiSlice } from '@Src/store/state/models/api';
+import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import { Button, Spinner, Void } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
-import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
-import { useSelector } from 'react-redux';
-import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { getColumns } from './columns';
-
-const { useGetModelsQuery } = modelsApiSlice;
-
-const { selectQueryParamsSelector } = contextConfigurationSelectors;
 
 export function ModelsList() {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.MODELS));
-
-  const { data, isLoading, isError } = useGetModelsQuery({ queryParams });
+  const { data, isLoading, isError } = useGetModelQueryWithPolling();
 
   const models = data?.items || [];
   const count = data?.total || 0;

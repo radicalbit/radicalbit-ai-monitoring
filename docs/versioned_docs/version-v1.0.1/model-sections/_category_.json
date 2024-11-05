@@ -1,0 +1,8 @@
+{
+  "label": "Model sections",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Each created models has three main sections: Overview, Reference, and Current. In this document we are thoroughly explaining each of them."
+  }
+}

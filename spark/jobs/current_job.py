@@ -6,14 +6,116 @@ import uuid
 import orjson
 from pyspark.sql.types import StructType, StructField, StringType
 
-from jobs.metrics.statistics import calculate_statistics_current
-from jobs.models.current_dataset import CurrentDataset
-from jobs.models.reference_dataset import ReferenceDataset
-from utils.current import CurrentMetricsService
-from utils.models import JobStatus, ModelOut
+from metrics.percentages import PercentageCalculator
+from metrics.statistics import calculate_statistics_current
+from models.current_dataset import CurrentDataset
+from models.reference_dataset import ReferenceDataset
+
+from utils.current_binary import CurrentMetricsService
+from utils.current_multiclass import CurrentMetricsMulticlassService
+from utils.current_regression import CurrentMetricsRegressionService
+from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 
 from pyspark.sql import SparkSession
+
+
+def compute_metrics(spark_session, current_dataset, reference_dataset, model):
+    complete_record = {}
+    match model.model_type:
+        case ModelType.BINARY:
+            metrics_service = CurrentMetricsService(
+                spark_session=spark_session,
+                current=current_dataset,
+                reference=reference_dataset,
+            )
+            statistics = calculate_statistics_current(current_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            model_quality = (
+                metrics_service.calculate_model_quality_with_group_by_timestamp()
+            )
+            drift = metrics_service.calculate_drift()
+            percentages = PercentageCalculator.calculate_percentages(
+                spark_session=spark_session,
+                current_dataset=current_dataset,
+                reference_dataset=reference_dataset,
+                drift=drift,
+                model_quality_current=model_quality,
+                model=model,
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+            complete_record["PERCENTAGES"] = orjson.dumps(percentages).decode("utf-8")
+        case ModelType.MULTI_CLASS:
+            metrics_service = CurrentMetricsMulticlassService(
+                spark_session=spark_session,
+                current=current_dataset,
+                reference=reference_dataset,
+            )
+            statistics = calculate_statistics_current(current_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            model_quality = metrics_service.calculate_model_quality()
+            drift = metrics_service.calculate_drift()
+            percentages = PercentageCalculator.calculate_percentages(
+                spark_session=spark_session,
+                current_dataset=current_dataset,
+                reference_dataset=reference_dataset,
+                drift=drift,
+                model_quality_current=model_quality,
+                model=model,
+            )
+
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+            complete_record["PERCENTAGES"] = orjson.dumps(percentages).decode("utf-8")
+        case ModelType.REGRESSION:
+            metrics_service = CurrentMetricsRegressionService(
+                reference=reference_dataset,
+                current=current_dataset,
+                spark_session=spark_session,
+            )
+            statistics = calculate_statistics_current(current_dataset)
+            data_quality = metrics_service.calculate_data_quality(is_current=True)
+            model_quality = metrics_service.calculate_model_quality()
+            drift = metrics_service.calculate_drift()
+            percentages = PercentageCalculator.calculate_percentages(
+                spark_session=spark_session,
+                current_dataset=current_dataset,
+                reference_dataset=reference_dataset,
+                drift=drift,
+                model_quality_current=model_quality,
+                model=model,
+            )
+
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["DRIFT"] = orjson.dumps(drift).decode("utf-8")
+            complete_record["PERCENTAGES"] = orjson.dumps(percentages).decode("utf-8")
+
+    return complete_record
 
 
 def main(
@@ -49,23 +151,13 @@ def main(
     raw_reference = spark_session.read.csv(reference_dataset_path, header=True)
     reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_reference)
 
-    metrics_service = CurrentMetricsService(
-        spark_session, current_dataset.current, reference_dataset.reference, model=model
+    complete_record = compute_metrics(
+        spark_session=spark_session,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+        model=model,
     )
-    statistics = calculate_statistics_current(current_dataset)
-    data_quality = metrics_service.calculate_data_quality()
-    model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
-    drift = metrics_service.calculate_drift()
-
-    # TODO put needed fields here
-    complete_record = {
-        "UUID": str(uuid.uuid4()),
-        "CURRENT_UUID": current_uuid,
-        "STATISTICS": orjson.dumps(statistics).decode("utf-8"),
-        "DATA_QUALITY": data_quality.model_dump_json(serialize_as_any=True),
-        "MODEL_QUALITY": orjson.dumps(model_quality).decode("utf-8"),
-        "DRIFT": orjson.dumps(drift).decode("utf-8"),
-    }
+    complete_record.update({"UUID": str(uuid.uuid4()), "CURRENT_UUID": current_uuid})
 
     schema = StructType(
         [
@@ -75,6 +167,7 @@ def main(
             StructField("DATA_QUALITY", StringType(), True),
             StructField("MODEL_QUALITY", StringType(), True),
             StructField("DRIFT", StringType(), True),
+            StructField("PERCENTAGES", StringType(), True),
         ]
     )
 

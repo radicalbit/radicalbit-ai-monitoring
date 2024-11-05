@@ -1,4 +1,4 @@
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -64,6 +64,18 @@ class NumericalFeatureMetrics(FeatureMetrics):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
+class NumericalTargetMetrics(FeatureMetrics):
+    type: str = 'numerical'
+    mean: float
+    std: float
+    min: float
+    max: float
+    median_metrics: MedianMetrics
+    histogram: Histogram
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
 class CategoryFrequency(BaseModel):
     name: str
     count: int
@@ -84,10 +96,11 @@ class DataQuality(BaseModel):
     pass
 
 
-class BinaryClassificationDataQuality(DataQuality):
+class ClassificationDataQuality(DataQuality):
     n_observations: int
     class_metrics: List[ClassMetrics]
-    feature_metrics: List[Union[NumericalFeatureMetrics, CategoricalFeatureMetrics]]
+    class_metrics_prediction: List[ClassMetrics]
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -96,9 +109,13 @@ class BinaryClassificationDataQuality(DataQuality):
     )
 
 
-class MultiClassDataQuality(DataQuality):
-    pass
-
-
 class RegressionDataQuality(DataQuality):
-    pass
+    n_observations: int
+    target_metrics: NumericalTargetMetrics
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )

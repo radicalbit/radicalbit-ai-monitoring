@@ -5,9 +5,11 @@ import uuid
 
 from radicalbit_platform_sdk.models import (
     DataType,
+    FieldType,
     Granularity,
     ModelDefinition,
     ModelType,
+    SupportedTypes,
 )
 
 
@@ -23,15 +25,17 @@ class ModelDefinitionTest(unittest.TestCase):
         frameworks = 'mlflow'
         feature_name = 'age'
         feature_type = 'int'
+        feature_field_type = 'numerical'
         output_name = 'adult'
         output_type = 'bool'
+        output_field_type = 'categorical'
         target_name = 'adult'
         target_type = 'bool'
+        target_field_type = 'categorical'
         timestamp_name = 'when'
-        timestamp_type = 'str'
+        timestamp_type = 'datetime'
+        timestamp_field_type = 'datetime'
         ts = str(time.time())
-        latest_reference_uuid = uuid.uuid4()
-        latest_current_uuid = uuid.uuid4()
         json_string = f"""{{
                 "uuid": "{str(id)}",
                 "name": "{name}",
@@ -40,37 +44,41 @@ class ModelDefinitionTest(unittest.TestCase):
                 "granularity": "{granularity.value}",
                 "features": [{{
                     "name": "{feature_name}",
-                    "type": "{feature_type}"
+                    "type": "{feature_type}",
+                    "fieldType": "{feature_field_type}"
                 }}],
                 "outputs": {{
                     "prediction": {{
                         "name": "{output_name}",
-                        "type": "{output_type}"
+                        "type": "{output_type}",
+                        "fieldType": "{output_field_type}"
                     }},
                     "predictionProba": {{
                         "name": "{output_name}",
-                        "type": "{output_type}"
+                        "type": "{output_type}",
+                        "fieldType": "{output_field_type}"
                     }},
                     "output": [{{
                         "name": "{output_name}",
-                        "type": "{output_type}"
+                        "type": "{output_type}",
+                        "fieldType": "{output_field_type}"
                     }}]
                 }},
                 "target": {{
                     "name": "{target_name}",
-                    "type": "{target_type}"
+                    "type": "{target_type}",
+                    "fieldType": "{target_field_type}"
                 }},
                 "timestamp": {{
                     "name": "{timestamp_name}",
-                    "type": "{timestamp_type}"
+                    "type": "{timestamp_type}",
+                    "fieldType": "{timestamp_field_type}"
                 }},
                 "description": "{description}",
                 "algorithm": "{algorithm}",
                 "frameworks": "{frameworks}",
                 "createdAt": "{ts}",
-                "updatedAt": "{ts}",
-                "latestReferenceUuid": "{str(latest_reference_uuid)}",
-                "latestCurrentUuid": "{str(latest_current_uuid)}"
+                "updatedAt": "{ts}"
             }}"""
         model_definition = ModelDefinition.model_validate(json.loads(json_string))
         assert model_definition.uuid == id
@@ -83,19 +91,26 @@ class ModelDefinitionTest(unittest.TestCase):
         assert model_definition.frameworks == frameworks
         assert model_definition.created_at == ts
         assert model_definition.updated_at == ts
-        assert model_definition.latest_reference_uuid == latest_reference_uuid
-        assert model_definition.latest_current_uuid == latest_current_uuid
         assert len(model_definition.features) == 1
         assert model_definition.features[0].name == feature_name
-        assert model_definition.features[0].type == feature_type
+        assert model_definition.features[0].type == SupportedTypes.int
+        assert model_definition.features[0].field_type == FieldType.numerical
         assert model_definition.outputs.prediction.name == output_name
-        assert model_definition.outputs.prediction.type == output_type
+        assert model_definition.outputs.prediction.type == SupportedTypes.bool
+        assert model_definition.outputs.prediction.field_type == FieldType.categorical
         assert model_definition.outputs.prediction_proba.name == output_name
-        assert model_definition.outputs.prediction_proba.type == output_type
+        assert model_definition.outputs.prediction_proba.type == SupportedTypes.bool
+        assert (
+            model_definition.outputs.prediction_proba.field_type
+            == FieldType.categorical
+        )
         assert len(model_definition.outputs.output) == 1
         assert model_definition.outputs.output[0].name == output_name
-        assert model_definition.outputs.output[0].type == output_type
+        assert model_definition.outputs.output[0].type == SupportedTypes.bool
+        assert model_definition.outputs.output[0].field_type == FieldType.categorical
         assert model_definition.target.name == target_name
-        assert model_definition.target.type == target_type
+        assert model_definition.target.type == SupportedTypes.bool
+        assert model_definition.target.field_type == FieldType.categorical
         assert model_definition.timestamp.name == timestamp_name
-        assert model_definition.timestamp.type == timestamp_type
+        assert model_definition.timestamp.type == SupportedTypes.datetime
+        assert model_definition.timestamp.field_type == FieldType.datetime

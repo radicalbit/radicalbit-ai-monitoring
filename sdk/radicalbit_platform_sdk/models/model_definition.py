@@ -25,6 +25,12 @@ class Granularity(str, Enum):
     MONTH = 'MONTH'
 
 
+class ModelFeatures(BaseModel):
+    features: List[ColumnDefinition]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
 class BaseModelDefinition(BaseModel):
     """A base class for model definition.
 
@@ -32,14 +38,14 @@ class BaseModelDefinition(BaseModel):
         name: The name of the model.
         description: An optional description to explain something about the model.
         model_type: The type of the model
-        data_type: It explanin the data type used by the model
+        data_type: It explains the data type used by the model
         granularity: The window used to calculate aggregated metrics
         features: A list column representing the features set
-        outputs: An OutputType definition to explaing the output of the model
+        outputs: An OutputType definition to explain the output of the model
         target: The column used to represent model's target
-        timestamp: The column used to store the when prediction was done
+        timestamp: The column used to store when prediction was done
         frameworks: An optional field to describe the frameworks used by the model
-        algorithm: An optional field to ecplane the algorithm used by the model
+        algorithm: An optional field to explain the algorithm used by the model
 
     """
 
@@ -68,7 +74,5 @@ class ModelDefinition(BaseModelDefinition):
     uuid: uuid_lib.UUID = Field(default_factory=lambda: uuid_lib.uuid4())
     created_at: str = Field(alias='createdAt')
     updated_at: str = Field(alias='updatedAt')
-    latest_reference_uuid: Optional[uuid_lib.UUID] = Field(alias='latestReferenceUuid')
-    latest_current_uuid: Optional[uuid_lib.UUID] = Field(alias='latestCurrentUuid')
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

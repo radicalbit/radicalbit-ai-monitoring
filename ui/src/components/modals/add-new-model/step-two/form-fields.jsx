@@ -17,7 +17,7 @@ function Header() {
   return (
     <SectionTitle
       subtitle={(
-        <>
+        <p>
           Upload your CSV file containing a representative sample of the data you want to monitor.
 
           <br />
@@ -25,9 +25,8 @@ function Header() {
           The uploaded file will be used to automatically infer variables names, data types,
           <br />
           and construct the corresponding schema
-        </>
+        </p>
       )}
-      title="Upload CSV file"
       titleWeight="normal"
     />
   );
@@ -74,10 +73,10 @@ function UploadButton() {
   const fileList = form.file ? [form.file] : undefined;
 
   const beforeUpload = (file) => {
-    const isTooBig = file.size / 1024 > 500;
+    const isTooBig = file.size / 1024 > 2000;
 
     if (isTooBig) {
-      setError('file', 'File must be smaller than 500KB');
+      setError('file', 'File must be smaller than 2MB');
     }
 
     return !isTooBig;
@@ -120,7 +119,7 @@ function UploadButton() {
           prefix={<FontAwesomeIcon icon={faUpload} />}
           type="primary"
         >
-          Import CSV
+          Upload CSV
         </Button>
       </Upload>
     </div>
@@ -165,14 +164,7 @@ function Recap() {
         <li>
           <label>
             <strong>File Size Limit: </strong>
-            500KB max
-          </label>
-        </li>
-
-        <li>
-          <label>
-            <strong>Data Row Limit: </strong>
-            100 rows max
+            2MB ( if your file is bigger please use our SDK )
           </label>
         </li>
       </ul>

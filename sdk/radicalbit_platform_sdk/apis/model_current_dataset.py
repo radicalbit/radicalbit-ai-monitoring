@@ -7,23 +7,20 @@ import requests
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    BinaryClassDrift,
-    BinaryClassificationDataQuality,
+    ClassificationDataQuality,
     CurrentBinaryClassificationModelQuality,
     CurrentFileUpload,
+    CurrentMultiClassificationModelQuality,
+    CurrentRegressionModelQuality,
     DataQuality,
     DatasetStats,
     Drift,
     JobStatus,
     ModelQuality,
     ModelType,
-    MultiClassDataQuality,
-    MultiClassDrift,
-    MultiClassModelQuality,
     RegressionDataQuality,
-    RegressionDrift,
-    RegressionModelQuality,
 )
+from radicalbit_platform_sdk.models.dataset_percentages import Percentages
 
 
 class ModelCurrentDataset:
@@ -46,6 +43,7 @@ class ModelCurrentDataset:
         self.__model_metrics = None
         self.__data_metrics = None
         self.__drift = None
+        self.__percentages = None
 
     def uuid(self) -> UUID:
         return self.__uuid
@@ -53,7 +51,7 @@ class ModelCurrentDataset:
     def path(self) -> str:
         return self.__path
 
-    def correlation_id_column(self) -> str:
+    def correlation_id_column(self) -> Optional[str]:
         return self.__correlation_id_column
 
     def date(self) -> str:
@@ -63,7 +61,7 @@ class ModelCurrentDataset:
         return self.__status
 
     def statistics(self) -> Optional[DatasetStats]:
-        """Get statistics about the current dataset
+        """Get statistics about the actual dataset
 
         :return: The `DatasetStats` if exists
         """
@@ -89,6 +87,8 @@ class ModelCurrentDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__statistics = None
+            case JobStatus.MISSING_CURRENT:
+                self.__statistics = None
             case JobStatus.SUCCEEDED:
                 if self.__statistics is None:
                     _, stats = invoke(
@@ -110,8 +110,58 @@ class ModelCurrentDataset:
 
         return self.__statistics
 
+    def percentages(self) -> Optional[Percentages]:
+        """Get percentages about the actual dataset
+
+        :return: The `Percentages` if exists
+        """
+
+        def __callback(
+            response: requests.Response,
+        ) -> tuple[JobStatus, Optional[Percentages]]:
+            try:
+                response_json = response.json()
+                job_status = JobStatus(response_json['jobStatus'])
+                if 'percentages' in response_json:
+                    return (
+                        job_status,
+                        Percentages.model_validate(response_json['percentages']),
+                    )
+            except KeyError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+            else:
+                return job_status, None
+
+        match self.__status:
+            case JobStatus.ERROR:
+                self.__percentages = None
+            case JobStatus.MISSING_CURRENT:
+                self.__percentages = None
+            case JobStatus.SUCCEEDED:
+                if self.__percentages is None:
+                    _, percentages = invoke(
+                        method='GET',
+                        url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/percentages',
+                        valid_response_code=200,
+                        func=__callback,
+                    )
+                    self.__percentages = percentages
+            case JobStatus.IMPORTING:
+                status, percentages = invoke(
+                    method='GET',
+                    url=f'{self.__base_url}/api/models/{str(self.__model_uuid)}/current/{str(self.__uuid)}/percentages',
+                    valid_response_code=200,
+                    func=__callback,
+                )
+                self.__status = status
+                self.__percentages = percentages
+
+        return self.__percentages
+
     def drift(self) -> Optional[Drift]:
-        """Get drift about the current dataset
+        """Get drift about the actual dataset
 
         :return: The `Drift` if exists
         """
@@ -123,26 +173,10 @@ class ModelCurrentDataset:
                 response_json = response.json()
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'drift' in response_json:
-                    match self.__model_type:
-                        case ModelType.BINARY:
-                            return (
-                                job_status,
-                                BinaryClassDrift.model_validate(response_json['drift']),
-                            )
-                        case ModelType.MULTI_CLASS:
-                            return (
-                                job_status,
-                                MultiClassDrift.model_validate(response_json['drift']),
-                            )
-                        case ModelType.REGRESSION:
-                            return (
-                                job_status,
-                                RegressionDrift.model_validate(response_json['drift']),
-                            )
-                        case _:
-                            raise ClientError(
-                                'Unable to parse metrics because of not managed model type'
-                            ) from None
+                    return (
+                        job_status,
+                        Drift.model_validate(response_json['drift']),
+                    )
             except KeyError as e:
                 raise ClientError(f'Unable to parse response: {response.text}') from e
             except ValidationError as e:
@@ -152,6 +186,8 @@ class ModelCurrentDataset:
 
         match self.__status:
             case JobStatus.ERROR:
+                self.__drift = None
+            case JobStatus.MISSING_CURRENT:
                 self.__drift = None
             case JobStatus.SUCCEEDED:
                 if self.__drift is None:
@@ -175,7 +211,7 @@ class ModelCurrentDataset:
         return self.__drift
 
     def data_quality(self) -> Optional[DataQuality]:
-        """Get data quality metrics about the current dataset
+        """Get data quality metrics about the actual dataset
 
         :return: The `DataQuality` if exists
         """
@@ -188,17 +224,10 @@ class ModelCurrentDataset:
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'dataQuality' in response_json:
                     match self.__model_type:
-                        case ModelType.BINARY:
+                        case ModelType.BINARY | ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                BinaryClassificationDataQuality.model_validate(
-                                    response_json['dataQuality']
-                                ),
-                            )
-                        case ModelType.MULTI_CLASS:
-                            return (
-                                job_status,
-                                MultiClassDataQuality.model_validate(
+                                ClassificationDataQuality.model_validate(
                                     response_json['dataQuality']
                                 ),
                             )
@@ -223,6 +252,8 @@ class ModelCurrentDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__data_metrics = None
+            case JobStatus.MISSING_CURRENT:
+                self.__data_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__data_metrics is None:
                     _, metrics = invoke(
@@ -245,7 +276,7 @@ class ModelCurrentDataset:
         return self.__data_metrics
 
     def model_quality(self) -> Optional[ModelQuality]:
-        """Get model quality metrics about the current dataset
+        """Get model quality metrics about the actual dataset
 
         :return: The `ModelQuality` if exists
         """
@@ -268,14 +299,14 @@ class ModelCurrentDataset:
                         case ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                MultiClassModelQuality.model_validate(
+                                CurrentMultiClassificationModelQuality.model_validate(
                                     response_json['modelQuality']
                                 ),
                             )
                         case ModelType.REGRESSION:
                             return (
                                 job_status,
-                                RegressionModelQuality.model_validate(
+                                CurrentRegressionModelQuality.model_validate(
                                     response_json['modelQuality']
                                 ),
                             )
@@ -292,6 +323,8 @@ class ModelCurrentDataset:
 
         match self.__status:
             case JobStatus.ERROR:
+                self.__model_metrics = None
+            case JobStatus.MISSING_CURRENT:
                 self.__model_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__model_metrics is None:

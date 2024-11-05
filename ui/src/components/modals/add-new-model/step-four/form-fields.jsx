@@ -1,20 +1,35 @@
-import { FormField, Select, Tooltip } from '@radicalbit/radicalbit-design-system';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { ModelTypeEnum } from '@State/models/constants';
+import {
+  FormField,
+  Select,
+  Tooltip,
+} from '@radicalbit/radicalbit-design-system';
+import { grafanaTracking } from '@Src/main';
 import { useModalContext } from '../modal-context-provider';
 
 function Target() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
+  const {
+    form, error, write, remove,
+  } = useFormbit;
 
   const targets = useGetTargets();
   const timestampName = form?.timestamp?.name;
+  const predictionName = form?.prediction?.name;
+  const predictionProbaName = form?.predictionProba?.name;
   const value = form?.target?.name;
 
   const handleOnChange = (val) => {
+    if (!val) {
+      remove('target');
+      return;
+    }
+
     try {
       write('target', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 
@@ -34,31 +49,55 @@ function Target() {
         {targets.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = timestampName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as timestamp">
+          switch (name) {
+            case timestampName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as timestamp">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current timestamp`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as prediction">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current prediction`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionProbaName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as probability">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current probability`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current timestamp`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -67,17 +106,27 @@ function Target() {
 
 function Timestamp() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
+  const {
+    form, error, write, remove,
+  } = useFormbit;
 
   const validTimestampFeatures = useGetTimestapValidFeatures();
   const targetName = form?.target?.name;
+  const predictionName = form?.prediction?.name;
+  const predictionProbaName = form?.predictionProba?.name;
   const value = form?.timestamp?.name;
 
   const handleOnChange = (val) => {
+    if (!val) {
+      remove('timestamp');
+      return;
+    }
+
     try {
       write('timestamp', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 
@@ -97,31 +146,55 @@ function Timestamp() {
         {validTimestampFeatures.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = targetName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as target">
+          switch (name) {
+            case targetName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as target">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current target`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as prediction">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current prediction`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionProbaName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as probability">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current probability`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current target`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -130,17 +203,27 @@ function Timestamp() {
 
 function Prediction() {
   const { useFormbit } = useModalContext();
-  const { form, error, write } = useFormbit;
+  const {
+    form, error, write, remove,
+  } = useFormbit;
 
   const predictions = useGetPredictions();
   const value = form?.prediction?.name;
   const predictionProbaName = form?.predictionProba?.name;
+  const timestampName = form?.timestamp?.name;
+  const targetName = form?.target?.name;
 
   const handleOnChange = (val) => {
+    if (!val) {
+      remove('prediction');
+      return;
+    }
+
     try {
       write('prediction', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
 
@@ -160,31 +243,55 @@ function Prediction() {
         {predictions.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = predictionProbaName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as probability">
+          switch (name) {
+            case targetName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as target">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current target`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case timestampName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as timestamp">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current timestamp`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionProbaName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as probability">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current probability`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current probability`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
@@ -192,17 +299,22 @@ function Prediction() {
 }
 
 function Probability() {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
+
   const {
     form, error, write, remove,
   } = useFormbit;
-
   const probabilities = useGetProbabilities();
   const predictionName = form?.prediction?.name;
+  const timestampName = form?.timestamp?.name;
+  const targetName = form?.target?.name;
   const value = form?.predictionProba?.name;
 
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
+
   const handleOnChange = (val) => {
-    if (val === undefined) {
+    if (!val) {
       remove('predictionProba');
       return;
     }
@@ -211,8 +323,17 @@ function Probability() {
       write('predictionProba', JSON.parse(val));
     } catch (e) {
       console.error('Error in parsing Select.Option value: ', e);
+      grafanaTracking?.api.pushError(e);
     }
   };
+
+  if (modelType === ModelTypeEnum.REGRESSION) {
+    return (
+      <FormField label="Probability" modifier="w-full">
+        <Select disabled readOnly value="Not available for Regression" />
+      </FormField>
+    );
+  }
 
   return (
     <FormField
@@ -230,77 +351,133 @@ function Probability() {
         {probabilities.map((o) => {
           const { name, type } = o;
           const v = JSON.stringify(o);
-          const isDisabled = predictionName === name;
 
-          if (isDisabled) {
-            return (
-              <Select.Option key={name} disabled value={v}>
-                <Tooltip placement="left" title="Already chosed as prediction">
+          switch (name) {
+            case targetName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as target">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current target`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case timestampName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as timestamp">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current timestamp`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            case predictionName:
+              return (
+                <Select.Option key={name} disabled value={v}>
+                  <Tooltip placement="left" title="Already chosed as prediction">
+                    <div className="flex flex-row items-center gap-2">
+                      <div>{name}</div>
+
+                      <small>{`(${type}) - current prediction`}</small>
+                    </div>
+                  </Tooltip>
+                </Select.Option>
+              );
+            default:
+              return (
+                <Select.Option key={name} value={v}>
                   <div className="flex flex-row items-center gap-2">
                     <div>{name}</div>
 
-                    <small>{`(${type}) - current prediction`}</small>
+                    <small>{`(${type})`}</small>
                   </div>
-                </Tooltip>
-              </Select.Option>
-            );
+                </Select.Option>
+              );
           }
-
-          return (
-            <Select.Option key={name} value={v}>
-              <div className="flex flex-row items-center gap-2">
-                <div>{name}</div>
-
-                <small>{`(${type})`}</small>
-              </div>
-            </Select.Option>
-          );
         })}
       </Select>
     </FormField>
   );
 }
 
-const targetValidTypes = ['int', 'float', 'double'];
+const targetValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double', 'string'],
+  [ModelTypeEnum.REGRESSION]: ['int', 'float', 'double'],
+};
 const useGetTargets = () => {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
+  const predictionType = form?.prediction?.type;
 
-  return form.features.filter(({ type }) => targetValidTypes.includes(type));
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
+
+  return form.outputs.filter(({ type }) => {
+    if (predictionType) {
+      return type === predictionType;
+    }
+
+    return targetValidTypes[modelType].includes(type);
+  });
 };
 
-const predictionValidTypes = ['int', 'float', 'double'];
+const predictionValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['int', 'float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['int', 'float', 'double', 'string'],
+  [ModelTypeEnum.REGRESSION]: ['int', 'float', 'double'],
+};
 const useGetPredictions = () => {
-  const { useFormbit } = useModalContext();
+  const { useFormbit, useFormbitStepOne } = useModalContext();
   const { form } = useFormbit;
+  const targetType = form?.target?.type;
 
-  return form.outputs.filter(({ type }) => predictionValidTypes.includes(type));
+  const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
+
+  return form.outputs.filter(({ type }) => {
+    if (targetType) {
+      return type === targetType;
+    }
+
+    return predictionValidTypes[modelType].includes(type);
+  });
 };
 
-const binaryClassificationProbabilityValidTypes = ['float', 'double'];
+const probabilityValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['float', 'double'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['float', 'double', 'string'],
+  [ModelTypeEnum.REGRESSION]: ['float', 'double'],
+};
 const useGetProbabilities = () => {
   const { useFormbitStepOne, useFormbit } = useModalContext();
   const { form } = useFormbit;
+
   const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
 
-  if (formStepOne.modelType === ModelTypeEnum.BINARY_CLASSIFICATION) {
-    return form.outputs.filter(({ type }) => binaryClassificationProbabilityValidTypes.includes(type));
-  }
-
-  return form.outputs;
+  return form.outputs.filter(({ type }) => probabilityValidTypes[modelType].includes(type));
 };
 
-const timestampValidTypes = ['datetime'];
+const timestampValidTypes = {
+  [ModelTypeEnum.BINARY_CLASSIFICATION]: ['datetime'],
+  [ModelTypeEnum.MULTI_CLASSIFICATION]: ['datetime'],
+  [ModelTypeEnum.REGRESSION]: ['datetime'],
+};
 const useGetTimestapValidFeatures = () => {
   const { useFormbitStepOne, useFormbit } = useModalContext();
   const { form } = useFormbit;
+
   const { form: formStepOne } = useFormbitStepOne;
+  const { modelType } = formStepOne;
 
-  if (formStepOne.modelType === ModelTypeEnum.BINARY_CLASSIFICATION) {
-    return form?.features.filter(({ type }) => timestampValidTypes.includes(type));
-  }
-
-  return form.outputs;
+  return form?.outputs.filter(({ type }) => timestampValidTypes[modelType].includes(type));
 };
 
 export {

@@ -25,6 +25,12 @@ class SupportedTypes(str, Enum):
     datetime = "datetime"
 
 
+class FieldTypes(str, Enum):
+    categorical = "categorical"
+    numerical = "numerical"
+    datetime = "datetime"
+
+
 class ModelType(str, Enum):
     REGRESSION = "REGRESSION"
     BINARY = "BINARY"
@@ -47,15 +53,27 @@ class Granularity(str, Enum):
 class ColumnDefinition(BaseModel):
     name: str
     type: SupportedTypes
+    field_type: FieldTypes
 
     def is_numerical(self) -> bool:
-        return self.type == SupportedTypes.float or self.type == SupportedTypes.int
+        return self.field_type == FieldTypes.numerical
+
+    def is_float(self) -> bool:
+        return (
+            self.field_type == FieldTypes.numerical
+            and self.type == SupportedTypes.float
+        )
+
+    def is_int(self) -> bool:
+        return (
+            self.field_type == FieldTypes.numerical and self.type == SupportedTypes.int
+        )
 
     def is_categorical(self) -> bool:
-        return self.type == SupportedTypes.string or self.type == SupportedTypes.bool
+        return self.field_type == FieldTypes.categorical
 
     def is_datetime(self) -> bool:
-        return self.type == SupportedTypes.datetime
+        return self.field_type == FieldTypes.datetime
 
 
 class OutputType(BaseModel):
@@ -97,6 +115,12 @@ class ModelOut(BaseModel):
 
     def get_numerical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_numerical()]
+
+    def get_float_features(self) -> List[ColumnDefinition]:
+        return [feature for feature in self.features if feature.is_float()]
+
+    def get_int_features(self) -> List[ColumnDefinition]:
+        return [feature for feature in self.features if feature.is_int()]
 
     def get_categorical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_categorical()]

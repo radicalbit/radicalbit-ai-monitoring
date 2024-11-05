@@ -39,6 +39,12 @@ target_metadata = BaseTable.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+def include_name(name, type_, parent_names):
+    if type_ == "schema":
+        return name in [target_metadata.schema]
+    else:
+        return True
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -59,9 +65,17 @@ def run_migrations_offline() -> None:
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
         render_item=render_item,
+        version_table_schema=target_metadata.schema,
+        include_schemas=True,
+        include_name=include_name
     )
 
+    # Here we need to enforce public if schema target_metadata.schema is None, which is default schema (public for postgres) for alembic
+    target_schema = 'public' if target_metadata.schema is None else target_metadata.schema
+
     with context.begin_transaction():
+        context.execute(f'create schema if not exists "{target_schema}";')
+        context.execute(f'set search_path to "{target_schema}"')
         context.run_migrations()
 
 
@@ -83,9 +97,17 @@ def run_migrations_online() -> None:
             connection=connection,
             target_metadata=target_metadata,
             render_item=render_item,
+            version_table_schema=target_metadata.schema,
+            include_schemas=True,
+            include_name=include_name
         )
 
+        # Here we need to enforce public if schema target_metadata.schema is None, which is default schema (public for postgres) for alembic
+        target_schema = 'public' if target_metadata.schema is None else target_metadata.schema
+
         with context.begin_transaction():
+            context.execute(f'create schema if not exists "{target_schema}";')
+            context.execute(f'set search_path to "{target_schema}"')
             context.run_migrations()
 
 

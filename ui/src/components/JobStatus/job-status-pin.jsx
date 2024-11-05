@@ -1,16 +1,7 @@
 import { JOB_STATUS } from '@Src/constants';
-import { useGetCurrentDataQualityQueryWithPolling, useGetReferenceDataQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 import { Pin, Spinner } from '@radicalbit/radicalbit-design-system';
 
-function JobStatusPin({ modelUUID }) {
-  const { data: referenceData } = useGetReferenceDataQualityQueryWithPolling(modelUUID);
-  const referenceJobStatus = referenceData?.jobStatus;
-
-  const { data: currentData } = useGetCurrentDataQualityQueryWithPolling(modelUUID);
-  const currentJobStatus = currentData?.jobStatus;
-
-  const jobStatus = (referenceJobStatus === JOB_STATUS.SUCCEEDED) ? currentJobStatus : referenceJobStatus;
-
+function JobStatusPin({ jobStatus }) {
   switch (jobStatus) {
     case JOB_STATUS.IMPORTING: {
       return (
@@ -30,8 +21,12 @@ function JobStatusPin({ modelUUID }) {
       );
     }
 
+    case JOB_STATUS.MISSING_CURRENT: {
+      return <Pin size="small" type="secondary" />;
+    }
+
     case JOB_STATUS.MISSING_REFERENCE: {
-      return false;
+      return <Pin size="small" type="secondary" />;
     }
 
     default: return false;

@@ -5,9 +5,9 @@ export const MODEL_TABS_ENUM = {
 };
 
 export const METRICS_TABS = {
-  DATA_QUALITIY: 'Data Quality',
+  DATA_QUALITY: 'Data Quality',
   MODEL_QUALITY: 'Model Quality',
-  DATA_DRIFT: 'Model Drift',
+  DATA_DRIFT: 'Data Drift',
   IMPORT: 'Import',
 };
 
@@ -21,21 +21,12 @@ export const OVERVIEW_ROW_TYPE = {
   PROBABILITY: 'PROBABILITY',
   PREDICTION: 'PREDICTION',
   GROUND_TRUTH: 'GROUND TRUTH',
+  TIMESTAMP: 'TIMESTAMP',
 };
 
 export const FEATURE_TYPE = {
   NUMERICAL: 'numerical',
   CATEGORICAL: 'categorical',
-};
-
-export const CHART_COLOR = {
-  REFERENCE: '#9B99A1',
-  REFERENCE_LIGHT: '#DBDBDB',
-  REFERENCE_DARK: '#667',
-  CURRENT: '#3695d9',
-  CURRENT_LIGHT: '#C8E4F9',
-  CURRENT_DARK: '#0A71BB',
-  WHITE: '#FFFFFF',
 };
 
 export const MODEL_QUALITY_FIELD = {
@@ -47,4 +38,17 @@ export const MODEL_QUALITY_FIELD = {
   TRUE_POSITIVE_RATE: 'True positive rate',
   AREA_UNDER_ROC: 'AUC-ROC',
   AREA_UNDER_PR: 'PR AUC',
+  MSE: 'Mean squared error',
+  RMSE: 'Root mean squared error',
+  MAE: 'Mean absolute error',
+  MAPE: 'Mean absolute percentage error',
+  R2: 'R-squared',
+  ADJ_R2: 'Adjusted R-squared',
+  VARIANCE: 'Variance',
+  LOG_LOSS: 'Log loss',
+};
+
+export const TABLE_COLOR = {
+  REFERENCE_COLUMN: '#fafafc',
+  CURRENT_COLUMN: '#f1f9ff',
 };

@@ -7,13 +7,69 @@ from pyspark.sql.types import StructField, StructType, StringType
 
 from metrics.statistics import calculate_statistics_reference
 from models.reference_dataset import ReferenceDataset
-from utils.reference import ReferenceMetricsService
+from utils.reference_regression import ReferenceMetricsRegressionService
+from utils.reference_binary import ReferenceMetricsService
 from utils.models import JobStatus, ModelOut, ModelType
 from utils.db import update_job_status, write_to_db
 
 from pyspark.sql import SparkSession
 
 import logging
+
+from utils.reference_multiclass import ReferenceMetricsMulticlassService
+
+
+def compute_metrics(reference_dataset, model):
+    complete_record = {}
+    match model.model_type:
+        case ModelType.BINARY:
+            metrics_service = ReferenceMetricsService(reference=reference_dataset)
+            model_quality = metrics_service.calculate_model_quality()
+            statistics = calculate_statistics_reference(reference_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+        case ModelType.MULTI_CLASS:
+            metrics_service = ReferenceMetricsMulticlassService(
+                reference=reference_dataset
+            )
+            statistics = calculate_statistics_reference(reference_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            model_quality = metrics_service.calculate_model_quality()
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+        case ModelType.REGRESSION:
+            metrics_service = ReferenceMetricsRegressionService(
+                reference=reference_dataset
+            )
+            statistics = calculate_statistics_reference(reference_dataset)
+            data_quality = metrics_service.calculate_data_quality()
+            model_quality = metrics_service.calculate_model_quality()
+
+            complete_record["STATISTICS"] = statistics.model_dump_json(
+                serialize_as_any=True
+            )
+            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
+                "utf-8"
+            )
+            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+                serialize_as_any=True
+            )
+    return complete_record
 
 
 def main(
@@ -46,26 +102,11 @@ def main(
     raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
     reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_dataframe)
 
-    metrics_service = ReferenceMetricsService(reference_dataset.reference, model=model)
+    complete_record = compute_metrics(reference_dataset, model)
 
-    complete_record = {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
-
-    match model.model_type:
-        case ModelType.BINARY:
-            model_quality = metrics_service.calculate_model_quality()
-            statistics = calculate_statistics_reference(reference_dataset)
-            data_quality = metrics_service.calculate_data_quality()
-            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
-                "utf-8"
-            )
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
-            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
-                serialize_as_any=True
-            )
-        case ModelType.MULTI_CLASS:
-            # TODO add data quality and model quality
-            statistics = calculate_statistics_reference(reference_dataset)
-            complete_record["STATISTICS"] = orjson.dumps(statistics).decode("utf-8")
+    complete_record.update(
+        {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
+    )
 
     schema = StructType(
         [

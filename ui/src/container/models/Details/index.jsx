@@ -1,35 +1,29 @@
-import NotFound from '@Components/ErrorPage/not-found';
+import { ModelTypeEnum } from '@State/models/constants';
 import { modelsApiSlice } from '@State/models/api';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
-import Current from './current';
-import Overview from './overview';
-import ReferenceDashboard from './reference';
+import { useParams } from 'react-router-dom';
+import BinaryClassificationMetrics from './binary-classification';
+import MultiClassificationMetrics from './multi-classification';
+import RegressionMetrics from './regression';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
 export function ModelDetails() {
   const { uuid } = useParams();
+  const { data } = useGetModelByUUIDQuery({ uuid });
 
-  const [searchParams] = useSearchParams();
-  const activeKey = searchParams.get('tab') || MODEL_TABS_ENUM.OVERVIEW;
+  const modelType = data?.modelType;
 
-  const { error } = useGetModelByUUIDQuery({ uuid });
-  const status = error?.status;
+  switch (modelType) {
+    case ModelTypeEnum.REGRESSION:
+      return <RegressionMetrics />;
 
-  if (status === 404) {
-    return <NotFound />;
-  }
+    case ModelTypeEnum.BINARY_CLASSIFICATION:
+      return <BinaryClassificationMetrics />;
 
-  if (activeKey === MODEL_TABS_ENUM.OVERVIEW) {
-    return (<Overview />);
-  }
+    case ModelTypeEnum.MULTI_CLASSIFICATION:
+      return <MultiClassificationMetrics />;
 
-  if (activeKey === MODEL_TABS_ENUM.REFERENCE_DASHBOARD) {
-    return (<ReferenceDashboard />);
-  }
-
-  if (activeKey === MODEL_TABS_ENUM.CURRENT_DASHBOARD) {
-    return (<Current />);
+    default:
+      return false;
   }
 }

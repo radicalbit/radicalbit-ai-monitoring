@@ -7,15 +7,14 @@ import requests
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    BinaryClassificationDataQuality,
     BinaryClassificationModelQuality,
+    ClassificationDataQuality,
     DataQuality,
     DatasetStats,
     JobStatus,
     ModelQuality,
     ModelType,
-    MultiClassDataQuality,
-    MultiClassModelQuality,
+    MultiClassificationModelQuality,
     ReferenceFileUpload,
     RegressionDataQuality,
     RegressionModelQuality,
@@ -54,7 +53,7 @@ class ModelReferenceDataset:
         return self.__status
 
     def statistics(self) -> Optional[DatasetStats]:
-        """Get statistics about the current dataset
+        """Get statistics about the actual dataset
 
         :return: The `DatasetStats` if exists
         """
@@ -79,6 +78,8 @@ class ModelReferenceDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__statistics = None
+            case JobStatus.MISSING_REFERENCE:
+                self.__statistics = None
             case JobStatus.SUCCEEDED:
                 if self.__statistics is None:
                     _, stats = invoke(
@@ -101,7 +102,7 @@ class ModelReferenceDataset:
         return self.__statistics
 
     def data_quality(self) -> Optional[DataQuality]:
-        """Get data quality metrics about the current dataset
+        """Get data quality metrics about the actual dataset
 
         :return: The `DataQuality` if exists
         """
@@ -114,17 +115,10 @@ class ModelReferenceDataset:
                 job_status = JobStatus(response_json['jobStatus'])
                 if 'dataQuality' in response_json:
                     match self.__model_type:
-                        case ModelType.BINARY:
+                        case ModelType.BINARY | ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                BinaryClassificationDataQuality.model_validate(
-                                    response_json['dataQuality']
-                                ),
-                            )
-                        case ModelType.MULTI_CLASS:
-                            return (
-                                job_status,
-                                MultiClassDataQuality.model_validate(
+                                ClassificationDataQuality.model_validate(
                                     response_json['dataQuality']
                                 ),
                             )
@@ -149,6 +143,8 @@ class ModelReferenceDataset:
         match self.__status:
             case JobStatus.ERROR:
                 self.__data_metrics = None
+            case JobStatus.MISSING_REFERENCE:
+                self.__data_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__data_metrics is None:
                     _, metrics = invoke(
@@ -171,7 +167,7 @@ class ModelReferenceDataset:
         return self.__data_metrics
 
     def model_quality(self) -> Optional[ModelQuality]:
-        """Get model quality metrics about the current dataset
+        """Get model quality metrics about the actual dataset
 
         :return: The `ModelQuality` if exists
         """
@@ -194,7 +190,7 @@ class ModelReferenceDataset:
                         case ModelType.MULTI_CLASS:
                             return (
                                 job_status,
-                                MultiClassModelQuality.model_validate(
+                                MultiClassificationModelQuality.model_validate(
                                     response_json['modelQuality']
                                 ),
                             )
@@ -218,6 +214,8 @@ class ModelReferenceDataset:
 
         match self.__status:
             case JobStatus.ERROR:
+                self.__model_metrics = None
+            case JobStatus.MISSING_REFERENCE:
                 self.__model_metrics = None
             case JobStatus.SUCCEEDED:
                 if self.__model_metrics is None:

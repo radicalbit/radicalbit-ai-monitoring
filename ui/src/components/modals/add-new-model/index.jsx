@@ -78,7 +78,7 @@ function Header() {
 
         <Step title="Schema" />
 
-        <Step title="Output" />
+        <Step title="Fields" />
 
         <Step title="Target" />
       </Steps>
@@ -87,7 +87,9 @@ function Header() {
 }
 
 function Subtitles() {
-  const { step } = useModalContext();
+  const { useFormbit, step } = useModalContext();
+  const { form } = useFormbit;
+  const variables = form?.variables ?? [];
 
   switch (step) {
     // step count start form 0
@@ -96,8 +98,38 @@ function Subtitles() {
 
     case 2:
       return (
-        <div className="flex justify-center">
-          Select output fields on the right. Remaining fields will be used as features or ground truth (target).
+        <div className="flex justify-between">
+          <div className="flex items-center justify-center basis-1/2">
+            <div className="text-center">
+              <strong>
+                Select from the
+                {' '}
+
+                {variables.length}
+              </strong>
+
+              {' '}
+
+              columns in
+              <br />
+
+              your schema the variables you are interested in
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center basis-1/2">
+            <div className="text-center">
+              <strong>Check</strong>
+
+              {' '}
+
+              that this section contains
+              <br />
+
+              <strong>features, target, predictions and timestamp</strong>
+            </div>
+
+          </div>
         </div>
       );
 

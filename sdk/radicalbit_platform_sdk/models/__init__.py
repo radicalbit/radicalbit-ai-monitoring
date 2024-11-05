@@ -2,7 +2,7 @@ from .aws_credentials import AwsCredentials
 from .column_definition import ColumnDefinition
 from .data_type import DataType
 from .dataset_data_quality import (
-    BinaryClassificationDataQuality,
+    ClassificationDataQuality,
     CategoricalFeatureMetrics,
     CategoryFrequency,
     ClassMedianMetrics,
@@ -11,42 +11,44 @@ from .dataset_data_quality import (
     FeatureMetrics,
     MedianMetrics,
     MissingValue,
-    MultiClassDataQuality,
     NumericalFeatureMetrics,
     RegressionDataQuality,
 )
 from .dataset_drift import (
-    BinaryClassDrift,
     Drift,
     DriftAlgorithm,
     FeatureDrift,
     FeatureDriftCalculation,
-    MultiClassDrift,
-    RegressionDrift,
 )
 from .dataset_model_quality import (
     BinaryClassificationModelQuality,
     CurrentBinaryClassificationModelQuality,
+    CurrentMultiClassificationModelQuality,
+    CurrentRegressionModelQuality,
     ModelQuality,
-    MultiClassModelQuality,
+    MultiClassificationModelQuality,
     RegressionModelQuality,
 )
 from .dataset_stats import DatasetStats
+from .field_type import FieldType
 from .file_upload_result import CurrentFileUpload, FileReference, ReferenceFileUpload
 from .job_status import JobStatus
 from .model_definition import (
     CreateModel,
     Granularity,
     ModelDefinition,
+    ModelFeatures,
     OutputType,
 )
 from .model_type import ModelType
+from .supported_types import SupportedTypes
 
 __all__ = [
     'OutputType',
     'Granularity',
     'CreateModel',
     'ModelDefinition',
+    'ModelFeatures',
     'ColumnDefinition',
     'JobStatus',
     'DataType',
@@ -55,11 +57,12 @@ __all__ = [
     'ModelQuality',
     'BinaryClassificationModelQuality',
     'CurrentBinaryClassificationModelQuality',
-    'MultiClassModelQuality',
+    'CurrentMultiClassificationModelQuality',
+    'MultiClassificationModelQuality',
     'RegressionModelQuality',
+    'CurrentRegressionModelQuality',
     'DataQuality',
-    'BinaryClassificationDataQuality',
-    'MultiClassDataQuality',
+    'ClassificationDataQuality',
     'RegressionDataQuality',
     'ClassMetrics',
     'MedianMetrics',
@@ -73,11 +76,10 @@ __all__ = [
     'FeatureDriftCalculation',
     'FeatureDrift',
     'Drift',
-    'BinaryClassDrift',
-    'MultiClassDrift',
-    'RegressionDrift',
     'ReferenceFileUpload',
     'CurrentFileUpload',
     'FileReference',
     'AwsCredentials',
+    'SupportedTypes',
+    'FieldType',
 ]

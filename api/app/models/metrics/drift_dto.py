@@ -1,17 +1,17 @@
 from enum import Enum
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
-from app.models.exceptions import MetricsInternalError
+from app.models.inferred_schema_dto import FieldType
 from app.models.job_status import JobStatus
-from app.models.model_dto import ModelType
 
 
 class DriftAlgorithm(str, Enum):
     KS = 'KS'
     CHI2 = 'CHI2'
+    PSI = 'PSI'
 
 
 class FeatureDriftCalculation(BaseModel):
@@ -24,28 +24,21 @@ class FeatureDriftCalculation(BaseModel):
 
 class FeatureMetrics(BaseModel):
     feature_name: str
+    field_type: FieldType
     drift_calc: FeatureDriftCalculation
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class BinaryClassDrift(BaseModel):
+class Drift(BaseModel):
     feature_metrics: List[FeatureMetrics]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class MultiClassDrift(BaseModel):
-    pass
-
-
-class RegressionDrift(BaseModel):
-    pass
-
-
 class DriftDTO(BaseModel):
     job_status: JobStatus
-    drift: Optional[Union[BinaryClassDrift, MultiClassDrift, RegressionDrift]]
+    drift: Optional[Drift]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -55,33 +48,22 @@ class DriftDTO(BaseModel):
 
     @staticmethod
     def from_dict(
-        model_type: ModelType,
         job_status: JobStatus,
         drift_data: Optional[Dict],
-    ):
+    ) -> 'DriftDTO':
+        """Create a DriftDTO from a dictionary of data."""
+        drift = DriftDTO._create_drift(drift_data=drift_data)
+
+        return DriftDTO(
+            job_status=job_status,
+            drift=drift,
+        )
+
+    @staticmethod
+    def _create_drift(
+        drift_data: Optional[Dict],
+    ) -> Optional[Drift]:
+        """Create a specific drift instance from a dictionary of data."""
         if not drift_data:
-            return DriftDTO(
-                job_status=job_status,
-                drift=None,
-            )
-        match model_type:
-            case ModelType.BINARY:
-                binary_class_data_quality = BinaryClassDrift(**drift_data)
-                return DriftDTO(
-                    job_status=job_status,
-                    drift=binary_class_data_quality,
-                )
-            case ModelType.MULTI_CLASS:
-                multi_class_data_quality = MultiClassDrift(**drift_data)
-                return DriftDTO(
-                    job_status=job_status,
-                    drift=multi_class_data_quality,
-                )
-            case ModelType.REGRESSION:
-                regression_data_quality = RegressionDrift(**drift_data)
-                return DriftDTO(
-                    job_status=job_status,
-                    drift=regression_data_quality,
-                )
-            case _:
-                raise MetricsInternalError(f'Invalid model type {model_type}')
+            return None
+        return Drift(**drift_data)

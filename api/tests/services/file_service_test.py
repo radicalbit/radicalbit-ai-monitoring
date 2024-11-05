@@ -188,24 +188,31 @@ class FileServiceTest(unittest.TestCase):
     def test_upload_current_file_ok(self):
         file = csv.get_current_sample_csv_file()
         model = db_mock.get_sample_model(
-            features=[{'name': 'num1', 'type': 'int'}],
+            features=[{'name': 'num1', 'type': 'int', 'fieldType': 'numerical'}],
             outputs={
-                'prediction': {'name': 'prediction', 'type': 'int'},
-                'prediction_proba': {'name': 'prediction_proba', 'type': 'int'},
-                'output': [{'name': 'num2', 'type': 'int'}],
+                'prediction': {
+                    'name': 'prediction',
+                    'type': 'int',
+                    'fieldType': 'numerical',
+                },
+                'prediction_proba': {
+                    'name': 'prediction_proba',
+                    'type': 'int',
+                    'fieldType': 'numerical',
+                },
+                'output': [{'name': 'num2', 'type': 'int', 'fieldType': 'numerical'}],
             },
-            target={'name': 'target', 'type': 'int'},
-            timestamp={'name': 'datetime', 'type': 'datetime'},
+            target={'name': 'target', 'type': 'int', 'fieldType': 'numerical'},
+            timestamp={'name': 'datetime', 'type': 'datetime', 'fieldType': 'datetime'},
         )
         object_name = f'{str(model.uuid)}/current/{file.filename}'
         path = f's3://bucket/{object_name}'
-        correlation_id_column = 'correlation_id'
         inserted_file = CurrentDataset(
             uuid=uuid4(),
             model_uuid=model_uuid,
             path=path,
             date=datetime.datetime.now(tz=datetime.UTC),
-            correlation_id_column=correlation_id_column,
+            correlation_id_column=None,
             status=JobStatus.IMPORTING,
         )
         reference_file = get_sample_reference_dataset(model_uuid=model_uuid)
@@ -221,7 +228,8 @@ class FileServiceTest(unittest.TestCase):
         self.spark_k8s_client.submit_app = MagicMock()
 
         result = self.files_service.upload_current_file(
-            model.uuid, file, correlation_id_column
+            model.uuid,
+            file,
         )
 
         self.model_svc.get_model_by_uuid.assert_called_once()

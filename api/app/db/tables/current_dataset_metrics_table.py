@@ -13,7 +13,6 @@ class CurrentDatasetMetrics(Reflected, BaseTable, BaseDAO):
     uuid = Column(
         'UUID',
         UUID(as_uuid=True),
-        unique=True,
         nullable=False,
         default=uuid4,
         primary_key=True,
@@ -28,3 +27,4 @@ class CurrentDatasetMetrics(Reflected, BaseTable, BaseDAO):
     data_quality = Column('DATA_QUALITY', JSONEncodedDict, nullable=True)
     drift = Column('DRIFT', JSONEncodedDict, nullable=True)
     statistics = Column('STATISTICS', JSONEncodedDict, nullable=True)
+    percentages = Column('PERCENTAGES', JSONEncodedDict, nullable=True)

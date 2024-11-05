@@ -10,7 +10,8 @@ from botocore.exceptions import ClientError, NoCredentialsError
 from fastapi import HTTPException, UploadFile
 from fastapi_pagination import Page, Params
 import pandas as pd
-from spark_on_k8s.client import SparkOnK8S
+from spark_on_k8s.client import ExecutorInstances, PodResources, SparkOnK8S
+from spark_on_k8s.utils.configuration import Configuration
 
 from app.core.config.config import create_secrets, get_config
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
@@ -31,6 +32,7 @@ from app.models.exceptions import (
     ModelNotFoundError,
 )
 from app.models.inferred_schema_dto import (
+    FieldType,
     InferredSchemaDTO,
     SchemaEntry,
     SupportedTypes,
@@ -107,8 +109,8 @@ class FileService:
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
             spark_config = get_config().spark_config
-            self.spark_k8s_client.submit_app(
-                image=spark_config.spark_image,
+            self.__submit_app(
+                app_name=str(model_out.uuid),
                 app_path=spark_config.spark_reference_app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
@@ -116,12 +118,6 @@ class FileService:
                     str(inserted_file.uuid),
                     ReferenceDatasetMetrics.__tablename__,
                 ],
-                app_name=str(model_out.uuid),
-                namespace=spark_config.spark_namespace,
-                service_account=spark_config.spark_service_account,
-                image_pull_policy=spark_config.spark_image_pull_policy,
-                app_waiter='no_wait',
-                secret_values=create_secrets(),
             )
 
             return ReferenceDatasetDTO.from_reference_dataset(inserted_file)
@@ -162,8 +158,8 @@ class FileService:
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
             spark_config = get_config().spark_config
-            self.spark_k8s_client.submit_app(
-                image=spark_config.spark_image,
+            self.__submit_app(
+                app_name=str(model_out.uuid),
                 app_path=spark_config.spark_reference_app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
@@ -171,12 +167,6 @@ class FileService:
                     str(inserted_file.uuid),
                     ReferenceDatasetMetrics.__tablename__,
                 ],
-                app_name=str(model_out.uuid),
-                namespace=spark_config.spark_namespace,
-                service_account=spark_config.spark_service_account,
-                image_pull_policy=spark_config.spark_image_pull_policy,
-                app_waiter='no_wait',
-                secret_values=create_secrets(),
             )
 
             return ReferenceDatasetDTO.from_reference_dataset(inserted_file)
@@ -198,7 +188,7 @@ class FileService:
         self,
         model_uuid: UUID,
         csv_file: UploadFile,
-        correlation_id_column: str,
+        correlation_id_column: Optional[str] = None,
         sep: str = ',',
         columns=None,
     ) -> CurrentDatasetDTO:
@@ -251,8 +241,8 @@ class FileService:
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
             spark_config = get_config().spark_config
-            self.spark_k8s_client.submit_app(
-                image=spark_config.spark_image,
+            self.__submit_app(
+                app_name=str(model_out.uuid),
                 app_path=spark_config.spark_current_app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
@@ -261,12 +251,6 @@ class FileService:
                     reference_dataset.path.replace('s3://', 's3a://'),
                     CurrentDatasetMetrics.__tablename__,
                 ],
-                app_name=str(model_out.uuid),
-                namespace=spark_config.spark_namespace,
-                service_account=spark_config.spark_service_account,
-                image_pull_policy=spark_config.spark_image_pull_policy,
-                app_waiter='no_wait',
-                secret_values=create_secrets(),
             )
 
             return CurrentDatasetDTO.from_current_dataset(inserted_file)
@@ -310,8 +294,8 @@ class FileService:
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
             spark_config = get_config().spark_config
-            self.spark_k8s_client.submit_app(
-                image=spark_config.spark_image,
+            self.__submit_app(
+                app_name=str(model_out.uuid),
                 app_path=spark_config.spark_current_app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
@@ -320,12 +304,6 @@ class FileService:
                     reference_dataset.path.replace('s3://', 's3a://'),
                     CurrentDatasetMetrics.__tablename__,
                 ],
-                app_name=str(model_out.uuid),
-                namespace=spark_config.spark_namespace,
-                service_account=spark_config.spark_service_account,
-                image_pull_policy=spark_config.spark_image_pull_policy,
-                app_waiter='no_wait',
-                secret_values=create_secrets(),
             )
 
             return CurrentDatasetDTO.from_current_dataset(inserted_file)
@@ -419,7 +397,11 @@ class FileService:
         data = data.loc[:, ~data.columns.str.contains('Unnamed')]
         return InferredSchemaDTO(
             inferred_schema=[
-                SchemaEntry(name=name.strip(), type=SupportedTypes.cast(type))
+                SchemaEntry(
+                    name=name.strip(),
+                    type=SupportedTypes.cast(type),
+                    field_type=FieldType.from_supported_type(SupportedTypes.cast(type)),
+                )
                 for name, type in data.convert_dtypes(infer_objects=True).dtypes.items()
             ]
         )
@@ -466,3 +448,36 @@ class FileService:
 
         csv_file.file.flush()
         csv_file.file.seek(0)
+
+    def __submit_app(
+        self, app_name: str, app_path: str, app_arguments: List[str]
+    ) -> None:
+        spark_config = get_config().spark_config
+        self.spark_k8s_client.submit_app(
+            image=spark_config.spark_image,
+            app_path=app_path,
+            app_arguments=app_arguments,
+            app_name=app_name,
+            namespace=spark_config.spark_namespace,
+            service_account=spark_config.spark_service_account,
+            image_pull_policy=spark_config.spark_image_pull_policy,
+            app_waiter='no_wait',
+            secret_values=create_secrets(),
+            driver_annotations=Configuration.SPARK_ON_K8S_SPARK_DRIVER_ANNOTATIONS,
+            executor_annotations=Configuration.SPARK_ON_K8S_SPARK_EXECUTOR_ANNOTATIONS,
+            driver_resources=PodResources(
+                cpu=Configuration.SPARK_ON_K8S_DRIVER_CPU,
+                memory=Configuration.SPARK_ON_K8S_DRIVER_MEMORY,
+                memory_overhead=Configuration.SPARK_ON_K8S_DRIVER_MEMORY_OVERHEAD,
+            ),
+            executor_resources=PodResources(
+                cpu=Configuration.SPARK_ON_K8S_EXECUTOR_CPU,
+                memory=Configuration.SPARK_ON_K8S_EXECUTOR_MEMORY,
+                memory_overhead=Configuration.SPARK_ON_K8S_EXECUTOR_MEMORY_OVERHEAD,
+            ),
+            executor_instances=ExecutorInstances(
+                min=Configuration.SPARK_ON_K8S_EXECUTOR_MIN_INSTANCES,
+                max=Configuration.SPARK_ON_K8S_EXECUTOR_MAX_INSTANCES,
+                initial=Configuration.SPARK_ON_K8S_EXECUTOR_INITIAL_INSTANCES,
+            ),
+        )

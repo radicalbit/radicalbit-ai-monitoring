@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -72,6 +72,20 @@ class NumericalFeatureMetrics(FeatureMetrics):
     )
 
 
+class NumericalTargetMetrics(FeatureMetrics):
+    type: str = 'numerical'
+    mean: float
+    std: float
+    min: float
+    max: float
+    median_metrics: MedianMetrics
+    histogram: Histogram
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
 class CategoryFrequency(BaseModel):
     name: str
     count: int
@@ -102,10 +116,11 @@ class ClassMetrics(BaseModel):
     )
 
 
-class BinaryClassDataQuality(BaseModel):
+class ClassificationDataQuality(BaseModel):
     n_observations: int
     class_metrics: List[ClassMetrics]
-    feature_metrics: List[Union[NumericalFeatureMetrics, CategoricalFeatureMetrics]]
+    class_metrics_prediction: List[ClassMetrics]
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -115,19 +130,22 @@ class BinaryClassDataQuality(BaseModel):
     )
 
 
-class MultiClassDataQuality(BaseModel):
-    pass
-
-
 class RegressionDataQuality(BaseModel):
-    pass
+    n_observations: int
+    target_metrics: NumericalTargetMetrics
+    feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+        protected_namespaces=(),
+    )
 
 
 class DataQualityDTO(BaseModel):
     job_status: JobStatus
-    data_quality: Optional[
-        Union[BinaryClassDataQuality, MultiClassDataQuality, RegressionDataQuality]
-    ]
+    data_quality: Optional[ClassificationDataQuality | RegressionDataQuality]
 
     model_config = ConfigDict(
         arbitrary_types_allowed=True,
@@ -141,30 +159,32 @@ class DataQualityDTO(BaseModel):
         model_type: ModelType,
         job_status: JobStatus,
         data_quality_data: Optional[Dict],
-    ):
+    ) -> 'DataQualityDTO':
+        """Create a DataQualityDTO from a dictionary of data."""
         if not data_quality_data:
             return DataQualityDTO(
                 job_status=job_status,
                 data_quality=None,
             )
-        match model_type:
-            case ModelType.BINARY:
-                binary_class_data_quality = BinaryClassDataQuality(**data_quality_data)
-                return DataQualityDTO(
-                    job_status=job_status,
-                    data_quality=binary_class_data_quality,
-                )
-            case ModelType.MULTI_CLASS:
-                multi_class_data_quality = MultiClassDataQuality(**data_quality_data)
-                return DataQualityDTO(
-                    job_status=job_status,
-                    data_quality=multi_class_data_quality,
-                )
-            case ModelType.REGRESSION:
-                regression_data_quality = RegressionDataQuality(**data_quality_data)
-                return DataQualityDTO(
-                    job_status=job_status,
-                    data_quality=regression_data_quality,
-                )
-            case _:
-                raise MetricsInternalError(f'Invalid model type {model_type}')
+
+        data_quality = DataQualityDTO._create_data_quality(
+            model_type=model_type,
+            data_quality_data=data_quality_data,
+        )
+
+        return DataQualityDTO(
+            job_status=job_status,
+            data_quality=data_quality,
+        )
+
+    @staticmethod
+    def _create_data_quality(
+        model_type: ModelType,
+        data_quality_data: Dict,
+    ) -> ClassificationDataQuality | RegressionDataQuality:
+        """Create a specific data quality instance based on the model type."""
+        if model_type in {ModelType.BINARY, ModelType.MULTI_CLASS}:
+            return ClassificationDataQuality(**data_quality_data)
+        if model_type == ModelType.REGRESSION:
+            return RegressionDataQuality(**data_quality_data)
+        raise MetricsInternalError(f'Invalid model type {model_type}')

@@ -2,6 +2,8 @@ from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
 import pyspark.sql.functions as F
 
+from models.statistics import Statistics
+
 N_VARIABLES = "n_variables"
 N_OBSERVATION = "n_observations"
 MISSING_CELLS = "missing_cells"
@@ -14,9 +16,10 @@ DATETIME = "datetime"
 
 
 # FIXME use pydantic struct like data quality
+# FIXME generalize to one method
 def calculate_statistics_reference(
     reference_dataset: ReferenceDataset,
-) -> dict[str, float]:
+) -> Statistics:
     number_of_variables = len(reference_dataset.get_all_variables())
     number_of_observations = reference_dataset.reference_count
     number_of_numerical = len(reference_dataset.get_numerical_variables())
@@ -78,12 +81,12 @@ def calculate_statistics_reference(
         .to_dict(orient="records")[0]
     )
 
-    return stats
+    return Statistics(**stats)
 
 
 def calculate_statistics_current(
     current_dataset: CurrentDataset,
-) -> dict[str, float]:
+) -> Statistics:
     number_of_variables = len(current_dataset.get_all_variables())
     number_of_observations = current_dataset.current_count
     number_of_numerical = len(current_dataset.get_numerical_variables())
@@ -145,4 +148,4 @@ def calculate_statistics_current(
         .to_dict(orient="records")[0]
     )
 
-    return stats
+    return Statistics(**stats)

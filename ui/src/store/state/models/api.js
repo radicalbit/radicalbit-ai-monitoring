@@ -1,3 +1,4 @@
+import { JOB_STATUS } from '@Src/constants';
 import { API_TAGS, apiService } from '@Src/store/apis';
 
 export const modelsApiSlice = apiService.injectEndpoints({
@@ -27,6 +28,17 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
     }),
 
+    editModel: builder.mutation({
+      invalidatesTags: (_, __, { data: { uuid } }) => [{ type: API_TAGS.MODEL, id: uuid }],
+      query: ({ data }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/models/${data.uuid}`,
+        method: 'post',
+        data,
+      }),
+
+    }),
+
     inferSchema: builder.mutation({
       query: ({ file, separator }) => {
         const data = new FormData();
@@ -44,7 +56,7 @@ export const modelsApiSlice = apiService.injectEndpoints({
     }),
 
     deleteModel: builder.mutation({
-      invalidatesTags: [API_TAGS.MODELS],
+      invalidatesTags: [API_TAGS.MODELS, API_TAGS.OVERALL_STATS, API_TAGS.ALERTS, API_TAGS.OVERALL_MODELS],
       query: ({ uuid }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/models/${uuid}`,
@@ -107,6 +119,8 @@ export const modelsApiSlice = apiService.injectEndpoints({
         if (result) {
           return [
             { type: API_TAGS.REFERENCE_IMPORT, id: modelUUID },
+            { type: API_TAGS.MODEL, id: modelUUID },
+            { type: API_TAGS.MODELS },
           ];
         }
         return [];
@@ -178,6 +192,8 @@ export const modelsApiSlice = apiService.injectEndpoints({
           return [
             { type: API_TAGS.CURRENT_IMPORT, id: modelUUID },
             { type: API_TAGS.MODEL, id: modelUUID },
+            { type: API_TAGS.MODELS },
+            { type: API_TAGS.OVERALL_MODELS },
           ];
         }
         return [];
@@ -193,6 +209,37 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
     }),
 
+    getOverallStats: builder.query({
+      providesTags: () => [{ type: API_TAGS.OVERALL_STATS }],
+      query: () => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: '/models/tot_percentages',
+        method: 'get',
+      }),
+    }),
+
+    getOverallModelList: builder.query({
+      providesTags: () => [API_TAGS.OVERALL_MODELS],
+      query: ({ limit }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/models/last_n?n_models=${limit}`,
+        method: 'get',
+      }),
+      onQueryStarted: (async (arg, { queryFulfilled, dispatch }) => {
+        const response = await queryFulfilled;
+
+        if (response.data) {
+          const isReferencePending = response.data.some((d) => d.latestReferenceJobStatus === JOB_STATUS.IMPORTING);
+          const isCurrentPending = response.data.some((d) => d.latestCurrentJobStatus === JOB_STATUS.IMPORTING);
+          const isPending = isReferencePending || isCurrentPending;
+
+          if (!isPending) {
+            dispatch(apiService.util.invalidateTags([API_TAGS.OVERALL_STATS, API_TAGS.ALERTS]));
+          }
+        }
+      }),
+
+    }),
   }),
 
 });

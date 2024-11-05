@@ -11,10 +11,12 @@ from radicalbit_platform_sdk.models import (
     ColumnDefinition,
     CreateModel,
     DataType,
+    FieldType,
     Granularity,
     ModelDefinition,
     ModelType,
     OutputType,
+    SupportedTypes,
 )
 
 
@@ -32,15 +34,17 @@ class ClientTest(unittest.TestCase):
         frameworks = 'mlflow'
         feature_name = 'age'
         feature_type = 'int'
+        feature_field_type = 'numerical'
         output_name = 'adult'
         output_type = 'bool'
+        output_field_type = 'categorical'
         target_name = 'adult'
         target_type = 'bool'
+        target_field_type = 'categorical'
         timestamp_name = 'when'
-        timestamp_type = 'str'
+        timestamp_type = 'datetime'
+        timestamp_field_type = 'datetime'
         ts = str(time.time())
-        latest_reference_uuid = uuid.uuid4()
-        latest_current_uuid = uuid.uuid4()
         json_string = f"""{{
                 "uuid": "{str(model_id)}",
                 "name": "{name}",
@@ -49,37 +53,41 @@ class ClientTest(unittest.TestCase):
                 "granularity": "{granularity.value}",
                 "features": [{{
                     "name": "{feature_name}",
-                    "type": "{feature_type}"
+                    "type": "{feature_type}",
+                    "fieldType": "{feature_field_type}"
                 }}],
                 "outputs": {{
                     "prediction": {{
                         "name": "{output_name}",
-                        "type": "{output_type}"
+                        "type": "{output_type}",
+                        "fieldType": "{output_field_type}"
                     }},
                     "predictionProba": {{
                         "name": "{output_name}",
-                        "type": "{output_type}"
+                        "type": "{output_type}",
+                        "fieldType": "{output_field_type}"
                     }},
                     "output": [{{
                         "name": "{output_name}",
-                        "type": "{output_type}"
+                        "type": "{output_type}",
+                        "fieldType": "{output_field_type}"
                     }}]
                 }},
                 "target": {{
                     "name": "{target_name}",
-                    "type": "{target_type}"
+                    "type": "{target_type}",
+                    "fieldType": "{target_field_type}"
                 }},
                 "timestamp": {{
                     "name": "{timestamp_name}",
-                    "type": "{timestamp_type}"
+                    "type": "{timestamp_type}",
+                    "fieldType": "{timestamp_field_type}"
                 }},
                 "description": "{description}",
                 "algorithm": "{algorithm}",
                 "frameworks": "{frameworks}",
                 "createdAt": "{ts}",
-                "updatedAt": "{ts}",
-                "latestReferenceUuid": "{str(latest_reference_uuid)}",
-                "latestCurrentUuid": "{str(latest_current_uuid)}"
+                "updatedAt": "{ts}"
             }}"""
         responses.add(
             method=responses.GET,
@@ -99,19 +107,25 @@ class ClientTest(unittest.TestCase):
         assert model.algorithm() == algorithm
         assert model.frameworks() == frameworks
         assert model.target().name == target_name
-        assert model.target().type == target_type
+        assert model.target().type == SupportedTypes.bool
+        assert model.target().field_type == FieldType.categorical
         assert model.timestamp().name == timestamp_name
-        assert model.timestamp().type == timestamp_type
+        assert model.timestamp().type == SupportedTypes.datetime
+        assert model.timestamp().field_type == FieldType.datetime
         assert len(model.features()) == 1
         assert model.features()[0].name == feature_name
-        assert model.features()[0].type == feature_type
+        assert model.features()[0].type == SupportedTypes.int
+        assert model.features()[0].field_type == FieldType.numerical
         assert model.outputs().prediction.name == output_name
-        assert model.outputs().prediction.type == output_type
+        assert model.outputs().prediction.type == SupportedTypes.bool
+        assert model.outputs().prediction.field_type == FieldType.categorical
         assert model.outputs().prediction_proba.name == output_name
-        assert model.outputs().prediction_proba.type == output_type
+        assert model.outputs().prediction_proba.type == SupportedTypes.bool
+        assert model.outputs().prediction_proba.field_type == FieldType.categorical
         assert len(model.outputs().output) == 1
         assert model.outputs().output[0].name == output_name
-        assert model.outputs().output[0].type == output_type
+        assert model.outputs().output[0].type == SupportedTypes.bool
+        assert model.outputs().output[0].field_type == FieldType.categorical
 
     @responses.activate
     def test_get_model_client_error(self):
@@ -137,13 +151,37 @@ class ClientTest(unittest.TestCase):
             model_type=ModelType.BINARY,
             data_type=DataType.TABULAR,
             granularity=Granularity.WEEK,
-            features=[ColumnDefinition(name='feature_column', type='string')],
+            features=[
+                ColumnDefinition(
+                    name='feature_column',
+                    type=SupportedTypes.string,
+                    field_type=FieldType.categorical,
+                )
+            ],
             outputs=OutputType(
-                prediction=ColumnDefinition(name='result_column', type='int'),
-                output=[ColumnDefinition(name='result_column', type='int')],
+                prediction=ColumnDefinition(
+                    name='result_column',
+                    type=SupportedTypes.int,
+                    field_type=FieldType.numerical,
+                ),
+                output=[
+                    ColumnDefinition(
+                        name='result_column',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    )
+                ],
             ),
-            target=ColumnDefinition(name='target_column', type='string'),
-            timestamp=ColumnDefinition(name='tst_column', type='string'),
+            target=ColumnDefinition(
+                name='target_column',
+                type=SupportedTypes.string,
+                field_type=FieldType.categorical,
+            ),
+            timestamp=ColumnDefinition(
+                name='tst_column',
+                type=SupportedTypes.string,
+                field_type=FieldType.categorical,
+            ),
         )
         model_definition = ModelDefinition(
             name=model.name,
@@ -156,8 +194,6 @@ class ClientTest(unittest.TestCase):
             timestamp=model.timestamp,
             created_at=str(time.time()),
             updated_at=str(time.time()),
-            latest_reference_uuid=None,
-            latest_current_uuid=None,
         )
         responses.add(
             method=responses.POST,
@@ -190,17 +226,39 @@ class ClientTest(unittest.TestCase):
             model_type=ModelType.BINARY,
             data_type=DataType.TABULAR,
             granularity=Granularity.DAY,
-            features=[ColumnDefinition(name='feature_column', type='string')],
+            features=[
+                ColumnDefinition(
+                    name='feature_column',
+                    type=SupportedTypes.string,
+                    field_type=FieldType.categorical,
+                )
+            ],
             outputs=OutputType(
-                prediction=ColumnDefinition(name='result_column', type='int'),
-                output=[ColumnDefinition(name='result_column', type='int')],
+                prediction=ColumnDefinition(
+                    name='result_column',
+                    type=SupportedTypes.int,
+                    field_type=FieldType.numerical,
+                ),
+                output=[
+                    ColumnDefinition(
+                        name='result_column',
+                        type=SupportedTypes.int,
+                        field_type=FieldType.numerical,
+                    )
+                ],
             ),
-            target=ColumnDefinition(name='target_column', type='string'),
-            timestamp=ColumnDefinition(name='tst_column', type='string'),
+            target=ColumnDefinition(
+                name='target_column',
+                type=SupportedTypes.string,
+                field_type=FieldType.categorical,
+            ),
+            timestamp=ColumnDefinition(
+                name='tst_column',
+                type=SupportedTypes.string,
+                field_type=FieldType.categorical,
+            ),
             created_at=str(time.time()),
             updated_at=str(time.time()),
-            latest_reference_uuid=None,
-            latest_current_uuid=None,
         )
 
         responses.add(

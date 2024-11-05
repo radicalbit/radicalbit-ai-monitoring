@@ -36,7 +36,7 @@ class CurrentDatasetDTO(BaseModel):
     model_uuid: UUID
     path: str
     date: str
-    correlation_id_column: str
+    correlation_id_column: Optional[str]
     status: str
 
     model_config = ConfigDict(

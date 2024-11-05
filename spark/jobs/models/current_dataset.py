@@ -2,9 +2,13 @@ from typing import List
 
 from pyspark.sql import DataFrame
 from pyspark.sql.types import DoubleType, StructField, StructType
+import pyspark.sql.functions as F
+from pyspark.sql.window import Window
 
+from models.reference_dataset import ReferenceDataset
 from utils.models import ModelOut, ModelType, ColumnDefinition
 from utils.spark import apply_schema_to_dataframe
+from utils.misc import rbit_prefix
 
 
 class CurrentDataset:
@@ -54,6 +58,12 @@ class CurrentDataset:
     def get_numerical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.model.features if feature.is_numerical()]
 
+    def get_float_features(self) -> List[ColumnDefinition]:
+        return [feature for feature in self.model.features if feature.is_float()]
+
+    def get_int_features(self) -> List[ColumnDefinition]:
+        return [feature for feature in self.model.features if feature.is_int()]
+
     def get_categorical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.model.features if feature.is_categorical()]
 
@@ -95,3 +105,72 @@ class CurrentDataset:
             + [self.model.timestamp]
             + self.model.outputs.output
         )
+
+    def get_string_indexed_dataframe(self, reference: ReferenceDataset):
+        """
+        Source: https://stackoverflow.com/questions/65911146/how-to-transform-multiple-categorical-columns-to-integers-maintaining-shared-val
+        Current dataset will be indexed with columns from both reference and current in order to have complete data
+        """
+        predictions_df_current = self.current.select(
+            self.model.outputs.prediction.name
+        ).withColumnRenamed(self.model.outputs.prediction.name, "classes")
+        target_df_current = self.current.select(
+            self.model.target.name
+        ).withColumnRenamed(self.model.target.name, "classes")
+        predictions_df_reference = reference.reference.select(
+            self.model.outputs.prediction.name
+        ).withColumnRenamed(self.model.outputs.prediction.name, "classes")
+        target_df_reference = reference.reference.select(
+            self.model.target.name
+        ).withColumnRenamed(self.model.target.name, "classes")
+        prediction_target_df = (
+            predictions_df_current.union(target_df_current)
+            .union(predictions_df_reference)
+            .union(target_df_reference)
+        ).dropna()
+        classes_index_df = (
+            prediction_target_df.select("classes")
+            .distinct()
+            .withColumn(
+                "classes_index",
+                (
+                    F.row_number().over(
+                        Window.partitionBy(F.lit("A")).orderBy("classes")
+                    )
+                    - 1
+                ).cast(DoubleType()),
+            )
+        )
+        indexed_prediction_df = (
+            self.current.join(
+                classes_index_df,
+                self.current[self.model.outputs.prediction.name]
+                == classes_index_df["classes"],
+                how="inner",
+            )
+            .withColumnRenamed(
+                "classes_index",
+                f"{rbit_prefix}_{self.model.outputs.prediction.name}-idx",
+            )
+            .drop("classes")
+        )
+        indexed_target_df = (
+            indexed_prediction_df.join(
+                classes_index_df,
+                indexed_prediction_df[self.model.target.name]
+                == classes_index_df["classes"],
+                how="inner",
+            )
+            .withColumnRenamed(
+                "classes_index", f"{rbit_prefix}_{self.model.target.name}-idx"
+            )
+            .drop("classes")
+        )
+
+        index_label_map = {
+            str(float(row.__getitem__("classes_index"))): str(
+                row.__getitem__("classes")
+            )
+            for row in classes_index_df.collect()
+        }
+        return index_label_map, indexed_target_df

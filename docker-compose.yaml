@@ -3,7 +3,7 @@ services:
     profiles: ["ui"]
     build:
       context: ./ui
-      target: build
+      target: dev
     command: yarn start:local
     develop:
       watch:
@@ -29,12 +29,14 @@ services:
       DB_USER: "postgres"
       DB_PWD: "postgres"
       DB_NAME: "radicalbit"
+      DB_SCHEMA: "public"
       AWS_ACCESS_KEY_ID: "minio"
       AWS_SECRET_ACCESS_KEY: "minio123"
       AWS_REGION: "us-east-1"
       S3_ENDPOINT_URL: "http://minio:9000"
       S3_BUCKET_NAME: "test-bucket"
       KUBECONFIG_FILE_PATH: "/opt/kubeconfig/kubeconfig.yaml"
+      SPARK_IMAGE: "radicalbit-spark-py:develop"
     depends_on:
       postgres:
         condition: service_healthy
@@ -42,6 +44,8 @@ services:
         condition: service_completed_successfully
       createbuckets:
         condition: service_completed_successfully
+      k3s:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -s http://localhost:9000/healthcheck" ]
       interval: 5s
@@ -61,6 +65,7 @@ services:
       DB_USER: "postgres"
       DB_PWD: "postgres"
       DB_NAME: "radicalbit"
+      DB_SCHEMA: "public"
     depends_on:
       postgres:
         condition: service_healthy
@@ -123,6 +128,36 @@ services:
       exit 0;
       "
 
+  init-data:
+    profiles: [ "init-data" ]
+    image: postgres:latest
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_DB: radicalbit
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_SCHEMA: public
+    volumes:
+      - ./init-data/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      PGPASSWORD=postgres PGOPTIONS="--search_path=$${POSTGRES_SCHEMA}" psql -h postgres -U postgres -d radicalbit -f /docker-entrypoint-initdb.d/init_db.sql;
+      "
+
+  minio-mirror:
+    profiles: ["init-data"]
+    image: minio/mc
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: /bin/sh /scripts/mirror_files.sh
+    volumes:
+      - ./init-data/mirror_files.sh:/scripts/mirror_files.sh
+      - ./docs/quickstarts/data:/data
+
   k3s:
     image: rancher/k3s:v1.30.1-k3s1
     networks:
@@ -142,6 +177,9 @@ services:
     environment:
       K3S_KUBECONFIG_OUTPUT: /output/kubeconfig.yaml
       K3S_KUBECONFIG_MODE: 666
+    depends_on:
+      docker-client:
+        condition: service_completed_successfully
     volumes:
       - k3s-server:/var/lib/rancher/k3s
       # This is just so that we get the kubeconfig file out
@@ -158,6 +196,42 @@ services:
       - "443"   # Ingress controller port 443
     ports:
       - 6443:6443
+    healthcheck:
+      test: [ "CMD-SHELL", "netstat -tuln | grep ':6443 ' || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      start_period: 5s
+      retries: 2
+
+  dind:
+    image: docker:dind
+    privileged: true
+    hostname: dind
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+    volumes:
+      - docker-certs-ca:/certs
+      - docker-certs-client:/certs/client
+    healthcheck:
+      test: nc -w 5 -z localhost 2376
+      start_period: 5s
+      interval: 10s
+      timeout: 5s
+      retries: 2
+
+  docker-client:
+    image: docker:cli
+    command: "/bin/sh -c 'docker build ./spark -t radicalbit-spark-py:develop && docker save radicalbit-spark-py:develop -o /images/radicalbit-spark-py:develop.tar'"
+    environment:
+      DOCKER_TLS_CERTDIR: /certs
+      DOCKER_HOST: tcp://dind:2376
+    depends_on:
+      dind:
+        condition: service_healthy
+    volumes:
+      - docker-certs-client:/certs/client:ro
+      - ./spark:/spark
+      - ./docker/k3s_data/images:/images
 
   k9s:
     profiles: ["k9s"]
@@ -165,6 +239,8 @@ services:
     stdin_open: true
     tty: true
     command: -A
+    ports:
+      - 4040:4040 # Spark UI port if forwarded from k9s
     volumes:
       - ./docker/k3s_data/kubeconfig/kubeconfig.yaml:/root/.kube/config
 
@@ -172,6 +248,8 @@ volumes:
   k3s-server: {}
   radicalbit-data: {}
   minio_storage: {}
+  docker-certs-ca: {}
+  docker-certs-client: {}
 networks:
   default:
     ipam:

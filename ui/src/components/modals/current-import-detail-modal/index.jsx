@@ -1,7 +1,7 @@
 import useModals from '@Hooks/use-modals';
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { modelsApiSlice } from '@State/models/api';
+import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { truncate } from 'lodash';
 import moment from 'moment';

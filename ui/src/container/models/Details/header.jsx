@@ -1,6 +1,6 @@
 import JobStatusTag from '@Components/JobStatus/job-status-tag';
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
-import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import truncate from 'lodash/truncate';
@@ -107,7 +107,11 @@ function Framework() {
   const { uuid } = useParams();
 
   const { data } = useGetModelByUUIDQuery({ uuid });
-  const framework = data?.frameworks ?? '--';
+  const framework = data?.frameworks;
+
+  if (!framework) {
+    return false;
+  }
 
   if (framework.length > STATUS_SELECTOR_MAX_LEN) {
     return (
@@ -130,7 +134,11 @@ function Algorithm() {
   const { uuid } = useParams();
 
   const { data } = useGetModelByUUIDQuery({ uuid });
-  const algorithm = data?.algorithm ?? '--';
+  const algorithm = data?.algorithm;
+
+  if (!algorithm) {
+    return false;
+  }
 
   if (algorithm.length > STATUS_SELECTOR_MAX_LEN) {
     return (
