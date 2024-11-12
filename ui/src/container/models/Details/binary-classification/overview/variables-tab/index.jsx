@@ -55,7 +55,7 @@ function VariablesTabInner() {
   const [handleOnSubmit, { isLoading }, isSubmitDisabled] = useHandleOnSubmit();
 
   return (
-    <div className="flex flex-col mt-4">
+    <div className="flex flex-col">
       {isMissingReference && (
       <div className="flex justify-end">
         <Button

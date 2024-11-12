@@ -34,7 +34,7 @@ function MultiClassificationDataQualityMetrics() {
     return (
       <FormbitContextProvider initialValues={initialValues}>
 
-        <div className="flex flex-col gap-4 py-4 h-full">
+        <div className="flex flex-col gap-4 px-4 py-4 h-full">
           <DataPointDistribution />
 
           <SearchFeatureList />

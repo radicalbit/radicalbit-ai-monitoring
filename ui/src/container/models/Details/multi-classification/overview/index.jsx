@@ -41,7 +41,6 @@ function Overview() {
       animated={false}
       fullHeight
       items={tabs}
-      modifier="py-4 px-4"
       onChange={handleOnChange}
     />
   );
