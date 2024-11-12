@@ -12,6 +12,7 @@ import {
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
 import truncate from 'lodash/truncate';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -190,13 +191,19 @@ function DeleteButton() {
 }
 
 function DarkMode() {
+  const [checked, setChecked] = useState(false);
+
   const dispatch = useDispatch();
 
-  const handleOnChange = (checked) => {
-    if (checked) {
+  const handleOnChange = (value) => {
+    setChecked(value);
+
+    if (value) {
       DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
-    } else LIGHTEN_DETAIL_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+    } else {
+      LIGHTEN_DETAIL_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+    }
   };
 
-  return <Switchbox onChange={handleOnChange} />;
+  return <Switchbox checked={checked} onChange={handleOnChange} />;
 }

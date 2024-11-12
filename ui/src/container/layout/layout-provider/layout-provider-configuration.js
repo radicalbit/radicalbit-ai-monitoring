@@ -32,8 +32,8 @@ export const LIGHTEN_DETAIL_MODE_CONFIGURATION = [
   layoutActions.lightenRightColumnHeader,
   layoutActions.lightenLeftColumn,
   layoutActions.lightenLeftColumnHeader,
-  layoutActions.darkenSecondaryColumn,
-  layoutActions.darkenSecondaryColumnHeader,
+  layoutActions.lightenSecondaryColumn,
+  layoutActions.lightenSecondaryColumnHeader,
 
 ];
 
