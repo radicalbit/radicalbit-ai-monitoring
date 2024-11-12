@@ -1,15 +1,18 @@
 import JobStatusTag from '@Components/JobStatus/job-status-tag';
+import { DARK_MODE_CONFIGURATION, LIGHTEN_DETAIL_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
-import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { modelsApiSlice } from '@State/models/api';
+import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import truncate from 'lodash/truncate';
 import {
   Dropdown,
   FontAwesomeIcon,
   NewHeader, Popconfirm, RelativeDateTime, SectionTitle, StatusSelector,
+  Switchbox,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
+import truncate from 'lodash/truncate';
+import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const { useGetModelByUUIDQuery, useDeleteModelMutation } = modelsApiSlice;
@@ -37,6 +40,7 @@ export default function MainModelsHeader() {
             <FontAwesomeIcon className="cursor-pointer" icon={faEllipsisH} />
           </Dropdown>
         ),
+        two: <DarkMode />,
       }}
       details={{
         one: (
@@ -183,4 +187,16 @@ function DeleteButton() {
       title=" Are you sure you want to delete this model? "
     />
   );
+}
+
+function DarkMode() {
+  const dispatch = useDispatch();
+
+  const handleOnChange = (checked) => {
+    if (checked) {
+      DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+    } else LIGHTEN_DETAIL_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+  };
+
+  return <Switchbox onChange={handleOnChange} />;
 }
