@@ -2,8 +2,8 @@ import SiderBk from '@Img/sider-bk.png';
 import Logo from '@Src/components/Logo';
 import ModalsProvider from '@Src/components/modals/modals-provider';
 import { useContextConfigurationFromUrlEffect } from '@State/context-configuration/hooks';
-import { useNotification } from '@State/notification/hooks';
 import { actions as layoutActions, selectors as layoutSelectors } from '@State/layout';
+import { useNotification } from '@State/notification/hooks';
 import '@Styles/index.less';
 import '@Styles/tailwind.less';
 import { Layout } from '@radicalbit/radicalbit-design-system';
@@ -11,7 +11,6 @@ import CookieConsent from 'react-cookie-consent';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { createRoutes } from '../layout';
-import { useLayoutProvider } from '../layout/layout-provider';
 import BottomMenu from './bottom-menu';
 import MainHeaderContentSwitch from './content-switch/header';
 import SecondaryContentSwitch from './content-switch/secondary-column/content';
@@ -21,8 +20,6 @@ export default function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { pathname } = useLocation();
-
-  useLayoutProvider();
 
   useNotification();
   useContextConfigurationFromUrlEffect();

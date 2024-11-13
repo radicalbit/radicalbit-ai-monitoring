@@ -1,6 +1,7 @@
 import { actions as layoutActions } from '@State/layout';
 
 export const MAIN_LAYOUT_DARK_MODE_CONFIGURATION = [
+  layoutActions.showHeader,
   layoutActions.hideSecondaryColumn,
   layoutActions.darkenMainContent,
   layoutActions.darkenMainHeader,
@@ -13,6 +14,7 @@ export const MAIN_LAYOUT_DARK_MODE_CONFIGURATION = [
 ];
 
 export const MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION = [
+  layoutActions.showHeader,
   layoutActions.hideSecondaryColumn,
   layoutActions.lightenMainContent,
   layoutActions.lightenMainHeader,
@@ -25,6 +27,7 @@ export const MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION = [
 ];
 
 export const DETAIL_LAYOUT_DARK_MODE_CONFIGURATION = [
+  layoutActions.showHeader,
   layoutActions.showSecondaryColumn,
   layoutActions.darkenMainContent,
   layoutActions.darkenMainHeader,
@@ -37,6 +40,7 @@ export const DETAIL_LAYOUT_DARK_MODE_CONFIGURATION = [
 ];
 
 export const DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION = [
+  layoutActions.showHeader,
   layoutActions.showSecondaryColumn,
   layoutActions.lightenMainContent,
   layoutActions.lightenMainHeader,
