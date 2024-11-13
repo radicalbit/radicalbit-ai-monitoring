@@ -9,7 +9,7 @@ const {
   selectHasHeaderLeftContentDark,
 } = layoutSelectors;
 
-export default function Logo({ onClick, title }) {
+export default function Logo({ className = '', onClick, title }) {
   const hasLeftColumnCollapsed = useSelector(selectHasLeftColumnCollapsed);
   const hasHeaderLeftContentDark = useSelector(selectHasHeaderLeftContentDark);
 
@@ -31,6 +31,7 @@ export default function Logo({ onClick, title }) {
 
   return (
     <a
+      className={`${className} p-4`}
       onClick={onClick}
       role="presentation"
       title={title}
