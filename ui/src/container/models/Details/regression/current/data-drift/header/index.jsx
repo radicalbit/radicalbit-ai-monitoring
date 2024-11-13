@@ -4,7 +4,7 @@ import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 
 function DataDriftHeader() {
   return (
-    <div className="flex gap-4 mt-4">
+    <div className="flex gap-4">
       <div className="basis-1/3">
         <TotalFeaturesCounter />
       </div>
