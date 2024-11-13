@@ -2,6 +2,8 @@ import { modelsApiSlice } from '@State/models/api';
 import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import {
   Board,
+  NewHeader,
+  Pin,
   SectionTitle,
 } from '@radicalbit/radicalbit-design-system';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
@@ -17,6 +19,7 @@ import {
 } from 'echarts/components';
 import * as echarts from 'echarts/lib/echarts';
 import { useParams } from 'react-router';
+import { CHART_COLOR } from '@Helpers/common-chart-options';
 import chartOptions from './options';
 
 echarts.use([
@@ -139,7 +142,29 @@ function DataPointDistributionChart() {
 
   return (
     <Board
-      header={<SectionTitle size="small" title={title} />}
+      header={(
+        <NewHeader
+          details={{
+            one: (
+              <div className="flex flex-row gap-2 items-center">
+                <div className="flex flex-row gap-1 items-center">
+                  <Pin color={CHART_COLOR.REFERENCE_LIGHT} size="small" />
+
+                  <label>Reference</label>
+                </div>
+
+                <div className="flex flex-row gap-1 items-center">
+                  <Pin color={CHART_COLOR.CURRENT_LIGHT} size="small" />
+
+                  <label>Current</label>
+                </div>
+              </div>
+
+            ),
+          }}
+          title={<SectionTitle size="small" title={title} />}
+        />
+)}
       main={(
         <div>
           <ReactEchartsCore
