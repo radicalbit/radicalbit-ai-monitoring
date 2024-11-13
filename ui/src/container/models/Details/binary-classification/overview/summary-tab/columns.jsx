@@ -27,7 +27,7 @@ const referenceColumns = [{
 }];
 
 const columnsComparison = [{
-  title: <div className="font-[var(--coo-font-weight-bold)]">Statistic</div>,
+  title: <div className="font-[var(--coo-font-weight-bold)]">Summary</div>,
   key: 'label',
   dataIndex: 'label',
   render: (label) => <div className="font-[var(--coo-font-weight-bold)]">{label}</div>,

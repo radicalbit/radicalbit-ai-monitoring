@@ -16,6 +16,7 @@ export default function chartOptions(title, dataset) {
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
         color: CHART_COLOR.REFERENCE_LIGHT,
+        name: 'Reference',
         label: {
           show: true,
           position: 'insideRight',
@@ -26,6 +27,7 @@ export default function chartOptions(title, dataset) {
       },
     ],
   };
+  console.debug('🚀 ~ chartOptions ~ options:', options);
 
   return options;
 }

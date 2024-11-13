@@ -22,23 +22,24 @@ echarts.use([
 ]);
 
 function PieChart({ title, data }) {
-  const splittedTitle = title.split(' ');
+  const currentData = numberFormatter({ maximumSignificantDigits: 4 }).format(data * 100);
 
   if (data <= 0) {
     return (
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center">
         <EmptyPieChart />
 
-        <Label splittedTitle={splittedTitle} />
+        <Label percentage={currentData} title={title} />
+
       </div>
     );
   }
 
   return (
-    <div className="flex flex-row items-center gap-2">
+    <div className="flex flex-row items-center">
       <EvaluatedPieChart data={data} />
 
-      <Label splittedTitle={splittedTitle} />
+      <Label percentage={currentData} title={title} />
     </div>
   );
 }
@@ -55,7 +56,7 @@ function EmptyPieChart() {
       echarts={echarts}
       onChartReady={handleOnChartReady}
       option={pieChartOptions({ currentData: 0, referenceData: 100 })}
-      style={{ height: '8rem', width: '100%' }}
+      style={{ height: '8rem', width: '10rem' }}
     />
   );
 }
@@ -74,17 +75,20 @@ function EvaluatedPieChart({ data }) {
       echarts={echarts}
       onChartReady={handleOnChartReady}
       option={pieChartOptions({ currentData, referenceData })}
-      style={{ height: '8rem', width: '100%' }}
+      style={{ height: '8rem', width: '10rem' }}
     />
   );
 }
 
-function Label({ splittedTitle }) {
+function Label({ title, percentage }) {
   return (
-    <div className="flex flex-col items-start justify-center">
-      <h1 className="font-bold text-3xl" style={{ marginBottom: '-0.6rem' }}>{splittedTitle[0]}</h1>
+    <div className="flex flex-col items-start justify-center w-full">
+      <h1 className="font-bold text-2xl" style={{ marginBottom: '-0.25rem' }}>
+        {percentage}
+        %
+      </h1>
 
-      <h2 className="m-0 text-2xl tracking-wider">{splittedTitle[1]}</h2>
+      <h2 className="m-0 text-lg font-normal">{title}</h2>
     </div>
   );
 }
