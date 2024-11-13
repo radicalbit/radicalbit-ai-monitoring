@@ -128,18 +128,10 @@ function TrialBoard() {
           <SectionTitle
             size="large"
             style={{ color: 'var(--coo-highlight)' }}
-            title={(
-              <div>
-                Start your free trial
-                <br />
-                today!
-              </div>
-
-          )}
+            title="Start your free trial!"
             titleWeight="bold"
             wrapTitle
           />
-
         </div>
       )}
       modifier="h-full shadow light border-none ml-4"
