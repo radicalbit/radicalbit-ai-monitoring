@@ -26,7 +26,7 @@ function PieChart({ title, data }) {
 
   if (data <= 0) {
     return (
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center">
         <EmptyPieChart />
 
         <Label percentage={currentData} title={title} />
@@ -36,7 +36,7 @@ function PieChart({ title, data }) {
   }
 
   return (
-    <div className="flex flex-row items-center gap-2">
+    <div className="flex flex-row items-center">
       <EvaluatedPieChart data={data} />
 
       <Label percentage={currentData} title={title} />
@@ -83,12 +83,12 @@ function EvaluatedPieChart({ data }) {
 function Label({ title, percentage }) {
   return (
     <div className="flex flex-col items-start justify-center w-full">
-      <h1 className="font-bold text-2xl" style={{ marginBottom: '-0.6rem' }}>
+      <h1 className="font-bold text-2xl" style={{ marginBottom: '-0.25rem' }}>
         {percentage}
         %
       </h1>
 
-      <h2 className="m-0 text-xl tracking-wider">{title}</h2>
+      <h2 className="m-0 text-lg font-normal">{title}</h2>
     </div>
   );
 }
