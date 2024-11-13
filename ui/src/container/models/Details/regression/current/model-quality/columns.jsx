@@ -2,7 +2,7 @@ import { numberFormatter } from '@Src/constants';
 
 export default [
   {
-    title: '',
+    title: <div className="font-[var(--coo-font-weight-bold)]">Metrics</div>,
     key: 'label',
     dataIndex: 'label',
     render: (label) => <div className="font-[var(--coo-font-weight-bold)]">{label}</div>,
