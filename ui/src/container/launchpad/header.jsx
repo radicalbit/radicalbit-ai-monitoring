@@ -4,7 +4,6 @@ import {
 } from '@Container/layout/layout-provider/layout-provider-configuration';
 import { faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import {
-  Button,
   FontAwesomeIcon, NewHeader, SectionTitle, Tooltip,
 } from '@radicalbit/radicalbit-design-system';
 import { useState } from 'react';
@@ -52,14 +51,14 @@ function DarkMode() {
   if (isDarkMode) {
     return (
       <Tooltip title="Switch to light mode">
-        <Button onClick={handleOnEnableLightMode} type="text"><FontAwesomeIcon icon={faMoon} /></Button>
+        <FontAwesomeIcon icon={faMoon} onClick={handleOnEnableLightMode} />
       </Tooltip>
     );
   }
 
   return (
     <Tooltip title="Switch to dark mode">
-      <Button onClick={handleOnEnableDarkMode} type="text"><FontAwesomeIcon icon={faSun} /></Button>
+      <FontAwesomeIcon icon={faSun} onClick={handleOnEnableDarkMode} />
     </Tooltip>
   );
 }

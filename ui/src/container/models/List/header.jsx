@@ -26,10 +26,7 @@ export default function MainListModelsHeader() {
     <NewHeader
       actions={{
         one: <DarkMode />,
-        two: <div />,
-      }}
-      details={{
-        three: <AddNewModel />,
+        two: <AddNewModel />,
       }}
       title={(
         <>
@@ -96,14 +93,14 @@ function DarkMode() {
   if (isDarkMode) {
     return (
       <Tooltip title="Switch to light mode">
-        <Button onClick={handleOnEnableLightMode} type="text"><FontAwesomeIcon icon={faMoon} /></Button>
+        <FontAwesomeIcon icon={faMoon} onClick={handleOnEnableLightMode} />
       </Tooltip>
     );
   }
 
   return (
     <Tooltip title="Switch to dark mode">
-      <Button onClick={handleOnEnableDarkMode} type="text"><FontAwesomeIcon icon={faSun} /></Button>
+      <FontAwesomeIcon icon={faSun} onClick={handleOnEnableDarkMode} />
     </Tooltip>
   );
 }

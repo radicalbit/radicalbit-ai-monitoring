@@ -8,7 +8,6 @@ import { modelsApiSlice } from '@State/models/api';
 import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
 import { faEllipsisH, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import {
-  Button,
   Dropdown,
   FontAwesomeIcon,
   NewHeader, Popconfirm, RelativeDateTime, SectionTitle, StatusSelector,
@@ -217,14 +216,14 @@ function DarkMode() {
   if (isDarkMode) {
     return (
       <Tooltip title="Switch to light mode">
-        <Button onClick={handleOnEnableLightMode} type="text"><FontAwesomeIcon icon={faMoon} /></Button>
+        <FontAwesomeIcon icon={faMoon} onClick={handleOnEnableLightMode} />
       </Tooltip>
     );
   }
 
   return (
     <Tooltip title="Switch to dark mode">
-      <Button onClick={handleOnEnableDarkMode} type="text"><FontAwesomeIcon icon={faSun} /></Button>
+      <FontAwesomeIcon icon={faSun} onClick={handleOnEnableDarkMode} />
     </Tooltip>
   );
 }
