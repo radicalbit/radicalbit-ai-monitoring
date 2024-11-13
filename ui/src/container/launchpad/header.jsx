@@ -7,10 +7,11 @@ export default function MainListModelsHeader() {
   return (
     <NewHeader
       title={(
-        <SectionTitle
-          subtitle={subtitle}
-          title={title}
-        />
+        <>
+          <h1>{title}</h1>
+
+          <SectionTitle subtitle={subtitle} />
+        </>
       )}
     />
   );

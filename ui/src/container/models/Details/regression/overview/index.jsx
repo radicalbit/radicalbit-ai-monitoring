@@ -22,6 +22,7 @@ function Overview() {
       label: 'Summary',
       key: OVERVIEW_TABS_ENUM.SUMMARY,
       children: <SummaryTab />,
+
     },
     {
       label: 'Variables',

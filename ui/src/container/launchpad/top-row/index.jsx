@@ -26,7 +26,7 @@ function QuickStartBoard() {
   return (
     <Board
       footer={(
-        <Link onClick={handleOnclick}>
+        <Link to={ExternalPathsEnum.QUICKSTART}>
           <div className="text-xl">
             {'Get Started >>'}
           </div>
@@ -67,7 +67,7 @@ function DocumentationHubBoard() {
   return (
     <Board
       footer={(
-        <Link onClick={handleOnclick}>
+        <Link to={ExternalPathsEnum.DOCUMENTATION}>
           <div className="text-xl">
             {'Get Started >>'}
           </div>

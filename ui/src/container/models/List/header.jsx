@@ -18,10 +18,16 @@ const { selectQueryParamsSelector } = contextConfigurationSelectors;
 export default function MainListModelsHeader() {
   return (
     <NewHeader
-      details={{
+      actions={{
         one: <AddNewModel />,
       }}
-      title={<SectionTitle subtitle={<Subtitle />} title="Models" />}
+      title={(
+        <>
+          <h1>Models</h1>
+
+          <SectionTitle subtitle={<Subtitle />} />
+        </>
+      )}
     />
   );
 }
@@ -53,7 +59,7 @@ function AddNewModel() {
   };
 
   return (
-    <Button onClick={onClick} shape="circle">
+    <Button onClick={onClick} shape="circle" title="New Model">
       <FontAwesomeIcon icon={faPlus} />
     </Button>
   );

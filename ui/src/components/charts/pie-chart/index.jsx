@@ -82,9 +82,9 @@ function EvaluatedPieChart({ data }) {
 function Label({ splittedTitle }) {
   return (
     <div className="flex flex-col items-start justify-center">
-      <p className="font-bold text-3xl" style={{ marginBottom: '-0.6rem' }}>{splittedTitle[0]}</p>
+      <h1 className="font-bold text-3xl" style={{ marginBottom: '-0.6rem' }}>{splittedTitle[0]}</h1>
 
-      <p className="m-0 text-2xl tracking-wider">{splittedTitle[1]}</p>
+      <h2 className="m-0 text-2xl tracking-wider">{splittedTitle[1]}</h2>
     </div>
   );
 }

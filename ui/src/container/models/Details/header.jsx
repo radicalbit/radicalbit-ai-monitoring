@@ -68,11 +68,14 @@ export default function MainModelsHeader() {
         ),
       }}
       title={(
-        <SectionTitle
-          subtitle={<Subtitle />}
-          title={<Title />}
-          titleSuffix={<JobStatusTag />}
-        />
+        <>
+          <Title />
+
+          <SectionTitle
+            subtitle={<Subtitle />}
+            titleSuffix={<JobStatusTag />}
+          />
+        </>
       )}
     />
   );
@@ -84,7 +87,7 @@ function Title() {
 
   const name = data?.name;
 
-  return name || '';
+  return <h1>{name || ''}</h1>;
 }
 
 function Subtitle() {
