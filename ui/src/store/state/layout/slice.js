@@ -1,23 +1,22 @@
 import { createAction, createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  hasHeaderLeftContentDark: false,
-  hasLeftContentDark: false,
-
-  hasHeaderRightContentDark: false,
-  hasHeader: true,
   hasHeaderContentDark: true,
+  hasHeaderLeftContentDark: false,
+  hasHeaderRightContentDark: false,
   hasHeaderSecondaryContentDark: true,
+  hasLeftContentDark: false,
+  hasMainContentDark: true,
+  hasRightContentDark: false,
+  hasSecondaryContentDark: false,
+
+  hasHeader: true,
   hasLeftColumn: true,
   hasLeftColumnCollapsed: true,
-  hasMainContentDark: true,
   hasRightColumn: false,
   hasRightColumnCollapsed: false,
-  hasRightContentDark: false,
   hasSecondaryColumn: false,
   hasSecondaryColumnCollapsed: false,
-  hasSecondaryContentDark: false,
-  isAllDark: false,
   showBottomDrawerOnHover: false,
 };
 
@@ -60,7 +59,7 @@ export const layoutSlice = createSlice({
 
     builder.addCase(layoutActions.darkenMainContent, (state) => ({ ...state, hasMainContentDark: true }));
     builder.addCase(layoutActions.darkenMainHeader, (state) => ({ ...state, hasHeaderContentDark: true }));
-    builder.addCase(layoutActions.darkenRightColumn, (state) => ({ ...state, hasHeaderRightContentDark: true }));
+    builder.addCase(layoutActions.darkenRightColumn, (state) => ({ ...state, hasRightContentDark: true }));
     builder.addCase(layoutActions.darkenRightColumnHeader, (state) => ({ ...state, hasHeaderRightContentDark: true }));
     builder.addCase(layoutActions.darkenLeftColumn, (state) => ({ ...state, hasLeftContentDark: true }));
     builder.addCase(layoutActions.darkenLeftColumnHeader, (state) => ({ ...state, hasHeaderLeftContentDark: true }));

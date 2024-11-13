@@ -1,5 +1,8 @@
 import JobStatusTag from '@Components/JobStatus/job-status-tag';
-import { DARK_MODE_CONFIGURATION, LIGHTEN_DETAIL_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
+import {
+  DETAIL_LAYOUT_DARK_MODE_CONFIGURATION,
+  DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION,
+} from '@Container/layout/layout-provider/layout-provider-configuration';
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
@@ -195,20 +198,20 @@ function DeleteButton() {
 
 function DarkMode() {
   const dispatch = useDispatch();
-  const [isDarkMode, setIsDarkMode] = useState(window.localStorage.getItem('dark-mode'));
+  const [isDarkMode, setIsDarkMode] = useState(!!window.localStorage.getItem('enable-dark-mode'));
 
   const handleOnEnableDarkMode = () => {
-    window.localStorage.setItem('dark-mode', true);
+    window.localStorage.setItem('enable-dark-mode', true);
     setIsDarkMode(true);
 
-    DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+    DETAIL_LAYOUT_DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
   };
 
   const handleOnEnableLightMode = () => {
-    window.localStorage.setItem('dark-mode', false);
+    window.localStorage.removeItem('enable-dark-mode');
     setIsDarkMode(false);
 
-    LIGHTEN_DETAIL_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+    DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
   };
 
   if (isDarkMode) {

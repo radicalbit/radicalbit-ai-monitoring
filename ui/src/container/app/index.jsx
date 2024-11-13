@@ -27,18 +27,16 @@ export default function App() {
   useNotification();
   useContextConfigurationFromUrlEffect();
 
-  const isAllDark = useSelector(layoutSelectors.selectIsAllDark);
-
   const hasHeaderContentDark = useSelector(layoutSelectors.selectHasHeaderContentDark);
-
-  const isMainContentDark = useSelector(layoutSelectors.selectHasMainContentDark);
-  const hasMainContentDark = isAllDark || isMainContentDark;
+  const hasHeaderLeftContentDark = useSelector(layoutSelectors.selectHasHeaderLeftContentDark);
+  const hasHeaderSecondaryContentDark = useSelector(layoutSelectors.selectHasHeaderSecondaryContentDark);
+  const hasLeftContentDark = useSelector(layoutSelectors.selectHasLeftContentDark);
+  const hasMainContentDark = useSelector(layoutSelectors.selectHasMainContentDark);
+  const hasSecondaryContentDark = useSelector(layoutSelectors.selectHasSecondaryContentDark);
 
   const hasHeader = useSelector(layoutSelectors.selectHasHeader);
   const isSecondaryColumn = useSelector(layoutSelectors.selectHasSecondaryColumn);
   const isLeftColumnCollapsed = useSelector(layoutSelectors.selectHasLeftColumnCollapsed);
-  const hasSecondaryContentDark = useSelector(layoutSelectors.selectHasSecondaryContentDark);
-  const hasHeaderSecondaryContentDark = useSelector(layoutSelectors.selectHasHeaderSecondaryContentDark);
   const hasSecondaryColumnCollapsed = useSelector(layoutSelectors.selectHasSecondaryColumnCollapsed);
 
   const hasSecondaryColumn = isSecondaryColumn;
@@ -64,7 +62,6 @@ export default function App() {
 
   return (
     <>
-
       <Layout
         hasHeader={hasHeader}
         hasLeftColumn
@@ -73,9 +70,9 @@ export default function App() {
         hasRightColumn={false}
         hasSecondaryColumn={hasSecondaryColumn}
         left={{
-          hasHeaderLeftContentDark: true,
+          hasHeaderLeftContentDark,
           hasLeftColumnCollapsed,
-          hasLeftContentDark: true,
+          hasLeftContentDark,
           leftColumnHeaderAltContent: <Logo onClick={goToHomePage} title="Radicalbit" />,
           backgroundImage: SiderBk,
           mainMenu: createRoutes({ currentPath: pathname }),

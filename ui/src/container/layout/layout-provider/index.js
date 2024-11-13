@@ -2,20 +2,28 @@ import { PathsEnum } from '@Src/constants';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { matchPath, useLocation } from 'react-router';
-import { DETAIL_LAYOUT_CONFIGURATION, MAIN_LAYOUT_CONFIGURATION, NOT_FOUND_CONFIGURATION } from './layout-provider-configuration';
+import {
+  DETAIL_LAYOUT_DARK_MODE_CONFIGURATION,
+  DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION,
+  MAIN_LAYOUT_DARK_MODE_CONFIGURATION,
+  MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION,
+  NOT_FOUND_CONFIGURATION,
+} from './layout-provider-configuration';
+
+const isDarkMode = window.localStorage.getItem('enable-dark-mode');
 
 const allRoutes = [
   {
     key: `/${PathsEnum.LAUNCHPAD}`,
-    layout: MAIN_LAYOUT_CONFIGURATION,
+    layout: isDarkMode ? MAIN_LAYOUT_DARK_MODE_CONFIGURATION : MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION,
   },
   {
     key: `/${PathsEnum.MODELS}`,
-    layout: MAIN_LAYOUT_CONFIGURATION,
+    layout: isDarkMode ? MAIN_LAYOUT_DARK_MODE_CONFIGURATION : MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION,
   },
   {
     key: `/${PathsEnum.MODELS_DETAIL}`,
-    layout: DETAIL_LAYOUT_CONFIGURATION,
+    layout: isDarkMode ? DETAIL_LAYOUT_DARK_MODE_CONFIGURATION : DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION,
   },
 ];
 
