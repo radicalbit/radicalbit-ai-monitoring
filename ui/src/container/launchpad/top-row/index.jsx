@@ -1,12 +1,10 @@
 import { Board, NewHeader, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { ExternalPathsEnum } from '@Src/constants';
 import { memo } from 'react';
-import { Link } from 'react-router-dom';
 
 function TopRow() {
   return (
     <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1.2fr] gap-4 h-[175px]">
-
       <QuickStartBoard />
 
       <DocumentationHubBoard />
@@ -26,12 +24,10 @@ function QuickStartBoard() {
   return (
     <Board
       footer={(
-        <Link to={ExternalPathsEnum.QUICKSTART}>
-          <div className="text-xl">
-            {'Get Started >>'}
-          </div>
-        </Link>
-        )}
+        <a className="text-xl">
+          {'Get Started >>'}
+        </a>
+      )}
       header={(
         <NewHeader
           details={{ one: (<span aria-label="tada" role="img">🎉</span>) }}
@@ -67,11 +63,9 @@ function DocumentationHubBoard() {
   return (
     <Board
       footer={(
-        <Link to={ExternalPathsEnum.DOCUMENTATION}>
-          <div className="text-xl">
-            {'Get Started >>'}
-          </div>
-        </Link>
+        <a className="text-xl">
+          {'Get Started >>'}
+        </a>
       )}
       header={(
         <NewHeader
@@ -134,18 +128,10 @@ function TrialBoard() {
           <SectionTitle
             size="large"
             style={{ color: 'var(--coo-highlight)' }}
-            title={(
-              <div>
-                Start your free trial
-                <br />
-                today!
-              </div>
-
-          )}
+            title="Start your free trial!"
             titleWeight="bold"
             wrapTitle
           />
-
         </div>
       )}
       modifier="h-full shadow light border-none ml-4"

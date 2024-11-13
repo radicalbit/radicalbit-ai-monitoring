@@ -320,7 +320,7 @@ const barChartCommonOptions = () => ({
 const heatmapCommonOptions = () => ({
   emphasis: { disabled: true },
   axis: {
-    axisLabel: {
+    axisLabel: { // tbd
       fontSize: 9,
       color: '#9b99a1',
     },
