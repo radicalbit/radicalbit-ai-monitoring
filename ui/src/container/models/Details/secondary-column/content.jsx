@@ -82,7 +82,6 @@ export default function SecondaryColumnModelsContent() {
       onOpenChange={onOpenChange}
       openKeys={openKeys}
       selectedKeys={selectedKeys}
-      theme="dark"
     />
   );
 }

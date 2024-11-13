@@ -59,8 +59,30 @@ html {
         background: radial-gradient(95.1% 62.76% at 0% 107.54%, rgba(var(--coo-rgb-primary), .6) 5.31%, var(--coo-white-bk) 100%);
     }
 
-    .ant-menu-dark .ant-menu-inline.ant-menu-sub {
+    .ant-menu {
+        background: transparent;
+    }
 
+    .ant-menu-sub.ant-menu-inline {
+        background: var(--coo-secondary-04);
+    }
+
+    .ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected {
+        background-color: rgba(var(--coo-rgb-primary), 0.10);
+        font-weight: bolder;
+    }
+
+    .c-menu__hide-expand-icon .ant-menu-submenu-title .ant-menu-submenu-arrow {
+        display: block; // va tolta la hide
+    }
+
+    .rdb-layout-secondary-column .ant-menu-inline > .ant-menu-item {
+        padding-left: 2.25rem !important; 
+    }
+
+    .ant-select-multiple .ant-select-selection-item {
+        background: rgba(var(--coo-rgb-secondary-01), 0.35);
+        border:none;
     }
 
 }
