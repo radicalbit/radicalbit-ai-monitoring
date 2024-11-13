@@ -34,7 +34,6 @@ export const LIGHTEN_DETAIL_MODE_CONFIGURATION = [
   layoutActions.lightenLeftColumnHeader,
   layoutActions.lightenSecondaryColumn,
   layoutActions.lightenSecondaryColumnHeader,
-
 ];
 
 export const NOT_FOUND_CONFIGURATION = [

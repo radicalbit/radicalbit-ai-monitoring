@@ -3,12 +3,12 @@ import { DARK_MODE_CONFIGURATION, LIGHTEN_DETAIL_MODE_CONFIGURATION } from '@Con
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
 import {
+  Button,
   Dropdown,
   FontAwesomeIcon,
   NewHeader, Popconfirm, RelativeDateTime, SectionTitle, StatusSelector,
-  Switchbox,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
 import truncate from 'lodash/truncate';
@@ -29,7 +29,7 @@ export default function MainModelsHeader() {
   return (
     <NewHeader
       actions={{
-        one: (
+        two: (
           <Dropdown
             key="header-dropdown"
             menu={{
@@ -41,7 +41,7 @@ export default function MainModelsHeader() {
             <FontAwesomeIcon className="cursor-pointer" icon={faEllipsisH} />
           </Dropdown>
         ),
-        two: <DarkMode />,
+        one: <DarkMode />,
       }}
       details={{
         one: (
@@ -191,19 +191,34 @@ function DeleteButton() {
 }
 
 function DarkMode() {
-  const [checked, setChecked] = useState(false);
-
   const dispatch = useDispatch();
+  const [isDarkMode, setIsDarkMode] = useState(window.localStorage.getItem('dark-mode'));
 
-  const handleOnChange = (value) => {
-    setChecked(value);
+  const handleOnEnableDarkMode = () => {
+    window.localStorage.setItem('dark-mode', true);
+    setIsDarkMode(true);
 
-    if (value) {
-      DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
-    } else {
-      LIGHTEN_DETAIL_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
-    }
+    DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
   };
 
-  return <Switchbox checked={checked} onChange={handleOnChange} />;
+  const handleOnEnableLightMode = () => {
+    window.localStorage.setItem('dark-mode', false);
+    setIsDarkMode(false);
+
+    LIGHTEN_DETAIL_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
+  };
+
+  if (isDarkMode) {
+    return (
+      <Tooltip title="Switch to light mode">
+        <Button onClick={handleOnEnableLightMode} type="text"><FontAwesomeIcon icon={faMoon} /></Button>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Tooltip title="Switch to dark mode">
+      <Button onClick={handleOnEnableDarkMode} type="text"><FontAwesomeIcon icon={faSun} /></Button>
+    </Tooltip>
+  );
 }
