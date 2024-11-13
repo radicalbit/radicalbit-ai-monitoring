@@ -17,7 +17,7 @@ export default function MainListModelsHeader() {
     <NewHeader
       actions={{
         one: <DarkMode />,
-        two: <div />,
+        two: <div style={{ width: '1rem', height: '1rem' }} />,
       }}
       title={(
         <>
