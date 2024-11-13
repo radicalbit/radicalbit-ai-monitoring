@@ -16,7 +16,7 @@ const initialState = {
   hasRightContentDark: false,
   hasSecondaryColumn: false,
   hasSecondaryColumnCollapsed: false,
-  hasSecondaryContentDark: true,
+  hasSecondaryContentDark: false,
   isAllDark: false,
   showBottomDrawerOnHover: false,
 };

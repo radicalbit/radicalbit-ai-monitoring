@@ -223,10 +223,12 @@ const legendOptions = (data) => {
       scrollDataIndex: 'scroll',
       pageIconSize: 8,
       pageTextStyle: {
-        fontSize: 8,
+        fontSize: 9,
+        color: '#9b99a1',
       },
       textStyle: {
-        fontSize: 10,
+        fontSize: 9,
+        color: '#9b99a1',
         fontWeight: '300',
       },
     },

@@ -20,6 +20,7 @@ export default function chartOptions(title, dataset) {
           show: true,
           position: 'insideRight',
           fontWeight: 'bold',
+          color: CHART_COLOR.WHITE,
           formatter: (el) => (el.data.count > 0) ? `${el.data.count} (${numberFormatter().format(el.data.percentage)}%)` : '',
         },
       },
