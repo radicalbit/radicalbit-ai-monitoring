@@ -111,8 +111,8 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
       axisLine: { show: false },
       splitLine: { show: false },
       axisLabel: {
-        fontSize: 9,
-        color: '#9b99a1',
+        fontSize: 12,
+        color: CHART_COLOR.REFERENCE_LIGHT,
       },
     },
   };
