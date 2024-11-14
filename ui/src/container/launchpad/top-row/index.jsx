@@ -24,13 +24,13 @@ function QuickStartBoard() {
   return (
     <Board
       footer={(
-        <a className="text-xl">
+        <a>
           {'Get Started >>'}
         </a>
       )}
       header={(
         <NewHeader
-          details={{ one: (<span aria-label="tada" role="img">🎉</span>) }}
+          details={{ one: (<span aria-label="tada" className="text-2xl" role="img">🎉</span>) }}
           title={(
             <SectionTitle
               title="Quickstart guide"
@@ -63,7 +63,7 @@ function DocumentationHubBoard() {
   return (
     <Board
       footer={(
-        <a className="text-xl">
+        <a>
           {'Get Started >>'}
         </a>
       )}

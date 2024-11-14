@@ -46,7 +46,7 @@ function MultiClassificationModelQualityMetrics() {
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
     if (mode === MODE.CHART) {
       return (
-        <div className="flex flex-row gap-4 py-4">
+        <div className="flex flex-row gap-4 p-4">
           <div className="flex flex-col w-full gap-4 ">
             <FormbitContextProvider initialValues={initialValues}>
 

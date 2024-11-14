@@ -83,9 +83,10 @@ function EvaluatedPieChart({ data }) {
 function Label({ title, percentage }) {
   return (
     <div className="flex flex-col items-start justify-center w-full">
-      <h1 className="font-bold text-2xl" style={{ marginBottom: '-0.25rem' }}>
+      <h1 className="font-bold text-3xl" style={{ marginBottom: '-0.25rem' }}>
         {percentage}
-        %
+
+        <small className="font-normal">%</small>
       </h1>
 
       <h2 className="m-0 text-lg font-normal">{title}</h2>
