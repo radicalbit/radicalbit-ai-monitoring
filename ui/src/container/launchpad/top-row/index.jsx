@@ -69,7 +69,7 @@ function DocumentationHubBoard() {
       )}
       header={(
         <NewHeader
-          details={{ one: (<span aria-label="man" role="img">👨</span>) }}
+          details={{ one: (<span aria-label="man" className="text-2xl" role="img">👨</span>) }}
           title={(
             <SectionTitle
               title="Documentation Hub"
