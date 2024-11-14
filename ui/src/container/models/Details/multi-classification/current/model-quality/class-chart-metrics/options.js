@@ -17,16 +17,15 @@ export default function lineChartOptions(currentDataset, referenceDataset) {
         ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, el.className, null, referenceSeries),
         endLabel: {
           show: true,
-          color: CHART_COLOR.REFERENCE,
+          color: CHART_COLOR.REFERENCE_LIGHT,
           formatter: ({ value }) => `${value[1]}`,
-          backgroundColor: '#fff',
         },
-
       };
       referenceOption.lineStyle = {
         width: 2,
         type: 'dotted',
       };
+
       return referenceOption;
     });
     dataSeries = dataSeries.concat(series);
@@ -45,6 +44,7 @@ export default function lineChartOptions(currentDataset, referenceDataset) {
       textStyle: {
         fontSize: 10,
         fontWeight: '300',
+        color: CHART_COLOR.REFERENCE_LIGHT,
       },
       right: 0,
     },

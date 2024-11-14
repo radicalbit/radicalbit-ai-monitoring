@@ -1,4 +1,3 @@
-import { color } from 'echarts';
 import moment from 'moment';
 
 const dateFormatter = (value) => moment(+value).format('DD MMM HH.mm');
@@ -228,7 +227,7 @@ const legendOptions = (data) => {
       },
       textStyle: {
         fontSize: 9,
-        color: '#9b99a1',
+        color: CHART_COLOR.REFERENCE_LIGHT,
         fontWeight: '300',
       },
     },
@@ -444,17 +443,6 @@ const colorList = {
 };
 
 export {
-  yAxisOptions,
-  xAxisOptions,
-  seriesOptions,
-  gridOptions,
-  commonOptions,
-  visualMapOptions,
-  tooltipOptions,
-  dataZoomOptions,
-  legendOptions,
-  colorList,
-  OPTIONS_TYPE,
   CHART_COLOR,
-  CHART_TYPE,
+  CHART_TYPE, colorList, commonOptions, dataZoomOptions, gridOptions, legendOptions, OPTIONS_TYPE, seriesOptions, tooltipOptions, visualMapOptions, xAxisOptions, yAxisOptions,
 };

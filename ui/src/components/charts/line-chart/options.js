@@ -16,10 +16,10 @@ export default function lineChartOptions(title, color, currentDataset, reference
       ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, 'Reference', CHART_COLOR.REFERENCE, referenceDatasetFormatted),
       endLabel: {
         show: true,
-        color: CHART_COLOR.REFERENCE,
+        color: CHART_COLOR.REFERENCE_LIGHT,
         formatter: ({ value }) => `${value[1]}`,
       },
-      color: CHART_COLOR.REFERENCE,
+      color: CHART_COLOR.REFERENCE_LIGHT,
     };
 
     referenceLine.lineStyle.type = 'dotted';
@@ -36,6 +36,9 @@ export default function lineChartOptions(title, color, currentDataset, reference
     series,
     legend: {
       show: true,
+      textStyle: {
+        color: CHART_COLOR.REFERENCE_LIGHT,
+      },
       right: 0,
     },
   };
