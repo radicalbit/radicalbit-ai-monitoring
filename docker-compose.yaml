@@ -220,7 +220,7 @@ services:
       retries: 2
 
   docker-client:
-    image: docker:cli
+    image: docker:27.2.1-cli
     command: "/bin/sh -c 'docker build ./spark -t radicalbit-spark-py:develop && docker save radicalbit-spark-py:develop -o /images/radicalbit-spark-py:develop.tar'"
     environment:
       DOCKER_TLS_CERTDIR: /certs

@@ -6,15 +6,15 @@ import { useSelector } from 'react-redux';
 
 const {
   selectHasLeftColumnCollapsed,
-  selectIsAllDark,
+  selectHasHeaderLeftContentDark,
 } = layoutSelectors;
 
-export default function Logo({ onClick, title }) {
+export default function Logo({ className = '', onClick, title }) {
   const hasLeftColumnCollapsed = useSelector(selectHasLeftColumnCollapsed);
-  const isAllDark = useSelector(selectIsAllDark);
+  const hasHeaderLeftContentDark = useSelector(selectHasHeaderLeftContentDark);
 
   const shape = hasLeftColumnCollapsed ? 'collapsed' : 'expanded';
-  const color = isAllDark ? 'light' : 'dark';
+  const color = hasHeaderLeftContentDark ? 'dark' : 'light';
 
   const logos = {
     expanded: {
@@ -31,6 +31,7 @@ export default function Logo({ onClick, title }) {
 
   return (
     <a
+      className={`${className} p-4`}
       onClick={onClick}
       role="presentation"
       title={title}

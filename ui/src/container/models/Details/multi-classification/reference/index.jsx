@@ -49,7 +49,7 @@ export default function ReferenceDashboard() {
   }
 
   return (
-    <div className="px-4 pt-4 h-full">
+    <div className="h-full">
       <Tabs
         activeKey={activeTab}
         fullHeight

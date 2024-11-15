@@ -89,7 +89,6 @@ function NumericalFeature({ item }) {
           </div>
         </div>
       )}
-      modifier="my-4 "
       size="small"
 
     />
@@ -135,7 +134,6 @@ function CategoricalFeature({ item }) {
           </div>
         </div>
       )}
-      modifier="my-4 "
       size="small"
     />
   );

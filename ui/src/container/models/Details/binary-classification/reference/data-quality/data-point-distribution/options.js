@@ -16,15 +16,18 @@ export default function chartOptions(title, dataset) {
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),
         color: CHART_COLOR.REFERENCE_LIGHT,
+        name: 'Reference',
         label: {
           show: true,
           position: 'insideRight',
           fontWeight: 'bold',
+          color: CHART_COLOR.WHITE,
           formatter: (el) => (el.data.count > 0) ? `${el.data.count} (${numberFormatter().format(el.data.percentage)}%)` : '',
         },
       },
     ],
   };
+  console.debug('🚀 ~ chartOptions ~ options:', options);
 
   return options;
 }

@@ -10,6 +10,8 @@ import {
 import * as echarts from 'echarts/lib/echarts';
 import {
   Board,
+  NewHeader,
+  Pin,
   SectionTitle,
 } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router';
@@ -102,7 +104,22 @@ function DataPointDistributionChart() {
 
   return (
     <Board
-      header={<SectionTitle size="small" title={title} />}
+      header={(
+        <NewHeader
+          details={{
+            one: (
+
+              <div className="flex flex-row gap-1 items-center">
+                <Pin color={CHART_COLOR.REFERENCE_LIGHT} size="small" />
+
+                <label>Reference</label>
+              </div>
+
+            ),
+          }}
+          title={<SectionTitle size="small" title={title} />}
+        />
+)}
       main={(
         <div>
           <ReactEchartsCore

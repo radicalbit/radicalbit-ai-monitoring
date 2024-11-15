@@ -2,8 +2,8 @@ import SiderBk from '@Img/sider-bk.png';
 import Logo from '@Src/components/Logo';
 import ModalsProvider from '@Src/components/modals/modals-provider';
 import { useContextConfigurationFromUrlEffect } from '@State/context-configuration/hooks';
-import { useNotification } from '@State/notification/hooks';
 import { actions as layoutActions, selectors as layoutSelectors } from '@State/layout';
+import { useNotification } from '@State/notification/hooks';
 import '@Styles/index.less';
 import '@Styles/tailwind.less';
 import { Layout } from '@radicalbit/radicalbit-design-system';
@@ -11,7 +11,6 @@ import CookieConsent from 'react-cookie-consent';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { createRoutes } from '../layout';
-import { useLayoutProvider } from '../layout/layout-provider';
 import BottomMenu from './bottom-menu';
 import MainHeaderContentSwitch from './content-switch/header';
 import SecondaryContentSwitch from './content-switch/secondary-column/content';
@@ -22,23 +21,19 @@ export default function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
-  useLayoutProvider();
-
   useNotification();
   useContextConfigurationFromUrlEffect();
 
-  const isAllDark = useSelector(layoutSelectors.selectIsAllDark);
-
   const hasHeaderContentDark = useSelector(layoutSelectors.selectHasHeaderContentDark);
-
-  const isMainContentDark = useSelector(layoutSelectors.selectHasMainContentDark);
-  const hasMainContentDark = isAllDark || isMainContentDark;
+  const hasHeaderLeftContentDark = useSelector(layoutSelectors.selectHasHeaderLeftContentDark);
+  const hasHeaderSecondaryContentDark = useSelector(layoutSelectors.selectHasHeaderSecondaryContentDark);
+  const hasLeftContentDark = useSelector(layoutSelectors.selectHasLeftContentDark);
+  const hasMainContentDark = useSelector(layoutSelectors.selectHasMainContentDark);
+  const hasSecondaryContentDark = useSelector(layoutSelectors.selectHasSecondaryContentDark);
 
   const hasHeader = useSelector(layoutSelectors.selectHasHeader);
   const isSecondaryColumn = useSelector(layoutSelectors.selectHasSecondaryColumn);
   const isLeftColumnCollapsed = useSelector(layoutSelectors.selectHasLeftColumnCollapsed);
-  const hasSecondaryContentDark = useSelector(layoutSelectors.selectHasSecondaryContentDark);
-  const hasHeaderSecondaryContentDark = useSelector(layoutSelectors.selectHasHeaderSecondaryContentDark);
   const hasSecondaryColumnCollapsed = useSelector(layoutSelectors.selectHasSecondaryColumnCollapsed);
 
   const hasSecondaryColumn = isSecondaryColumn;
@@ -64,7 +59,6 @@ export default function App() {
 
   return (
     <>
-
       <Layout
         hasHeader={hasHeader}
         hasLeftColumn
@@ -73,9 +67,9 @@ export default function App() {
         hasRightColumn={false}
         hasSecondaryColumn={hasSecondaryColumn}
         left={{
-          hasHeaderLeftContentDark: true,
+          hasHeaderLeftContentDark,
           hasLeftColumnCollapsed,
-          hasLeftContentDark: true,
+          hasLeftContentDark,
           leftColumnHeaderAltContent: <Logo onClick={goToHomePage} title="Radicalbit" />,
           backgroundImage: SiderBk,
           mainMenu: createRoutes({ currentPath: pathname }),

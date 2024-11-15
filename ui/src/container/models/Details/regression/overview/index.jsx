@@ -22,6 +22,7 @@ function Overview() {
       label: 'Summary',
       key: OVERVIEW_TABS_ENUM.SUMMARY,
       children: <SummaryTab />,
+
     },
     {
       label: 'Variables',
@@ -41,7 +42,6 @@ function Overview() {
       animated={false}
       fullHeight
       items={tabs}
-      modifier="py-4 px-4"
       onChange={handleOnChange}
     />
   );

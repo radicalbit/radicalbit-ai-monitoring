@@ -46,7 +46,7 @@ export default function Imports() {
   }
 
   return (
-    <div className="flex flex-col gap-4 pt-4">
+    <div className="flex flex-col gap-4">
       <FeedBackHeader />
 
       <FeedbackTable />
@@ -66,7 +66,7 @@ function FeedbackTable() {
     <SmartTable
       columns={getColumns}
       dataSource={items}
-      modifier="w-full pt-4"
+      modifier="w-full"
       namespace={NamespaceEnum.CURRENT_IMPORT}
       recordCount={recordCount}
       rowKey={({ uuid }) => `${uuid}`}
@@ -82,7 +82,7 @@ function FeedBackHeader() {
   const totalCounter = data?.total;
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center  p-4 justify-between">
       <div className="font-[var(--coo-font-weight-bold)]">
         {`${totalCounter} Dataset`}
       </div>

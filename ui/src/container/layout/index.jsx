@@ -10,7 +10,7 @@ export const createRoutes = ({ currentPath }) => {
   return { selectedItem, items: allRoutes };
 };
 
-const getLink = (pathname, search) => <Link to={{ pathname, search }} />;
+const getLink = (pathname, search) => <Link to={{ pathname, search }}><div className="hidden">{pathname}</div></Link>;
 
 const allRoutes = [
   {

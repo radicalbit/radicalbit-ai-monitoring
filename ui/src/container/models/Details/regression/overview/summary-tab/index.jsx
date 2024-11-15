@@ -79,7 +79,7 @@ function ReferenceCurrentLatestComparison() {
         collapsible="header"
         defaultActiveKey={date}
         expandIconPosition="end"
-        modifier="pb-4 mt-4"
+        modifier="pb-4"
         type="primary-light"
       >
         <Panel key={date} header="Reference vs current overview">
@@ -114,7 +114,7 @@ function ReferenceCurrentLatestComparison() {
       collapsible="header"
       defaultActiveKey={date}
       expandIconPosition="end"
-      modifier="pb-4 mt-4"
+      modifier="pb-4"
       type="secondary-medium"
     >
       <Panel key={date} header="Reference overview">

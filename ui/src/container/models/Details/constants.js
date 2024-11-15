@@ -49,6 +49,6 @@ export const MODEL_QUALITY_FIELD = {
 };
 
 export const TABLE_COLOR = {
-  REFERENCE_COLUMN: '#fafafc',
-  CURRENT_COLUMN: '#f1f9ff',
+  REFERENCE_COLUMN: '#d8d8e152',
+  CURRENT_COLUMN: '#3695d921',
 };

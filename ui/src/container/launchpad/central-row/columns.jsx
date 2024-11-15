@@ -54,11 +54,7 @@ export const getColumns = (
       const value = percentages?.dataQuality.value;
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
 
-      return (
-        <div>
-          {data}
-        </div>
-      );
+      return data;
     },
   }),
 
@@ -73,11 +69,7 @@ export const getColumns = (
       const value = percentages?.modelQuality.value;
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
 
-      return (
-        <div>
-          {data}
-        </div>
-      );
+      return data;
     },
   }),
 
@@ -92,11 +84,7 @@ export const getColumns = (
       const value = percentages?.drift.value;
       const data = (value && value !== -1) ? `${numberFormatter({ maximumSignificantDigits: 4 }).format(parseFloat(value) * 100)}%` : '--';
 
-      return (
-        <div>
-          {data}
-        </div>
-      );
+      return data;
     },
   }),
 

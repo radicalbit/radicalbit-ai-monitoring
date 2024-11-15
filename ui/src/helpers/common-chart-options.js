@@ -56,6 +56,11 @@ const xAxisValueType = (xAxisData, xAxisName) => {
         fontSize: 9,
         color: '#9b99a1',
       },
+      splitLine: {
+        lineStyle: {
+          color: '#9f9f9f54',
+        },
+      },
     },
   };
 
@@ -79,6 +84,11 @@ const yAxisValueType = (yAxisData, yAxisName) => {
         fontSize: 9,
         color: '#9b99a1',
       },
+      splitLine: {
+        lineStyle: {
+          color: '#9f9f9f54',
+        },
+      },
     },
   };
   if (yAxisData) {
@@ -101,7 +111,8 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
       axisLine: { show: false },
       splitLine: { show: false },
       axisLabel: {
-        fontSize: 9,
+        fontSize: 12,
+        color: CHART_COLOR.REFERENCE_LIGHT,
       },
     },
   };
@@ -211,10 +222,12 @@ const legendOptions = (data) => {
       scrollDataIndex: 'scroll',
       pageIconSize: 8,
       pageTextStyle: {
-        fontSize: 8,
+        fontSize: 9,
+        color: '#9b99a1',
       },
       textStyle: {
-        fontSize: 10,
+        fontSize: 9,
+        color: CHART_COLOR.REFERENCE_LIGHT,
         fontWeight: '300',
       },
     },
@@ -305,6 +318,12 @@ const barChartCommonOptions = () => ({
 
 const heatmapCommonOptions = () => ({
   emphasis: { disabled: true },
+  axis: {
+    axisLabel: { // tbd
+      fontSize: 9,
+      color: '#9b99a1',
+    },
+  },
 });
 
 // Object to simplify usage of common options
@@ -384,10 +403,10 @@ const visualMapOptions = (chartType, dataMax, colors, itemHeight) => {
 
 const CHART_COLOR = {
   REFERENCE: '#9B99A1',
-  REFERENCE_LIGHT: '#DBDBDB',
+  REFERENCE_LIGHT: '#9B99A1',
   REFERENCE_DARK: '#667',
   CURRENT: '#3695d9',
-  CURRENT_LIGHT: '#3795d990',
+  CURRENT_LIGHT: '#3695d9',
   CURRENT_DARK: '#0A71BB',
   WHITE: '#FFFFFF',
   LINE_CHART_COLOR: '#73B2E0',
@@ -424,17 +443,6 @@ const colorList = {
 };
 
 export {
-  yAxisOptions,
-  xAxisOptions,
-  seriesOptions,
-  gridOptions,
-  commonOptions,
-  visualMapOptions,
-  tooltipOptions,
-  dataZoomOptions,
-  legendOptions,
-  colorList,
-  OPTIONS_TYPE,
   CHART_COLOR,
-  CHART_TYPE,
+  CHART_TYPE, colorList, commonOptions, dataZoomOptions, gridOptions, legendOptions, OPTIONS_TYPE, seriesOptions, tooltipOptions, visualMapOptions, xAxisOptions, yAxisOptions,
 };

@@ -54,7 +54,6 @@ function CurrentList() {
 
   return (
     <Virtuoso
-      className="mt-4"
       data={rest}
       itemContent={(_, { uuid: currentUUID }) => (<Currents currentUUID={currentUUID} />)}
       totalCount={rest.length}
@@ -79,7 +78,6 @@ function ReferenceCurrentLatestComparison() {
         collapsible="header"
         defaultActiveKey={date}
         expandIconPosition="end"
-        modifier="pb-4 mt-4"
         type="primary-light"
       >
         <Panel key={date} header="Reference vs current overview">
@@ -114,7 +112,6 @@ function ReferenceCurrentLatestComparison() {
       collapsible="header"
       defaultActiveKey={date}
       expandIconPosition="end"
-      modifier="pb-4 mt-4"
       type="secondary-medium"
     >
       <Panel key={date} header="Reference overview">
@@ -158,7 +155,6 @@ function Currents({ currentUUID }) {
     <Collapse
       collapsible="header"
       expandIconPosition="end"
-      modifier="pb-4"
     >
       <Panel key={date} header={`Current - ${moment(date).format('YYYY.MM.DD HH.mm')}`}>
         <div className="flex flex-row gap-4">
