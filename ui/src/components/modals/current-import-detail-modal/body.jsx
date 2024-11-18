@@ -38,6 +38,7 @@ function Body() {
           activeKey={activeTab}
           fullHeight
           items={tabs}
+          noBorder
           onChange={onChangeTab}
         />
       </div>

@@ -55,6 +55,7 @@ export default function ReferenceDashboard() {
         activeKey={activeTab}
         fullHeight
         items={tabs}
+        noBorder
         onChange={onChangeTab}
       />
     </div>
