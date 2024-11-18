@@ -87,8 +87,8 @@ function NumericalFeature({ item }) {
           </div>
         </div>
       )}
+      modifier="my-4 "
       size="small"
-
     />
   );
 }

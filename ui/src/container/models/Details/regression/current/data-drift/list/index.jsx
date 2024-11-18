@@ -86,6 +86,7 @@ function FeatureRow({ item }) {
           )}
         />
       )}
+      modifier="my-4 "
       size="small"
     />
   );
