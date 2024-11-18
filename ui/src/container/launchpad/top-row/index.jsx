@@ -114,7 +114,7 @@ function YoutubeVideoBoard() {
 
 function TrialBoard() {
   const handleOnclick = () => {
-    window.open(ExternalPathsEnum.FREE_TRIAL, '_blank');
+    window.open(ExternalPathsEnum.BOOK_A_DEMO, '_blank');
   };
 
   return (
@@ -128,7 +128,7 @@ function TrialBoard() {
           <SectionTitle
             size="large"
             style={{ color: 'var(--coo-highlight)' }}
-            title="Start your free trial!"
+            title="Book a demo"
             titleWeight="bold"
             wrapTitle
           />
