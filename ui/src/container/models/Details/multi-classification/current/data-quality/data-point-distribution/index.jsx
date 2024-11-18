@@ -150,13 +150,13 @@ function DataPointDistributionChart() {
                 <div className="flex flex-row gap-1 items-center">
                   <Pin color={CHART_COLOR.REFERENCE_LIGHT} size="small" />
 
-                  <label>Reference</label>
+                  <span>Reference</span>
                 </div>
 
                 <div className="flex flex-row gap-1 items-center">
                   <Pin color={CHART_COLOR.CURRENT_LIGHT} size="small" />
 
-                  <label>Current</label>
+                  <span>Current</span>
                 </div>
               </div>
 

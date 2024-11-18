@@ -1,8 +1,5 @@
+import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
-import {
-  fa1,
-  faC,
-} from '@fortawesome/free-solid-svg-icons';
 import {
   Board,
   Button,
@@ -13,7 +10,7 @@ import {
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
-import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
+import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 import CategoricalLeftTable from './categorical/left-table/index';
 import CategoricalRightTable from './categorical/right-table';
@@ -62,6 +59,7 @@ function NumericalFeature({ item }) {
               <Button
                 shape="circle"
                 size="small"
+                title="1"
                 type="primary"
               >
                 <FontAwesomeIcon icon={fa1} />
@@ -109,6 +107,7 @@ function CategoricalFeature({ item }) {
               <Button
                 shape="circle"
                 size="small"
+                title="C"
                 type="primary"
               >
                 <FontAwesomeIcon icon={faC} />

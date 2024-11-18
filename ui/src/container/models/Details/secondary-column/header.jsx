@@ -1,22 +1,27 @@
 import { NamespaceEnum } from '@Src/constants';
-import { modelsApiSlice } from '@State/models/api';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
+import { modelsApiSlice } from '@State/models/api';
 import { SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const { useGetModelsQuery } = modelsApiSlice;
 
 const { selectQueryParamsSelector } = contextConfigurationSelectors;
 
 export default function SecondaryColumnModelsHeader() {
+  const navigate = useNavigate();
+
+  const handleOnClick = () => {
+    navigate('/models');
+  };
+
   return (
-    <Link to="/models">
-      <SectionTitle
-        subtitle={<Subtitle />}
-        title="Models"
-      />
-    </Link>
+    <SectionTitle
+      onClick={handleOnClick}
+      subtitle={<Subtitle />}
+      title="Models"
+    />
   );
 }
 

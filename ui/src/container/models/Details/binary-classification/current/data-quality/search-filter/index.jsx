@@ -71,6 +71,7 @@ function NumericalFilter() {
         <Button
           onClick={handleOnClick}
           shape="circle"
+          title="1"
           type={type}
         >
           <FontAwesomeIcon icon={fa1} />
@@ -96,6 +97,7 @@ function CategoricalFilter() {
       <Toggle checked={isCategoricalSelected} onClick={handleOnClick}>
         <Button
           shape="circle"
+          title="C"
           type={type}
         >
           <FontAwesomeIcon icon={faC} />

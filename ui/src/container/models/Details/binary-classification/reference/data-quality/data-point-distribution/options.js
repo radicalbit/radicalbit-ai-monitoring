@@ -27,7 +27,6 @@ export default function chartOptions(title, dataset) {
       },
     ],
   };
-  console.debug('🚀 ~ chartOptions ~ options:', options);
 
   return options;
 }

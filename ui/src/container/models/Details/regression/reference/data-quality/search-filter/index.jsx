@@ -25,6 +25,7 @@ function SearchFeatureList() {
     <div className="flex flex-row w-full gap-4 mt-4">
       <div className="w-full">
         <FormField>
+
           <Select
             mode="multiple"
             onChange={handleOnSelect}
@@ -72,8 +73,8 @@ function NumericalFilter() {
     <Tooltip title={title}>
       <Toggle checked={isNumericalSelected} onClick={handleOnClick}>
         <Button
-          onClick={handleOnClick}
           shape="circle"
+          title="1"
           type={type}
         >
           <FontAwesomeIcon icon={fa1} />
@@ -99,6 +100,7 @@ function CategoricalFilter() {
       <Toggle checked={isCategoricalSelected} onClick={handleOnClick}>
         <Button
           shape="circle"
+          title="C"
           type={type}
         >
           <FontAwesomeIcon icon={faC} />

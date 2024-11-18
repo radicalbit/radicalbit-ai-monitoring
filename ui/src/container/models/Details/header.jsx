@@ -70,14 +70,11 @@ export default function MainModelsHeader() {
         ),
       }}
       title={(
-        <>
-          <Title />
-
-          <SectionTitle
-            subtitle={<Subtitle />}
-            titleSuffix={<JobStatusTag />}
-          />
-        </>
+        <SectionTitle
+          subtitle={<Subtitle />}
+          title={<Title />}
+          titleSuffix={<JobStatusTag />}
+        />
       )}
     />
   );

@@ -1,12 +1,12 @@
 const columns = [
   {
-    title: '',
+    title: 'Metrics',
     key: 'label',
     dataIndex: 'label',
     render: (label) => <div className="font-[var(--coo-font-weight-bold)]">{label}</div>,
   },
   {
-    title: '',
+    title: 'Value',
     key: 'value',
     dataIndex: 'value',
     align: 'right',

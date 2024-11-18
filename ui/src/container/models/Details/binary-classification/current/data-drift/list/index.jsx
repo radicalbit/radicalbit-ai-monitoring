@@ -4,7 +4,6 @@ import {
   DRIFT_FEATURE_TYPE_ENUM,
   DRIFT_TEST_ENUM_LABEL, numberFormatter,
 } from '@Src/constants';
-import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import {
   Board,
   Button,
@@ -16,6 +15,7 @@ import {
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
+import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 
 function DataDriftList() {

@@ -21,7 +21,7 @@ export const getColumns = (activeFilters, activeSorter) => [
     render: (date) => moment(date).format('DD MMM YYYY HH:mm:ss').toString(),
   }),
   columnFactory({
-    title: '',
+    title: 'S',
     key: 'status',
     dataIndex: 'status',
     activeFilters,

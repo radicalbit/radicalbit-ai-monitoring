@@ -74,9 +74,7 @@ function DataPointDistributionCounter() {
             <div className="text-3xl">{letter}</div>
           </div>
 
-          <label>
-            <p>{`${fullNumber} data point`}</p>
-          </label>
+          <p>{`${fullNumber} data point`}</p>
 
         </div>
       )}
@@ -112,7 +110,7 @@ function DataPointDistributionChart() {
               <div className="flex flex-row gap-1 items-center">
                 <Pin color={CHART_COLOR.REFERENCE_LIGHT} size="small" />
 
-                <label>Reference</label>
+                <span>Reference</span>
               </div>
 
             ),

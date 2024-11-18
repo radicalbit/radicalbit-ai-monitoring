@@ -3,10 +3,10 @@ import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
 
 const outputsColumns = (dataSource) => [
   {
-    title: '',
+    title: '#',
     key: 'index',
     width: '30px',
-    render: (_, record) => <label>{dataSource.indexOf(record) + 1}</label>,
+    render: (_, record) => <span>{dataSource.indexOf(record) + 1}</span>,
   }, {
     title: 'Name',
     dataIndex: 'name',
@@ -16,9 +16,10 @@ const outputsColumns = (dataSource) => [
     dataIndex: 'type',
     key: 'type',
   }, {
-    title: '',
+    title: 'Label',
     dataIndex: 'outputType',
     key: 'outputType',
+    align: 'right',
     render: (_, record) => {
       if (record.outputType.length > 0) {
         const tagType = record.outputType === OVERVIEW_ROW_TYPE.PREDICTION ? 'full' : '';
