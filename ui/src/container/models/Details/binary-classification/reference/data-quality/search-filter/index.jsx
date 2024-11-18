@@ -1,5 +1,5 @@
 import { modelsApiSlice } from '@State/models/api';
-import { fa1, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { fa1, faC, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {
   Button, FontAwesomeIcon, FormField, Select, Toggle,
@@ -100,10 +100,12 @@ function CategoricalFilter() {
       <Toggle checked={isCategoricalSelected} onClick={handleOnClick}>
         <Button
           shape="circle"
+          title="C"
           type={type}
         >
-          C
+          <FontAwesomeIcon icon={faC} />
         </Button>
+
       </Toggle>
     </Tooltip>
   );

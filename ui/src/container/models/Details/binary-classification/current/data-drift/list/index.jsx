@@ -7,6 +7,7 @@ import {
 import {
   Board,
   Button,
+  FontAwesomeIcon,
   NewHeader,
   Pin,
   SectionTitle,
@@ -14,6 +15,7 @@ import {
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
+import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 
 function DataDriftList() {
@@ -67,7 +69,7 @@ function FeatureRow({ item }) {
                 size="small"
                 type="primary"
               >
-                {buttonIcon}
+                <FontAwesomeIcon icon={buttonIcon} />
               </Button>
             ),
           }}
@@ -93,10 +95,10 @@ function FeatureRow({ item }) {
 const getButtonIcon = (value) => {
   switch (value) {
     case FEATURE_TYPE.NUMERICAL:
-      return '1';
+      return fa1;
 
     case FEATURE_TYPE.CATEGORICAL:
-      return 'C';
+      return faC;
 
     default:
       return '';
