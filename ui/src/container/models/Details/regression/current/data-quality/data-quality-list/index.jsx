@@ -3,12 +3,14 @@ import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import {
   Board,
   Button,
+  FontAwesomeIcon,
   NewHeader,
   SectionTitle,
   Spinner,
   Tag,
 } from '@radicalbit/radicalbit-design-system';
 import { Virtuoso } from 'react-virtuoso';
+import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import useGetFilteredFeatures from '../use-get-filtered-features';
 import CategoricalLeftTable from './categorical/left-table/index';
 import CategoricalRightTable from './categorical/right-table';
@@ -58,9 +60,10 @@ function NumericalFeature({ item }) {
               <Button
                 shape="circle"
                 size="small"
+                title="1"
                 type="primary"
               >
-                <span className="mt-1">1</span>
+                <FontAwesomeIcon icon={fa1} />
               </Button>
             ),
           }}
@@ -107,9 +110,10 @@ function CategoricalFeature({ item }) {
               <Button
                 shape="circle"
                 size="small"
+                title="C"
                 type="primary"
               >
-                <span className="mt-1">C</span>
+                <FontAwesomeIcon icon={faC} />
               </Button>
             ),
           }}

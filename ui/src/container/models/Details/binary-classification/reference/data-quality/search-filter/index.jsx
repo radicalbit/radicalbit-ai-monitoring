@@ -1,5 +1,5 @@
 import { modelsApiSlice } from '@State/models/api';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { fa1, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {
   Button, FontAwesomeIcon, FormField, Select, Toggle,
@@ -73,11 +73,11 @@ function NumericalFilter() {
     <Tooltip title={title}>
       <Toggle checked={isNumericalSelected} onClick={handleOnClick}>
         <Button
-          onClick={handleOnClick}
           shape="circle"
+          title="1"
           type={type}
         >
-          1
+          <FontAwesomeIcon icon={fa1} />
         </Button>
       </Toggle>
     </Tooltip>
