@@ -1,5 +1,5 @@
 import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
-import { fa1, faC, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useFormbitContext } from '@radicalbit/formbit';
 import {
   Button, FontAwesomeIcon, FormField, Select, Toggle,
@@ -73,7 +73,7 @@ function NumericalFilter() {
           shape="circle"
           type={type}
         >
-          <FontAwesomeIcon icon={fa1} />
+          1
         </Button>
       </Toggle>
     </Tooltip>
@@ -98,7 +98,7 @@ function CategoricalFilter() {
           shape="circle"
           type={type}
         >
-          <FontAwesomeIcon icon={faC} />
+          C
         </Button>
       </Toggle>
     </Tooltip>

@@ -3,10 +3,10 @@ import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
 
 const outputsColumns = (dataSource) => [
   {
-    title: '',
+    title: '#',
     key: 'index',
     width: '30px',
-    render: (_, record) => <label>{dataSource.indexOf(record) + 1}</label>,
+    render: (_, record) => <span>{dataSource.indexOf(record) + 1}</span>,
   }, {
     title: 'Name',
     dataIndex: 'name',
@@ -16,7 +16,12 @@ const outputsColumns = (dataSource) => [
     dataIndex: 'type',
     key: 'type',
   }, {
-    title: '',
+    title: (
+      <div className="flex justify-end mr-2">
+        Label
+      </div>
+    ),
+    align: 'right',
     dataIndex: 'outputType',
     key: 'outputType',
     render: (_, record) => {

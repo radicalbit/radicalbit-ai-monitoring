@@ -5,10 +5,10 @@ import useHandleOnSubmit from './useHandleOnSubmit';
 
 const featuresColumns = (dataSource) => [
   {
-    title: '',
+    title: '#',
     key: 'index',
     width: '2rem',
-    render: (_, record) => <label>{dataSource.indexOf(record) + 1}</label>,
+    render: (_, record) => <span>{dataSource.indexOf(record) + 1}</span>,
   }, {
     title: 'Name',
     dataIndex: 'name',
@@ -27,7 +27,11 @@ const featuresColumns = (dataSource) => [
     width: '10rem',
   },
   {
-    title: '',
+    title: (
+      <div className="flex justify-end mr-2">
+        Label
+      </div>
+    ),
     dataIndex: 'type',
     key: 'type',
     width: '15rem',
@@ -47,7 +51,7 @@ const featuresColumns = (dataSource) => [
 
 const featuresColumnsWithSelection = (dataSource) => [
   {
-    title: '',
+    title: '#',
     key: 'index',
     width: '2rem',
     render: (_, record) => <label>{dataSource.indexOf(record) + 1}</label>,
@@ -70,7 +74,11 @@ const featuresColumnsWithSelection = (dataSource) => [
     render: (_, __, idx) => (<FieldTypeSelection variableIdx={idx} />),
   },
   {
-    title: '',
+    title: (
+      <div className="flex justify-end mr-2">
+        Label
+      </div>
+    ),
     dataIndex: 'type',
     key: 'type',
     width: '15rem',

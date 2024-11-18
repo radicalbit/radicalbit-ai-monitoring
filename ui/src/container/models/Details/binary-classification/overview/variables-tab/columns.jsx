@@ -1,24 +1,27 @@
-import { FEATURE_TYPE, OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';
+import {
+  FEATURE_TYPE,
+  OVERVIEW_ROW_TYPE,
+} from '@Container/models/Details/constants';
 import { useFormbitContext } from '@radicalbit/formbit';
 import { Select, Tag } from '@radicalbit/radicalbit-design-system';
 import useHandleOnSubmit from './useHandleOnSubmit';
 
 const featuresColumns = (dataSource) => [
   {
-    title: '',
+    title: '#',
     key: 'index',
     width: '2rem',
-    render: (_, record) => <label>{dataSource.indexOf(record) + 1}</label>,
-  }, {
+    render: (_, record) => <span>{dataSource.indexOf(record) + 1}</span>,
+  },
+  {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-
-  }, {
+  },
+  {
     title: 'Type',
     dataIndex: 'type',
     key: 'type',
-
   },
   {
     title: 'Field type',
@@ -27,13 +30,21 @@ const featuresColumns = (dataSource) => [
     width: '10rem',
   },
   {
-    title: '',
+    title: (
+      <div className="flex justify-end mr-2">
+        Label
+      </div>
+    ),
     dataIndex: 'type',
     key: 'type',
     width: '15rem',
     render: (_, { rowType }) => {
       if (rowType) {
-        const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH ? 'full' : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP ? 'light' : '';
+        const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH
+          ? 'full'
+          : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP
+            ? 'light'
+            : '';
         return (
           <div className="flex justify-end">
             <Tag type={tagType}>{rowType}</Tag>
@@ -47,36 +58,44 @@ const featuresColumns = (dataSource) => [
 
 const featuresColumnsWithSelection = (dataSource) => [
   {
-    title: '',
+    title: '#',
     key: 'index',
     width: '2rem',
     render: (_, record) => <label>{dataSource.indexOf(record) + 1}</label>,
-  }, {
+  },
+  {
     title: 'Name',
     dataIndex: 'name',
     key: 'name',
-
-  }, {
+  },
+  {
     title: 'Type',
     dataIndex: 'type',
     key: 'type',
-
   },
   {
     title: 'Field type',
     key: 'fieldType',
     width: '10rem',
     onCell: () => ({ style: { height: '3.5rem' } }),
-    render: (_, __, idx) => (<FieldTypeSelection variableIdx={idx} />),
+    render: (_, __, idx) => <FieldTypeSelection variableIdx={idx} />,
   },
   {
-    title: '',
+    title: (
+      <div className="flex justify-end mr-2">
+        Label
+      </div>
+    ),
     dataIndex: 'type',
     key: 'type',
     width: '15rem',
     render: (_, { rowType }) => {
       if (rowType) {
-        const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH ? 'full' : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP ? 'light' : '';
+        const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH
+          ? 'full'
+          : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP
+            ? 'light'
+            : '';
         return (
           <div className="flex justify-end">
             <Tag type={tagType}>{rowType}</Tag>
@@ -106,7 +125,10 @@ function FieldTypeSelection({ variableIdx }) {
   ];
 
   const handleOnChange = (valueSelected) => {
-    write(`variables[${variableIdx}]`, { ...variables[variableIdx], fieldType: valueSelected });
+    write(`variables[${variableIdx}]`, {
+      ...variables[variableIdx],
+      fieldType: valueSelected,
+    });
   };
 
   if (typeNotEditable.includes(`${type}`) || rowType !== '') {

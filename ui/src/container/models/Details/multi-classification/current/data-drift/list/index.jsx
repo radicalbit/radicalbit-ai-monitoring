@@ -4,11 +4,9 @@ import {
   DRIFT_FEATURE_TYPE_ENUM,
   DRIFT_TEST_ENUM_LABEL, numberFormatter,
 } from '@Src/constants';
-import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import {
   Board,
   Button,
-  FontAwesomeIcon,
   NewHeader,
   Pin,
   SectionTitle,
@@ -69,7 +67,7 @@ function FeatureRow({ item }) {
                 size="small"
                 type="primary"
               >
-                <FontAwesomeIcon icon={buttonIcon} />
+                {buttonIcon}
               </Button>
             ),
           }}
@@ -100,10 +98,10 @@ function FeatureRow({ item }) {
 const getButtonIcon = (value) => {
   switch (value) {
     case FEATURE_TYPE.NUMERICAL:
-      return fa1;
+      return '1';
 
     case FEATURE_TYPE.CATEGORICAL:
-      return faC;
+      return 'C';
 
     default:
       return '';

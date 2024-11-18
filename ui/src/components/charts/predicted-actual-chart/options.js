@@ -43,6 +43,9 @@ export default function chartOptions(dataset, xAxisLabel, yAxisLabel, color) {
     ],
     legend: {
       show: true,
+      textStyle: {
+        color: CHART_COLOR.REFERENCE_LIGHT,
+      },
       right: 0,
     },
   };
