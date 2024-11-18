@@ -33,6 +33,7 @@ const featuresColumns = (dataSource) => [
     title: 'Label',
     dataIndex: 'type',
     key: 'type',
+    align: 'right',
     width: '15rem',
     render: (_, { rowType }) => {
       if (rowType) {
@@ -80,6 +81,7 @@ const featuresColumnsWithSelection = (dataSource) => [
     title: 'Label',
     dataIndex: 'type',
     key: 'type',
+    align: 'right',
     width: '15rem',
     render: (_, { rowType }) => {
       if (rowType) {

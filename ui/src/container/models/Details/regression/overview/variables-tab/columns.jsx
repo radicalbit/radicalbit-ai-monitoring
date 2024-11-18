@@ -31,6 +31,7 @@ const featuresColumns = (dataSource) => [
     dataIndex: 'type',
     key: 'type',
     width: '15rem',
+    align: 'right',
     render: (_, { rowType }) => {
       if (rowType) {
         const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH ? 'full' : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP ? 'light' : '';
@@ -74,6 +75,7 @@ const featuresColumnsWithSelection = (dataSource) => [
     dataIndex: 'type',
     key: 'type',
     width: '15rem',
+    align: 'right',
     render: (_, { rowType }) => {
       if (rowType) {
         const tagType = rowType === OVERVIEW_ROW_TYPE.GROUND_TRUTH ? 'full' : rowType === OVERVIEW_ROW_TYPE.TIMESTAMP ? 'light' : '';

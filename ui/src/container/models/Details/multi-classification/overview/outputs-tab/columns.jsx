@@ -19,6 +19,7 @@ const outputsColumns = (dataSource) => [
     title: 'Label',
     dataIndex: 'outputType',
     key: 'outputType',
+    align: 'right',
     render: (_, record) => {
       if (record.outputType.length > 0) {
         const tagType = record.outputType === OVERVIEW_ROW_TYPE.PREDICTION ? 'full' : '';
