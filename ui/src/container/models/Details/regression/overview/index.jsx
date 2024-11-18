@@ -42,6 +42,7 @@ function Overview() {
       animated={false}
       fullHeight
       items={tabs}
+      noBorder
       onChange={handleOnChange}
     />
   );

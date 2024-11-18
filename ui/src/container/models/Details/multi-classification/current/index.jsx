@@ -57,6 +57,7 @@ export default function CurrentDashboard() {
         activeKey={activeTab}
         fullHeight
         items={tabs}
+        noBorder
         onChange={onChangeTab}
       />
     </div>
