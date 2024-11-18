@@ -27,11 +27,7 @@ const featuresColumns = (dataSource) => [
     width: '10rem',
   },
   {
-    title: (
-      <div className="flex justify-end mr-2">
-        Label
-      </div>
-    ),
+    title: 'Label',
     dataIndex: 'type',
     key: 'type',
     width: '15rem',
@@ -74,11 +70,7 @@ const featuresColumnsWithSelection = (dataSource) => [
     render: (_, __, idx) => (<FieldTypeSelection variableIdx={idx} />),
   },
   {
-    title: (
-      <div className="flex justify-end mr-2">
-        Label
-      </div>
-    ),
+    title: 'Label',
     dataIndex: 'type',
     key: 'type',
     width: '15rem',

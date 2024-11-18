@@ -16,11 +16,7 @@ const outputsColumns = (dataSource) => [
     dataIndex: 'type',
     key: 'type',
   }, {
-    title: (
-      <div className="flex justify-end mr-2">
-        Label
-      </div>
-    ),
+    title: 'Label',
     align: 'right',
     dataIndex: 'outputType',
     key: 'outputType',
