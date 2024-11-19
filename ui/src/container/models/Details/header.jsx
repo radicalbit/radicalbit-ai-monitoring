@@ -1,12 +1,10 @@
 import JobStatusTag from '@Components/JobStatus/job-status-tag';
-import {
-  DETAIL_LAYOUT_DARK_MODE_CONFIGURATION,
-  DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION,
-} from '@Container/layout/layout-provider/layout-provider-configuration';
+import DarkMode from '@Components/dark-mode';
+import { DETAIL_LAYOUT_DARK_MODE_CONFIGURATION, DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
 import { STATUS_SELECTOR_MAX_LEN, TRUNCATE_LENGTH } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { DataTypeEnumLabel, GranularityEnumLabel, ModelTypeEnumLabel } from '@State/models/constants';
-import { faEllipsisH, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import {
   Dropdown,
   FontAwesomeIcon,
@@ -14,8 +12,6 @@ import {
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
 import truncate from 'lodash/truncate';
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const { useGetModelByUUIDQuery, useDeleteModelMutation } = modelsApiSlice;
@@ -43,7 +39,10 @@ export default function MainModelsHeader() {
             <FontAwesomeIcon className="cursor-pointer" icon={faEllipsisH} />
           </Dropdown>
         ),
-        one: <DarkMode />,
+        one: <DarkMode
+          darkActions={DETAIL_LAYOUT_DARK_MODE_CONFIGURATION}
+          lightActions={DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION}
+        />,
       }}
       details={{
         one: (
@@ -189,38 +188,5 @@ function DeleteButton() {
       onConfirm={handleOnClick}
       title=" Are you sure you want to delete this model? "
     />
-  );
-}
-
-function DarkMode() {
-  const dispatch = useDispatch();
-  const [isDarkMode, setIsDarkMode] = useState(!!window.localStorage.getItem('enable-dark-mode'));
-
-  const handleOnEnableDarkMode = () => {
-    window.localStorage.setItem('enable-dark-mode', true);
-    setIsDarkMode(true);
-
-    DETAIL_LAYOUT_DARK_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
-  };
-
-  const handleOnEnableLightMode = () => {
-    window.localStorage.removeItem('enable-dark-mode');
-    setIsDarkMode(false);
-
-    DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION.forEach((action) => dispatch(action()));
-  };
-
-  if (isDarkMode) {
-    return (
-      <Tooltip title="Switch to light mode">
-        <FontAwesomeIcon icon={faMoon} onClick={handleOnEnableLightMode} />
-      </Tooltip>
-    );
-  }
-
-  return (
-    <Tooltip title="Switch to dark mode">
-      <FontAwesomeIcon icon={faSun} onClick={handleOnEnableDarkMode} />
-    </Tooltip>
   );
 }
