@@ -1,5 +1,5 @@
+import { useInitDarkMode } from '@Components/dark-mode/hooks';
 import { DETAIL_LAYOUT_DARK_MODE_CONFIGURATION, DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
-import useSetDarkMode from '@Hooks/use-set-dark-mode';
 import { modelsApiSlice } from '@State/models/api';
 import { ModelTypeEnum } from '@State/models/constants';
 import { useParams } from 'react-router-dom';
@@ -13,7 +13,7 @@ export function ModelDetails() {
   const { uuid } = useParams();
   const { data } = useGetModelByUUIDQuery({ uuid });
 
-  useSetDarkMode(DETAIL_LAYOUT_DARK_MODE_CONFIGURATION, DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION);
+  useInitDarkMode(DETAIL_LAYOUT_DARK_MODE_CONFIGURATION, DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION);
 
   const modelType = data?.modelType;
 

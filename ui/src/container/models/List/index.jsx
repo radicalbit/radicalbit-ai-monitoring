@@ -1,7 +1,7 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import { useInitDarkMode } from '@Components/dark-mode/hooks';
 import SmartTable from '@Components/smart-table';
 import { MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
-import useSetDarkMode from '@Hooks/use-set-dark-mode';
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import useModals from '@Src/hooks/use-modals';
@@ -18,7 +18,7 @@ export function ModelsList() {
   const models = data?.items || [];
   const count = data?.total || 0;
 
-  useSetDarkMode(MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION);
+  useInitDarkMode(MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION);
 
   const modifier = models?.length ? '' : 'c-spinner--centered';
 
