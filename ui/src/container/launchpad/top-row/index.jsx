@@ -105,7 +105,7 @@ function YoutubeVideoBoard() {
       height="175px"
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
-      style={{ borderRadius: '1rem', minWidth: '270px' }}
+      style={{ borderRadius: '.25rem', minWidth: '270px' }}
       title="Radicalbit in Action: Open Source AI Monitoring for Regression Models"
       width="100%"
     />

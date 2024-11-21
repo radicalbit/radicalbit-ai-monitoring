@@ -35,9 +35,8 @@ function JobStatus({ jobStatus }) {
       return (
         <Void
           actions={(<ImportReferenceButton type="primary" />)}
-          description="Import a reference file to see the outcome"
-          image={<LogoSquared />}
-          title="No reference data imported yet"
+          description="Import a csv file to see the outcome"
+          title="🥳 Import a reference"
         />
       );
     }
