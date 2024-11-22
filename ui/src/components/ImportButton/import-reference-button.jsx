@@ -1,7 +1,7 @@
 import { Button, Upload } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
-
 import { modelsApiSlice } from '@State/models/api';
+import ConfettiExplosion from 'react-confetti-explosion';
+import { useParams } from 'react-router';
 
 const { useImportReferenceDataMutation } = modelsApiSlice;
 
@@ -19,15 +19,27 @@ function ImportReferenceButton({ type = 'primary-light' }) {
   };
 
   return (
-    <Upload
-      accept=".csv"
-      beforeUpload={disableUploadAction}
-      disabled={isSubmitDisabled}
-      fileList={[]}
-      onChange={handleOnChange}
-    >
-      <Button disabled={isSubmitDisabled} loading={isLoading} onClick={() => {}} type={type}>Import Reference</Button>
-    </Upload>
+    <div className="flex flex-row justfy-end w-full">
+
+      <Upload
+        accept=".csv"
+        beforeUpload={disableUploadAction}
+        disabled={isSubmitDisabled}
+        fileList={[]}
+        onChange={handleOnChange}
+      >
+
+        <Button disabled={isSubmitDisabled} loading={isLoading} onClick={() => {}} type={type}>Import Reference</Button>
+      </Upload>
+
+      <ConfettiExplosion
+        duration={3000}
+        force={0.9}
+        particleCount={200}
+        style={{ marginLeft: '-2rem' }}
+        width={2000}
+      />
+    </div>
   );
 }
 

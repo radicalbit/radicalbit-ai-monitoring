@@ -2,9 +2,9 @@ import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import { JOB_STATUS } from '@Src/constants';
 import { Spinner, Void } from '@radicalbit/radicalbit-design-system';
 // @ts-ignore
-import LogoSquared from '@Img/logo-collapsed.svg';
-import ImportReferenceButton from '@Components/ImportButton/import-reference-button';
 import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-button';
+import ImportReferenceButton from '@Components/ImportButton/import-reference-button';
+import LogoSquared from '@Img/logo-collapsed.svg';
 
 function JobStatus({ jobStatus }) {
   switch (jobStatus) {

@@ -4,21 +4,11 @@ import { Pin, Spinner } from '@radicalbit/radicalbit-design-system';
 function JobStatusPin({ jobStatus }) {
   switch (jobStatus) {
     case JOB_STATUS.IMPORTING: {
-      return (
-        <Spinner
-          fullHeight={false}
-          fullWidth={false}
-          size="small"
-          spinning
-        />
-
-      );
+      return (<Spinner fullHeight={false} fullWidth={false} size="small" spinning />);
     }
 
     case JOB_STATUS.ERROR: {
-      return (
-        <Pin size="small" type="filled-error">{JOB_STATUS.ERROR}</Pin>
-      );
+      return (<Pin size="small" type="filled-error">{JOB_STATUS.ERROR}</Pin>);
     }
 
     case JOB_STATUS.MISSING_CURRENT: {
@@ -29,7 +19,8 @@ function JobStatusPin({ jobStatus }) {
       return <Pin size="small" type="secondary" />;
     }
 
-    default: return false;
+    default:
+      return <Pin size="small" type="filled" />;
   }
 }
 
