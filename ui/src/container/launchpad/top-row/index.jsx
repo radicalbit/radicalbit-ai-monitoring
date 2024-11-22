@@ -30,10 +30,9 @@ function QuickStartBoard() {
       )}
       header={(
         <NewHeader
-          details={{ one: (<span aria-label="tada" className="text-2xl" role="img">🎉</span>) }}
           title={(
             <SectionTitle
-              title="Quickstart guide"
+              title="Quickstart guide 🚀"
               titleColor="primary"
               titleWeight="normal"
             />
@@ -69,10 +68,9 @@ function DocumentationHubBoard() {
       )}
       header={(
         <NewHeader
-          details={{ one: (<span aria-label="man" className="text-2xl" role="img">👨</span>) }}
           title={(
             <SectionTitle
-              title="Documentation Hub"
+              title="Documentation Hub 📚​"
               titleColor="primary"
               titleWeight="normal"
             />

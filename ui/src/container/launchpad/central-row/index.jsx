@@ -1,7 +1,9 @@
 import PieChart from '@Components/charts/pie-chart';
 import SmartTable from '@Components/smart-table';
 import useModals from '@Hooks/use-modals';
-import { Button, Spinner, Void } from '@radicalbit/radicalbit-design-system';
+import {
+  Button, Spinner, Void, SectionTitle,
+} from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
 import { useGetOverallModelListQueryWithPolling } from '@Src/store/state/models/polling-hook';
@@ -9,6 +11,7 @@ import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { getColumns } from './columns';
+import WorkInProgress from '../right-column/work-in-progress';
 
 const { useGetOverallStatsQuery } = modelsApiSlice;
 
@@ -22,15 +25,26 @@ function ModelStatsList() {
   }
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <div className="flex flex-row justify-between items-end">
-        <OverallCharts />
+    <div className="flex flex-col gap-9 w-full">
+      <div>
 
-        {count > 0 && <AddNewModel />}
+        <SectionTitle title="Available models" titleWeight="light" />
+
+        <div className="flex flex-row justify-between items-end">
+          <OverallCharts />
+
+          {count > 0 && <AddNewModel />}
+
+        </div>
+
+        <OverallList />
 
       </div>
 
-      <OverallList />
+      <SectionTitle title="Work in progress" titleWeight="light" />
+
+      <WorkInProgress />
+
     </div>
   );
 }

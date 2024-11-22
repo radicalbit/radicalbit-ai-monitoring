@@ -18,10 +18,6 @@ function RightColumn() {
 
   return (
     <div className="flex flex-col h-full gap-4 ml-4">
-      <div className="max-h-[16rem] h-full">
-        <WorkInProgress />
-
-      </div>
 
       <div className="min-h-[15rem] h-full">
         <Alerts />

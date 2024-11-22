@@ -3,7 +3,7 @@ import useModals from '@Hooks/use-modals';
 import { ModalsEnum } from '@Src/constants';
 import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import {
-  Board, Button, DataTable, SectionTitle, Skeleton, Void,
+  Button, DataTable, Skeleton, Void,
 } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import columns from './columns';
@@ -18,62 +18,39 @@ function WorkInProgress() {
 
   if (isLoading) {
     return (
-      <Board
-        header={<SectionTitle size="small" title="Work in progress" />}
-        main={(
-          <div className="flex flex-col gap-2">
-            <Skeleton.Input active block />
+      <>
+        <Skeleton.Input active block />
 
-            <Skeleton.Input active block />
+        <Skeleton.Input active block />
 
-            <Skeleton.Input active block />
-          </div>
-      )}
-        modifier="h-full"
-      />
+        <Skeleton.Input active block />
+      </>
     );
   }
 
   if (isError) {
     return (
-      <Board
-        header={<SectionTitle size="small" title="Work in progress" />}
-        main={<SomethingWentWrong size="small" />}
-        modifier="h-full"
-        size="small"
-      />
+      <SomethingWentWrong size="small" />
     );
   }
 
   if (wipModels.length === 0) {
     return (
-      <Board
-        header={<SectionTitle size="small" title="Work in progress" />}
-        main={(<AddNewModelVoid />)}
-        modifier="h-full"
-        size="small"
-      />
+      <AddNewModelVoid />
     );
   }
 
   return (
-    <Board
-      header={<SectionTitle size="small" title="Work in progress" />}
-      main={(
-        <DataTable
-          clickable
-          columns={columns}
-          dataSource={wipModels}
-          onRow={({ uuid }) => ({
-            onClick: () => navigate({ pathname: `/models/${uuid}`, search }),
-          })}
-          pagination={false}
-          rowKey={({ uuid }) => uuid}
-          scroll={{ y: '8rem' }}
-          size="small"
-        />
-      )}
-      modifier="h-full"
+    <DataTable
+      clickable
+      columns={columns}
+      dataSource={wipModels}
+      onRow={({ uuid }) => ({
+        onClick: () => navigate({ pathname: `/models/${uuid}`, search }),
+      })}
+      pagination={false}
+      rowKey={({ uuid }) => uuid}
+      scroll={{ y: '8rem' }}
       size="small"
     />
   );
