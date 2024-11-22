@@ -72,6 +72,8 @@ html {
     justify-content: unset;
 }
 
+
+
 .rdb-layout-secondary-column {
     background-color: var(--coo-white-bk);
 }
@@ -92,4 +94,14 @@ html {
 
 .rdb-tabs .ant-tabs-nav, .c-tabs .ant-tabs-nav {
     border-bottom: 1px solid var(--coo-secondary-03);
+}
+
+.l-data-table tbody tr.l-data-table__row--error th, .l-data-table tbody tr.l-data-table__row--error td {
+    background-color: rgba(var(--coo-rgb-error), 0.05) !important;
+    color: var(--coo-dark); // in DS remove the class attribute
+    border-bottom: 1px solid var(--coo-secondary-03); // in DS remove the class attribute
+}
+
+.l-data-table tbody tr:hover.l-data-table__row--error th, .l-data-table tbody tr:hover.l-data-table__row--error td {
+    background-color: rgba(var(--coo-rgb-error), 0.1) !important;
 }
