@@ -1,8 +1,13 @@
 import PieChart from '@Components/charts/pie-chart';
 import SmartTable from '@Components/smart-table';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
 import useModals from '@Hooks/use-modals';
 import {
-  Button, Spinner, Void, SectionTitle,
+  Button,
+  FontAwesomeIcon,
+  NewHeader,
+  SectionTitle,
+  Spinner, Void,
 } from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
@@ -11,7 +16,6 @@ import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { getColumns } from './columns';
-import WorkInProgress from '../right-column/work-in-progress';
 
 const { useGetOverallStatsQuery } = modelsApiSlice;
 
@@ -26,24 +30,12 @@ function ModelStatsList() {
 
   return (
     <div className="flex flex-col gap-9 w-full">
-      <div>
 
-        <SectionTitle title="Available models" titleWeight="light" />
+      <OverallCharts />
 
-        <div className="flex flex-row justify-between items-end">
-          <OverallCharts />
+      <AvailableModelHeader />
 
-          {count > 0 && <AddNewModel />}
-
-        </div>
-
-        <OverallList />
-
-      </div>
-
-      <SectionTitle title="Work in progress" titleWeight="light" />
-
-      <WorkInProgress />
+      <OverallList />
 
     </div>
   );
@@ -111,9 +103,38 @@ function AddNewModel() {
   };
 
   return (
-    <Button modifier="mb-4" onClick={onClick} type="primary">
+    <Button onClick={onClick} type="primary">
       New Model
     </Button>
+  );
+}
+
+function AvailableModelHeader() {
+  const navigate = useNavigate();
+  const handleOnClick = () => {
+    navigate('#alert-table');
+  };
+
+  return (
+    <NewHeader
+      details={{
+        one: (
+          <Button
+            className="p-2"
+            onClick={handleOnClick}
+            title="1"
+            type="error"
+          >
+            <FontAwesomeIcon className="fa-shake" icon={faBell} size="xl" />
+          </Button>
+        ),
+        two: (
+          <AddNewModel />
+        ),
+
+      }}
+      title={<SectionTitle title="Available models" titleWeight="light" />}
+    />
   );
 }
 

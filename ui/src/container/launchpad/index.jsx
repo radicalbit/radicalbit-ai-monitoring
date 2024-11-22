@@ -1,8 +1,9 @@
 import { useInitDarkMode } from '@Components/dark-mode/hooks';
 import { MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
-import ModelStatsList from './central-row';
-import RightColumn from './right-column';
+import ModelStatsList from './model-stats-list';
 import TopRow from './top-row';
+import AlertList from './alerts-list';
+import WorkInProgress from './work-in-progress';
 
 export default function Launchpad() {
   useInitDarkMode(MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION);
@@ -11,13 +12,12 @@ export default function Launchpad() {
     <div className="flex flex-col p-4 gap-4 h-full">
       <TopRow />
 
-      <div className="grid grid-cols-[1.2fr,1.2fr,1.2fr,1fr] gap-4 h-full">
-        <div className="col-span-3">
-          <ModelStatsList />
-        </div>
+      <ModelStatsList />
 
-        <RightColumn />
-      </div>
+      <WorkInProgress />
+
+      <AlertList />
+
     </div>
   );
 }
