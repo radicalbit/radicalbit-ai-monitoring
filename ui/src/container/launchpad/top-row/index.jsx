@@ -120,12 +120,9 @@ function TrialBoard() {
   return (
     <Board
       main={(
-        <div className="flex flex-row">
-          <div>
-            <img alt="test" className="w-[10rem] h-full" src={Logo} />
-          </div>
+        <div className="flex flex-row px-8">
 
-          <div className="flex flex-col items-start gap-2 p-4 pl-0 pr-8">
+          <div className="flex flex-col items-start gap-2 p-4 px-0">
             <SectionTitle title="Unlock the Full Potential" />
 
             <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
@@ -137,6 +134,10 @@ function TrialBoard() {
               titleWeight="bold"
               wrapTitle
             />
+          </div>
+
+          <div>
+            <img alt="test" className="w-[10rem] h-full" src={Logo} />
           </div>
         </div>
       )}
