@@ -1,6 +1,6 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import SmartTable from '@Components/smart-table';
-import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
+import { METRICS_TABS, MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import {
   DataTable,
   SectionTitle, Skeleton,
@@ -18,7 +18,7 @@ function AlertList() {
   const count = data?.length;
 
   const handleOnClick = ({ modelUuid, anomalyType }) => {
-    navigate(`/models/${modelUuid}?tab=${MODEL_TABS_ENUM.CURRENT_DASHBOARD}&tab-metrics=${anomalyType}`);
+    navigate(`/models/${modelUuid}?tab=${MODEL_TABS_ENUM.CURRENT_DASHBOARD}&tab-metrics=${METRICS_TABS[`${anomalyType}`]}`);
   };
 
   if (isLoading) {
