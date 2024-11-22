@@ -1,7 +1,7 @@
 import { Board, NewHeader, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { ExternalPathsEnum } from '@Src/constants';
 import { memo } from 'react';
-import Logo from '@Img/rocket2.gif';
+import Logo from '@Img/rocket-02.gif';
 
 function TopRow() {
   return (
@@ -120,12 +120,12 @@ function TrialBoard() {
   return (
     <Board
       main={(
-        <div className="flex flex-row gap-4">
+        <div className="flex flex-row">
           <div>
             <img alt="test" className="w-[10rem] h-full" src={Logo} />
           </div>
 
-          <div className="flex flex-col items-start gap-2">
+          <div className="flex flex-col items-start gap-2 p-4 pl-0 pr-8">
             <SectionTitle title="Unlock the Full Potential" />
 
             <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
@@ -140,7 +140,7 @@ function TrialBoard() {
           </div>
         </div>
       )}
-      modifier="h-full shadow light border-none"
+      modifier="h-full shadow light border-none p-0"
       onClick={handleOnclick}
       size="small"
       type="primary"
