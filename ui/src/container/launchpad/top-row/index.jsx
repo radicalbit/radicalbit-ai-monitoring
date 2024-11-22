@@ -5,7 +5,7 @@ import Logo from '@Img/rocket2.gif';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.2fr,1.2fr,1.2fr,1fr] gap-4 h-[175px]">
+    <div className="grid grid-cols-[1.2fr,1.2fr,1.2fr,1fr] px-4 gap-4 h-[175px]">
       <QuickStartBoard />
 
       <DocumentationHubBoard />

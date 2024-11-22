@@ -3,7 +3,7 @@ import useModals from '@Hooks/use-modals';
 import { ModalsEnum } from '@Src/constants';
 import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import {
-  Button, DataTable, SectionTitle, Skeleton, Void,
+  Button, DataTable, SectionTitle, Skeleton, Void, NewHeader,
 } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import columns from './columns';
@@ -41,8 +41,10 @@ function WorkInProgress() {
   }
 
   return (
-    <div className="flex flex-col gap-9 justify-start">
-      <SectionTitle title="Work in progress" titleWeight="light" />
+    <div className="flex flex-col justify-start">
+      <NewHeader
+        title={<SectionTitle title="Work in progress" titleWeight="light" />}
+      />
 
       <DataTable
         clickable
@@ -53,7 +55,6 @@ function WorkInProgress() {
         })}
         pagination={false}
         rowKey={({ uuid }) => uuid}
-        scroll={{ y: '8rem' }}
         size="small"
       />
     </div>

@@ -3,7 +3,7 @@ import SmartTable from '@Components/smart-table';
 import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import {
   DataTable,
-  SectionTitle, Skeleton,
+  SectionTitle, Skeleton, NewHeader,
 } from '@radicalbit/radicalbit-design-system';
 import { NamespaceEnum } from '@Src/constants';
 import { alertsApiSlice } from '@State/alerts/api';
@@ -23,8 +23,10 @@ function AlertList() {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-9 justify-start">
-        <SectionTitle title="Alert" titleWeight="light" />
+      <div className="flex flex-col justify-start">
+        <NewHeader
+          title={<SectionTitle title="Alert" titleWeight="light" />}
+        />
 
         <Skeleton.Input active block />
       </div>
@@ -34,8 +36,10 @@ function AlertList() {
 
   if (isError) {
     return (
-      <div className="flex flex-col gap-9 justify-start">
-        <SectionTitle title="Alert" titleWeight="light" />
+      <div className="flex flex-col justify-start">
+        <NewHeader
+          title={<SectionTitle title="Alert" titleWeight="light" />}
+        />
 
         <SomethingWentWrong size="small" />
       </div>
@@ -48,8 +52,10 @@ function AlertList() {
   }
 
   return (
-    <div className="flex flex-col gap-9 justify-start">
-      <SectionTitle id="alert-table" title="Alert" titleWeight="light" />
+    <div className="flex flex-col justify-start">
+      <NewHeader
+        title={<SectionTitle id="alert-table" title="Alert" titleWeight="light" />}
+      />
 
       <SmartTable
         clickable
