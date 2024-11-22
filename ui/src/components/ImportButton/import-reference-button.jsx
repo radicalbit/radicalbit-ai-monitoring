@@ -26,7 +26,7 @@ function ImportReferenceButton({ type = 'primary-light' }) {
       fileList={[]}
       onChange={handleOnChange}
     >
-      <Button disabled={isSubmitDisabled} loading={isLoading} type={type}>Import Reference</Button>
+      <Button disabled={isSubmitDisabled} loading={isLoading} onClick={() => {}} type={type}>Import Reference</Button>
     </Upload>
   );
 }
