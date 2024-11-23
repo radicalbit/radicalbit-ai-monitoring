@@ -9,7 +9,7 @@ export default function Launchpad() {
   useInitDarkMode(MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION);
 
   return (
-    <div className="flex flex-col p-4 gap-4 h-full">
+    <div className="flex flex-col gap-4 h-full">
 
       <TopRow />
 
