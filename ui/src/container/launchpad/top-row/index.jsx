@@ -5,7 +5,7 @@ import Logo from '@Img/rocket-02.gif';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.2fr,1.2fr,1.2fr,1fr] px-4 gap-4 h-[175px]">
+    <div className="grid grid-cols-[auto,auto,auto,1fr] px-4 gap-4 h-[175px] auto-rows-auto">
       <QuickStartBoard />
 
       <DocumentationHubBoard />
@@ -105,9 +105,11 @@ function YoutubeVideoBoard() {
       height="175px"
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
-      style={{ borderRadius: '.25rem', minWidth: '270px' }}
+      style={{
+        borderRadius: '.25rem',
+      }}
       title="Radicalbit in Action: Open Source AI Monitoring for Regression Models"
-      width="100%"
+      width="312px"
     />
   );
 }
@@ -120,9 +122,9 @@ function TrialBoard() {
   return (
     <Board
       main={(
-        <div className="flex flex-row px-8">
+        <div className="flex flex-row items-center h-full pl-4 ">
 
-          <div className="flex flex-col items-start gap-2 p-4 px-0">
+          <div className="flex flex-col gap-2 justify-center mr-20">
             <SectionTitle title="Unlock the Full Potential" />
 
             <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
@@ -136,8 +138,8 @@ function TrialBoard() {
             />
           </div>
 
-          <div>
-            <img alt="test" className="w-[10rem] h-full" src={Logo} />
+          <div className="absolute right-0 flex items-end h-full">
+            <img alt="test" className="w-[8rem]" src={Logo} />
           </div>
         </div>
       )}
