@@ -11,7 +11,7 @@ export const getColumns = (
   columnFactory({
     title: 'S',
     key: 'name',
-    width: '3rem',
+    width: '3%',
     align: 'center',
     render: ({ latestCurrentJobStatus, latestReferenceJobStatus }) => {
       const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;
@@ -25,6 +25,7 @@ export const getColumns = (
     key: 'name',
     activeFilters,
     activeSorter,
+    width: '33%',
     render: ({ name }) => (
       <div className="font-[var(--coo-font-weight-bold)] w-96">
         <Truncate>{name}</Truncate>

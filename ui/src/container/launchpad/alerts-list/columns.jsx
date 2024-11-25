@@ -11,22 +11,10 @@ export const getColumns = (
   columnFactory({
     title: 'S',
     key: 'name',
-    width: '4rem',
+    width: '3%',
     align: 'center',
     render: () => (
       <JobStatusPin jobStatus={JOB_STATUS.ERROR} />
-    ),
-  }),
-  columnFactory({
-    title: 'Name',
-    key: 'modelName',
-    activeFilters,
-    activeSorter,
-    width: '35rem',
-    render: ({ modelName }) => (
-      <div className="font-[var(--coo-font-weight-bold)] w-96">
-        <Truncate>{modelName}</Truncate>
-      </div>
     ),
   }),
   columnFactory({
@@ -35,8 +23,21 @@ export const getColumns = (
     activeFilters,
     activeSorter,
     align: 'left',
-    width: '20rem',
-    render: ({ anomalyType }) => (<div>{METRICS_TABS[`${anomalyType}`]}</div>),
+    width: '17%',
+    render: ({ anomalyType }) => (<div className="font-[var(--coo-font-weight-bold)]">{METRICS_TABS[`${anomalyType}`]}</div>),
+  }),
+
+  columnFactory({
+    title: 'Name',
+    key: 'modelName',
+    activeFilters,
+    activeSorter,
+    width: '16%',
+    render: ({ modelName }) => (
+      <div className="w-96">
+        <Truncate>{modelName}</Truncate>
+      </div>
+    ),
   }),
 
   columnFactory({
@@ -45,6 +46,7 @@ export const getColumns = (
     activeFilters,
     activeSorter,
     align: 'left',
+    width: '64%',
     render: ({ anomalyFeatures }) => <div>{anomalyFeatures.join(', ')}</div>,
   }),
 

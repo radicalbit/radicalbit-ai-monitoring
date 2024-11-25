@@ -48,6 +48,7 @@ export const NamespaceEnum = {
   REFERENCE_IMPORT: 'REFERENCE_IMPORT',
   CURRENT_IMPORT: 'CURRENT_IMPORT',
   ALERTS: 'ALERTS',
+  MODELS_WIP: 'MODELS_WIP',
 };
 
 export const JOB_STATUS = {

@@ -7,7 +7,8 @@ import {
   FontAwesomeIcon,
   NewHeader,
   SectionTitle,
-  Spinner, Void,
+  Skeleton,
+  Void,
 } from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@Src/store/state/models/api';
@@ -20,12 +21,13 @@ import { getColumns } from './columns';
 const { useGetOverallStatsQuery } = modelsApiSlice;
 
 function ModelStatsList() {
+  useGetOverallModelListQueryWithPolling();
   const { isLoading } = useGetOverallStatsQuery();
-  const { data } = useGetOverallModelListQueryWithPolling();
-  const count = data?.length;
 
   if (isLoading) {
-    <Spinner spinning />;
+    return (
+      <Skeleton active block className="my-8" paragraph={{ rows: 5, width: '100%' }} title={{ width: '100%' }} />
+    );
   }
 
   return (

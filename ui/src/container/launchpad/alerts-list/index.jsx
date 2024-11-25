@@ -28,7 +28,7 @@ function AlertList() {
           title={<SectionTitle title="Alert" titleWeight="light" />}
         />
 
-        <Skeleton.Input active block />
+        <Skeleton active block paragraph={{ rows: 5, width: '100%' }} title={{ width: '100%' }} />
       </div>
 
     );

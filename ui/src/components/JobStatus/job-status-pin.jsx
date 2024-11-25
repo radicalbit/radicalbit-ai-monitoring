@@ -8,7 +8,7 @@ function JobStatusPin({ jobStatus }) {
     }
 
     case JOB_STATUS.ERROR: {
-      return (<Pin size="small" type="filled-error">{JOB_STATUS.ERROR}</Pin>);
+      return (<Pin size="small" type="error">{JOB_STATUS.ERROR}</Pin>);
     }
 
     case JOB_STATUS.MISSING_CURRENT: {
@@ -20,7 +20,7 @@ function JobStatusPin({ jobStatus }) {
     }
 
     default:
-      return <Pin size="small" type="filled" />;
+      return <Pin size="small" type="primary" />;
   }
 }
 

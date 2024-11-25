@@ -1,12 +1,17 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
+import { RelativeDateTime, Truncate } from '@radicalbit/radicalbit-design-system';
 import { columnFactory } from '@Src/components/smart-table/utils';
 import { JOB_STATUS } from '@Src/constants';
+import { ModelTypeEnumLabel } from '@Src/store/state/models/constants';
 
-const columns = [
+const columns = (
+  activeFilters,
+  activeSorter,
+) => [
   columnFactory({
     title: 'S',
     key: 'name',
-    width: '3rem',
+    width: '3%',
     align: 'center',
     render: ({ latestCurrentJobStatus, latestReferenceJobStatus }) => {
       const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED
@@ -21,8 +26,37 @@ const columns = [
   columnFactory({
     title: 'Name',
     key: 'name',
-    width: 250,
-    render: ({ name }) => (<div className="font-[var(--coo-font-weight-bold)]">{name}</div>),
+    activeFilters,
+    activeSorter,
+    width: '33%',
+    render: ({ name }) => (
+      <div className="font-[var(--coo-font-weight-bold)] w-96">
+        <Truncate>{name}</Truncate>
+      </div>
+    ),
+  }),
+
+  columnFactory({
+    title: 'Model Type',
+    dataIndex: 'modelType',
+    key: 'modelType',
+    activeFilters,
+    activeSorter,
+    align: 'left',
+    width: '51%',
+    render: (type) => <div>{ModelTypeEnumLabel[type]}</div>,
+  }),
+
+  columnFactory({
+    title: 'Updated',
+    dataIndex: 'updatedAt',
+    key: 'updatedAt',
+    activeFilters,
+    activeSorter,
+    sorter: true,
+    align: 'right',
+    width: '13%',
+    render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,
   }),
 ];
 

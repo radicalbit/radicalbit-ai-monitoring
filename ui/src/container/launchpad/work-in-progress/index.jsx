@@ -1,9 +1,12 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import SmartTable from '@Components/smart-table';
 import useModals from '@Hooks/use-modals';
-import { ModalsEnum } from '@Src/constants';
+import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import {
-  Button, DataTable, SectionTitle, Skeleton, Void, NewHeader,
+  Button,
+  NewHeader,
+  SectionTitle, Skeleton, Void,
 } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import columns from './columns';
@@ -18,38 +21,52 @@ function WorkInProgress() {
 
   if (isLoading) {
     return (
-      <>
-        <Skeleton.Input active block />
+      <div className="flex flex-col justify-start">
+        <NewHeader
+          title={<SectionTitle title="Models with no current" titleWeight="light" />}
+        />
 
-        <Skeleton.Input active block />
-
-        <Skeleton.Input active block />
-      </>
+        <Skeleton active block paragraph={{ rows: 5, width: '100%' }} title={{ width: '100%' }} />
+      </div>
     );
   }
 
   if (isError) {
     return (
-      <SomethingWentWrong size="small" />
+      <div className="flex flex-col justify-start">
+        <NewHeader
+          title={<SectionTitle title="Models with no current" titleWeight="light" />}
+        />
+
+        <SomethingWentWrong size="small" />
+      </div>
     );
   }
 
   if (wipModels.length === 0) {
     return (
-      <AddNewModelVoid />
+      <div className="flex flex-col justify-start">
+        <NewHeader
+          title={<SectionTitle title="Models with no current" titleWeight="light" />}
+        />
+
+        <AddNewModelVoid />
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col justify-start">
       <NewHeader
-        title={<SectionTitle title="Work in progress" titleWeight="light" />}
+        title={<SectionTitle title="Models with no current" titleWeight="light" />}
       />
 
-      <DataTable
+      <SmartTable
         clickable
         columns={columns}
         dataSource={wipModels}
+        fixedHeader="30rem"
+        namespace={NamespaceEnum.MODELS_STATS}
         onRow={({ uuid }) => ({
           onClick: () => navigate({ pathname: `/models/${uuid}`, search }),
         })}
