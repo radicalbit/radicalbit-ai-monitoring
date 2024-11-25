@@ -26,7 +26,13 @@ export const getColumns = (
     activeFilters,
     activeSorter,
     width: 250,
-    render: ({ name }) => (<div className="font-[var(--coo-font-weight-bold)]">{name}</div>),
+    render: ({ uuid, name }) => (
+      <div className="font-[var(--coo-font-weight-bold)]">
+        <a className="pointer-events-none" href={`/models/${uuid}`}>
+          {name}
+        </a>
+      </div>
+    ),
   }),
 
   columnFactory({

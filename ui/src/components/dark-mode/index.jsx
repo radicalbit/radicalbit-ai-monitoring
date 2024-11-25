@@ -8,14 +8,14 @@ function DarkMode({ darkActions = [], lightActions = [] }) {
 
   if (isDarkMode) {
     return (
-      <Tooltip title="Switch to light mode">
+      <Tooltip placement="left" title="Switch to light mode">
         <FontAwesomeIcon icon={faMoon} onClick={enableLightMode} />
       </Tooltip>
     );
   }
 
   return (
-    <Tooltip title="Switch to dark mode">
+    <Tooltip placement="left" title="Switch to dark mode">
       <FontAwesomeIcon icon={faSun} onClick={enableDarkMode} />
     </Tooltip>
   );

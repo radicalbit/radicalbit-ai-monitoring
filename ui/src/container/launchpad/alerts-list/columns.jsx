@@ -24,7 +24,13 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '17%',
-    render: ({ anomalyType }) => (<div className="font-[var(--coo-font-weight-bold)]">{METRICS_TABS[`${anomalyType}`]}</div>),
+    render: ({ uuid, anomalyType }) => (
+      <div className="font-[var(--coo-font-weight-bold)]">
+        <a className="pointer-events-none" href={`/models/${uuid}`}>
+          {METRICS_TABS[`${anomalyType}`]}
+        </a>
+      </div>
+    ),
   }),
 
   columnFactory({

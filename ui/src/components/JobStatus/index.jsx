@@ -36,7 +36,7 @@ function JobStatus({ jobStatus }) {
         <Void
           actions={(<ImportReferenceButton type="primary" />)}
           description="Import a csv file to see the outcome"
-          title="🥳 Import a reference"
+          title="Import a reference 🥳"
         />
       );
     }

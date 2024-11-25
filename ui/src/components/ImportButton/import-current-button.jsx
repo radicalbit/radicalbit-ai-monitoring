@@ -1,7 +1,6 @@
 import { Button, Upload } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router';
 import { modelsApiSlice } from '@State/models/api';
-import ConfettiExplosion from 'react-confetti-explosion';
 
 const { useImportCurrentDataMutation } = modelsApiSlice;
 
@@ -43,13 +42,6 @@ function ImportCurrentDatasetButton({ type = 'primary-light' }) {
         </Button>
       </Upload>
 
-      <ConfettiExplosion
-        duration={3000}
-        force={0.9}
-        particleCount={200}
-        style={{ marginLeft: '-2rem' }}
-        width={2000}
-      />
     </div>
   );
 }

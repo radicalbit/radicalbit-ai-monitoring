@@ -26,9 +26,11 @@ export const getColumns = (
     activeFilters,
     activeSorter,
     width: '33%',
-    render: ({ name }) => (
+    render: ({ uuid, name }) => (
       <div className="font-[var(--coo-font-weight-bold)] w-96">
-        <Truncate>{name}</Truncate>
+        <a className="pointer-events-none" href={`/models/${uuid}`}>
+          <Truncate>{name}</Truncate>
+        </a>
       </div>
     ),
   }),
@@ -95,7 +97,7 @@ export const getColumns = (
     key: 'updatedAt',
     activeFilters,
     activeSorter,
-    sorter: true,
+    sorter: false,
     align: 'right',
     width: '13%',
     render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,

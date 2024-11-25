@@ -29,9 +29,11 @@ const columns = (
     activeFilters,
     activeSorter,
     width: '33%',
-    render: ({ name }) => (
+    render: ({ uuid, name }) => (
       <div className="font-[var(--coo-font-weight-bold)] w-96">
-        <Truncate>{name}</Truncate>
+        <a className="pointer-events-none" href={`/models/${uuid}`}>
+          <Truncate>{name}</Truncate>
+        </a>
       </div>
     ),
   }),

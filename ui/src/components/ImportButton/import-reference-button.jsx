@@ -1,6 +1,9 @@
 import { Button, Upload } from '@radicalbit/radicalbit-design-system';
+import { selectIsShowConfettiForModelCreation } from '@Src/store/state/global-configuration/selectors';
+import { globalConfigSliceActions } from '@Src/store/state/global-configuration/slice';
 import { modelsApiSlice } from '@State/models/api';
 import ConfettiExplosion from 'react-confetti-explosion';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 
 const { useImportReferenceDataMutation } = modelsApiSlice;
@@ -28,19 +31,38 @@ function ImportReferenceButton({ type = 'primary-light' }) {
         fileList={[]}
         onChange={handleOnChange}
       >
-
         <Button disabled={isSubmitDisabled} loading={isLoading} onClick={() => {}} type={type}>Import Reference</Button>
       </Upload>
 
+      <ConfettiOS />
+
+    </div>
+  );
+}
+
+function ConfettiOS() {
+  const { uuid: modelUUID } = useParams();
+  const dispatch = useDispatch();
+
+  const isShowConfettiFroModel = useSelector((state) => selectIsShowConfettiForModelCreation(state, modelUUID));
+
+  const handleOnComplete = () => {
+    dispatch(globalConfigSliceActions.removeModelFromShowConfettiList(modelUUID));
+  };
+
+  if (isShowConfettiFroModel) {
+    return (
       <ConfettiExplosion
         duration={3000}
         force={0.9}
+        onComplete={handleOnComplete}
         particleCount={200}
-        style={{ marginLeft: '-2rem' }}
+        style={{ marginLeft: '-3rem' }}
         width={2000}
       />
-    </div>
-  );
+    );
+  }
+  return false;
 }
 
 export default ImportReferenceButton;
