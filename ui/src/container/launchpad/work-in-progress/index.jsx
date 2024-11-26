@@ -6,10 +6,12 @@ import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import {
   Button,
   NewHeader,
-  SectionTitle, Skeleton, Void,
+  SectionTitle,
+  Void,
 } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import columns from './columns';
+import getSkeletonColumns from './skeleton-columns';
 
 function WorkInProgress() {
   const navigate = useNavigate();
@@ -18,18 +20,6 @@ function WorkInProgress() {
   const { data = [], isLoading, isError } = useGetModelQueryWithPolling();
   const models = data.items || [];
   const wipModels = models.filter(({ latestCurrentUuid, latestReferenceUuid }) => !latestCurrentUuid || !latestReferenceUuid);
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col justify-start">
-        <NewHeader
-          title={<SectionTitle title="Models with no current" titleWeight="light" />}
-        />
-
-        <Skeleton active block paragraph={{ rows: 5, width: '100%' }} title={{ width: '100%' }} />
-      </div>
-    );
-  }
 
   if (isError) {
     return (
@@ -63,7 +53,7 @@ function WorkInProgress() {
 
       <SmartTable
         clickable
-        columns={columns}
+        columns={isLoading ? getSkeletonColumns : columns}
         dataSource={wipModels}
         fixedHeader="30rem"
         namespace={NamespaceEnum.MODELS_STATS}

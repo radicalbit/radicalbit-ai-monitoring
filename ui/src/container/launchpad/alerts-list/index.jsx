@@ -9,6 +9,7 @@ import { NamespaceEnum } from '@Src/constants';
 import { alertsApiSlice } from '@State/alerts/api';
 import { useNavigate } from 'react-router';
 import { getColumns } from './columns';
+import { getSkeletonColumns } from './skeleton-columns';
 
 const { useGetAlertsQuery } = alertsApiSlice;
 
@@ -20,19 +21,6 @@ function AlertList() {
   const handleOnClick = ({ modelUuid, anomalyType }) => {
     navigate(`/models/${modelUuid}?tab=${MODEL_TABS_ENUM.CURRENT_DASHBOARD}&tab-metrics=${METRICS_TABS[`${anomalyType}`]}`);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex flex-col justify-start">
-        <NewHeader
-          title={<SectionTitle title="Alert" titleWeight="light" />}
-        />
-
-        <Skeleton active block paragraph={{ rows: 5, width: '100%' }} title={{ width: '100%' }} />
-      </div>
-
-    );
-  }
 
   if (isError) {
     return (
@@ -52,14 +40,14 @@ function AlertList() {
   }
 
   return (
-    <div className="flex flex-col justify-start">
+    <div className="flex flex-col justify-start" id="alert-table">
       <NewHeader
         title={<SectionTitle id="alert-table" title="Alert" titleWeight="light" />}
       />
 
       <SmartTable
         clickable
-        columns={getColumns}
+        columns={isLoading ? getSkeletonColumns : getColumns}
         dataSource={data}
         fixedHeader="30rem"
         namespace={NamespaceEnum.ALERTS}
@@ -67,7 +55,7 @@ function AlertList() {
           onClick: () => handleOnClick({ modelUuid, anomalyType }),
         })}
         recordCount={count}
-        rowClassName={DataTable.ROW_ERROR}
+        rowClassName={isLoading ? '' : DataTable.ROW_ERROR}
         rowKey={({ uuid }) => uuid}
       />
     </div>

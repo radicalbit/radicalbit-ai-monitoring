@@ -4,6 +4,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import useModals from '@Hooks/use-modals';
 import {
   Button,
+  // CustomLink,
   FontAwesomeIcon,
   NewHeader,
   SectionTitle,
@@ -16,19 +17,15 @@ import { useGetOverallModelListQueryWithPolling } from '@Src/store/state/models/
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
+import { alertsApiSlice } from '@Src/store/state/alerts/api';
 import { getColumns } from './columns';
+import { getSkeletonColumns } from './skeleton-columns';
 
 const { useGetOverallStatsQuery } = modelsApiSlice;
+const { useGetAlertsQuery } = alertsApiSlice;
 
 function ModelStatsList() {
   useGetOverallModelListQueryWithPolling();
-  const { isLoading } = useGetOverallStatsQuery();
-
-  if (isLoading) {
-    return (
-      <Skeleton active block className="my-8" paragraph={{ rows: 5, width: '100%' }} title={{ width: '100%' }} />
-    );
-  }
 
   return (
     <div className="flex flex-col w-full">
@@ -44,10 +41,23 @@ function ModelStatsList() {
 }
 
 function OverallCharts() {
-  const { data } = useGetOverallStatsQuery();
+  const { data, isLoading } = useGetOverallStatsQuery();
+
   const dataQualityStats = data?.dataQuality || 0;
   const modelQualityStats = data?.modelQuality || 0;
   const dataDriftStats = data?.drift || 0;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-row px-4">
+        <OverallChartsSkeleton />
+
+        <OverallChartsSkeleton />
+
+        <OverallChartsSkeleton />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-row px-4 items-start justify-start ">
@@ -56,7 +66,20 @@ function OverallCharts() {
       <PieChart data={modelQualityStats} title="Model Quality" />
 
       <PieChart data={dataDriftStats} title="Drift Detection" />
+    </div>
+  );
+}
 
+function OverallChartsSkeleton() {
+  return (
+    <div className="flex flex-row items-center mx-6 gap-2 w-[14rem] h-[8rem]">
+      <Skeleton.Avatar active size="large" />
+
+      <div className="flex flex-col gap-2 w-full">
+        <Skeleton.Input active block size="small" />
+
+        <Skeleton.Input active block size="small" />
+      </div>
     </div>
   );
 }
@@ -65,7 +88,7 @@ function OverallList() {
   const { search } = useSearchParams();
   const navigate = useNavigate();
 
-  const { data } = useGetOverallModelListQueryWithPolling();
+  const { data, isLoading } = useGetOverallModelListQueryWithPolling();
   const count = data?.length;
 
   const handleOnClick = ({ uuid }) => {
@@ -84,7 +107,7 @@ function OverallList() {
   return (
     <SmartTable
       clickable
-      columns={getColumns}
+      columns={isLoading ? getSkeletonColumns : getColumns}
       dataSource={data}
       fixedHeader="30rem"
       namespace={NamespaceEnum.MODELS_STATS}
@@ -112,32 +135,75 @@ function AddNewModel() {
 }
 
 function AvailableModelHeader() {
-  const navigate = useNavigate();
-  const handleOnClick = () => {
-    navigate('#alert-table');
-  };
-
   return (
     <NewHeader
       details={{
-        one: (
-          <Button
-            className="p-2"
-            onClick={handleOnClick}
-            title="1"
-            type="error"
-          >
-            <FontAwesomeIcon className="fa-shake" icon={faBell} size="xl" />
-          </Button>
-        ),
-        two: (
-          <AddNewModel />
-        ),
-
+        one: (<AlertsButton />),
+        two: (<AddNewModel />),
       }}
       title={<SectionTitle title="Available models" titleWeight="light" />}
     />
   );
 }
 
+function AlertsButton() {
+  const { data = [] } = useGetAlertsQuery();
+  const isActiveAlerts = data.length > 0;
+
+  if (isActiveAlerts) {
+    return (
+
+      <Button
+        className="p-2"
+        onClick={() => {}}
+        title="1"
+        type="error"
+      >
+        <FontAwesomeIcon className="fa-shake" icon={faBell} size="xl" />
+      </Button>
+    );
+  }
+
+  return (
+
+    <FontAwesomeIcon icon={faBell} size="xl" />
+
+  );
+}
+
 export default memo(ModelStatsList);
+
+/*
+
+function AlertsButton() {
+  const { data = [] } = useGetAlertsQuery();
+  const isActiveAlerts = data.length > 0;
+
+  if (isActiveAlerts) {
+    return (
+      <CustomLink
+        href="/launchpad#alert-table"
+        title={(
+          <Button
+            className="p-2"
+            onClick={() => {}}
+            title="1"
+            type="error"
+          >
+            <FontAwesomeIcon className="fa-shake" icon={faBell} size="xl" />
+          </Button>
+)}
+      />
+    );
+  }
+  return (
+    <CustomLink
+      href="/launchpad#alert-table"
+      title={(
+        <FontAwesomeIcon icon={faBell} size="xl" />
+
+)}
+    />
+  );
+}
+  */
