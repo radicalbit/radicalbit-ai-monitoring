@@ -1,11 +1,12 @@
 import { Board, NewHeader, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { ExternalPathsEnum } from '@Src/constants';
 import { memo } from 'react';
-import Logo from '@Img/rocket-02.gif';
+import Animation from '@Img/rocket-02.gif';
+import CTAbackground from '@Img/RDBbackground.png';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[auto,auto,auto,1fr] px-4 gap-4 h-[175px] auto-rows-auto">
+    <div className="grid grid-cols-[auto,auto,1fr,1fr] px-4 gap-4 h-[175px] auto-rows-auto">
       <QuickStartBoard />
 
       <DocumentationHubBoard />
@@ -121,6 +122,7 @@ function TrialBoard() {
 
   return (
     <Board
+      backgroundImage={CTAbackground}
       main={(
         <div className="flex flex-row items-center h-full pl-4 ">
 
@@ -130,20 +132,21 @@ function TrialBoard() {
             <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
 
             <SectionTitle
+              modifier="montserrat-headers"
               size="large"
               style={{ color: 'var(--coo-highlight)' }}
-              title="Book a demo"
+              title="BOOK A DEMO"
               titleWeight="bold"
               wrapTitle
             />
           </div>
 
           <div className="absolute right-0 flex items-end h-full">
-            <img alt="test" className="w-[8rem]" src={Logo} />
+            <img alt="test" className="w-[8rem]" src={Animation} />
           </div>
         </div>
       )}
-      modifier="h-full shadow light border-none p-0"
+      modifier="light border-none p-0"
       onClick={handleOnclick}
       size="small"
       type="primary"
