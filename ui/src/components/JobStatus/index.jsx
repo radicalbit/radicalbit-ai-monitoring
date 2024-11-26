@@ -35,8 +35,14 @@ function JobStatus({ jobStatus }) {
       return (
         <Void
           actions={(<ImportReferenceButton type="primary" />)}
-          description="Import a csv file to see the outcome"
-          title="Import a reference 🥳"
+          description={(
+            <>
+              Upload a CSV file to analyze and visualize the data.
+              <br />
+              This will allow you to see the outcome of your analysis.
+            </>
+  )}
+          title="Import a Reference File 🥳"
         />
       );
     }
