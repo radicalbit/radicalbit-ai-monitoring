@@ -24,25 +24,23 @@ function ImportCurrentDatasetButton({ type = 'primary-light' }) {
   };
 
   return (
-    <div className="flex flex-row justfy-end w-full">
-      <Upload
-        accept=".csv"
-        beforeUpload={disableUploadAction}
+    <Upload
+      accept=".csv"
+      beforeUpload={disableUploadAction}
+      disabled={isSubmitDisabled}
+      fileList={[]}
+      onChange={handleOnChange}
+    >
+      <Button
         disabled={isSubmitDisabled}
-        fileList={[]}
-        onChange={handleOnChange}
+        loading={isLoading}
+        onClick={() => {}}
+        type={type}
       >
-        <Button
-          disabled={isSubmitDisabled}
-          loading={isLoading}
-          onClick={() => {}}
-          type={type}
-        >
-          Import Current
-        </Button>
-      </Upload>
+        Import Current
+      </Button>
+    </Upload>
 
-    </div>
   );
 }
 
