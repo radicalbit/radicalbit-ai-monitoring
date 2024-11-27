@@ -22,7 +22,7 @@ function ImportReferenceButton({ type = 'primary-light' }) {
   };
 
   return (
-    <div className="flex flex-row justfy-end w-full">
+    <div className="flex flex-col justfy-end w-full">
 
       <Upload
         accept=".csv"
@@ -57,7 +57,7 @@ function ConfettiOS() {
         force={0.9}
         onComplete={handleOnComplete}
         particleCount={200}
-        style={{ marginLeft: '-3rem' }}
+        style={{ marginLeft: '5rem' }}
         width={2000}
       />
     );

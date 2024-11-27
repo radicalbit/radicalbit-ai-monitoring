@@ -1,13 +1,12 @@
-import SmartTable from '@Components/smart-table';
 import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-button';
-import LogoSquared from '@Img/logo-collapsed.svg';
+import SmartTable from '@Components/smart-table';
 import { NamespaceEnum } from '@Src/constants';
-import { useGetCurrentImportsQueryWithPolling } from '@State/models/polling-hook';
-import { modelsApiSlice } from '@State/models/api';
-import { Spin, Void } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
-import { useSelector } from 'react-redux';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
+import { modelsApiSlice } from '@State/models/api';
+import { useGetCurrentImportsQueryWithPolling } from '@State/models/polling-hook';
+import { Spin, Void } from '@radicalbit/radicalbit-design-system';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router';
 import { getColumns } from './columns';
 
 const { useGetCurrentImportsQuery } = modelsApiSlice;
@@ -38,7 +37,6 @@ export default function Imports() {
             <strong>instructions</strong>
           </>
           )}
-        image={<LogoSquared />}
         title="No current dataset imported yet"
       />
     );

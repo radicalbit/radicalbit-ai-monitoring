@@ -126,6 +126,20 @@ a {
 
  */
 
- .ant-skeleton-active .ant-skeleton-input::after {
+.ant-skeleton-active .ant-skeleton-input::after {
     background: linear-gradient(90deg, #c53838 25%, #d47b7b 37%, #a80808 63%);
-  }
+} 
+
+.ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled):hover {
+    background-color: var(--coo-secondary-03);
+    color:var(--coo-dark)
+}
+
+.ant-transfer-list-content-item:not(.ant-transfer-list-content-item-disabled).ant-transfer-list-content-item-checked:hover {
+    background-color: var(--coo-white-bk);
+}
+
+.ant-transfer-list-content-item-checked {
+    background-color: var(--coo-secondary-03);
+    color:var(--coo-dark)
+}
