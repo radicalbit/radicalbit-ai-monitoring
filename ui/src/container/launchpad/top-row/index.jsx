@@ -1,17 +1,20 @@
 import { Board, NewHeader, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { ExternalPathsEnum } from '@Src/constants';
 import { memo } from 'react';
+import Animation from '@Img/rocket-02.gif';
+import CTAbackground from '@Img/RDBbackground.png';
 
 function TopRow() {
   return (
-    <div className="grid grid-cols-[1.2fr,1.2fr,1fr,1.2fr] gap-4 h-[175px]">
+    <div className="grid grid-cols-[auto,auto,1fr,1fr] px-4 gap-4 h-[175px] auto-rows-auto">
       <QuickStartBoard />
 
       <DocumentationHubBoard />
 
+      <TrialBoard />
+
       <YoutubeVideoBoard />
 
-      <TrialBoard />
     </div>
   );
 }
@@ -30,10 +33,9 @@ function QuickStartBoard() {
       )}
       header={(
         <NewHeader
-          details={{ one: (<span aria-label="tada" className="text-2xl" role="img">🎉</span>) }}
           title={(
             <SectionTitle
-              title="Quickstart guide"
+              title="Quickstart guide 🚀"
               titleColor="primary"
               titleWeight="normal"
             />
@@ -69,10 +71,9 @@ function DocumentationHubBoard() {
       )}
       header={(
         <NewHeader
-          details={{ one: (<span aria-label="man" className="text-2xl" role="img">👨</span>) }}
           title={(
             <SectionTitle
-              title="Documentation Hub"
+              title="Documentation Hub 📚​"
               titleColor="primary"
               titleWeight="normal"
             />
@@ -105,9 +106,11 @@ function YoutubeVideoBoard() {
       height="175px"
       referrerPolicy="strict-origin-when-cross-origin"
       src={`${ExternalPathsEnum.IFRAME_VIDEO}`}
-      style={{ borderRadius: '1rem', minWidth: '270px' }}
+      style={{
+        borderRadius: '.25rem',
+      }}
       title="Radicalbit in Action: Open Source AI Monitoring for Regression Models"
-      width="100%"
+      width="312px"
     />
   );
 }
@@ -119,22 +122,31 @@ function TrialBoard() {
 
   return (
     <Board
+      backgroundImage={CTAbackground}
       main={(
-        <div className="flex flex-col items-start gap-2">
-          <SectionTitle title="Unlock the Full Potential" />
+        <div className="flex flex-row items-center h-full pl-4 ">
 
-          <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
+          <div className="flex flex-col gap-2 justify-center mr-20">
+            <SectionTitle title="Unlock the Full Potential" />
 
-          <SectionTitle
-            size="large"
-            style={{ color: 'var(--coo-highlight)' }}
-            title="Book a demo"
-            titleWeight="bold"
-            wrapTitle
-          />
+            <p className="leading-snug">Upgrade now and access advanced MLOps & LLMOps features, premium support and enhanced scalability</p>
+
+            <SectionTitle
+              modifier="montserrat-headers"
+              size="large"
+              style={{ color: 'var(--coo-highlight)' }}
+              title="BOOK A DEMO"
+              titleWeight="bold"
+              wrapTitle
+            />
+          </div>
+
+          <div className="absolute right-0 flex items-end h-full">
+            <img alt="test" className="w-[8rem]" src={Animation} />
+          </div>
         </div>
       )}
-      modifier="h-full shadow light border-none ml-4"
+      modifier="light border-none p-0"
       onClick={handleOnclick}
       size="small"
       type="primary"

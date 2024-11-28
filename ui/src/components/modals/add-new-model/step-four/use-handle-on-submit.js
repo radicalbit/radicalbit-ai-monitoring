@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 import { ModelTypeEnum } from '@State/models/constants';
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
+import { useDispatch } from 'react-redux';
+import { globalConfigSliceActions } from '@State/global-configuration/slice';
 import { useModalContext } from '../modal-context-provider';
 
 const { useAddNewModelMutation } = modelsApiSlice;
@@ -10,6 +12,7 @@ const { useAddNewModelMutation } = modelsApiSlice;
 export default () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const dispatch = useDispatch();
 
   const { useFormbit, useFormbitStepOne } = useModalContext();
 
@@ -80,7 +83,11 @@ export default () => {
         return;
       }
 
+      const newModelUUID = response.data.uuid;
+
       searchParams.delete('modal');
+      dispatch(globalConfigSliceActions.addModelToShowConfettiList(newModelUUID));
+
       navigate({ pathname: `models/${response.data.uuid}`, search: searchParams.toString() });
     });
   };

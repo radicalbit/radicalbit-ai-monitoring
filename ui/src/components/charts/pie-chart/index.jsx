@@ -29,7 +29,7 @@ function PieChart({ title, data }) {
       <div className="flex flex-row items-center">
         <EmptyPieChart />
 
-        <Label percentage={currentData} title={title} />
+        <Label percentage={0} title={title} />
 
       </div>
     );

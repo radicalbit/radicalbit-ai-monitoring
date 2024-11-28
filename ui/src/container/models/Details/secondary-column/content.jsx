@@ -34,9 +34,10 @@ export default function SecondaryColumnModelsContent() {
     return {
       label: (
         <div className="flex gap-2 items-center">
+          <JobStatusPin jobStatus={jobStatus} />
+
           <Truncate className="w-10/12">{name}</Truncate>
 
-          <JobStatusPin jobStatus={jobStatus} />
         </div>),
       key: modelUUID,
       children: commonChildrenMenu,

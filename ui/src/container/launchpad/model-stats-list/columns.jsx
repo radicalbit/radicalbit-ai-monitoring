@@ -1,7 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { columnFactory } from '@Src/components/smart-table/utils';
 import { JOB_STATUS, numberFormatter } from '@Src/constants';
-import { ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { ModelTypeEnumLabel } from '@State/models/constants';
 import { RelativeDateTime, Truncate } from '@radicalbit/radicalbit-design-system';
 
 export const getColumns = (
@@ -11,7 +11,7 @@ export const getColumns = (
   columnFactory({
     title: 'S',
     key: 'name',
-    width: '3rem',
+    width: '3%',
     align: 'center',
     render: ({ latestCurrentJobStatus, latestReferenceJobStatus }) => {
       const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;
@@ -25,10 +25,15 @@ export const getColumns = (
     key: 'name',
     activeFilters,
     activeSorter,
-    render: ({ name }) => (
-      <div className="font-[var(--coo-font-weight-bold)] w-96">
+    width: '33%',
+    render: ({ uuid, name }) => (
+      <a
+        className="font-[var(--coo-font-weight-bold)]"
+        href={`/models/${uuid}`}
+        onClick={(e) => e.preventDefault()}
+      >
         <Truncate>{name}</Truncate>
-      </div>
+      </a>
     ),
   }),
 
@@ -94,7 +99,7 @@ export const getColumns = (
     key: 'updatedAt',
     activeFilters,
     activeSorter,
-    sorter: true,
+    sorter: false,
     align: 'right',
     width: '13%',
     render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,

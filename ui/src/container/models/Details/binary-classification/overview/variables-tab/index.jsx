@@ -57,7 +57,9 @@ function VariablesTabInner() {
   return (
     <div className="flex flex-col">
       {isMissingReference && (
-      <div className="flex justify-end">
+      <div className="flex justify-between p-4">
+        <strong>Variable List</strong>
+
         <Button
           disabled={isSubmitDisabled}
           loading={isLoading}

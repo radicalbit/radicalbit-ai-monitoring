@@ -9,7 +9,6 @@ const initialState = {
   hasMainContentDark: true,
   hasRightContentDark: false,
   hasSecondaryContentDark: false,
-
   hasHeader: true,
   hasLeftColumn: true,
   hasLeftColumnCollapsed: true,

@@ -1,12 +1,16 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import { JOB_STATUS } from '@Src/constants';
 import { Spinner, Void } from '@radicalbit/radicalbit-design-system';
-// @ts-ignore
-import LogoSquared from '@Img/logo-collapsed.svg';
-import ImportReferenceButton from '@Components/ImportButton/import-reference-button';
 import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-button';
+import ImportReferenceButton from '@Components/ImportButton/import-reference-button';
+import { selectIsShowConfettiForModelCreation } from '@State/global-configuration/selectors';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router';
 
 function JobStatus({ jobStatus }) {
+  const { uuid: modelUUID } = useParams();
+  const isShowConfettiFroModel = useSelector((state) => selectIsShowConfettiForModelCreation(state, modelUUID));
+
   switch (jobStatus) {
     case JOB_STATUS.IMPORTING: {
       return (
@@ -35,9 +39,14 @@ function JobStatus({ jobStatus }) {
       return (
         <Void
           actions={(<ImportReferenceButton type="primary" />)}
-          description="Import a reference file to see the outcome"
-          image={<LogoSquared />}
-          title="No reference data imported yet"
+          description={(
+            <>
+              Upload a CSV file to analyze and visualize the data.
+              <br />
+              This will allow you to see the outcome of your analysis.
+            </>
+          )}
+          title={`Import a Reference File${isShowConfettiFroModel ? ' 🥳' : ''}`}
         />
       );
     }
@@ -47,7 +56,6 @@ function JobStatus({ jobStatus }) {
         <Void
           actions={(<ImportCurrentDatasetButton type="primary" />)}
           description="Import a new dataset to see the outcome"
-          image={<LogoSquared />}
           title="No current dataset imported yet"
         />
       );
