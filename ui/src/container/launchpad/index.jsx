@@ -1,6 +1,6 @@
 import { useInitDarkMode } from '@Components/dark-mode/hooks';
 import { MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION } from '@Container/layout/layout-provider/layout-provider-configuration';
-// import { Anchor } from '@radicalbit/radicalbit-design-system';
+
 import AlertList from './alerts-list';
 import ModelStatsList from './model-stats-list';
 import TopRow from './top-row';
@@ -10,7 +10,6 @@ export default function Launchpad() {
   useInitDarkMode(MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION);
 
   return (
-  //   <Anchor>
     <div className="flex flex-col gap-4 h-full">
       <TopRow />
 
@@ -20,6 +19,5 @@ export default function Launchpad() {
 
       <AlertList />
     </div>
-  // </Anchor>
   );
 }

@@ -4,7 +4,7 @@ import { faBell } from '@fortawesome/free-solid-svg-icons';
 import useModals from '@Hooks/use-modals';
 import {
   Button,
-  // CustomLink,
+  CustomLink,
   FontAwesomeIcon,
   NewHeader,
   SectionTitle,
@@ -97,17 +97,16 @@ function OverallList() {
 
   if (count === 0) {
     return (
-      <Void
-        actions={<AddNewModel />}
-        description="No models are available."
-      />
+      <div className="w-full h-[30rem] flex items-center">
+        <AddNewModelVoid />
+      </div>
     );
   }
 
   return (
     <SmartTable
       clickable
-      columns={!isLoading ? getSkeletonColumns : getColumns}
+      columns={isLoading ? getSkeletonColumns : getColumns}
       dataSource={data}
       fixedHeader="30rem"
       namespace={NamespaceEnum.MODELS_STATS}
@@ -116,6 +115,27 @@ function OverallList() {
       })}
       recordCount={count}
       rowKey={({ uuid }) => uuid}
+    />
+  );
+}
+
+function AddNewModelVoid() {
+  const { showModal } = useModals();
+
+  const handleOnAddModel = () => {
+    showModal(ModalsEnum.ADD_NEW_MODEL);
+  };
+
+  return (
+    <Void
+      actions={<Button onClick={handleOnAddModel} type="default">New Model</Button>}
+      description={(
+        <>
+          Define and configure a new model
+          <br />
+          to begin monitoring its performance and gain insights.
+        </>
+      )}
     />
   );
 }
@@ -152,35 +172,6 @@ function AlertsButton() {
 
   if (isActiveAlerts) {
     return (
-
-      <Button
-        className="p-2"
-        onClick={() => {}}
-        title="1"
-        type="error"
-      >
-        <FontAwesomeIcon className="fa-shake" icon={faBell} size="xl" />
-      </Button>
-    );
-  }
-
-  return (
-
-    <FontAwesomeIcon icon={faBell} size="xl" />
-
-  );
-}
-
-export default memo(ModelStatsList);
-
-/*
-
-function AlertsButton() {
-  const { data = [] } = useGetAlertsQuery();
-  const isActiveAlerts = data.length > 0;
-
-  if (isActiveAlerts) {
-    return (
       <CustomLink
         href="/launchpad#alert-table"
         title={(
@@ -196,14 +187,7 @@ function AlertsButton() {
       />
     );
   }
-  return (
-    <CustomLink
-      href="/launchpad#alert-table"
-      title={(
-        <FontAwesomeIcon icon={faBell} size="xl" />
-
-)}
-    />
-  );
+  return false;
 }
-  */
+
+export default memo(ModelStatsList);

@@ -1,13 +1,10 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import SmartTable from '@Components/smart-table';
-import useModals from '@Hooks/use-modals';
-import { ModalsEnum, NamespaceEnum } from '@Src/constants';
+import { NamespaceEnum } from '@Src/constants';
 import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
 import {
-  Button,
   NewHeader,
   SectionTitle,
-  Void,
 } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import columns from './columns';
@@ -34,15 +31,7 @@ function WorkInProgress() {
   }
 
   if (wipModels.length === 0) {
-    return (
-      <div className="flex flex-col justify-start">
-        <NewHeader
-          title={<SectionTitle title="Models with no current" titleWeight="light" />}
-        />
-
-        <AddNewModelVoid />
-      </div>
-    );
+    return false;
   }
 
   return (
@@ -65,27 +54,6 @@ function WorkInProgress() {
         size="small"
       />
     </div>
-  );
-}
-
-function AddNewModelVoid() {
-  const { showModal } = useModals();
-
-  const handleOnAddModel = () => {
-    showModal(ModalsEnum.ADD_NEW_MODEL);
-  };
-
-  return (
-    <Void
-      actions={<Button onClick={handleOnAddModel} type="default">New Model</Button>}
-      description={(
-        <>
-          Define and configure a new model
-          <br />
-          to begin monitoring its performance and gain insights.
-        </>
-      )}
-    />
   );
 }
 
