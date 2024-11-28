@@ -107,7 +107,7 @@ function OverallList() {
   return (
     <SmartTable
       clickable
-      columns={isLoading ? getSkeletonColumns : getColumns}
+      columns={!isLoading ? getSkeletonColumns : getColumns}
       dataSource={data}
       fixedHeader="30rem"
       namespace={NamespaceEnum.MODELS_STATS}

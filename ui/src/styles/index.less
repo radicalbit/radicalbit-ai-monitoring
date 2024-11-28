@@ -12,7 +12,7 @@ html {
     overflow: hidden !important;
     margin: 0;
 
-    --coo-border-radius-small: .25rem;
+    --coo-border-radius-small: .3rem;
     --coo-header-font:'Open Sans', sans-serif;
   }
 }
@@ -127,16 +127,16 @@ a {
  */
 
  .ant-skeleton-active .ant-skeleton-input {
-    background: var(--coo-secondary-03);
+    background:rgba(var(--coo-rgb-secondary-03), 0);
  }
 
  .ant-skeleton-element .ant-skeleton-avatar {
-    background: var(--coo-secondary-03);
+    background:rgba(var(--coo-rgb-secondary-03), 0);
  }
 
 .ant-skeleton-active .ant-skeleton-input::after, .ant-skeleton-active .ant-skeleton-title::after, .ant-skeleton-active .ant-skeleton-paragraph > li::after, .ant-skeleton-active .ant-skeleton-avatar::after, .ant-skeleton-active .ant-skeleton-button::after, .ant-skeleton-active .ant-skeleton-input::after, .ant-skeleton-active .ant-skeleton-image::after {
     background: linear-gradient(90deg, #c53838 25%, #d47b7b 37%, #a80808 63%);
-    background: linear-gradient(90deg, rgba(var(--coo-rgb-secondary-02), 0.4) 25%, var(--coo-white-bk) 37%, rgba(var(--coo-rgb-secondary-02), 0) 63%);
+    background: linear-gradient(90deg, rgba(var(--coo-rgb-secondary-03), 0.5) 25%, rgba(var(--coo-rgb-secondary-03), 1) 37%, rgba(var(--coo-rgb-secondary-03), 0.2) 63%);
     border-radius: var(--coo-border-radius-small);
 } 
 
