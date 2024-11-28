@@ -16,11 +16,7 @@ function AlertList() {
   const count = data?.length;
 
   const handleOnClick = ({ modelUuid, anomalyType }) => {
-    navigate(
-      `/models/${modelUuid}?tab=${
-        MODEL_TABS_ENUM.CURRENT_DASHBOARD
-      }&tab-metrics=${METRICS_TABS[`${anomalyType}`]}`,
-    );
+    navigate(`/models/${modelUuid}?tab=${MODEL_TABS_ENUM.CURRENT_DASHBOARD}&tab-metrics=${METRICS_TABS[`${anomalyType}`]}`);
   };
 
   if (isError) {
@@ -39,11 +35,7 @@ function AlertList() {
 
   return (
     <div className="flex flex-col justify-start" id="alert-table">
-      <NewHeader
-        title={
-          <SectionTitle id="alert-table" title="Alert" titleWeight="light" />
-        }
-      />
+      <NewHeader title={<SectionTitle id="alert-table" title="Alert" titleWeight="light" />} />
 
       <SmartTable
         clickable

@@ -25,11 +25,14 @@ export const getColumns = (
     align: 'left',
     width: '17%',
     render: ({ uuid, anomalyType }) => (
-      <div className="font-[var(--coo-font-weight-bold)]">
-        <a className="pointer-events-none" href={`/models/${uuid}`}>
-          {METRICS_TABS[`${anomalyType}`]}
-        </a>
-      </div>
+      <a
+        className="font-[var(--coo-font-weight-bold)]"
+        href={`/models/${uuid}`}
+        onClick={(e) => e.preventDefault()}
+      >
+        {METRICS_TABS[`${anomalyType}`]}
+      </a>
+
     ),
   }),
 
@@ -53,7 +56,7 @@ export const getColumns = (
     activeSorter,
     align: 'left',
     width: '64%',
-    render: ({ anomalyFeatures }) => <div>{anomalyFeatures.join(', ')}</div>,
+    render: ({ anomalyFeatures }) => anomalyFeatures.join(', '),
   }),
 
 ];

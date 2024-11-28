@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { ModelTypeEnum } from '@State/models/constants';
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import { useDispatch } from 'react-redux';
-import { globalConfigSliceActions } from '@Src/store/state/global-configuration/slice';
+import { globalConfigSliceActions } from '@State/global-configuration/slice';
 import { useModalContext } from '../modal-context-provider';
 
 const { useAddNewModelMutation } = modelsApiSlice;

@@ -45,7 +45,7 @@ function JobStatus({ jobStatus }) {
               <br />
               This will allow you to see the outcome of your analysis.
             </>
-  )}
+          )}
           title={`Import a Reference File${isShowConfettiFroModel ? ' 🥳' : ''}`}
         />
       );

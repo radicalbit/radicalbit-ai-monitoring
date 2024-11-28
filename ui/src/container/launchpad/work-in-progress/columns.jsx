@@ -30,11 +30,13 @@ const columns = (
     activeSorter,
     width: '33%',
     render: ({ uuid, name }) => (
-      <div className="font-[var(--coo-font-weight-bold)] w-96">
-        <a className="pointer-events-none" href={`/models/${uuid}`}>
-          <Truncate>{name}</Truncate>
-        </a>
-      </div>
+      <a
+        className="pointer-events-none"
+        href={`/models/${uuid}`}
+        onClick={(e) => e.preventDefault()}
+      >
+        <Truncate>{name}</Truncate>
+      </a>
     ),
   }),
 

@@ -21,9 +21,7 @@ function WorkInProgress() {
   if (isError) {
     return (
       <div className="flex flex-col justify-start">
-        <NewHeader
-          title={<SectionTitle title="Models with no current" titleWeight="light" />}
-        />
+        <NewHeader title={<SectionTitle title="Models with no current" titleWeight="light" />} />
 
         <SomethingWentWrong size="small" />
       </div>
@@ -36,9 +34,7 @@ function WorkInProgress() {
 
   return (
     <div className="flex flex-col justify-start">
-      <NewHeader
-        title={<SectionTitle title="Models with no current" titleWeight="light" />}
-      />
+      <NewHeader title={<SectionTitle title="Models with no current" titleWeight="light" />} />
 
       <SmartTable
         clickable

@@ -1,7 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { columnFactory } from '@Src/components/smart-table/utils';
 import { JOB_STATUS, numberFormatter } from '@Src/constants';
-import { ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { ModelTypeEnumLabel } from '@State/models/constants';
 import { RelativeDateTime, Truncate } from '@radicalbit/radicalbit-design-system';
 
 export const getColumns = (
@@ -27,11 +27,13 @@ export const getColumns = (
     activeSorter,
     width: '33%',
     render: ({ uuid, name }) => (
-      <div className="font-[var(--coo-font-weight-bold)] w-96">
-        <a className="pointer-events-none" href={`/models/${uuid}`}>
-          <Truncate>{name}</Truncate>
-        </a>
-      </div>
+      <a
+        className="font-[var(--coo-font-weight-bold)]"
+        href={`/models/${uuid}`}
+        onClick={(e) => e.preventDefault()}
+      >
+        <Truncate>{name}</Truncate>
+      </a>
     ),
   }),
 
