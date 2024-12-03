@@ -55,7 +55,7 @@ What follows is an example of data we will use in this tutorial:
 * **days_as_customer:** it indicates how many days the user is a customer.
 
 ### Create the Model
-To create a new model, navigate to the *Models* section and click the plus (+) icon.
+To create a new model, navigate to the *Models* section and click the plus (+) icon in the top right corner.
 
 ![Alt text](/img/quickstart/empty-models-list.png "Empty Models List")
 
@@ -84,10 +84,6 @@ To infer the model schema you have to upload a sample dataset. Please download a
 Since in the CSV file there might be useless fields, e.g. some uuid which would be pointless to analyse, choose which fields you want to carry over: in the case select all of them, click on the arrow to transfer them, and then click on the *Next* button.
 
 ![Alt text](/img/quickstart/new-model-modal-s2_extra.png "Fields transfer")
-
-Once you have defined the model schema, select the output fields from the variables. Choose `model_answer` and `prediction`, move them to the right, and click on the *Next* button.
-
-![Alt text](/img/quickstart/new-model-modal-s3.png "Output fields selection")
 
 Finally, you need to select and associate the following fields:
 * **Target:** the target field or ground truth;
