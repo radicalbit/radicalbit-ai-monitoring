@@ -105,22 +105,8 @@ function DataPointDistributionChart() {
       header={(
         <NewHeader
           details={{
-            one: (
-              <div className="flex flex-row gap-2 items-center">
-                <div className="flex flex-row gap-1 items-center">
-                  <Pin color={CHART_COLOR.REFERENCE_LIGHT} size="small" />
-
-                  <span>Reference</span>
-                </div>
-
-                <div className="flex flex-row gap-1 items-center">
-                  <Pin color={CHART_COLOR.CURRENT_LIGHT} size="small" />
-
-                  <span>Current</span>
-                </div>
-              </div>
-
-            ),
+            one: <Pin color={CHART_COLOR.REFERENCE_LIGHT} label="Reference" size="small" />,
+            two: <Pin color={CHART_COLOR.CURRENT_LIGHT} label="Current" size="small" />,
           }}
           title={<SectionTitle size="small" title={title} />}
         />
