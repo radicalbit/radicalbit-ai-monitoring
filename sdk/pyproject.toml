@@ -14,6 +14,7 @@ requests = "^2.31.0"
 pydantic = "^2.7.1"
 boto3 = "^1.34.111"
 pandas = "^2.2.2"
+ipecharts = "^1.0.8"
 
 
 [tool.poetry.group.dev.dependencies]
