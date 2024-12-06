@@ -11,7 +11,7 @@ from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.models.alert_dto import AnomalyType
 from app.models.exceptions import ModelError, ModelNotFoundError
-from app.models.model_dto import ModelOut
+from app.models.model_dto import ModelOut, ModelType
 from app.models.model_order import OrderType
 from app.services.model_service import ModelService
 from tests.commons import db_mock
@@ -37,6 +37,27 @@ class ModelServiceTest(unittest.TestCase):
         model = db_mock.get_sample_model()
         self.model_dao.insert = MagicMock(return_value=model)
         model_in = db_mock.get_sample_model_in()
+        res = self.model_service.create_model(model_in)
+        self.model_dao.insert.assert_called_once()
+
+        assert res == ModelOut.from_model(model)
+
+    def test_create_text_generation_model_ok(self):
+        model = db_mock.get_sample_model(
+            model_type=ModelType.TEXT_GENERATION,
+            features=None,
+            target=None,
+            outputs=None,
+            timestamp=None,
+        )
+        self.model_dao.insert = MagicMock(return_value=model)
+        model_in = db_mock.get_sample_model_in(
+            model_type=ModelType.TEXT_GENERATION,
+            features=None,
+            target=None,
+            outputs=None,
+            timestamp=None,
+        )
         res = self.model_service.create_model(model_in)
         self.model_dao.insert.assert_called_once()
 

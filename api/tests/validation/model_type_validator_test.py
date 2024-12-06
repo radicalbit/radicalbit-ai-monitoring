@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 import pytest
 
-from app.models.model_dto import ModelIn, ModelType
+from app.models.model_dto import ModelIn, ModelType, DataType, Granularity
 from tests.commons.modelin_factory import get_model_sample_wrong
 
 
@@ -108,3 +108,35 @@ def test_prediction_proba_for_regression():
     assert 'prediction_proba must be None for a ModelType.REGRESSION' in str(
         excinfo.value
     )
+
+
+def test_text_generation_invalid_fields_provided():
+    """Tests that TEXT_GENERATION fails if features, outputs, target, or timestamp are provided."""
+    with pytest.raises(ValidationError) as excinfo:
+        model_data = get_model_sample_wrong(
+            fail_fields=['features', 'outputs', 'target', 'timestamp'],
+            model_type=ModelType.TEXT_GENERATION,
+        )
+        ModelIn.model_validate(ModelIn(**model_data))
+    assert (
+        'target, features, outputs and timestamp must not be provided for a ModelType.TEXT_GENERATION'
+        in str(excinfo.value)
+    )
+
+
+def test_text_generation_valid():
+    """Tests that TEXT_GENERATION passes validation with no schema fields."""
+    model_data = {
+        'name': 'text_generation_model',
+        'model_type': ModelType.TEXT_GENERATION,
+        'data_type': DataType.TEXT,
+        'granularity': Granularity.DAY,
+        'frameworks': 'transformer',
+        'algorithm': 'gpt-like',
+    }
+    model = ModelIn.model_validate(ModelIn(**model_data))
+    assert model.model_type == ModelType.TEXT_GENERATION
+    assert model.features is None
+    assert model.outputs is None
+    assert model.target is None
+    assert model.timestamp is None
