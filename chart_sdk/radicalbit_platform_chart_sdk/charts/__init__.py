@@ -1,8 +1,7 @@
-from .chart_type import ChartType
+from .chart_data import ChartData
 from .chart import Chart
 
-
 __all__ = [
-    'ChartType',
+    'ChartData',
     'Chart'
 ]

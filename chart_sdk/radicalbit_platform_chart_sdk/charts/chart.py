@@ -1,22 +1,22 @@
 from ipecharts import EChartsRawWidget
-
+from radicalbit_platform_chart_sdk.charts import ChartData
 
 class Chart:
     def __init__(self) -> None:
         pass
-    def placeholder_chart(self) -> EChartsRawWidget:
+    def placeholder_chart(self,data: ChartData) -> EChartsRawWidget:
         option = {
             'xAxis': {
                 'type': 'category',
                 'boundaryGap': False,
-                'data': ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                'data': data.x_axis_data
             },
             'yAxis': {
                 'type': 'value'
             },
             'series': [
                 {
-                    'data': [820, 932, 901, 934, 1290, 1330, 1320],
+                    'data': data.series_data,
                     'type': 'line',
                     'areaStyle': {}
                 }
@@ -24,10 +24,3 @@ class Chart:
         }
 
         return EChartsRawWidget(option=option)
-
-""" refernceData = api.getRefence
-currentData = api.getRefence
-
-linearChart = Chart.LinearCHart(reference,current)
-
-linearChart.plot() """
