@@ -42,7 +42,7 @@ class ModelServiceTest(unittest.TestCase):
 
         assert res == ModelOut.from_model(model)
 
-    def test_create_text_generation_model_ok(self):
+    def test_create_model_with_empty_schema_ok(self):
         model = db_mock.get_sample_model(
             model_type=ModelType.TEXT_GENERATION,
             features=None,

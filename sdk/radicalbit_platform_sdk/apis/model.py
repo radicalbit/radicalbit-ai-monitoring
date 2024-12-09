@@ -60,16 +60,16 @@ class Model:
     def granularity(self) -> Granularity:
         return self.__granularity
 
-    def features(self) -> List[ColumnDefinition]:
+    def features(self) -> Optional[List[ColumnDefinition]]:
         return self.__features
 
-    def target(self) -> ColumnDefinition:
+    def target(self) -> Optional[ColumnDefinition]:
         return self.__target
 
-    def timestamp(self) -> ColumnDefinition:
+    def timestamp(self) -> Optional[ColumnDefinition]:
         return self.__timestamp
 
-    def outputs(self) -> OutputType:
+    def outputs(self) -> Optional[OutputType]:
         return self.__outputs
 
     def frameworks(self) -> Optional[str]:
