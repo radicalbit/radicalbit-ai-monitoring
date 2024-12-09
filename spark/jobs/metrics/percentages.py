@@ -62,7 +62,7 @@ class PercentageCalculator:
 
         model_quality_reference = metrics_service.calculate_model_quality()
 
-        def compute_mq_percentage(metrics_cur, metric_ref):
+        def _compute_mq_percentage(metrics_cur, metric_ref):
             metrics_cur_np = np.array(metrics_cur)
 
             # bootstrap Parameters
@@ -80,6 +80,7 @@ class PercentageCalculator:
             # calculate 95% confidence interval
             lower_bound = np.percentile(bootstrap_means, 2.5)
             upper_bound = np.percentile(bootstrap_means, 97.5)
+
             return 1 if not (lower_bound <= metric_ref <= upper_bound) else 0
 
         perc_model_quality = {"value": 0, "details": []}
@@ -95,15 +96,15 @@ class PercentageCalculator:
                     perc_model_quality["value"] = -1
                     break
                 else:
-                    is_flag = compute_mq_percentage(metrics_cur, metric_ref)
+                    is_flag = _compute_mq_percentage(metrics_cur, metric_ref)
                     flagged_metrics += is_flag
                     if is_flag:
                         perc_model_quality["details"].append(
                             {"feature_name": key_m, "score": -1}
                         )
-                perc_model_quality["value"] = 1 - (
-                    flagged_metrics / len(model_quality_reference)
-                )
+            perc_model_quality["value"] = 1 - (
+                flagged_metrics / len(model_quality_current["grouped_metrics"])
+            )
 
         elif model.model_type == ModelType.MULTI_CLASS:
             flagged_metrics = 0
@@ -119,23 +120,22 @@ class PercentageCalculator:
                         # not enough values to do the test, return -1
                         cumulative_sum -= 10000
                     else:
-                        is_flag = compute_mq_percentage(metrics_cur, metric_ref)
+                        is_flag = _compute_mq_percentage(metrics_cur, metric_ref)
                         flagged_metrics += is_flag
-                        perc_model_quality["details"].append(
-                            {
-                                "feature_name": cm["class_name"] + "_" + key_m,
-                                "score": -1,
-                            }
-                        )
-                    cumulative_sum += 1 - (
-                        flagged_metrics / len(model_quality_reference)
-                    )
-            perc_model_quality["value"] = (
-                cumulative_sum
-                / (
-                    len(model_quality_reference["classes"])
-                    * len(model_quality_reference["class_metrics"][0])
+                        if is_flag:
+                            perc_model_quality["details"].append(
+                                {
+                                    "feature_name": cm["class_name"] + "_" + key_m,
+                                    "score": -1,
+                                }
+                            )
+                cumulative_sum += 1 - (
+                    flagged_metrics
+                    / len(model_quality_reference["class_metrics"][0]["metrics"])
                 )
+                flagged_metrics = 0
+            perc_model_quality["value"] = (
+                cumulative_sum / len(model_quality_reference["classes"])
                 if cumulative_sum > 0
                 else -1
             )
