@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 import pytest
 
-from app.models.model_dto import ModelIn, ModelType, DataType, Granularity
+from app.models.model_dto import DataType, Granularity, ModelIn, ModelType
 from tests.commons.modelin_factory import get_model_sample_wrong
 
 
