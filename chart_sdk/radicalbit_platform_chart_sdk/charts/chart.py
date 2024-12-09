@@ -92,3 +92,4 @@ class Chart:
         }
 
         return EChartsRawWidget(option=option)
+    
