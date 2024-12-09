@@ -228,7 +228,7 @@ class ClientTest(unittest.TestCase):
             features=None,
             outputs=None,
             target=None,
-            timestamp=None
+            timestamp=None,
         )
 
         model_definition = ModelDefinition(
