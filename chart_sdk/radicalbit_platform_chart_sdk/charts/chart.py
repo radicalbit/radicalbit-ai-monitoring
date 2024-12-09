@@ -46,18 +46,18 @@ class Chart:
                 "right": 20,
                 "bottom": 0,
                 "top": 10,
-                "containLabel": true
+                "containLabel": True
             },
             "xAxis": {
                 "type": "category",
                 "axisTick": {
-                    "show": false
+                    "show": False
                 },
                 "axisLine": {
-                    "show": false
+                    "show": False
                 },
                 "splitLine": {
-                    "show": false
+                    "show": False
                 },
                 "axisLabel": {
                     "fontSize": 12,
@@ -65,18 +65,7 @@ class Chart:
                     "color": "#9B99A1",
                     "rotate": 20
                 },
-                "data": [
-                    "[19,700-99,400) ",
-                    "[99,400-179,000) ",
-                    "[179,000-259,000) ",
-                    "[259,000-339,000) ",
-                    "[339,000-418,000) ",
-                    "[418,000-498,000) ",
-                    "[498,000-578,000) ",
-                    "[578,000-657,000) ",
-                    "[657,000-737,000) ",
-                    "[737,000-817,000] "
-                ]
+                "data": data.bucket_data 
             },
             "yAxis": {
                 "type": "value",
@@ -91,7 +80,7 @@ class Chart:
                 }
             },
             "emphasis": {
-                "disabled": true
+                "disabled": True
             },
             "barCategoryGap": "0",
             "barGap": "0",
@@ -99,27 +88,7 @@ class Chart:
                 "borderWidth": 1,
                 "borderColor": "rgba(201, 25, 25, 1)"
             },
-            "series": [
-                {
-                    "title": "reference",
-                    "type": "bar",
-                    "itemStyle": {
-                        "color": "#9B99A1"
-                    },
-                    "data": [
-                        502,
-                        982,
-                        896,
-                        356,
-                        181,
-                        44,
-                        24,
-                        10,
-                        3,
-                        2
-                    ]
-                }
-            ]
+            "series": series
         }
 
         return EChartsRawWidget(option=option)

@@ -7,5 +7,6 @@ class ChartData(BaseModel):
     x_axis_data: List[str]
 
 class NumericalBarChartData(BaseModel):
+    bucket_data: List[str]
     reference_data: List[float]
-    current_data: Optional[List[float]]
+    current_data: Optional[List[float]] = None
