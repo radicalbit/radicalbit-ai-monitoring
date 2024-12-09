@@ -19,6 +19,7 @@ class ModelType(str, Enum):
     REGRESSION = 'REGRESSION'
     BINARY = 'BINARY'
     MULTI_CLASS = 'MULTI_CLASS'
+    TEXT_GENERATION = 'TEXT_GENERATION'
 
 
 class DataType(str, Enum):
@@ -93,10 +94,10 @@ class ModelIn(BaseModel, validate_assignment=True):
     model_type: ModelType
     data_type: DataType
     granularity: Granularity
-    features: List[ColumnDefinition]
-    outputs: OutputType
-    target: ColumnDefinition
-    timestamp: ColumnDefinition
+    features: Optional[List[ColumnDefinition]] = None
+    outputs: Optional[OutputType] = None
+    target: Optional[ColumnDefinition] = None
+    timestamp: Optional[ColumnDefinition] = None
     frameworks: Optional[str] = None
     algorithm: Optional[str] = None
 
@@ -105,8 +106,28 @@ class ModelIn(BaseModel, validate_assignment=True):
     )
 
     @model_validator(mode='after')
+    def validate_fields(self) -> Self:
+        checked_model_type = self.model_type
+        if checked_model_type == ModelType.TEXT_GENERATION:
+            if any([self.target, self.features, self.outputs, self.timestamp]):
+                raise ValueError(
+                    f'target, features, outputs and timestamp must not be provided for a {checked_model_type}'
+                )
+            return self
+        if not self.features:
+            raise ValueError(f'features must be provided for a {checked_model_type}')
+        if not self.outputs:
+            raise ValueError(f'outputs must be provided for a {checked_model_type}')
+        if not self.target:
+            raise ValueError(f'target must be provided for a {checked_model_type}')
+        if not self.timestamp:
+            raise ValueError(f'timestamp must be provided for a {checked_model_type}')
+
+        return self
+
+    @model_validator(mode='after')
     def validate_target(self) -> Self:
-        checked_model_type: ModelType = self.model_type
+        checked_model_type = self.model_type
         match checked_model_type:
             case ModelType.BINARY:
                 if not is_number(self.target.type):
@@ -126,12 +147,14 @@ class ModelIn(BaseModel, validate_assignment=True):
                         f'target must be a number for a {checked_model_type}, has been provided [{self.target}]'
                     )
                 return self
+            case ModelType.TEXT_GENERATION:
+                return self
             case _:
                 raise ValueError('not supported type for model_type')
 
     @model_validator(mode='after')
     def validate_outputs(self) -> Self:
-        checked_model_type: ModelType = self.model_type
+        checked_model_type = self.model_type
         match checked_model_type:
             case ModelType.BINARY:
                 if not is_number(self.outputs.prediction.type):
@@ -169,11 +192,15 @@ class ModelIn(BaseModel, validate_assignment=True):
                         f'prediction_proba must be None for a {checked_model_type}, has been provided [{self.outputs.prediction_proba}]'
                     )
                 return self
+            case ModelType.TEXT_GENERATION:
+                return self
             case _:
                 raise ValueError('not supported type for model_type')
 
     @model_validator(mode='after')
     def timestamp_must_be_datetime(self) -> Self:
+        if self.model_type == ModelType.TEXT_GENERATION:
+            return self
         if not self.timestamp.type == SupportedTypes.datetime:
             raise ValueError('timestamp must be a datetime')
         return self
@@ -187,10 +214,12 @@ class ModelIn(BaseModel, validate_assignment=True):
             model_type=self.model_type.value,
             data_type=self.data_type.value,
             granularity=self.granularity.value,
-            features=[feature.to_dict() for feature in self.features],
-            outputs=self.outputs.to_dict(),
-            target=self.target.to_dict(),
-            timestamp=self.timestamp.to_dict(),
+            features=[feature.to_dict() for feature in self.features]
+            if self.features
+            else None,
+            outputs=self.outputs.to_dict() if self.outputs else None,
+            target=self.target.to_dict() if self.target else None,
+            timestamp=self.timestamp.to_dict() if self.timestamp else None,
             frameworks=self.frameworks,
             algorithm=self.algorithm,
             created_at=now,
@@ -205,10 +234,10 @@ class ModelOut(BaseModel):
     model_type: ModelType
     data_type: DataType
     granularity: Granularity
-    features: List[ColumnDefinition]
-    outputs: OutputType
-    target: ColumnDefinition
-    timestamp: ColumnDefinition
+    features: Optional[List[ColumnDefinition]]
+    outputs: Optional[OutputType]
+    target: Optional[ColumnDefinition]
+    timestamp: Optional[ColumnDefinition]
     frameworks: Optional[str]
     algorithm: Optional[str]
     created_at: str
