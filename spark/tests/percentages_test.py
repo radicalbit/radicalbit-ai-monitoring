@@ -64,6 +64,34 @@ def dataset_perfect_classes(spark_fixture, test_data_dir):
     )
 
 
+@pytest.fixture()
+def dataset_talk(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/reference/multiclass/reference_sentiment_analysis_talk.csv",
+            header=True,
+        ),
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/multiclass/current_sentiment_analysis_talk.csv",
+            header=True,
+        ),
+    )
+
+
+@pytest.fixture()
+def dataset_demo(spark_fixture, test_data_dir):
+    yield (
+        spark_fixture.read.csv(
+            f"{test_data_dir}/reference/multiclass/3_classes_reference.csv",
+            header=True,
+        ),
+        spark_fixture.read.csv(
+            f"{test_data_dir}/current/multiclass/3_classes_current1.csv",
+            header=True,
+        ),
+    )
+
+
 def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_classes):
     output = OutputType(
         prediction=ColumnDefinition(
@@ -360,6 +388,177 @@ def test_percentages_abalone(spark_fixture, test_dataset_abalone):
     assert not deepdiff.DeepDiff(
         percentages,
         res.test_percentage_abalone,
+        ignore_order=True,
+        significant_digits=6,
+    )
+
+
+def test_percentages_dataset_talk(spark_fixture, dataset_talk):
+    output = OutputType(
+        prediction=ColumnDefinition(
+            name="content", type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        prediction_proba=None,
+        output=[
+            ColumnDefinition(
+                name="content",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.categorical,
+            )
+        ],
+    )
+    target = ColumnDefinition(
+        name="label", type=SupportedTypes.int, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="rbit_prediction_ts",
+        type=SupportedTypes.datetime,
+        field_type=FieldTypes.datetime,
+    )
+    granularity = Granularity.HOUR
+    features = [
+        ColumnDefinition(
+            name="total_tokens",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+        ColumnDefinition(
+            name="prompt_tokens",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+        ),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="talk model",
+        description="description",
+        model_type=ModelType.MULTI_CLASS,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    raw_reference_dataset, raw_current_dataset = dataset_talk
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
+    )
+
+    drift = DriftCalculator.calculate_drift(
+        spark_session=spark_fixture,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+    )
+
+    metrics_service = CurrentMetricsMulticlassService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    percentages = PercentageCalculator.calculate_percentages(
+        spark_session=spark_fixture,
+        drift=drift,
+        model_quality_current=model_quality,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+        model=model,
+    )
+
+    assert not deepdiff.DeepDiff(
+        percentages,
+        res.test_dataset_talk,
+        ignore_order=True,
+        significant_digits=6,
+    )
+
+
+def test_percentages_dataset_demo(spark_fixture, dataset_demo):
+    output = OutputType(
+        prediction=ColumnDefinition(
+            name="prediction",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+        ),
+        prediction_proba=None,
+        output=[
+            ColumnDefinition(
+                name="prediction",
+                type=SupportedTypes.int,
+                field_type=FieldTypes.categorical,
+            )
+        ],
+    )
+    target = ColumnDefinition(
+        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
+    granularity = Granularity.DAY
+    features = [
+        ColumnDefinition(
+            name="age", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        )
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name="talk model",
+        description="description",
+        model_type=ModelType.MULTI_CLASS,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks="framework",
+        algorithm="algorithm",
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    raw_reference_dataset, raw_current_dataset = dataset_demo
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference_dataset
+    )
+
+    drift = DriftCalculator.calculate_drift(
+        spark_session=spark_fixture,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+    )
+
+    metrics_service = CurrentMetricsMulticlassService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    percentages = PercentageCalculator.calculate_percentages(
+        spark_session=spark_fixture,
+        drift=drift,
+        model_quality_current=model_quality,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+        model=model,
+    )
+
+    assert not deepdiff.DeepDiff(
+        percentages,
+        res.test_dataset_demo,
         ignore_order=True,
         significant_digits=6,
     )

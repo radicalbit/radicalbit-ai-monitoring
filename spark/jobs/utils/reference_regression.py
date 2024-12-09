@@ -20,7 +20,7 @@ class ReferenceMetricsRegressionService:
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
-        ).dict()
+        ).model_dump()
 
         metrics["residuals"] = ModelQualityRegressionCalculator.residual_metrics(
             model=self.reference.model,
