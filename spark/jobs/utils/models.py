@@ -35,6 +35,7 @@ class ModelType(str, Enum):
     REGRESSION = "REGRESSION"
     BINARY = "BINARY"
     MULTI_CLASS = "MULTI_CLASS"
+    TEXT_GENERATION = "TEXT_GENERATION"
 
 
 class DataType(str, Enum):
@@ -89,10 +90,10 @@ class ModelOut(BaseModel):
     model_type: ModelType
     data_type: DataType
     granularity: Granularity
-    features: List[ColumnDefinition]
-    outputs: OutputType
-    target: ColumnDefinition
-    timestamp: ColumnDefinition
+    features: Optional[List[ColumnDefinition]]
+    outputs: Optional[OutputType]
+    target: Optional[ColumnDefinition]
+    timestamp: Optional[ColumnDefinition]
     frameworks: Optional[str]
     algorithm: Optional[str]
     created_at: str

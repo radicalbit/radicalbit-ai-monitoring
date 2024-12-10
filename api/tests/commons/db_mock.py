@@ -33,10 +33,10 @@ def get_sample_model(
     model_type: str = ModelType.BINARY.value,
     data_type: str = DataType.TEXT.value,
     granularity: str = Granularity.DAY.value,
-    features: List[Dict] = [
+    features: Optional[List[Dict]] = [
         {'name': 'feature1', 'type': 'string', 'fieldType': 'categorical'}
     ],
-    outputs: Dict = {
+    outputs: Optional[Dict] = {
         'prediction': {'name': 'pred1', 'type': 'int', 'fieldType': 'numerical'},
         'prediction_proba': {
             'name': 'prob1',
@@ -45,8 +45,12 @@ def get_sample_model(
         },
         'output': [{'name': 'output1', 'type': 'string', 'fieldType': 'categorical'}],
     },
-    target: Dict = {'name': 'target1', 'type': 'string', 'fieldType': 'categorical'},
-    timestamp: Dict = {
+    target: Optional[Dict] = {
+        'name': 'target1',
+        'type': 'string',
+        'fieldType': 'categorical',
+    },
+    timestamp: Optional[Dict] = {
         'name': 'timestamp',
         'type': 'datetime',
         'fieldType': 'datetime',
@@ -91,14 +95,14 @@ def get_sample_model_in(
     model_type: str = ModelType.BINARY.value,
     data_type: str = DataType.TEXT.value,
     granularity: str = Granularity.DAY.value,
-    features: List[ColumnDefinition] = [
+    features: Optional[List[ColumnDefinition]] = [
         ColumnDefinition(
             name='feature1',
             type=SupportedTypes.string,
             field_type=FieldType.categorical,
         )
     ],
-    outputs: OutputType = OutputType(
+    outputs: Optional[OutputType] = OutputType(
         prediction=ColumnDefinition(
             name='pred1', type=SupportedTypes.int, field_type=FieldType.numerical
         ),
@@ -113,10 +117,10 @@ def get_sample_model_in(
             )
         ],
     ),
-    target: ColumnDefinition = ColumnDefinition(
+    target: Optional[ColumnDefinition] = ColumnDefinition(
         name='target1', type=SupportedTypes.int, field_type=FieldType.numerical
     ),
-    timestamp: ColumnDefinition = ColumnDefinition(
+    timestamp: Optional[ColumnDefinition] = ColumnDefinition(
         name='timestamp', type=SupportedTypes.datetime, field_type=FieldType.datetime
     ),
     frameworks: Optional[str] = None,

@@ -218,6 +218,50 @@ class ClientTest(unittest.TestCase):
         assert model.frameworks() is None
 
     @responses.activate
+    def test_create_model_with_empty_schema(self):
+        base_url = 'http://api:9000'
+        model = CreateModel(
+            name='My Model',
+            model_type=ModelType.TEXT_GENERATION,
+            data_type=DataType.TEXT,
+            granularity=Granularity.DAY,
+            features=None,
+            outputs=None,
+            target=None,
+            timestamp=None,
+        )
+
+        model_definition = ModelDefinition(
+            name=model.name,
+            model_type=model.model_type,
+            data_type=model.data_type,
+            granularity=model.granularity,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        responses.add(
+            method=responses.POST,
+            url=f'{base_url}/api/models',
+            body=model_definition.model_dump_json(),
+            status=201,
+            content_type='application/json',
+        )
+
+        client = Client(base_url)
+        model = client.create_model(model)
+        assert model.name() == model_definition.name
+        assert model.model_type() == model_definition.model_type
+        assert model.data_type() == model_definition.data_type
+        assert model.granularity() == model_definition.granularity
+        assert model.features() is None
+        assert model.outputs() is None
+        assert model.target() is None
+        assert model.timestamp() is None
+        assert model.description() is None
+        assert model.algorithm() is None
+        assert model.frameworks() is None
+
+    @responses.activate
     def test_search_models(self):
         base_url = 'http://api:9000'
 
