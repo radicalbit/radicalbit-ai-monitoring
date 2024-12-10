@@ -9,6 +9,12 @@ class BinaryChart:
         pass
 
     def distribution_chart(self, data: BinaryChartData) -> EChartsRawWidget:
+        assert len(data.reference_data) <= 2
+        assert len(data.y_axis_label) <= 2
+        
+        if data.current_data:
+            assert len(data.current_data) <= 2
+
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json =  data.model_dump().get('current_data')
 
