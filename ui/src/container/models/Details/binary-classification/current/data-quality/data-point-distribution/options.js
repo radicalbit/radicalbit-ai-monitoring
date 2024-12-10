@@ -39,7 +39,5 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
     ],
   };
 
-  console.debug('🚀 ~ chartOptions ~ options:', options);
-
   return options;
 }
