@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.2.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.1.0...v1.2.0) (2024-12-10)
+
+
+### Features
+
+* change banner introducing "Book a demo" ([#197](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/197)) ([7842eb1](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/7842eb148459fed7b6af9768dc41a4ac9012e2d1))
+* create a custom component and custom hooks to manage dark mode ([#199](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/199)) ([05b93fb](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/05b93fb3587900091cc1dcea37bb432e1e4abace))
+* improve layout and accessibility ([#201](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/201)) ([7016c0f](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/7016c0fa9923740ea1f773440dfff14761be30be))
+* ugrade design system to 1.4.0 ([#196](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/196)) ([9358296](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/9358296c0c8d78abe7b88229ff9fc2ec1f770254))
+* **ui:** add dark mode ([#195](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/195)) ([1c3bc31](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/1c3bc316a9e75598b11ff731b19392e2de5f7ccd))
+* **ui:** improve accessibility ([#198](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/198)) ([8ea1e23](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/8ea1e23d82ab5c3c00e4e01768d4dd87f9de6d4c))
+* upgrade design-system ([#200](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/200)) ([6f582e6](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/6f582e6680c26e5806f19c64ee827684026ab57c))
+
+
+### Bug Fixes
+
+* percentage fix ([#206](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/206)) ([523d197](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/523d1974dbd513bb85107f50de2d5d6f3e5e5304))
+* **ui:** improve charts header legend ([#203](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/203)) ([5c3ca24](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/5c3ca24fc539ab434a36ec3dc3492aace6ca2d0b))
+
 ## [1.1.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.0.1...v1.1.0) (2024-10-31)
 
 
