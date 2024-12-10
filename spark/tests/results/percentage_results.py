@@ -22,7 +22,7 @@ test_percentage_easy_dataset = {
             {"feature_name": "cat2", "score": 0.0},
         ],
     },
-    "model_quality": {"value": -1, "details": []},
+    "model_quality": {"value": 1.0, "details": []},
     "drift": {
         "value": 0.5,
         "details": [
@@ -56,4 +56,46 @@ test_percentage_abalone = {
             {"feature_name": "Height", "score": 1.0},
         ],
     },
+}
+
+test_dataset_talk = {
+    "data_quality": {
+        "value": 0.94,
+        "details": [
+            {"feature_name": "total_tokens", "score": 0.06},
+            {"feature_name": "prompt_tokens", "score": 0.06},
+        ],
+    },
+    "model_quality": {
+        "value": 0.4,
+        "details": [
+            {"feature_name": "0_true_positive_rate", "score": -1},
+            {"feature_name": "0_recall", "score": -1},
+            {"feature_name": "0_f_measure", "score": -1},
+            {"feature_name": "1_false_positive_rate", "score": -1},
+            {"feature_name": "1_precision", "score": -1},
+            {"feature_name": "1_f_measure", "score": -1},
+        ],
+    },
+    "drift": {"value": 1.0, "details": []},
+}
+
+test_dataset_demo = {
+    "data_quality": {"value": 1.0, "details": [{"feature_name": "age", "score": 0.0}]},
+    "model_quality": {
+        "value": 0.3333333333333333,
+        "details": [
+            {"feature_name": "0_true_positive_rate", "score": -1},
+            {"feature_name": "0_recall", "score": -1},
+            {"feature_name": "0_f_measure", "score": -1},
+            {"feature_name": "1_true_positive_rate", "score": -1},
+            {"feature_name": "1_false_positive_rate", "score": -1},
+            {"feature_name": "1_precision", "score": -1},
+            {"feature_name": "1_recall", "score": -1},
+            {"feature_name": "1_f_measure", "score": -1},
+            {"feature_name": "2_false_positive_rate", "score": -1},
+            {"feature_name": "2_precision", "score": -1},
+        ],
+    },
+    "drift": {"value": 1.0, "details": []},
 }
