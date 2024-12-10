@@ -7,13 +7,16 @@ class BinaryChart:
         pass
 
     def distribution_chart(self, data: BinaryChartData) -> EChartsRawWidget:
-        reference_data_json = {
+        reference_json_data = data.model_dump().get('reference_data')
+        current_data_json =  data.model_dump().get('current_data')
+        
+        reference_series_data = {
             "title": data.title,
             "type": "bar",
             "itemStyle": {
                 "color": "#9B99A1"
             },
-            "data": data.reference_data,
+            "data": reference_json_data,
             "color": "#9B99A1",
             "name": "Reference",
             "label": {
@@ -24,11 +27,11 @@ class BinaryChart:
             }
         }
 
-        current_data_json =  {
+        current_series_data = {
             "title": data.title,
             "type": "bar",
             "itemStyle": {},
-            "data": data.current_data,
+            "data": current_data_json,
             "color": "#3695d9",
             "label": {
                 "show": True,
@@ -38,8 +41,8 @@ class BinaryChart:
             }
         }
 
-        series = [reference_data_json] if not data.current_data else [reference_data_json, current_data_json]
-
+        series = [reference_series_data] if not data.current_data else [reference_series_data, current_series_data]
+      
         option = {
             "grid": {
                 "left": 0,
