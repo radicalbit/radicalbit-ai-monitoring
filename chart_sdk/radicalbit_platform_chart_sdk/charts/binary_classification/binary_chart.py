@@ -1,4 +1,5 @@
 from ipecharts import EChartsRawWidget
+
 from .binary_chart_data import BinaryChartData
 
 
@@ -9,7 +10,7 @@ class BinaryChart:
     def distribution_chart(self, data: BinaryChartData) -> EChartsRawWidget:
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json =  data.model_dump().get('current_data')
-        
+
         reference_series_data = {
             "title": data.title,
             "type": "bar",
@@ -42,7 +43,7 @@ class BinaryChart:
         }
 
         series = [reference_series_data] if not data.current_data else [reference_series_data, current_series_data]
-      
+
         option = {
             "grid": {
                 "left": 0,
@@ -94,6 +95,6 @@ class BinaryChart:
             },
             "series": series
         }
-        
+
         return EChartsRawWidget(option=option)
 

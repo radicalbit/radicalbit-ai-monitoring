@@ -1,6 +1,7 @@
-from typing import Optional, List
-from pydantic import BaseModel,ConfigDict
-from pydantic.alias_generators import to_camel
+from typing import List, Optional
+
+from pydantic import BaseModel
+
 
 class Binary_Data(BaseModel):
     percentage: float

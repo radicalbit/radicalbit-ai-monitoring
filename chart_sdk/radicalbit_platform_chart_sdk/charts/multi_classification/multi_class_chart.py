@@ -1,4 +1,5 @@
 from ipecharts import EChartsRawWidget
+
 from .multi_class_chart_data import MultiClassificationChartData
 
 
@@ -18,7 +19,7 @@ class MultiClassificationChart:
             },
             "data": reference_json_data
         }
-        
+
         current_series_data = {
             "title": data.title + "_current",
             "type": "bar",
@@ -27,7 +28,7 @@ class MultiClassificationChart:
             },
             "data": current_data_json
         }
-        
+
         series = [reference_series_data] if not data.current_data else [reference_series_data, current_series_data]
 
         option = {

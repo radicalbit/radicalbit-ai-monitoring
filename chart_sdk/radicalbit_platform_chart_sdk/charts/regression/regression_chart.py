@@ -1,6 +1,7 @@
 from ipecharts import EChartsRawWidget
-from .regression_chart_data import RegressionChartData
+
 from ..utils import get_formatted_bucket_data
+from .regression_chart_data import RegressionChartData
 
 
 class RegressionChart:

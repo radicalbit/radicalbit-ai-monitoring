@@ -1,5 +1,7 @@
 from ipecharts import EChartsRawWidget
+
 from radicalbit_platform_chart_sdk.charts import ChartData, NumericalBarChartData
+
 from .utils import get_formatted_bucket_data
 
 
@@ -31,7 +33,7 @@ class Chart:
                     },
                     "data": data.reference_data
                 }
-        
+
         current_data_json = {
                     "title": "current",
                     "type": "bar",
@@ -40,9 +42,9 @@ class Chart:
                     },
                     "data": data.current_data
                 }
-        
+
         series = [reference_data_json] if not data.current_data else [reference_data_json, current_data_json]
-        
+
         option = {
             "grid": {
                 "left": 0,
@@ -68,7 +70,7 @@ class Chart:
                     "color": "#9B99A1",
                     "rotate": 20
                 },
-                "data": bucket_data_formatted 
+                "data": bucket_data_formatted
             },
             "yAxis": {
                 "type": "value",
