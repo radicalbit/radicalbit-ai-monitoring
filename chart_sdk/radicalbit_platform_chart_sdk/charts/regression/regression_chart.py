@@ -1,41 +1,45 @@
 from ipecharts import EChartsRawWidget
-from .multi_class_chart_data import MultiClassificationChartData
+from .regression_chart_data import RegressionChartData
+from ..utils import get_formatted_bucket_data
 
 
-class MultiClassificationChart:
+class RegressionChart:
     def __init__(self) -> None:
         pass
 
-    def distribution_chart(self, data: MultiClassificationChartData) -> EChartsRawWidget:
+    def distribution_chart(self, data: RegressionChartData) -> EChartsRawWidget:
+        bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
+
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json = data.model_dump().get('current_data')
 
         reference_series_data = {
-            "title": data.title,
+            "title": "reference",
             "type": "bar",
             "itemStyle": {
                 "color": "#9B99A1"
             },
             "data": reference_json_data
         }
-        
+
         current_series_data = {
-            "title": data.title + "_current",
+            "title": "current",
             "type": "bar",
             "itemStyle": {
                 "color": "#3695d9"
             },
             "data": current_data_json
         }
-        
-        series = [reference_series_data] if not data.current_data else [reference_series_data, current_series_data]
+
+        series = [reference_series_data] if not data.current_data else [
+            reference_series_data, current_series_data]
 
         option = {
             "grid": {
                 "left": 0,
                 "right": 20,
                 "bottom": 0,
-                "top": 25,
+                "top": 10,
                 "containLabel": True
             },
             "xAxis": {
@@ -53,13 +57,9 @@ class MultiClassificationChart:
                     "fontSize": 12,
                     "interval": 0,
                     "color": "#9b99a1",
-                    "rotate": 35
+                    "rotate": 20
                 },
-                "data": [
-                    "0",
-                    "1",
-                    "2"
-                ]
+                "data":bucket_data_formatted,
             },
             "yAxis": {
                 "type": "value",
@@ -76,21 +76,11 @@ class MultiClassificationChart:
             "emphasis": {
                 "disabled": True
             },
-            "barCategoryGap": "21%",
+            "barCategoryGap": "0",
             "barGap": "0",
             "itemStyle": {
                 "borderWidth": 1,
                 "borderColor": "rgba(201, 25, 25, 1)"
-            },
-            "tooltip": {
-                "trigger": "axis",
-                "crosshairs": True,
-                "axisPointer": {
-                    "type": "cross",
-                    "label": {
-                        "show": True
-                    }
-                }
             },
             "series": series
         }

@@ -6,7 +6,7 @@ class MultiClassificationData(BaseModel):
     count: float
     value: float
 
-class MultiClasssificationChartData(BaseModel):
+class MultiClassificationChartData(BaseModel):
     title: str
     reference_data: List[MultiClassificationData]
     current_data: Optional[List[MultiClassificationData]] = None

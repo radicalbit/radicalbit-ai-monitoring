@@ -1,5 +1,6 @@
 from ipecharts import EChartsRawWidget
 from radicalbit_platform_chart_sdk.charts import ChartData, NumericalBarChartData
+from .utils import get_formatted_bucket_data
 
 
 class Chart:
@@ -20,6 +21,8 @@ class Chart:
         return EChartsRawWidget(option=option)
 
     def numerical_bar_chart(self, data: NumericalBarChartData) -> EChartsRawWidget:
+        bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
+
         reference_data_json = {
                     "title": "reference",
                     "type": "bar",
@@ -65,7 +68,7 @@ class Chart:
                     "color": "#9B99A1",
                     "rotate": 20
                 },
-                "data": data.bucket_data 
+                "data": bucket_data_formatted 
             },
             "yAxis": {
                 "type": "value",
