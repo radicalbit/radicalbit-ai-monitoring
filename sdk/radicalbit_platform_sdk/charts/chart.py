@@ -1,6 +1,6 @@
 from ipecharts import EChartsRawWidget
 
-from radicalbit_platform_chart_sdk.charts import ChartData, NumericalBarChartData
+from .chart_data import ChartData, NumericalBarChartData
 
 from .utils import get_formatted_bucket_data,get_chart_header
 
