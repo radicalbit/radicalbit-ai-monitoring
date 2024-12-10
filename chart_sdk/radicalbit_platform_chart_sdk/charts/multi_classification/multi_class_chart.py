@@ -1,6 +1,7 @@
 from ipecharts import EChartsRawWidget
 
 from .multi_class_chart_data import MultiClassificationChartData
+from ..utils import get_chart_header
 
 
 class MultiClassificationChart:
@@ -8,12 +9,14 @@ class MultiClassificationChart:
         pass
 
     def distribution_chart(self, data: MultiClassificationChartData) -> EChartsRawWidget:
+
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json = data.model_dump().get('current_data')
 
         reference_series_data = {
             "title": data.title,
             "type": "bar",
+            "name": "Reference",
             "itemStyle": {
                 "color": "#9B99A1"
             },
@@ -23,6 +26,7 @@ class MultiClassificationChart:
         current_series_data = {
             "title": data.title + "_current",
             "type": "bar",
+            "name": "Current",
             "itemStyle": {
                 "color": "#3695d9"
             },
@@ -36,7 +40,7 @@ class MultiClassificationChart:
                 "left": 0,
                 "right": 20,
                 "bottom": 0,
-                "top": 25,
+                "top": 40,
                 "containLabel": True
             },
             "xAxis": {
@@ -56,11 +60,7 @@ class MultiClassificationChart:
                     "color": "#9b99a1",
                     "rotate": 35
                 },
-                "data": [
-                    "0",
-                    "1",
-                    "2"
-                ]
+                "data": data.x_axis_label
             },
             "yAxis": {
                 "type": "value",
@@ -95,5 +95,7 @@ class MultiClassificationChart:
             },
             "series": series
         }
+
+        option.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=option)

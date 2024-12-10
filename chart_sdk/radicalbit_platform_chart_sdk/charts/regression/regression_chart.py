@@ -1,6 +1,6 @@
 from ipecharts import EChartsRawWidget
 
-from ..utils import get_formatted_bucket_data
+from ..utils import get_formatted_bucket_data,get_chart_header
 from .regression_chart_data import RegressionChartData
 
 
@@ -17,6 +17,7 @@ class RegressionChart:
         reference_series_data = {
             "title": "reference",
             "type": "bar",
+            "name":"Reference",
             "itemStyle": {
                 "color": "#9B99A1"
             },
@@ -26,6 +27,7 @@ class RegressionChart:
         current_series_data = {
             "title": "current",
             "type": "bar",
+            "name":"Current",
             "itemStyle": {
                 "color": "#3695d9"
             },
@@ -40,7 +42,7 @@ class RegressionChart:
                 "left": 0,
                 "right": 20,
                 "bottom": 0,
-                "top": 10,
+                "top": 40,
                 "containLabel": True
             },
             "xAxis": {
@@ -85,5 +87,7 @@ class RegressionChart:
             },
             "series": series
         }
+
+        option.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=option)

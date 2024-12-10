@@ -1,6 +1,7 @@
 from ipecharts import EChartsRawWidget
 
 from .binary_chart_data import BinaryChartData
+from ..utils import get_chart_header
 
 
 class BinaryChart:
@@ -29,11 +30,12 @@ class BinaryChart:
         }
 
         current_series_data = {
-            "title": data.title,
+            "title": data.title + "_current",
             "type": "bar",
             "itemStyle": {},
             "data": current_data_json,
             "color": "#3695d9",
+            "name": "Current",
             "label": {
                 "show": True,
                 "position": "insideRight",
@@ -49,7 +51,7 @@ class BinaryChart:
                 "left": 0,
                 "right": 20,
                 "bottom": 0,
-                "top": 10,
+                "top": 40,
                 "containLabel": True
             },
             "xAxis": {
@@ -79,10 +81,7 @@ class BinaryChart:
                     "fontSize": 12,
                     "color": "#9B99A1"
                 },
-                "data": [
-                    "0.0",
-                    "1.0"
-                ]
+                "data": data.y_axis_label
             },
             "emphasis": {
                 "disabled": True
@@ -95,6 +94,8 @@ class BinaryChart:
             },
             "series": series
         }
+
+        option.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=option)
 

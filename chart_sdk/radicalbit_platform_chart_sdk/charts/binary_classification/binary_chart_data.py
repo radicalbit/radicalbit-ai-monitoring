@@ -10,5 +10,6 @@ class Binary_Data(BaseModel):
 
 class BinaryChartData(BaseModel):
     title: str
+    y_axis_label: List[str]
     reference_data: List[Binary_Data]
     current_data: Optional[List[Binary_Data]] = None

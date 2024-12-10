@@ -2,7 +2,7 @@ from ipecharts import EChartsRawWidget
 
 from radicalbit_platform_chart_sdk.charts import ChartData, NumericalBarChartData
 
-from .utils import get_formatted_bucket_data
+from .utils import get_formatted_bucket_data,get_chart_header
 
 
 class Chart:
@@ -28,6 +28,7 @@ class Chart:
         reference_data_json = {
                     "title": "reference",
                     "type": "bar",
+                    "name":"Reference",
                     "itemStyle": {
                         "color": "#9B99A1"
                     },
@@ -37,6 +38,7 @@ class Chart:
         current_data_json = {
                     "title": "current",
                     "type": "bar",
+                    "name":"Current",
                     "itemStyle": {
                         "color": "#3695D9"
                     },
@@ -50,7 +52,7 @@ class Chart:
                 "left": 0,
                 "right": 20,
                 "bottom": 0,
-                "top": 10,
+                "top": 40,
                 "containLabel": True
             },
             "xAxis": {
@@ -95,5 +97,7 @@ class Chart:
             },
             "series": series
         }
-
+        
+        option.update(get_chart_header(title=data.title))
+        
         return EChartsRawWidget(option=option)
