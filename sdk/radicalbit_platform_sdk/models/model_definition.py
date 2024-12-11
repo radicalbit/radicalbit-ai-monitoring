@@ -54,10 +54,10 @@ class BaseModelDefinition(BaseModel):
     model_type: ModelType
     data_type: DataType
     granularity: Granularity
-    features: List[ColumnDefinition]
-    outputs: OutputType
-    target: ColumnDefinition
-    timestamp: ColumnDefinition
+    features: Optional[List[ColumnDefinition]] = None
+    outputs: Optional[OutputType] = None
+    target: Optional[ColumnDefinition] = None
+    timestamp: Optional[ColumnDefinition] = None
     frameworks: Optional[str] = None
     algorithm: Optional[str] = None
 
