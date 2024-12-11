@@ -8,17 +8,24 @@ from fastapi import HTTPException
 from fastapi_pagination import Page, Params
 import pytest
 
+from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.reference_dataset_table import ReferenceDataset
-from app.models.dataset_dto import CurrentDatasetDTO, FileReference, ReferenceDatasetDTO
+from app.models.dataset_dto import (
+    CompletionDatasetDTO,
+    CurrentDatasetDTO,
+    FileReference,
+    ReferenceDatasetDTO,
+)
 from app.models.exceptions import InvalidFileException, ModelNotFoundError
 from app.models.job_status import JobStatus
 from app.models.model_dto import ModelOut
 from app.services.file_service import FileService
 from app.services.model_service import ModelService
-from tests.commons import csv_file_mock as csv, db_mock
+from tests.commons import csv_file_mock as csv, db_mock, json_file_mock as json
 from tests.commons.db_mock import get_sample_reference_dataset
 
 
@@ -27,15 +34,22 @@ class FileServiceTest(unittest.TestCase):
     def setUpClass(cls):
         cls.rd_dao = MagicMock(spec_set=ReferenceDatasetDAO)
         cls.cd_dao = MagicMock(spec_set=CurrentDatasetDAO)
+        cls.completion_dataset_dao = MagicMock(spec_set=CompletionDatasetDAO)
         cls.model_svc = MagicMock(spec_set=ModelService)
         cls.s3_client = MagicMock()
         cls.spark_k8s_client = MagicMock()
         cls.files_service = FileService(
-            cls.rd_dao, cls.cd_dao, cls.model_svc, cls.s3_client, cls.spark_k8s_client
+            cls.rd_dao,
+            cls.cd_dao,
+            cls.completion_dataset_dao,
+            cls.model_svc,
+            cls.s3_client,
+            cls.spark_k8s_client,
         )
         cls.mocks = [
             cls.rd_dao,
             cls.cd_dao,
+            cls.completion_dataset_dao,
             cls.model_svc,
             cls.s3_client,
             cls.spark_k8s_client,
@@ -66,6 +80,15 @@ class FileServiceTest(unittest.TestCase):
         file = csv.get_file_using_sep(';')
         schema = FileService.infer_schema(file, sep=';')
         assert schema == csv.correct_schema()
+
+    def test_validate_completion_json_file_ok(self):
+        json_file = json.get_completion_sample_json_file()
+        self.files_service.validate_json_file(json_file)
+
+    def test_validate_completion_json_file_error(self):
+        json_file = json.get_incorrect_sample_json_file()
+        with pytest.raises(InvalidFileException):
+            self.files_service.validate_json_file(json_file)
 
     def test_upload_reference_file_ok(self):
         file = csv.get_correct_sample_csv_file()
@@ -253,6 +276,44 @@ class FileServiceTest(unittest.TestCase):
             correlation_id_column,
         )
 
+    def test_upload_completion_file_ok(self):
+        file = json.get_completion_sample_json_file()
+        model = db_mock.get_sample_model(
+            features=None,
+            outputs=None,
+            target=None,
+            timestamp=None,
+        )
+        object_name = f'{str(model.uuid)}/completion/{file.filename}'
+        path = f's3://bucket/{object_name}'
+        inserted_file = CompletionDataset(
+            uuid=uuid4(),
+            model_uuid=model_uuid,
+            path=path,
+            date=datetime.datetime.now(tz=datetime.UTC),
+            status=JobStatus.IMPORTING,
+        )
+
+        self.model_svc.get_model_by_uuid = MagicMock(
+            return_value=ModelOut.from_model(model)
+        )
+        self.s3_client.upload_fileobj = MagicMock()
+        self.completion_dataset_dao.insert_completion_dataset = MagicMock(
+            return_value=inserted_file
+        )
+        self.spark_k8s_client.submit_app = MagicMock()
+
+        result = self.files_service.upload_completion_file(
+            model.uuid,
+            file,
+        )
+
+        self.model_svc.get_model_by_uuid.assert_called_once()
+        self.completion_dataset_dao.insert_completion_dataset.assert_called_once()
+        self.s3_client.upload_fileobj.assert_called_once()
+        self.spark_k8s_client.submit_app.assert_called_once()
+        assert result == CompletionDatasetDTO.from_completion_dataset(inserted_file)
+
     def test_get_all_reference_datasets_by_model_uuid_paginated(self):
         reference_upload_1 = db_mock.get_sample_reference_dataset(
             model_uuid=model_uuid, path='reference/test_1.csv'
@@ -311,6 +372,35 @@ class FileServiceTest(unittest.TestCase):
         assert result.items[1].model_uuid == model_uuid
         assert result.items[2].model_uuid == model_uuid
 
+    def test_get_all_completion_datasets_by_model_uuid_paginated(self):
+        completion_upload_1 = db_mock.get_sample_completion_dataset(
+            model_uuid=model_uuid, path='completion/test_1.json'
+        )
+        completion_upload_2 = db_mock.get_sample_completion_dataset(
+            model_uuid=model_uuid, path='completion/test_2.json'
+        )
+        completion_upload_3 = db_mock.get_sample_completion_dataset(
+            model_uuid=model_uuid, path='completion/test_3.json'
+        )
+
+        sample_results = [completion_upload_1, completion_upload_2, completion_upload_3]
+        page = Page.create(
+            sample_results, total=len(sample_results), params=Params(page=1, size=10)
+        )
+        self.completion_dataset_dao.get_all_completion_datasets_by_model_uuid_paginated = MagicMock(
+            return_value=page
+        )
+
+        result = self.files_service.get_all_completion_datasets_by_model_uuid_paginated(
+            model_uuid, Params(page=1, size=10)
+        )
+
+        assert result.total == 3
+        assert len(result.items) == 3
+        assert result.items[0].model_uuid == model_uuid
+        assert result.items[1].model_uuid == model_uuid
+        assert result.items[2].model_uuid == model_uuid
+
     def test_get_all_reference_datasets_by_model_uuid(self):
         reference_upload_1 = db_mock.get_sample_reference_dataset(
             model_uuid=model_uuid, path='reference/test_1.csv'
@@ -351,6 +441,31 @@ class FileServiceTest(unittest.TestCase):
         )
 
         result = self.files_service.get_all_current_datasets_by_model_uuid(model_uuid)
+
+        assert len(result) == 3
+        assert result[0].model_uuid == model_uuid
+        assert result[1].model_uuid == model_uuid
+        assert result[2].model_uuid == model_uuid
+
+    def test_get_all_completion_datasets_by_model_uuid(self):
+        completion_upload_1 = db_mock.get_sample_completion_dataset(
+            model_uuid=model_uuid, path='completion/test_1.json'
+        )
+        completion_upload_2 = db_mock.get_sample_completion_dataset(
+            model_uuid=model_uuid, path='completion/test_2.json'
+        )
+        completion_upload_3 = db_mock.get_sample_completion_dataset(
+            model_uuid=model_uuid, path='completion/test_3.json'
+        )
+
+        sample_results = [completion_upload_1, completion_upload_2, completion_upload_3]
+        self.completion_dataset_dao.get_all_completion_datasets_by_model_uuid = (
+            MagicMock(return_value=sample_results)
+        )
+
+        result = self.files_service.get_all_completion_datasets_by_model_uuid(
+            model_uuid
+        )
 
         assert len(result) == 3
         assert result[0].model_uuid == model_uuid

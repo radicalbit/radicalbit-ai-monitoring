@@ -56,6 +56,7 @@ class SparkConfig(BaseSettings):
     spark_image_pull_policy: str = 'IfNotPresent'
     spark_reference_app_path: str = 'local:///opt/spark/custom_jobs/reference_job.py'
     spark_current_app_path: str = 'local:///opt/spark/custom_jobs/current_job.py'
+    spark_completion_app_path: str = 'local:///opt/spark/custom_jobs/completion_job.py'
     spark_namespace: str = 'spark'
     spark_service_account: str = 'spark'
 
