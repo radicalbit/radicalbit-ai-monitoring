@@ -1,8 +1,9 @@
 from .multi_class_chart import MultiClassificationChart
-from .multi_class_chart_data import MultiClassificationData, MultiClassificationChartData
+from .multi_class_chart_data import MultiClassificationDistributionChartData, MultiClassificationLinearChartData, MultiClassificationLinearData
 
 __all__ = [
     'MultiClassificationChart',
-    'MultiClassificationData',
-    'MultiClassificationChartData'
+    'MultiClassificationDistributionChartData',
+    'MultiClassificationLinearChartData',
+    'MultiClassificationLinearData'
 ]
