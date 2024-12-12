@@ -2,6 +2,7 @@ export const ModelTypeEnum = {
   REGRESSION: 'REGRESSION',
   BINARY_CLASSIFICATION: 'BINARY',
   MULTI_CLASSIFICATION: 'MULTI_CLASS',
+  LLM: 'LLM',
 };
 
 export const DataTypeEnum = {
@@ -21,6 +22,7 @@ export const ModelTypeEnumLabel = {
   [ModelTypeEnum.REGRESSION]: 'Regression',
   [ModelTypeEnum.BINARY_CLASSIFICATION]: 'Binary Classification',
   [ModelTypeEnum.MULTI_CLASSIFICATION]: 'Multiclass Classification',
+  [ModelTypeEnum.LLM]: 'LLM',
 };
 
 export const DataTypeEnumLabel = {

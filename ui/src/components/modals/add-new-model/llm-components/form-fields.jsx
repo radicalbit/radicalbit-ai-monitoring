@@ -11,12 +11,12 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import { useRef } from 'react';
 import { useModalContext } from '../modal-context-provider';
-import useHandleOnNext from './use-handle-on-next';
+import useHandleOnSubmit from './use-handle-on-submit';
 
 function Name() {
   const ref = useRef(null);
 
-  const { handleOnNext } = useHandleOnNext();
+  const { handleOnSubmit } = useHandleOnSubmit();
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
@@ -30,7 +30,7 @@ function Name() {
     <FormField label="Name" message={error('name')} modifier="w-full" required>
       <Input
         onChange={handleOnChange}
-        onPressEnter={handleOnNext}
+        onPressEnter={handleOnSubmit}
         ref={ref}
         value={form.name}
       />
@@ -99,7 +99,7 @@ function Granularity() {
 }
 
 function Framework() {
-  const { handleOnNext } = useHandleOnNext();
+  const { handleOnSubmit } = useHandleOnSubmit();
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
@@ -111,7 +111,7 @@ function Framework() {
     <FormField label="Framework" message={error('frameworks')} modifier="w-full">
       <Input
         onChange={handleOnChange}
-        onPressEnter={handleOnNext}
+        onPressEnter={handleOnSubmit}
         value={form.frameworks}
       />
     </FormField>
@@ -119,7 +119,7 @@ function Framework() {
 }
 
 function Algorithm() {
-  const { handleOnNext } = useHandleOnNext();
+  const { handleOnSubmit } = useHandleOnSubmit();
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
@@ -131,7 +131,7 @@ function Algorithm() {
     <FormField label="Algorithm" message={error('algorithm')} modifier="w-full">
       <Input
         onChange={handleOnChange}
-        onPressEnter={handleOnNext}
+        onPressEnter={handleOnSubmit}
         value={form.algorithm}
       />
     </FormField>
