@@ -1,10 +1,8 @@
 from ipecharts import EChartsRawWidget
-
-from .chart_data import ChartData, NumericalBarChartData, ConfusionMatrixChartData
-
-from .utils import get_formatted_bucket_data, get_chart_header
-
 import numpy as np
+
+from .chart_data import ChartData, ConfusionMatrixChartData, NumericalBarChartData
+from .utils import get_chart_header, get_formatted_bucket_data
 
 
 class Chart:

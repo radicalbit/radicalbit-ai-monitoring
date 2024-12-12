@@ -1,10 +1,10 @@
 from ipecharts import EChartsRawWidget
 
+from ..utils import get_chart_header
 from .multi_class_chart_data import (
     MultiClassificationDistributionChartData,
     MultiClassificationLinearChartData,
 )
-from ..utils import get_chart_header
 
 
 class MultiClassificationChart:

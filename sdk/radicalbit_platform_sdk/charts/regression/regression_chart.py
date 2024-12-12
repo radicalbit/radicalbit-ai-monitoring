@@ -1,12 +1,12 @@
 from ipecharts import EChartsRawWidget
 import numpy as np
 
-from ..utils import get_formatted_bucket_data, get_chart_header
+from ..utils import get_chart_header, get_formatted_bucket_data
 from .regression_chart_data import (
     RegressionDistributionChartData,
     RegressionPredictedActualChartData,
-    RegressionResidualScatterChartData,
     RegressionResidualBucketChartData,
+    RegressionResidualScatterChartData,
 )
 
 

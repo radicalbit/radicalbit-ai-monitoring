@@ -1,7 +1,7 @@
 from ipecharts import EChartsRawWidget
 
-from .binary_chart_data import BinaryDistributionChartData, BinaryLinearChartData
 from ..utils import get_chart_header
+from .binary_chart_data import BinaryDistributionChartData, BinaryLinearChartData
 
 
 class BinaryChart:
