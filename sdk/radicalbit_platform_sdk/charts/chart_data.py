@@ -3,11 +3,6 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class ChartData(BaseModel):
-    series_data: List[int]
-    x_axis_data: List[str]
-
-
 class NumericalBarChartData(BaseModel):
     title: str
     bucket_data: List[str]

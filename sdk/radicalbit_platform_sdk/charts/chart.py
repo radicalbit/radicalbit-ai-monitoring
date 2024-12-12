@@ -1,26 +1,13 @@
 from ipecharts import EChartsRawWidget
 import numpy as np
 
-from .chart_data import ChartData, ConfusionMatrixChartData, NumericalBarChartData
+from .chart_data import ConfusionMatrixChartData, NumericalBarChartData
 from .utils import get_chart_header, get_formatted_bucket_data
 
 
 class Chart:
     def __init__(self) -> None:
         pass
-
-    def placeholder_chart(self, data: ChartData) -> EChartsRawWidget:
-        option = {
-            'xAxis': {
-                'type': 'category',
-                'boundaryGap': False,
-                'data': data.x_axis_data,
-            },
-            'yAxis': {'type': 'value'},
-            'series': [{'data': data.series_data, 'type': 'line', 'areaStyle': {}}],
-        }
-
-        return EChartsRawWidget(option=option)
 
     def numerical_bar_chart(self, data: NumericalBarChartData) -> EChartsRawWidget:
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
