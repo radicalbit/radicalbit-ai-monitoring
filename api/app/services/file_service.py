@@ -126,6 +126,7 @@ class FileService:
                     path.replace('s3://', 's3a://'),
                     str(inserted_file.uuid),
                     ReferenceDatasetMetrics.__tablename__,
+                    ReferenceDataset.__tablename__,
                 ],
             )
 
@@ -175,6 +176,7 @@ class FileService:
                     file_ref.file_url.replace('s3://', 's3a://'),
                     str(inserted_file.uuid),
                     ReferenceDatasetMetrics.__tablename__,
+                    ReferenceDataset.__tablename__,
                 ],
             )
 
@@ -259,6 +261,7 @@ class FileService:
                     str(inserted_file.uuid),
                     reference_dataset.path.replace('s3://', 's3a://'),
                     CurrentDatasetMetrics.__tablename__,
+                    CurrentDataset.__tablename__,
                 ],
             )
 
@@ -312,6 +315,7 @@ class FileService:
                     str(inserted_file.uuid),
                     reference_dataset.path.replace('s3://', 's3a://'),
                     CurrentDatasetMetrics.__tablename__,
+                    CurrentDataset.__tablename__,
                 ],
             )
 
@@ -377,10 +381,10 @@ class FileService:
                 app_name=str(model_out.uuid),
                 app_path=spark_config.spark_completion_app_path,
                 app_arguments=[
-                    model_out.model_dump_json(),
                     path.replace('s3://', 's3a://'),
                     str(inserted_file.uuid),
                     CompletionDatasetMetrics.__tablename__,
+                    CompletionDataset.__tablename__,
                 ],
             )
 
