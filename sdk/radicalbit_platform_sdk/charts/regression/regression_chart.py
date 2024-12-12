@@ -1,4 +1,5 @@
 from ipecharts import EChartsRawWidget
+from IPython.display import display
 import numpy as np
 
 from ..utils import get_chart_header, get_formatted_bucket_data
@@ -156,10 +157,7 @@ class RegressionChart:
             'legend': {'show': True, 'textStyle': {'color': '#9B99A1'}, 'right': 0},
         }
 
-        # TODO: the next print are required to show the title passed by params.
-        # we disable the ruff check for this line, for now
-        # Maybe exsist a better way to do this
-        print('\033[1m' + 'prediction vs ground_truth') # noqa: T201
+        display('prediction vs ground_truth')
 
         return EChartsRawWidget(option=options)
 

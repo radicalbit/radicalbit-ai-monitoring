@@ -1,4 +1,5 @@
 from ipecharts import EChartsRawWidget
+from IPython.display import display
 
 from ..utils import get_chart_header
 from .multi_class_chart_data import (
@@ -160,9 +161,6 @@ class MultiClassificationChart:
             'series': series,
         }
 
-        # TODO: the next print are required to show the title passed by params.
-        # we disable the ruff check for this line, for now
-        # Maybe exsist a better way to do this
-        print('\033[1m' + data.title) # noqa: T201
+        display(data.title)
 
         return EChartsRawWidget(option=options)
