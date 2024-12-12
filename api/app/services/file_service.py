@@ -559,8 +559,8 @@ class FileService:
     def validate_json_file(json_file: UploadFile) -> None:
         try:
             content = json_file.file.read().decode('utf-8')
-            data = json.loads(content)
-            CompletionResponses(**data)
+            json_data = json.loads(content)
+            CompletionResponses.model_validate(json_data)
         except ValidationError as e:
             logger.error('Invalid json file: %s', str(e))
             raise InvalidFileException(f'Invalid json file: {str(e)}') from e

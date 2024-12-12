@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, RootModel, model_validator
 
 
 class TokenLogProbs(BaseModel):
@@ -29,6 +29,14 @@ class Choice(BaseModel):
     logprobs: Optional[LogProbs] = None
     message: Message
 
+    @model_validator(mode='after')
+    def validate_logprobs(self):
+        if self.logprobs is None:
+            raise ValueError(
+                "the 'logprobs' field cannot be empty, metrics could not be computed."
+            )
+        return self
+
 
 class UsageDetails(BaseModel):
     accepted_prediction_tokens: int = 0
@@ -46,7 +54,7 @@ class Usage(BaseModel):
     prompt_tokens_details: Optional[UsageDetails] = None
 
 
-class Response(BaseModel):
+class Completion(BaseModel):
     id: str
     choices: List[Choice]
     created: int
@@ -56,20 +64,15 @@ class Response(BaseModel):
     usage: Usage
 
 
-class CompletionResponses(BaseModel):
-    responses: List[Response]
-
+class CompletionResponses(RootModel[List[Completion]]):
     @model_validator(mode='before')
     @classmethod
-    def handle_single_response(cls, values):
-        if 'responses' not in values:
-            return {'responses': [values]}
-        return values
-
-    @model_validator(mode='after')
-    def validate_responses_non_empty(self):
-        if not self.responses or len(self.responses) == 0:
-            raise ValueError(
-                "The 'responses' array must contain at least one response."
-            )
-        return self
+    def handle_single_completion(cls, data):
+        """If a single object is passed instead of a list, wrap it into a list."""
+        if isinstance(data, dict):
+            return [data]
+        if isinstance(data, list):
+            return data
+        raise ValueError(
+            'Input file must be a list of completion json or a single completion json'
+        )
