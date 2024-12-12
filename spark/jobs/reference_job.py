@@ -77,7 +77,8 @@ def main(
     model: ModelOut,
     reference_dataset_path: str,
     reference_uuid: str,
-    table_name: str,
+    metrics_table_name: str,
+    dataset_table_name: str,
 ):
     spark_context = spark_session.sparkContext
 
@@ -118,9 +119,8 @@ def main(
         ]
     )
 
-    write_to_db(spark_session, complete_record, schema, table_name)
-    # FIXME table name should come from parameters
-    update_job_status(reference_uuid, JobStatus.SUCCEEDED, "reference_dataset")
+    write_to_db(spark_session, complete_record, schema, metrics_table_name)
+    update_job_status(reference_uuid, JobStatus.SUCCEEDED, dataset_table_name)
 
 
 if __name__ == "__main__":
@@ -134,14 +134,21 @@ if __name__ == "__main__":
     reference_dataset_path = sys.argv[2]
     # Reference file uuid third param
     reference_uuid = sys.argv[3]
-    # Table name fourth param
-    table_name = sys.argv[4]
+    # Metrics table name fourth param
+    metrics_table_name = sys.argv[4]
+    # Dataset table name fourth param
+    dataset_table_name = sys.argv[5]
 
     try:
-        main(spark_session, model, reference_dataset_path, reference_uuid, table_name)
+        main(
+            spark_session,
+            model,
+            reference_dataset_path,
+            reference_uuid,
+            metrics_table_name,
+        )
     except Exception as e:
         logging.exception(e)
-        # FIXME table name should come from parameters
-        update_job_status(reference_uuid, JobStatus.ERROR, "reference_dataset")
+        update_job_status(reference_uuid, JobStatus.ERROR, dataset_table_name)
     finally:
         spark_session.stop()

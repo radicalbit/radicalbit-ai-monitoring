@@ -17,7 +17,7 @@ postgres_schema = os.getenv("POSTGRES_SCHEMA")
 url = f"jdbc:postgresql://{db_host}:{db_port}/{db_name}"
 
 
-def update_job_status(file_uuid: str, status: str, table_name: str):
+def update_job_status(file_uuid: str, status: str, dataset_table_name: str):
     # Use psycopg2 to update the job status
     with psycopg2.connect(
         host=db_host,
@@ -30,7 +30,7 @@ def update_job_status(file_uuid: str, status: str, table_name: str):
         with conn.cursor() as cur:
             cur.execute(
                 f"""
-                UPDATE {table_name}
+                UPDATE {dataset_table_name}
                 SET "STATUS" = %s
                 WHERE "UUID" = %s
                 """,
@@ -40,7 +40,10 @@ def update_job_status(file_uuid: str, status: str, table_name: str):
 
 
 def write_to_db(
-    spark_session: SparkSession, record: Dict, schema: StructType, table_name: str
+    spark_session: SparkSession,
+    record: Dict,
+    schema: StructType,
+    metrics_table_name: str,
 ):
     out_df = spark_session.createDataFrame(data=[record], schema=schema)
 
@@ -49,4 +52,6 @@ def write_to_db(
         "stringtype", "unspecified"
     ).option("driver", "org.postgresql.Driver").option("user", user).option(
         "password", password
-    ).option("dbtable", f'"{postgres_schema}"."{table_name}"').mode("append").save()
+    ).option("dbtable", f'"{postgres_schema}"."{metrics_table_name}"').mode(
+        "append"
+    ).save()
