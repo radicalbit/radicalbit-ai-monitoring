@@ -2,6 +2,7 @@ import datetime
 from typing import Dict, List, Optional
 import uuid
 
+from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
@@ -23,6 +24,7 @@ from app.models.model_dto import (
 MODEL_UUID = uuid.uuid4()
 REFERENCE_UUID = uuid.uuid4()
 CURRENT_UUID = uuid.uuid4()
+COMPLETION_UUID = uuid.uuid4()
 
 
 def get_sample_model(
@@ -168,6 +170,21 @@ def get_sample_current_dataset(
         path=path,
         date=datetime.datetime.now(tz=datetime.UTC),
         correlation_id_column='some_column',
+        status=status,
+    )
+
+
+def get_sample_completion_dataset(
+    uuid: uuid.UUID = COMPLETION_UUID,
+    model_uuid: uuid.UUID = MODEL_UUID,
+    path: str = 'completion/json_file.json',
+    status: str = JobStatus.IMPORTING.value,
+) -> CompletionDataset:
+    return CompletionDataset(
+        uuid=uuid,
+        model_uuid=model_uuid,
+        path=path,
+        date=datetime.datetime.now(tz=datetime.UTC),
         status=status,
     )
 

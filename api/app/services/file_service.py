@@ -1,5 +1,6 @@
 from copy import deepcopy
 import datetime
+import json
 import logging
 import pathlib
 from typing import List, Optional
@@ -10,17 +11,23 @@ from botocore.exceptions import ClientError, NoCredentialsError
 from fastapi import HTTPException, UploadFile
 from fastapi_pagination import Page, Params
 import pandas as pd
+from pydantic import ValidationError
 from spark_on_k8s.client import ExecutorInstances, PodResources, SparkOnK8S
 from spark_on_k8s.utils.configuration import Configuration
 
 from app.core.config.config import create_secrets, get_config
+from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
+from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
+from app.models.completion_response import CompletionResponses
 from app.models.dataset_dto import (
+    CompletionDatasetDTO,
     CurrentDatasetDTO,
     FileReference,
     OrderType,
@@ -48,12 +55,14 @@ class FileService:
         self,
         reference_dataset_dao: ReferenceDatasetDAO,
         current_dataset_dao: CurrentDatasetDAO,
+        completion_dataset_dao: CompletionDatasetDAO,
         model_service: ModelService,
         s3_client: boto3.client,
         spark_k8s_client: SparkOnK8S,
     ) -> 'FileService':
         self.rd_dao = reference_dataset_dao
         self.cd_dao = current_dataset_dao
+        self.completion_dataset_dao = completion_dataset_dao
         self.model_svc = model_service
         self.s3_client = s3_client
         s3_config = get_config().s3_config
@@ -321,6 +330,69 @@ class FileService:
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
 
+    def upload_completion_file(
+        self,
+        model_uuid: UUID,
+        json_file: UploadFile,
+    ) -> CompletionDatasetDTO:
+        model_out = self.model_svc.get_model_by_uuid(model_uuid)
+        if not model_out:
+            logger.error('Model %s not found', model_uuid)
+            raise ModelNotFoundError(f'Model {model_uuid} not found')
+
+        self.validate_json_file(json_file)
+        _f_name = json_file.filename
+        _f_uuid = uuid4()
+        try:
+            object_name = f'{str(model_out.uuid)}/completion/{_f_uuid}/{_f_name}'
+            self.s3_client.upload_fileobj(
+                json_file.file,
+                self.bucket_name,
+                object_name,
+                ExtraArgs={
+                    'Metadata': {
+                        'model_uuid': str(model_out.uuid),
+                        'model_name': model_out.name,
+                        'file_type': 'completion',
+                    }
+                },
+            )
+
+            path = f's3://{self.bucket_name}/{object_name}'
+
+            inserted_file = self.completion_dataset_dao.insert_completion_dataset(
+                CompletionDataset(
+                    uuid=_f_uuid,
+                    model_uuid=model_uuid,
+                    path=path,
+                    date=datetime.datetime.now(tz=datetime.UTC),
+                    status=JobStatus.IMPORTING,
+                )
+            )
+
+            logger.debug('File %s has been correctly stored in the db', inserted_file)
+
+            spark_config = get_config().spark_config
+            self.__submit_app(
+                app_name=str(model_out.uuid),
+                app_path=spark_config.spark_completion_app_path,
+                app_arguments=[
+                    model_out.model_dump_json(),
+                    path.replace('s3://', 's3a://'),
+                    str(inserted_file.uuid),
+                    CompletionDatasetMetrics.__tablename__,
+                ],
+            )
+
+            return CompletionDatasetDTO.from_completion_dataset(inserted_file)
+
+        except NoCredentialsError as nce:
+            raise HTTPException(
+                status_code=500, detail='S3 credentials not available'
+            ) from nce
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
+
     def get_all_reference_datasets_by_model_uuid_paginated(
         self,
         model_uuid: UUID,
@@ -380,6 +452,40 @@ class FileService:
         return [
             CurrentDatasetDTO.from_current_dataset(current_dataset)
             for current_dataset in currents
+        ]
+
+    def get_all_completion_datasets_by_model_uuid_paginated(
+        self,
+        model_uuid: UUID,
+        params: Params = Params(),
+        order: OrderType = OrderType.ASC,
+        sort: Optional[str] = None,
+    ) -> Page[CompletionDatasetDTO]:
+        results: Page[CompletionDatasetDTO] = (
+            self.completion_dataset_dao.get_all_completion_datasets_by_model_uuid_paginated(
+                model_uuid, params=params, order=order, sort=sort
+            )
+        )
+
+        _items = [
+            CompletionDatasetDTO.from_completion_dataset(completion_dataset)
+            for completion_dataset in results.items
+        ]
+
+        return Page.create(items=_items, params=params, total=results.total)
+
+    def get_all_completion_datasets_by_model_uuid(
+        self,
+        model_uuid: UUID,
+    ) -> List[CompletionDatasetDTO]:
+        completions = (
+            self.completion_dataset_dao.get_all_completion_datasets_by_model_uuid(
+                model_uuid
+            )
+        )
+        return [
+            CompletionDatasetDTO.from_completion_dataset(completion_dataset)
+            for completion_dataset in completions
         ]
 
     @staticmethod
@@ -448,6 +554,19 @@ class FileService:
 
         csv_file.file.flush()
         csv_file.file.seek(0)
+
+    @staticmethod
+    def validate_json_file(json_file: UploadFile) -> None:
+        try:
+            content = json_file.file.read().decode('utf-8')
+            json_data = json.loads(content)
+            CompletionResponses.model_validate(json_data)
+        except ValidationError as e:
+            logger.error('Invalid json file: %s', str(e))
+            raise InvalidFileException(f'Invalid json file: {str(e)}') from e
+        except Exception as e:
+            logger.error('Error while reading the json file: %s', str(e))
+            raise InvalidFileException(f'Invalid json file: {str(e)}') from e
 
     def __submit_app(
         self, app_name: str, app_path: str, app_arguments: List[str]

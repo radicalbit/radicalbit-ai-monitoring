@@ -6,6 +6,7 @@ from fastapi.params import Query
 from fastapi_pagination import Page, Params
 
 from app.models.dataset_dto import (
+    CompletionDatasetDTO,
     CurrentDatasetDTO,
     FileReference,
     OrderType,
@@ -64,6 +65,16 @@ class UploadDatasetRoute:
         ) -> CurrentDatasetDTO:
             return file_service.bind_current_file(model_uuid, file_ref)
 
+        @router.post(
+            '/{model_uuid}/completion/upload',
+            status_code=status.HTTP_200_OK,
+            response_model=CompletionDatasetDTO,
+        )
+        def upload_completion_file(
+            model_uuid: UUID, json_file: UploadFile = File(...)
+        ) -> CompletionDatasetDTO:
+            return file_service.upload_completion_file(model_uuid, json_file)
+
         @router.get(
             '/{model_uuid}/reference',
             status_code=200,
@@ -117,5 +128,32 @@ class UploadDatasetRoute:
             model_uuid: UUID,
         ):
             return file_service.get_all_current_datasets_by_model_uuid(model_uuid)
+
+        @router.get(
+            '/{model_uuid}/completion',
+            status_code=200,
+            response_model=Page[CompletionDatasetDTO],
+        )
+        def get_all_completion_datasets_by_model_uuid_paginated(
+            model_uuid: UUID,
+            _page: Annotated[int, Query()] = 1,
+            _limit: Annotated[int, Query()] = 50,
+            _order: Annotated[OrderType, Query()] = OrderType.ASC,
+            _sort: Annotated[Optional[str], Query()] = None,
+        ):
+            params = Params(page=_page, size=_limit)
+            return file_service.get_all_completion_datasets_by_model_uuid_paginated(
+                model_uuid, params=params, order=_order, sort=_sort
+            )
+
+        @router.get(
+            '/{model_uuid}/completion/all',
+            status_code=200,
+            response_model=List[CompletionDatasetDTO],
+        )
+        def get_all_completion_datasets_by_model_uuid(
+            model_uuid: UUID,
+        ):
+            return file_service.get_all_completion_datasets_by_model_uuid(model_uuid)
 
         return router

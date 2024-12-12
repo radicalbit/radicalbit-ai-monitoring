@@ -9,6 +9,7 @@ from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
 from app.models.dataset_dto import (
+    CompletionDatasetDTO,
     CurrentDatasetDTO,
     FileReference,
     OrderType,
@@ -17,7 +18,7 @@ from app.models.dataset_dto import (
 from app.models.job_status import JobStatus
 from app.routes.upload_dataset_route import UploadDatasetRoute
 from app.services.file_service import FileService
-from tests.commons import csv_file_mock as csv, db_mock
+from tests.commons import csv_file_mock as csv, db_mock, json_file_mock as json
 
 
 class UploadDatasetRouteTest(unittest.TestCase):
@@ -113,6 +114,26 @@ class UploadDatasetRouteTest(unittest.TestCase):
         assert res.status_code == 200
         assert jsonable_encoder(upload_file_result) == res.json()
 
+    def test_upload_completion(self):
+        file = json.get_completion_sample_json_file()
+        model_uuid = uuid.uuid4()
+        upload_file_result = CompletionDatasetDTO(
+            uuid=uuid.uuid4(),
+            model_uuid=model_uuid,
+            path='test',
+            date=str(datetime.datetime.now(tz=datetime.UTC)),
+            status=JobStatus.IMPORTING,
+        )
+        self.file_service.upload_completion_file = MagicMock(
+            return_value=upload_file_result
+        )
+        res = self.client.post(
+            f'{self.prefix}/{model_uuid}/completion/upload',
+            files={'json_file': (file.filename, file.file)},
+        )
+        assert res.status_code == 200
+        assert jsonable_encoder(upload_file_result) == res.json()
+
     def test_get_all_reference_datasets_by_model_uuid_paginated(self):
         test_model_uuid = uuid.uuid4()
         reference_upload_1 = db_mock.get_sample_reference_dataset(
@@ -181,6 +202,40 @@ class UploadDatasetRouteTest(unittest.TestCase):
             sort=None,
         )
 
+    def test_get_all_completion_datasets_by_model_uuid_paginated(self):
+        test_model_uuid = uuid.uuid4()
+        completion_upload_1 = db_mock.get_sample_completion_dataset(
+            model_uuid=test_model_uuid, path='completion/test_1.json'
+        )
+        completion_upload_2 = db_mock.get_sample_completion_dataset(
+            model_uuid=test_model_uuid, path='completion/test_2.json'
+        )
+        completion_upload_3 = db_mock.get_sample_completion_dataset(
+            model_uuid=test_model_uuid, path='completion/test_3.json'
+        )
+
+        sample_results = [
+            CompletionDatasetDTO.from_completion_dataset(completion_upload_1),
+            CompletionDatasetDTO.from_completion_dataset(completion_upload_2),
+            CompletionDatasetDTO.from_completion_dataset(completion_upload_3),
+        ]
+        page = Page.create(
+            items=sample_results, total=len(sample_results), params=Params()
+        )
+        self.file_service.get_all_completion_datasets_by_model_uuid_paginated = (
+            MagicMock(return_value=page)
+        )
+
+        res = self.client.get(f'{self.prefix}/{test_model_uuid}/completion')
+        assert res.status_code == 200
+        assert jsonable_encoder(page) == res.json()
+        self.file_service.get_all_completion_datasets_by_model_uuid_paginated.assert_called_once_with(
+            test_model_uuid,
+            params=Params(page=1, size=50),
+            order=OrderType.ASC,
+            sort=None,
+        )
+
     def test_get_all_reference_datasets_by_model_uuid(self):
         test_model_uuid = uuid.uuid4()
         reference_upload_1 = db_mock.get_sample_reference_dataset(
@@ -234,5 +289,33 @@ class UploadDatasetRouteTest(unittest.TestCase):
         assert res.status_code == 200
         assert jsonable_encoder(sample_results) == res.json()
         self.file_service.get_all_current_datasets_by_model_uuid.assert_called_once_with(
+            test_model_uuid,
+        )
+
+    def test_get_all_completion_datasets_by_model_uuid(self):
+        test_model_uuid = uuid.uuid4()
+        completion_upload_1 = db_mock.get_sample_completion_dataset(
+            model_uuid=test_model_uuid, path='completion/test_1.json'
+        )
+        completion_upload_2 = db_mock.get_sample_completion_dataset(
+            model_uuid=test_model_uuid, path='completion/test_2.json'
+        )
+        completion_upload_3 = db_mock.get_sample_completion_dataset(
+            model_uuid=test_model_uuid, path='completion/test_3.json'
+        )
+
+        sample_results = [
+            CompletionDatasetDTO.from_completion_dataset(completion_upload_1),
+            CompletionDatasetDTO.from_completion_dataset(completion_upload_2),
+            CompletionDatasetDTO.from_completion_dataset(completion_upload_3),
+        ]
+        self.file_service.get_all_completion_datasets_by_model_uuid = MagicMock(
+            return_value=sample_results
+        )
+
+        res = self.client.get(f'{self.prefix}/{test_model_uuid}/completion/all')
+        assert res.status_code == 200
+        assert jsonable_encoder(sample_results) == res.json()
+        self.file_service.get_all_completion_datasets_by_model_uuid.assert_called_once_with(
             test_model_uuid,
         )
