@@ -100,7 +100,7 @@ class MultiClassificationChart:
                     'symbol': 'none',
                     'data': element.values,
                     'endLabel': {
-                        'show': False,
+                        'show': True,
                         'color': '#9B99A1',
                     },
                 } for element in data.reference_data]
