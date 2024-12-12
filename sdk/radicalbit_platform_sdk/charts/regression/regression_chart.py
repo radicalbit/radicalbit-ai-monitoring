@@ -156,7 +156,10 @@ class RegressionChart:
             'legend': {'show': True, 'textStyle': {'color': '#9B99A1'}, 'right': 0},
         }
 
-        print('\033[1m' + 'prediction vs ground_truth')
+        # TODO: the next print are required to show the title passed by params.
+        # we disable the ruff check for this line, for now
+        # Maybe exsist a better way to do this
+        print('\033[1m' + 'prediction vs ground_truth') # noqa: T201
 
         return EChartsRawWidget(option=options)
 

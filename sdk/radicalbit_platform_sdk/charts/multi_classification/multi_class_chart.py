@@ -84,22 +84,16 @@ class MultiClassificationChart:
     def linear_chart(
         self, data: MultiClassificationLinearChartData
     ) -> EChartsRawWidget:
-        series = []
 
-        for element in data.current_data:
-            series.append(
-                {
+        series_current_data = [{
                     'name': element.name,
                     'type': 'line',
                     'lineStyle': {'width': 2.2},
                     'symbol': 'none',
                     'data': element.values,
-                }
-            )
+                } for element in data.current_data ]
 
-        for element in data.reference_data:
-            series.append(
-                {
+        series_reference_data = [ {
                     'name': element.name,
                     'type': 'line',
                     'lineStyle': {'width': 2, 'type': 'dotted'},
@@ -109,8 +103,10 @@ class MultiClassificationChart:
                         'show': False,
                         'color': '#9B99A1',
                     },
-                }
-            )
+                } for element in data.reference_data]
+
+
+        series = series_current_data + series_reference_data
 
         options = {
             'yAxis': {
@@ -163,5 +159,10 @@ class MultiClassificationChart:
             },
             'series': series,
         }
-        print('\033[1m' + data.title)
+
+        # TODO: the next print are required to show the title passed by params.
+        # we disable the ruff check for this line, for now
+        # Maybe exsist a better way to do this
+        print('\033[1m' + data.title) # noqa: T201
+
         return EChartsRawWidget(option=options)
