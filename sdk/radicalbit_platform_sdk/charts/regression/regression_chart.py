@@ -2,7 +2,7 @@ from ipecharts import EChartsRawWidget
 import numpy as np
 
 from ..utils import get_formatted_bucket_data, get_chart_header
-from .regression_chart_data import RegressionDistributionChartData, RegressionPredictedActualChartData, RegressionResidualScatterChartData
+from .regression_chart_data import RegressionDistributionChartData, RegressionPredictedActualChartData, RegressionResidualScatterChartData, RegressionResidualBucketChartData
 
 
 class RegressionChart:
@@ -10,8 +10,7 @@ class RegressionChart:
         pass
 
     def distribution_chart(self, data: RegressionDistributionChartData) -> EChartsRawWidget:
-        bucket_data_formatted = get_formatted_bucket_data(
-            bucket_data=data.bucket_data)
+        bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json = data.model_dump().get('current_data')
@@ -276,6 +275,70 @@ class RegressionChart:
                     },
                     "color": data.color,
                     "data": data.scatter_data
+                }
+            ]
+        }
+
+        return EChartsRawWidget(option=options)
+
+    def residual_bucket_chart(self, data: RegressionResidualBucketChartData) -> EChartsRawWidget:
+        bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
+
+        options = {
+            "grid": {
+                "left": 0,
+                "right": 20,
+                "bottom": 0,
+                "top": 10,
+                "containLabel": True
+            },
+            "xAxis": {
+                "type": "category",
+                "axisTick": {
+                    "show": False
+                },
+                "axisLine": {
+                    "show": False
+                },
+                "splitLine": {
+                    "show": False
+                },
+                "axisLabel": {
+                    "fontSize": 12,
+                    "interval": 0,
+                    "color": "#9b99a1",
+                    "rotate": 20
+                },
+                "data": bucket_data_formatted,
+            },
+            "yAxis": {
+                "type": "value",
+                "axisLabel": {
+                    "fontSize": 9,
+                    "color": "#9b99a1"
+                },
+                "splitLine": {
+                    "lineStyle": {
+                        "color": "#9f9f9f54"
+                    }
+                }
+            },
+            "emphasis": {
+                "disabled": True
+            },
+            "barCategoryGap": "0",
+            "barGap": "0",
+            "itemStyle": {
+                "borderWidth": 1,
+                "borderColor": "rgba(201, 25, 25, 1)"
+            },
+            "series": [
+                {
+                    "type": "bar",
+                    "itemStyle": {
+                        "color": "#3695d9"
+                    },
+                    "data": data.values
                 }
             ]
         }

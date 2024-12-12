@@ -18,3 +18,8 @@ class RegressionPredictedActualChartData(BaseModel):
 class RegressionResidualScatterChartData(BaseModel):
     scatter_data: List[List[float]]
     color: Optional[str] = '#9B99A1'
+
+class RegressionResidualBucketChartData(BaseModel):
+    bucket_data: List[str]
+    values: List[float]
+    color: Optional[str] = '#3695d9'
