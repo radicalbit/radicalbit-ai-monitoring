@@ -16,13 +16,6 @@ def get_formatted_bucket_data(bucket_data: List[str]) -> List[str]:
 
 def get_chart_header(title: str):
     return {
-        "title": {
-            "text": title,
-            "textStyle": {
-                "fontSize": 14
-            }
-        },
-        "legend": {
-            "center": 'center'
-        },
+        'title': {'text': title, 'textStyle': {'fontSize': 14}},
+        'legend': {'center': 'center'},
     }

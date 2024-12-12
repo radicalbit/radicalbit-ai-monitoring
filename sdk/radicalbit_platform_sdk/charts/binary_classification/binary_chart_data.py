@@ -8,11 +8,13 @@ class BinaryDistributionData(BaseModel):
     count: float
     value: float
 
+
 class BinaryDistributionChartData(BaseModel):
     title: str
     y_axis_label: List[str]
     reference_data: List[BinaryDistributionData]
     current_data: Optional[List[BinaryDistributionData]] = None
+
 
 class BinaryLinearChartData(BaseModel):
     title: str

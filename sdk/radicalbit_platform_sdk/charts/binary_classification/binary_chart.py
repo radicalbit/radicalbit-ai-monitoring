@@ -19,87 +19,67 @@ class BinaryChart:
         current_data_json = data.model_dump().get('current_data')
 
         reference_series_data = {
-            "title": data.title,
-            "type": "bar",
-            "itemStyle": {
-                "color": "#9B99A1"
+            'title': data.title,
+            'type': 'bar',
+            'itemStyle': {'color': '#9B99A1'},
+            'data': reference_json_data,
+            'color': '#9B99A1',
+            'name': 'Reference',
+            'label': {
+                'show': True,
+                'position': 'insideRight',
+                'fontWeight': 'bold',
+                'color': '#FFFFFF',
             },
-            "data": reference_json_data,
-            "color": "#9B99A1",
-            "name": "Reference",
-            "label": {
-                "show": True,
-                "position": "insideRight",
-                "fontWeight": "bold",
-                "color": "#FFFFFF"
-            }
         }
 
         current_series_data = {
-            "title": data.title + "_current",
-            "type": "bar",
-            "itemStyle": {},
-            "data": current_data_json,
-            "color": "#3695d9",
-            "name": "Current",
-            "label": {
-                "show": True,
-                "position": "insideRight",
-                "fontWeight": "bold",
-                "color": "#FFFFFF"
-            }
+            'title': data.title + '_current',
+            'type': 'bar',
+            'itemStyle': {},
+            'data': current_data_json,
+            'color': '#3695d9',
+            'name': 'Current',
+            'label': {
+                'show': True,
+                'position': 'insideRight',
+                'fontWeight': 'bold',
+                'color': '#FFFFFF',
+            },
         }
 
-        series = [reference_series_data] if not data.current_data else [
-            reference_series_data, current_series_data]
+        series = (
+            [reference_series_data]
+            if not data.current_data
+            else [reference_series_data, current_series_data]
+        )
 
         option = {
-            "grid": {
-                "left": 0,
-                "right": 20,
-                "bottom": 0,
-                "top": 40,
-                "containLabel": True
+            'grid': {
+                'left': 0,
+                'right': 20,
+                'bottom': 0,
+                'top': 40,
+                'containLabel': True,
             },
-            "xAxis": {
-                "type": "value",
-                "axisLabel": {
-                    "fontSize": 9,
-                    "color": "#9b99a1"
-                },
-                "splitLine": {
-                    "lineStyle": {
-                        "color": "#9f9f9f54"
-                    }
-                }
+            'xAxis': {
+                'type': 'value',
+                'axisLabel': {'fontSize': 9, 'color': '#9b99a1'},
+                'splitLine': {'lineStyle': {'color': '#9f9f9f54'}},
             },
-            "yAxis": {
-                "type": "category",
-                "axisTick": {
-                    "show": False
-                },
-                "axisLine": {
-                    "show": False
-                },
-                "splitLine": {
-                    "show": False
-                },
-                "axisLabel": {
-                    "fontSize": 12,
-                    "color": "#9B99A1"
-                },
-                "data": data.y_axis_label
+            'yAxis': {
+                'type': 'category',
+                'axisTick': {'show': False},
+                'axisLine': {'show': False},
+                'splitLine': {'show': False},
+                'axisLabel': {'fontSize': 12, 'color': '#9B99A1'},
+                'data': data.y_axis_label,
             },
-            "emphasis": {
-                "disabled": True
-            },
-            "barCategoryGap": "21%",
-            "barGap": "0",
-            "itemStyle": {
-                "borderWidth": 1,
-                "borderColor": "rgba(201, 25, 25, 1)"
-            },
-            "series": series
+            'emphasis': {'disabled': True},
+            'barCategoryGap': '21%',
+            'barGap': '0',
+            'itemStyle': {'borderWidth': 1, 'borderColor': 'rgba(201, 25, 25, 1)'},
+            'series': series,
         }
 
         option.update(get_chart_header(title=data.title))
@@ -107,105 +87,65 @@ class BinaryChart:
         return EChartsRawWidget(option=option)
 
     def linear_chart(self, data: BinaryLinearChartData) -> EChartsRawWidget:
-
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json = data.model_dump().get('current_data')
 
         reference_series_data = {
-            "name": "Reference",
-            "type": "line",
-            "lineStyle": {
-                "width": 2.2,
-                "color": "#9B99A1",
-                "type": "dotted"
-            },
-            "symbol": "none",
-            "data": reference_json_data,
-            "itemStyle": {
-                "color": "#9B99A1"
-            },
-            "endLabel": {
-                "show": True,
-                "color": "#9B99A1"
-            },
-            "color": "#9B99A1"
+            'name': 'Reference',
+            'type': 'line',
+            'lineStyle': {'width': 2.2, 'color': '#9B99A1', 'type': 'dotted'},
+            'symbol': 'none',
+            'data': reference_json_data,
+            'itemStyle': {'color': '#9B99A1'},
+            'endLabel': {'show': True, 'color': '#9B99A1'},
+            'color': '#9B99A1',
         }
 
         current_series_data = {
-            "name": data.title,
-            "type": "line",
-            "lineStyle": {
-                "width": 2.2,
-                "color": "#73B2E0"
-            },
-            "symbol": "none",
-            "data": current_data_json,
-            "itemStyle": {
-                "color": "#73B2E0"
-            }
+            'name': data.title,
+            'type': 'line',
+            'lineStyle': {'width': 2.2, 'color': '#73B2E0'},
+            'symbol': 'none',
+            'data': current_data_json,
+            'itemStyle': {'color': '#73B2E0'},
         }
 
         series = [reference_series_data, current_series_data]
 
         options = {
-            
-            "tooltip": {
-                "trigger": "axis",
-                "crosshairs": True,
-                "axisPointer": {
-                    "type": "cross",
-                    "label": {
-                        "show": True
-                    }
-                }
+            'tooltip': {
+                'trigger': 'axis',
+                'crosshairs': True,
+                'axisPointer': {'type': 'cross', 'label': {'show': True}},
             },
-            "yAxis": {
-                "type": "value",
-                "axisLabel": {
-                    "fontSize": 9,
-                    "color": "#9b99a1"
-                },
-                "splitLine": {
-                    "lineStyle": {
-                        "color": "#9f9f9f54"
-                    }
-                },
-                "scale": True
+            'yAxis': {
+                'type': 'value',
+                'axisLabel': {'fontSize': 9, 'color': '#9b99a1'},
+                'splitLine': {'lineStyle': {'color': '#9f9f9f54'}},
+                'scale': True,
             },
-            "xAxis": {
-                "type": "time",
-                "axisTick": {
-                    "show": False
-                },
-                "axisLine": {
-                    "show": False
-                },
-                "splitLine": {
-                    "show": False
-                },
-                "axisLabel": {
-                    "fontSize": 12,
-                    "color": "#9b99a1"
-                },
-                "scale": True
+            'xAxis': {
+                'type': 'time',
+                'axisTick': {'show': False},
+                'axisLine': {'show': False},
+                'splitLine': {'show': False},
+                'axisLabel': {'fontSize': 12, 'color': '#9b99a1'},
+                'scale': True,
             },
-            "grid": {
-                "bottom": 0,
-                "top": 32,
-                "left": 0,
-                "right": 64,
-                "containLabel": True
+            'grid': {
+                'bottom': 0,
+                'top': 32,
+                'left': 0,
+                'right': 64,
+                'containLabel': True,
             },
-            "series": series,
-            "legend": {
-                "show": True,
-                "textStyle": {
-                    "color": "#9B99A1"
-                },
-            }
+            'series': series,
+            'legend': {
+                'show': True,
+                'textStyle': {'color': '#9B99A1'},
+            },
         }
 
         options.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=options)
-    
