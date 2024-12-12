@@ -85,6 +85,15 @@ class FileServiceTest(unittest.TestCase):
         json_file = json.get_completion_sample_json_file()
         self.files_service.validate_json_file(json_file)
 
+    def test_validate_completion_json_file_without_logprobs_field(self):
+        json_file = json.get_completion_sample_json_file_without_logprobs_field()
+        with pytest.raises(InvalidFileException) as ex:
+            self.files_service.validate_json_file(json_file)
+        assert (
+            "the 'logprobs' field cannot be empty, metrics could not be computed."
+            in str(ex.value)
+        )
+
     def test_validate_completion_json_file_error(self):
         json_file = json.get_incorrect_sample_json_file()
         with pytest.raises(InvalidFileException):
