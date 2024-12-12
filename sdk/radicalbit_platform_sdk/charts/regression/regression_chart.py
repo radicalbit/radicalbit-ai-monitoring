@@ -1,15 +1,17 @@
 from ipecharts import EChartsRawWidget
+import numpy as np
 
-from ..utils import get_formatted_bucket_data,get_chart_header
-from .regression_chart_data import RegressionChartData
+from ..utils import get_formatted_bucket_data, get_chart_header
+from .regression_chart_data import RegressionDistributionChartData, RegressionPredictedActualChartData
 
 
 class RegressionChart:
     def __init__(self) -> None:
         pass
 
-    def distribution_chart(self, data: RegressionChartData) -> EChartsRawWidget:
-        bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
+    def distribution_chart(self, data: RegressionDistributionChartData) -> EChartsRawWidget:
+        bucket_data_formatted = get_formatted_bucket_data(
+            bucket_data=data.bucket_data)
 
         reference_json_data = data.model_dump().get('reference_data')
         current_data_json = data.model_dump().get('current_data')
@@ -17,7 +19,7 @@ class RegressionChart:
         reference_series_data = {
             "title": "reference",
             "type": "bar",
-            "name":"Reference",
+            "name": "Reference",
             "itemStyle": {
                 "color": "#9B99A1"
             },
@@ -27,7 +29,7 @@ class RegressionChart:
         current_series_data = {
             "title": "current",
             "type": "bar",
-            "name":"Current",
+            "name": "Current",
             "itemStyle": {
                 "color": "#3695d9"
             },
@@ -62,7 +64,7 @@ class RegressionChart:
                     "color": "#9b99a1",
                     "rotate": 20
                 },
-                "data":bucket_data_formatted,
+                "data": bucket_data_formatted,
             },
             "yAxis": {
                 "type": "value",
@@ -91,3 +93,119 @@ class RegressionChart:
         option.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=option)
+
+    def predicted_actual_chart(self, data: RegressionPredictedActualChartData) -> EChartsRawWidget:
+
+        np_array = np.array(data.scatter_data)
+        x_max = np_array.max()
+        x_min = np_array.min()
+
+        regression_line_data = [
+            [x_min, (data.coefficient * x_min) + data.intercept],
+            [x_max, (data.coefficient * x_max) + data.intercept]
+        ]
+
+        diagonal_line_data = [
+            [x_min, x_min],
+            [x_max, x_max]
+        ]
+
+        options = {
+            "grid": {
+                "left": 20,
+                "right": 0,
+                "bottom": 50,
+                "top": 24,
+                "containLabel": True
+            },
+            "xAxis": {
+                "type": "value",
+                "axisLabel": {
+                    "fontSize": 9,
+                    "color": "#9b99a1"
+                },
+                "splitLine": {
+                    "lineStyle": {
+                        "color": "#9f9f9f54"
+                    }
+                },
+                "name": "ground_truth",
+                "nameGap": 25,
+                "nameLocation": "middle",
+                "scale": True
+            },
+            "yAxis": {
+                "type": "value",
+                "axisLabel": {
+                    "fontSize": 9,
+                    "color": "#9b99a1"
+                },
+                "splitLine": {
+                    "lineStyle": {
+                        "color": "#9f9f9f54"
+                    }
+                },
+                "name": "prediction",
+                "nameGap": 25,
+                "nameLocation": "middle",
+                "scale": True
+            },
+            "tooltip": {
+                "axisPointer": {
+                    "show": True,
+                    "type": "cross",
+                    "lineStyle": {
+                        "type": "dashed",
+                        "width": 1
+                    }
+                }
+            },
+            "series": [
+                {
+                    "name": "",
+                    "type": "scatter",
+                    "emphasis": {
+                        "focus": "series"
+                    },
+                    "color": data.color,
+                    "data": data.scatter_data
+                },
+                {
+                    "name": "Diagonal line",
+                    "type": "line",
+                    "lineStyle": {
+                        "width": 2.2,
+                        "color": "#FFC000"
+                    },
+                    "symbol": "none",
+                    "data": diagonal_line_data,
+                    "itemStyle": {
+                        "color": "#FFC000"
+                    }
+                },
+                {
+                    "name": "Regression line",
+                    "type": "line",
+                    "lineStyle": {
+                        "width": 2.2,
+                        "color": "#8D6ECF"
+                    },
+                    "symbol": "none",
+                    "data": regression_line_data,
+                    "itemStyle": {
+                        "color": "#8D6ECF"
+                    }
+                }
+            ],
+            "legend": {
+                "show": True,
+                "textStyle": {
+                    "color": "#9B99A1"
+                },
+                "right": 0
+            }
+        }
+
+        print('\033[1m'+'prediction vs ground_truth')
+
+        return EChartsRawWidget(option=options)
