@@ -15,8 +15,8 @@ class BinaryChart:
         if data.current_data:
             assert len(data.current_data) <= 2
 
-        reference_json_data = data.model_dump().get('reference_data')
-        current_data_json = data.model_dump().get('current_data')
+        reference_json_data = [binary_data.model_dump() for binary_data in data.reference_data]
+        current_data_json = [binary_data.model_dump() for binary_data in data.current_data] if data.current_data else []
 
         reference_series_data = {
             'title': data.title,
@@ -87,15 +87,13 @@ class BinaryChart:
         return EChartsRawWidget(option=option)
 
     def linear_chart(self, data: BinaryLinearChartData) -> EChartsRawWidget:
-        reference_json_data = data.model_dump().get('reference_data')
-        current_data_json = data.model_dump().get('current_data')
 
         reference_series_data = {
             'name': 'Reference',
             'type': 'line',
             'lineStyle': {'width': 2.2, 'color': '#9B99A1', 'type': 'dotted'},
             'symbol': 'none',
-            'data': reference_json_data,
+            'data': data.reference_data,
             'itemStyle': {'color': '#9B99A1'},
             'endLabel': {'show': True, 'color': '#9B99A1'},
             'color': '#9B99A1',
@@ -106,7 +104,7 @@ class BinaryChart:
             'type': 'line',
             'lineStyle': {'width': 2.2, 'color': '#73B2E0'},
             'symbol': 'none',
-            'data': current_data_json,
+            'data': data.current_data,
             'itemStyle': {'color': '#73B2E0'},
         }
 

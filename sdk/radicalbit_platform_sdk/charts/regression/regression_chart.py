@@ -20,15 +20,12 @@ class RegressionChart:
     ) -> EChartsRawWidget:
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
-        reference_json_data = data.model_dump().get('reference_data')
-        current_data_json = data.model_dump().get('current_data')
-
         reference_series_data = {
             'title': 'reference',
             'type': 'bar',
             'name': 'Reference',
             'itemStyle': {'color': '#9B99A1'},
-            'data': reference_json_data,
+            'data': data.reference_data,
         }
 
         current_series_data = {
@@ -36,7 +33,7 @@ class RegressionChart:
             'type': 'bar',
             'name': 'Current',
             'itemStyle': {'color': '#3695d9'},
-            'data': current_data_json,
+            'data': data.current_data,
         }
 
         series = (
@@ -85,6 +82,7 @@ class RegressionChart:
     def predicted_actual_chart(
         self, data: RegressionPredictedActualChartData
     ) -> EChartsRawWidget:
+
         np_array = np.array(data.scatter_data)
         x_max = np_array.max()
         x_min = np_array.min()
@@ -164,6 +162,7 @@ class RegressionChart:
     def residual_scatter_chart(
         self, data: RegressionResidualScatterChartData
     ) -> EChartsRawWidget:
+
         options = {
             'grid': {
                 'left': 20,
@@ -213,6 +212,7 @@ class RegressionChart:
     def residual_bucket_chart(
         self, data: RegressionResidualBucketChartData
     ) -> EChartsRawWidget:
+
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
         options = {

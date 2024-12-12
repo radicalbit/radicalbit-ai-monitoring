@@ -15,8 +15,9 @@ class MultiClassificationChart:
     def distribution_chart(
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
-        reference_json_data = data.model_dump().get('reference_data')
-        current_data_json = data.model_dump().get('current_data')
+
+        reference_json_data = [multi_class_data.model_dump() for multi_class_data in data.reference_data]
+        current_data_json = [multi_class_data.model_dump() for multi_class_data in data.current_data] if data.current_data else []
 
         reference_series_data = {
             'title': data.title,
