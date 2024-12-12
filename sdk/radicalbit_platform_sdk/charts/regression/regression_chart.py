@@ -2,7 +2,7 @@ from ipecharts import EChartsRawWidget
 import numpy as np
 
 from ..utils import get_formatted_bucket_data, get_chart_header
-from .regression_chart_data import RegressionDistributionChartData, RegressionPredictedActualChartData
+from .regression_chart_data import RegressionDistributionChartData, RegressionPredictedActualChartData, RegressionResidualScatterChartData
 
 
 class RegressionChart:
@@ -207,5 +207,77 @@ class RegressionChart:
         }
 
         print('\033[1m'+'prediction vs ground_truth')
+
+        return EChartsRawWidget(option=options)
+
+    def residual_scatter_chart(self, data: RegressionResidualScatterChartData) -> EChartsRawWidget:
+
+        options = {
+            "grid": {
+                "left": 20,
+                "right": 0,
+                "bottom": 50,
+                "top": 24,
+                "containLabel": True
+            },
+            "xAxis": {
+                "type": "value",
+                "axisLabel": {
+                    "fontSize": 9,
+                    "color": "#9b99a1"
+                },
+                "splitLine": {
+                    "lineStyle": {
+                        "color": "#9f9f9f54"
+                    }
+                },
+                "name": "prediction",
+                "nameGap": 25,
+                "nameLocation": "middle",
+                "axisLine": {
+                    "lineStyle": {
+                        "width": 2,
+                        "type": "dashed"
+                    }
+                }
+            },
+            "yAxis": {
+                "type": "value",
+                "axisLabel": {
+                    "fontSize": 9,
+                    "color": "#9b99a1"
+                },
+                "splitLine": {
+                    "lineStyle": {
+                        "color": "#9f9f9f54"
+                    }
+                },
+                "name": "standardized residuals",
+                "nameGap": 25,
+                "nameLocation": "middle",
+                "scale": False
+            },
+            "tooltip": {
+                "axisPointer": {
+                    "show": True,
+                    "type": "cross",
+                    "lineStyle": {
+                        "type": "dashed",
+                        "width": 1
+                    }
+                }
+            },
+            "series": [
+                {
+                    "name": "",
+                    "type": "scatter",
+                    "emphasis": {
+                        "focus": "series"
+                    },
+                    "color": data.color,
+                    "data": data.scatter_data
+                }
+            ]
+        }
 
         return EChartsRawWidget(option=options)

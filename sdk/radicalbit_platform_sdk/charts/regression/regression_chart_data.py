@@ -14,3 +14,7 @@ class RegressionPredictedActualChartData(BaseModel):
     coefficient: float
     intercept: float
     color: Optional[str] = '#9B99A1'
+
+class RegressionResidualScatterChartData(BaseModel):
+    scatter_data: List[List[float]]
+    color: Optional[str] = '#9B99A1'
