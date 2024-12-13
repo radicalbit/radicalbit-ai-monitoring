@@ -4,7 +4,7 @@ import uuid
 import orjson
 from pyspark.sql.types import StructField, StructType, StringType
 
-from metrics.completion_metrics import LLMMetrics
+from metrics.completion_metrics import CompletionMetrics
 from utils.models import JobStatus
 from utils.db import update_job_status, write_to_db
 
@@ -15,7 +15,7 @@ import logging
 
 def compute_metrics(df: DataFrame) -> dict:
     complete_record = {}
-    completion_service = LLMMetrics()
+    completion_service = CompletionMetrics()
     model_quality = completion_service.extract_metrics(df)
     complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality.model_dump(serialize_as_any=True)).decode(
         "utf-8"

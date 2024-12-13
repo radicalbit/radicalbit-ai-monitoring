@@ -2,10 +2,11 @@ import pyspark.sql.functions as F
 import numpy as np
 from pyspark.sql import DataFrame
 from pyspark.sql.types import FloatType
-from models.completion_dataset import LLMMetricsModel
+
+from models.completion_dataset import CompletionMetricsModel
 
 
-class LLMMetrics:
+class CompletionMetrics:
     def __init__(self):
         pass
 
@@ -46,7 +47,7 @@ class LLMMetrics:
         )
         return df
 
-    def extract_metrics(self, df: DataFrame) -> LLMMetricsModel:
+    def extract_metrics(self, df: DataFrame) -> CompletionMetricsModel:
         df = self.remove_columns(df)
         df = self.compute_prob(df)
         df_prob = df.drop("logprob")
@@ -81,4 +82,4 @@ class LLMMetrics:
             "mean_per_phrase": df_mean_values.toPandas().to_dict(orient="records"),
             "mean_per_file": df.toPandas().to_dict(orient="records"),
         }
-        return LLMMetricsModel(**res)
+        return CompletionMetricsModel(**res)

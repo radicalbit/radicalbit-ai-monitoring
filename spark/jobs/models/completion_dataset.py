@@ -29,7 +29,7 @@ class MeanPerFile(BaseModel):
     model_config = ConfigDict(ser_json_inf_nan="null")
 
 
-class LLMMetricsModel(BaseModel):
+class CompletionMetricsModel(BaseModel):
     tokens: List[Probs]
     mean_per_phrase: List[MeanPerPhrase]
     mean_per_file: List[MeanPerFile]
