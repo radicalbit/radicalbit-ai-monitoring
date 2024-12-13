@@ -3,7 +3,6 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import useModals from '@Src/hooks/use-modals';
 import { ModelTypeEnum } from '@Src/store/state/models/constants';
-import { LlmActionButton, LlmBody, LlmHeader } from './llm-components';
 import ModalContextProvider, { useModalContext } from './modal-context-provider';
 import ActionsStepFourth from './step-four/actions';
 import BodyStepFour from './step-four/new-body';
@@ -13,6 +12,10 @@ import ActionsStepThree from './step-three/actions';
 import BodyStepThree from './step-three/body';
 import ActionsStepTwo from './step-two/actions';
 import BodyStepTwo from './step-two/body';
+import {
+  TextGenerationActionButton, TextGenerationBody,
+  TextGenerationHeader,
+} from './text-generation';
 
 const { Step } = Steps;
 
@@ -77,7 +80,7 @@ function Header() {
 
   switch (modelType) {
     case ModelTypeEnum.TEXT_GENERATION:
-      return (<LlmHeader />);
+      return (<TextGenerationHeader />);
 
     default:
       return (
@@ -165,7 +168,7 @@ function Body() {
 
   switch (modelType) {
     case ModelTypeEnum.TEXT_GENERATION:
-      return <LlmBody />;
+      return <TextGenerationBody />;
 
     default:
       return <BodyInner />;
@@ -199,7 +202,7 @@ function Actions() {
 
   switch (modelType) {
     case ModelTypeEnum.TEXT_GENERATION:
-      return (<LlmActionButton />);
+      return (<TextGenerationActionButton />);
 
     default:
       return <ActionsInner />;

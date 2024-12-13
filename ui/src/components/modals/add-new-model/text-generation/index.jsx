@@ -5,11 +5,11 @@ import {
 import { useModalContext } from '../modal-context-provider';
 import useHandleOnSubmit from './use-handle-on-submit';
 
-function LlmHeader() {
+function TextGenerationHeader() {
   return <SectionTitle title="New Model" />;
 }
 
-function LlmBody() {
+function TextGenerationBody() {
   const { useFormbit } = useModalContext();
   const { error } = useFormbit;
 
@@ -37,7 +37,7 @@ function LlmBody() {
   );
 }
 
-function LlmActionButton() {
+function TextGenerationActionButton() {
   const { handleOnSubmit, args, isSubmitDisabled } = useHandleOnSubmit();
 
   return (
@@ -56,4 +56,4 @@ function LlmActionButton() {
   );
 }
 
-export { LlmHeader, LlmBody, LlmActionButton };
+export { TextGenerationHeader, TextGenerationBody, TextGenerationActionButton };
