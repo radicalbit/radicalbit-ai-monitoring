@@ -3,6 +3,7 @@ import datetime
 import json
 import logging
 import pathlib
+from io import BytesIO
 from typing import List, Optional
 from uuid import UUID, uuid4
 
@@ -344,13 +345,13 @@ class FileService:
             logger.error('Model %s not found', model_uuid)
             raise ModelNotFoundError(f'Model {model_uuid} not found')
 
-        self.validate_json_file(json_file)
-        _f_name = json_file.filename
+        validated_json_file = self.validate_json_file(json_file)
+        _f_name = validated_json_file.filename
         _f_uuid = uuid4()
         try:
             object_name = f'{str(model_out.uuid)}/completion/{_f_uuid}/{_f_name}'
             self.s3_client.upload_fileobj(
-                json_file.file,
+                validated_json_file.file,
                 self.bucket_name,
                 object_name,
                 ExtraArgs={
@@ -560,11 +561,15 @@ class FileService:
         csv_file.file.seek(0)
 
     @staticmethod
-    def validate_json_file(json_file: UploadFile) -> None:
+    def validate_json_file(json_file: UploadFile):
         try:
             content = json_file.file.read().decode('utf-8')
             json_data = json.loads(content)
-            CompletionResponses.model_validate(json_data)
+            validated_data = CompletionResponses.model_validate(json_data)
+            return UploadFile(
+                filename=json_file.filename,
+                file=BytesIO(validated_data.model_dump_json().encode()),
+            )
         except ValidationError as e:
             logger.error('Invalid json file: %s', str(e))
             raise InvalidFileException(f'Invalid json file: {str(e)}') from e

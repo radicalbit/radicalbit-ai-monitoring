@@ -83,7 +83,7 @@ class FileServiceTest(unittest.TestCase):
 
     def test_validate_completion_json_file_ok(self):
         json_file = json.get_completion_sample_json_file()
-        self.files_service.validate_json_file(json_file)
+        assert self.files_service.validate_json_file(json_file) is not None
 
     def test_validate_completion_json_file_without_logprobs_field(self):
         json_file = json.get_completion_sample_json_file_without_logprobs_field()
