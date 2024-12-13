@@ -50,7 +50,7 @@ function ModelType() {
     ModelTypeEnum.BINARY_CLASSIFICATION,
     ModelTypeEnum.MULTI_CLASSIFICATION,
     ModelTypeEnum.REGRESSION,
-    ModelTypeEnum.LLM,
+    ModelTypeEnum.TEXT_GENERATION,
   ];
 
   return (
@@ -72,7 +72,7 @@ function DataType() {
 
   return (
     <FormField label="Data type" message={error('dataType')} modifier="w-full" required>
-      {DataTypeEnumLabel[DataTypeEnum.TABULAR]}
+      {DataTypeEnumLabel[DataTypeEnum.TEXT]}
     </FormField>
   );
 }

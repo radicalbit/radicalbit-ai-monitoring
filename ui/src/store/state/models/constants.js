@@ -2,7 +2,7 @@ export const ModelTypeEnum = {
   REGRESSION: 'REGRESSION',
   BINARY_CLASSIFICATION: 'BINARY',
   MULTI_CLASSIFICATION: 'MULTI_CLASS',
-  LLM: 'LLM',
+  TEXT_GENERATION: 'TEXT_GENERATION',
 };
 
 export const DataTypeEnum = {
@@ -22,7 +22,7 @@ export const ModelTypeEnumLabel = {
   [ModelTypeEnum.REGRESSION]: 'Regression',
   [ModelTypeEnum.BINARY_CLASSIFICATION]: 'Binary Classification',
   [ModelTypeEnum.MULTI_CLASSIFICATION]: 'Multiclass Classification',
-  [ModelTypeEnum.LLM]: 'LLM',
+  [ModelTypeEnum.TEXT_GENERATION]: 'Text Generation',
 };
 
 export const DataTypeEnumLabel = {

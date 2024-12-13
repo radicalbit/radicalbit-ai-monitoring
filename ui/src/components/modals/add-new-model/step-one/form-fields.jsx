@@ -50,7 +50,7 @@ function ModelType() {
     ModelTypeEnum.BINARY_CLASSIFICATION,
     ModelTypeEnum.MULTI_CLASSIFICATION,
     ModelTypeEnum.REGRESSION,
-    ModelTypeEnum.LLM,
+    ModelTypeEnum.TEXT_GENERATION,
   ];
 
   return (

@@ -3,6 +3,7 @@ import { modelsApiSlice } from '@State/models/api';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
+import { DataTypeEnum } from '@Src/store/state/models/constants';
 import { useModalContext } from '../modal-context-provider';
 
 const { useAddNewModelMutation } = modelsApiSlice;
@@ -28,12 +29,12 @@ export default () => {
 
     submitForm(async (_, setError) => {
       const {
-        name, algorithm, frameworks, modelType, dataType, granularity,
+        name, algorithm, frameworks, modelType, granularity,
       } = formStepOne;
 
       const response = await triggerAddNewModel({
         name,
-        dataType,
+        dataType: DataTypeEnum.TEXT,
         modelType,
         granularity,
         algorithm,

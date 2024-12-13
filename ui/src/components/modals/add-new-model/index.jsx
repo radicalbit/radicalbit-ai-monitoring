@@ -76,7 +76,7 @@ function Header() {
   || (step === 3 && isFormInvalidStepFour()) ? 'error' : undefined;
 
   switch (modelType) {
-    case ModelTypeEnum.LLM:
+    case ModelTypeEnum.TEXT_GENERATION:
       return (<LlmHeader />);
 
     default:
@@ -164,7 +164,7 @@ function Body() {
   const modelType = form?.modelType;
 
   switch (modelType) {
-    case ModelTypeEnum.LLM:
+    case ModelTypeEnum.TEXT_GENERATION:
       return <LlmBody />;
 
     default:
@@ -198,7 +198,7 @@ function Actions() {
   const modelType = form?.modelType;
 
   switch (modelType) {
-    case ModelTypeEnum.LLM:
+    case ModelTypeEnum.TEXT_GENERATION:
       return (<LlmActionButton />);
 
     default:
