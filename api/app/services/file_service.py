@@ -1,9 +1,9 @@
 from copy import deepcopy
 import datetime
+from io import BytesIO
 import json
 import logging
 import pathlib
-from io import BytesIO
 from typing import List, Optional
 from uuid import UUID, uuid4
 
