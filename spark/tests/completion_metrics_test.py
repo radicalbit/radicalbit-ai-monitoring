@@ -31,7 +31,9 @@ def test_compute_prob(spark_fixture, input_file):
 
 def test_extract_metrics(spark_fixture, input_file):
     completion_metrics_service = CompletionMetrics()
-    completion_metrics_model: CompletionMetricsModel = completion_metrics_service.extract_metrics(input_file)
+    completion_metrics_model: CompletionMetricsModel = (
+        completion_metrics_service.extract_metrics(input_file)
+    )
     assert len(completion_metrics_model.tokens) > 0
     assert len(completion_metrics_model.mean_per_phrase) > 0
     assert len(completion_metrics_model.mean_per_file) > 0
@@ -40,6 +42,4 @@ def test_extract_metrics(spark_fixture, input_file):
 def test_compute_metrics(spark_fixture, input_file):
     complete_record = compute_metrics(input_file)
     model_quality = complete_record.get("MODEL_QUALITY")
-    assert model_quality == orjson.dumps(completion_metric_results).decode(
-        "utf-8"
-    )
+    assert model_quality == orjson.dumps(completion_metric_results).decode("utf-8")
