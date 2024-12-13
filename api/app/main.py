@@ -61,6 +61,7 @@ model_service = ModelService(
     model_dao=model_dao,
     reference_dataset_dao=reference_dataset_dao,
     current_dataset_dao=current_dataset_dao,
+    completion_dataset_dao=completion_dataset_dao,
 )
 s3_config = get_config().s3_config
 

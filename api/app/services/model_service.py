@@ -3,9 +3,11 @@ from uuid import UUID
 
 from fastapi_pagination import Page, Params
 
+from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
@@ -13,7 +15,7 @@ from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.alert_dto import AlertDTO, AnomalyType
 from app.models.exceptions import ModelError, ModelInternalError, ModelNotFoundError
 from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
-from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
+from app.models.model_dto import ModelFeatures, ModelIn, ModelOut, ModelType
 from app.models.model_order import OrderType
 
 
@@ -23,10 +25,12 @@ class ModelService:
         model_dao: ModelDAO,
         reference_dataset_dao: ReferenceDatasetDAO,
         current_dataset_dao: CurrentDatasetDAO,
+        completion_dataset_dao: CompletionDatasetDAO,
     ):
         self.model_dao = model_dao
-        self.rd_dao = reference_dataset_dao
-        self.cd_dao = current_dataset_dao
+        self.reference_dataset_dao = reference_dataset_dao
+        self.current_dataset_dao = current_dataset_dao
+        self.completion_dataset_dao = completion_dataset_dao
 
     def create_model(self, model_in: ModelIn) -> ModelOut:
         try:
@@ -40,22 +44,25 @@ class ModelService:
 
     def get_model_by_uuid(self, model_uuid: UUID) -> Optional[ModelOut]:
         model = self.check_and_get_model(model_uuid)
-        latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
-            model_uuid
+        latest_reference_dataset, latest_current_dataset, latest_completion_dataset = (
+            self._get_latest_datasets(model_uuid, model.model_type)
         )
         return ModelOut.from_model(
             model=model,
             latest_reference_dataset=latest_reference_dataset,
             latest_current_dataset=latest_current_dataset,
+            latest_completion_dataset=latest_completion_dataset,
         )
 
     def update_model_features_by_uuid(
         self, model_uuid: UUID, model_features: ModelFeatures
     ) -> bool:
-        last_reference = self.rd_dao.get_latest_reference_dataset_by_model_uuid(
-            model_uuid
+        latest_reference_dataset = (
+            self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid(
+                model_uuid
+            )
         )
-        if last_reference is not None:
+        if latest_reference_dataset is not None:
             raise ModelError(
                 'Model already has a reference dataset, could not be updated', 400
             ) from None
@@ -77,13 +84,16 @@ class ModelService:
         models = self.model_dao.get_all()
         model_out_list = []
         for model in models:
-            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
-                model.uuid
-            )
+            (
+                latest_reference_dataset,
+                latest_current_dataset,
+                latest_completion_dataset,
+            ) = self._get_latest_datasets(model.uuid, model.model_type)
             model_out = ModelOut.from_model(
                 model=model,
                 latest_reference_dataset=latest_reference_dataset,
                 latest_current_dataset=latest_current_dataset,
+                latest_completion_dataset=latest_completion_dataset,
             )
             model_out_list.append(model_out)
         return model_out_list
@@ -134,9 +144,11 @@ class ModelService:
         res = []
         count_alerts = 0
         for model, metrics in models:
-            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
-                model.uuid
-            )
+            (
+                latest_reference_dataset,
+                latest_current_dataset,
+                latest_completion_dataset,
+            ) = self._get_latest_datasets(model.uuid, model.model_type)
             if metrics and metrics.percentages:
                 for perc in ['data_quality', 'model_quality', 'drift']:
                     if count_alerts == n_alerts:
@@ -151,6 +163,9 @@ class ModelService:
                                 else None,
                                 current_uuid=latest_current_dataset.uuid
                                 if latest_current_dataset
+                                else None,
+                                completion_uuid=latest_completion_dataset.uuid
+                                if latest_completion_dataset
                                 else None,
                                 anomaly_type=AnomalyType[perc.upper()],
                                 anomaly_features=[
@@ -172,13 +187,16 @@ class ModelService:
         models = self.model_dao.get_last_n_percentages(n_models)
         model_out_list_tmp = []
         for model, metrics in models:
-            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
-                model.uuid
-            )
+            (
+                latest_reference_dataset,
+                latest_current_dataset,
+                latest_completion_dataset,
+            ) = self._get_latest_datasets(model.uuid, model.model_type)
             model_out = ModelOut.from_model(
                 model=model,
                 latest_reference_dataset=latest_reference_dataset,
                 latest_current_dataset=latest_current_dataset,
+                latest_completion_dataset=latest_completion_dataset,
                 percentages=metrics.percentages if metrics else None,
             )
             model_out_list_tmp.append(model_out)
@@ -195,13 +213,16 @@ class ModelService:
         )
         _items = []
         for model, metrics in models.items:
-            latest_reference_dataset, latest_current_dataset = self.get_latest_datasets(
-                model.uuid
-            )
+            (
+                latest_reference_dataset,
+                latest_current_dataset,
+                latest_completion_dataset,
+            ) = self._get_latest_datasets(model.uuid, model.model_type)
             model_out = ModelOut.from_model(
                 model=model,
                 latest_reference_dataset=latest_reference_dataset,
                 latest_current_dataset=latest_current_dataset,
+                latest_completion_dataset=latest_completion_dataset,
                 percentages=metrics.percentages if metrics else None,
             )
             _items.append(model_out)
@@ -214,14 +235,37 @@ class ModelService:
             raise ModelNotFoundError(f'Model {model_uuid} not found')
         return model
 
-    def get_latest_datasets(
-        self, model_uuid: UUID
-    ) -> (Optional[ReferenceDataset], Optional[CurrentDataset]):
-        latest_reference_dataset = (
-            self.rd_dao.get_latest_reference_dataset_by_model_uuid(model_uuid)
-        )
-        latest_current_dataset = self.cd_dao.get_latest_current_dataset_by_model_uuid(
-            model_uuid
-        )
+    def _get_latest_datasets(
+        self, model_uuid: UUID, model_type: ModelType
+    ) -> (
+        Optional[ReferenceDataset],
+        Optional[CurrentDataset],
+        Optional[CompletionDataset],
+    ):
+        latest_reference_dataset = None
+        latest_current_dataset = None
+        latest_completion_dataset = None
 
-        return latest_reference_dataset, latest_current_dataset
+        if model_type == ModelType.TEXT_GENERATION:
+            latest_completion_dataset = (
+                self.completion_dataset_dao.get_latest_completion_dataset_by_model_uuid(
+                    model_uuid
+                )
+            )
+        else:
+            latest_reference_dataset = (
+                self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid(
+                    model_uuid
+                )
+            )
+            latest_current_dataset = (
+                self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
+                    model_uuid
+                )
+            )
+
+        return (
+            latest_reference_dataset,
+            latest_current_dataset,
+            latest_completion_dataset,
+        )

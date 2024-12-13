@@ -17,9 +17,9 @@ def compute_metrics(df: DataFrame) -> dict:
     complete_record = {}
     completion_service = CompletionMetrics()
     model_quality = completion_service.extract_metrics(df)
-    complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality.model_dump(serialize_as_any=True)).decode(
-        "utf-8"
-    )
+    complete_record["MODEL_QUALITY"] = orjson.dumps(
+        model_quality.model_dump(serialize_as_any=True)
+    ).decode("utf-8")
     return complete_record
 
 

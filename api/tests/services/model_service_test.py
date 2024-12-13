@@ -5,6 +5,7 @@ import uuid
 from fastapi_pagination import Page, Params
 import pytest
 
+from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
@@ -21,17 +22,30 @@ class ModelServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.model_dao: ModelDAO = MagicMock(spec_set=ModelDAO)
-        cls.rd_dao: ReferenceDatasetDAO = MagicMock(spec_set=ReferenceDatasetDAO)
-        cls.cd_dao: CurrentDatasetDAO = MagicMock(spec_set=CurrentDatasetDAO)
+        cls.reference_dataset_dao: ReferenceDatasetDAO = MagicMock(
+            spec_set=ReferenceDatasetDAO
+        )
+        cls.current_dataset_dao: CurrentDatasetDAO = MagicMock(
+            spec_set=CurrentDatasetDAO
+        )
+        cls.completion_dataset_dao: CompletionDatasetDAO = MagicMock(
+            spec_set=CompletionDatasetDAO
+        )
         cls.model_service = ModelService(
             model_dao=cls.model_dao,
-            reference_dataset_dao=cls.rd_dao,
-            current_dataset_dao=cls.cd_dao,
+            reference_dataset_dao=cls.reference_dataset_dao,
+            current_dataset_dao=cls.current_dataset_dao,
+            completion_dataset_dao=cls.completion_dataset_dao,
         )
         cls.current_metrics_dao: CurrentDatasetMetricsDAO = MagicMock(
             spec_set=CurrentDatasetMetricsDAO
         )
-        cls.mocks = [cls.model_dao, cls.rd_dao, cls.cd_dao]
+        cls.mocks = [
+            cls.model_dao,
+            cls.reference_dataset_dao,
+            cls.current_dataset_dao,
+            cls.completion_dataset_dao,
+        ]
 
     def test_create_model_ok(self):
         model = db_mock.get_sample_model()
@@ -68,21 +82,45 @@ class ModelServiceTest(unittest.TestCase):
         reference_dataset = db_mock.get_sample_reference_dataset(model_uuid=model.uuid)
         current_dataset = db_mock.get_sample_current_dataset(model_uuid=model.uuid)
         self.model_dao.get_by_uuid = MagicMock(return_value=model)
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=reference_dataset
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=reference_dataset)
         )
-        self.cd_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
+        self.current_dataset_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
             return_value=current_dataset
         )
         res = self.model_service.get_model_by_uuid(model_uuid)
         self.model_dao.get_by_uuid.assert_called_once()
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once()
-        self.cd_dao.get_latest_current_dataset_by_model_uuid.assert_called_once()
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once()
+        self.current_dataset_dao.get_latest_current_dataset_by_model_uuid.assert_called_once()
 
         assert res == ModelOut.from_model(
             model=model,
             latest_reference_dataset=reference_dataset,
             latest_current_dataset=current_dataset,
+        )
+
+    def test_get_model_by_uuid_without_schema_ok(self):
+        model = db_mock.get_sample_model(
+            model_type=ModelType.TEXT_GENERATION,
+            features=None,
+            target=None,
+            outputs=None,
+            timestamp=None,
+        )
+        completion_dataset = db_mock.get_sample_completion_dataset(
+            model_uuid=model.uuid
+        )
+        self.model_dao.get_by_uuid = MagicMock(return_value=model)
+        self.completion_dataset_dao.get_latest_completion_dataset_by_model_uuid = (
+            MagicMock(return_value=completion_dataset)
+        )
+        res = self.model_service.get_model_by_uuid(model_uuid)
+        self.model_dao.get_by_uuid.assert_called_once()
+        self.completion_dataset_dao.get_latest_completion_dataset_by_model_uuid.assert_called_once()
+
+        assert res == ModelOut.from_model(
+            model=model,
+            latest_completion_dataset=completion_dataset,
         )
 
     def test_get_model_by_uuid_not_found(self):
@@ -94,15 +132,15 @@ class ModelServiceTest(unittest.TestCase):
 
     def test_update_model_ok(self):
         model_features = db_mock.get_sample_model_features()
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=None
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=None)
         )
         self.model_dao.update_features = MagicMock(return_value=1)
         res = self.model_service.update_model_features_by_uuid(
             model_uuid, model_features
         )
         feature_dict = [feature.to_dict() for feature in model_features.features]
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
             model_uuid
         )
         self.model_dao.update_features.assert_called_once_with(model_uuid, feature_dict)
@@ -111,15 +149,15 @@ class ModelServiceTest(unittest.TestCase):
 
     def test_update_model_ko(self):
         model_features = db_mock.get_sample_model_features()
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=None
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=None)
         )
         self.model_dao.update_features = MagicMock(return_value=0)
         res = self.model_service.update_model_features_by_uuid(
             model_uuid, model_features
         )
         feature_dict = [feature.to_dict() for feature in model_features.features]
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
             model_uuid
         )
         self.model_dao.update_features.assert_called_once_with(model_uuid, feature_dict)
@@ -128,14 +166,14 @@ class ModelServiceTest(unittest.TestCase):
 
     def test_update_model_freezed(self):
         model_features = db_mock.get_sample_model_features()
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=db_mock.get_sample_reference_dataset()
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=db_mock.get_sample_reference_dataset())
         )
         self.model_dao.update_features = MagicMock(return_value=0)
         with pytest.raises(ModelError):
             self.model_service.update_model_features_by_uuid(model_uuid, model_features)
             feature_dict = [feature.to_dict() for feature in model_features.features]
-            self.rd_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
+            self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid.assert_called_once_with(
                 model_uuid
             )
             self.model_dao.update_features.assert_called_once_with(
@@ -172,10 +210,10 @@ class ModelServiceTest(unittest.TestCase):
             sort=None,
         )
         self.model_dao.get_all_paginated = MagicMock(return_value=page)
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=None
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=None)
         )
-        self.cd_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
+        self.current_dataset_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
             return_value=None
         )
 
@@ -202,10 +240,10 @@ class ModelServiceTest(unittest.TestCase):
         model3 = db_mock.get_sample_model(id=3, uuid=uuid.uuid4(), name='model3')
         sample_models = [model1, model2, model3]
         self.model_dao.get_all = MagicMock(return_value=sample_models)
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=None
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=None)
         )
-        self.cd_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
+        self.current_dataset_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
             return_value=None
         )
 
@@ -233,10 +271,10 @@ class ModelServiceTest(unittest.TestCase):
         sample = [(model1, metrics1), (model0, metrics0)]
 
         self.model_dao.get_last_n_percentages = MagicMock(return_value=sample)
-        self.rd_dao.get_latest_reference_dataset_by_model_uuid = MagicMock(
-            return_value=None
+        self.reference_dataset_dao.get_latest_reference_dataset_by_model_uuid = (
+            MagicMock(return_value=None)
         )
-        self.cd_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
+        self.current_dataset_dao.get_latest_current_dataset_by_model_uuid = MagicMock(
             return_value=None
         )
 

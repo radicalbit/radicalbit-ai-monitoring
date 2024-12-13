@@ -17,6 +17,7 @@ class AlertDTO(BaseModel):
     model_uuid: UUID
     reference_uuid: Optional[UUID]
     current_uuid: Optional[UUID]
+    completion_uuid: Optional[UUID]
     anomaly_type: AnomalyType
     anomaly_features: List[str]
 
