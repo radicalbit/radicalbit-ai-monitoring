@@ -49,7 +49,6 @@ def main(
         spark_context._jsc.hadoopConfiguration().set(
             "fs.s3a.connection.ssl.enabled", "false"
         )
-    print(completion_dataset_path)
     df = spark_session.read.option("multiline", "true").json(completion_dataset_path)
     complete_record = compute_metrics(df)
 
