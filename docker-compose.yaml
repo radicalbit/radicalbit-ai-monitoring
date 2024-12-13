@@ -203,6 +203,16 @@ services:
       start_period: 5s
       retries: 2
 
+  spark-test:
+    profiles: ["spark-test"]
+    build: ./spark-test
+    environment:
+      JOB_NAME: "completion"
+      KUBECONFIG_FILE_PATH: "/opt/kubeconfig/kubeconfig.yaml"
+      SPARK_IMAGE: "radicalbit-spark-py:develop"
+    volumes:
+      - ./docker/k3s_data/kubeconfig/kubeconfig.yaml:/opt/kubeconfig/kubeconfig.yaml
+
   dind:
     image: docker:dind
     privileged: true
