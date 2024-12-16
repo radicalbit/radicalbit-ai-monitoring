@@ -117,6 +117,8 @@ class MetricsService:
             missing_status=JobStatus.MISSING_CURRENT,
         )
 
+    def get_completion_model_quality_by_model_by_uuid(self):
+
     def get_current_drift(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
     ) -> DriftDTO:
