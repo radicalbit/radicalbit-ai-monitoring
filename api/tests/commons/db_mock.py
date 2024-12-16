@@ -2,6 +2,7 @@ import datetime
 from typing import Dict, List, Optional
 import uuid
 
+from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
 from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
@@ -545,6 +546,30 @@ percentages_dict = {
     },
 }
 
+model_quality_completion_dict = {
+    'tokens': [
+        {
+            'id': 'chatcmpl',
+            'probs': [
+                {'prob': 0.27718424797058105, 'token': 'Sky'},
+                {'prob': 0.8951022028923035, 'token': ' is'},
+                {'prob': 0.7038467526435852, 'token': ' blue'},
+                {'prob': 0.9999753832817078, 'token': '.'},
+            ],
+        }
+    ],
+    'mean_per_file': [
+        {'prob_tot_mean': 0.7190271615982056, 'perplex_tot_mean': 1.5469378232955933}
+    ],
+    'mean_per_phrase': [
+        {
+            'id': 'chatcmpl',
+            'prob_per_phrase': 0.7190271615982056,
+            'perplex_per_phrase': 1.5469378232955933,
+        }
+    ],
+}
+
 
 def get_sample_reference_metrics(
     reference_uuid: uuid.UUID = REFERENCE_UUID,
@@ -575,4 +600,14 @@ def get_sample_current_metrics(
         data_quality=data_quality,
         drift=drift,
         percentages=percentages,
+    )
+
+
+def get_sample_completion_metrics(
+    completion_uuid: uuid.UUID = COMPLETION_UUID,
+    model_quality: Dict = model_quality_completion_dict,
+) -> CompletionDatasetMetrics:
+    return CompletionDatasetMetrics(
+        completion_uuid=completion_uuid,
+        model_quality=model_quality,
     )

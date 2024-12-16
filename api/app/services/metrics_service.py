@@ -2,10 +2,14 @@ import datetime
 from typing import Optional
 from uuid import UUID
 
+from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
+from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
+from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
+from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
@@ -29,12 +33,16 @@ class MetricsService:
         reference_dataset_dao: ReferenceDatasetDAO,
         current_dataset_metrics_dao: CurrentDatasetMetricsDAO,
         current_dataset_dao: CurrentDatasetDAO,
+        completion_dataset_metrics_dao: CompletionDatasetMetricsDAO,
+        completion_dataset_dao: CompletionDatasetDAO,
         model_service: ModelService,
     ):
         self.reference_dataset_metrics_dao = reference_dataset_metrics_dao
         self.reference_dataset_dao = reference_dataset_dao
         self.current_dataset_metrics_dao = current_dataset_metrics_dao
         self.current_dataset_dao = current_dataset_dao
+        self.completion_dataset_metrics_dao = completion_dataset_metrics_dao
+        self.completion_dataset_dao = completion_dataset_dao
         self.model_service = model_service
 
     def get_reference_statistics_by_model_by_uuid(
@@ -83,6 +91,19 @@ class MetricsService:
             missing_status=JobStatus.MISSING_CURRENT,
         )
 
+    def get_completion_model_quality_by_model_by_uuid(
+        self, model_uuid: UUID, completion_uuid: UUID
+    ) -> ModelQualityDTO:
+        """Retrieve completion model quality for a model by its UUID."""
+        return self._get_model_quality_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_completion_dataset_and_metrics(
+                uuid, completion_uuid
+            ),
+            dataset_type=DatasetType.COMPLETION,
+            missing_status=JobStatus.MISSING_COMPLETION,
+        )
+
     def get_reference_data_quality_by_model_by_uuid(
         self, model_uuid: UUID
     ) -> DataQualityDTO:
@@ -116,8 +137,6 @@ class MetricsService:
             ),
             missing_status=JobStatus.MISSING_CURRENT,
         )
-
-    def get_completion_model_quality_by_model_by_uuid(self):
 
     def get_current_drift(
         self, model_uuid: UUID, current_uuid: Optional[UUID]
@@ -164,12 +183,28 @@ class MetricsService:
             ),
         )
 
+    def check_and_get_completion_dataset_and_metrics(
+        self, model_uuid: UUID, completion_uuid: UUID
+    ) -> tuple[Optional[CompletionDataset], Optional[CompletionDatasetMetrics]]:
+        """Check and retrieve the completion dataset and its metrics for a model by its UUID."""
+        return self._check_and_get_dataset_and_metrics(
+            model_uuid=model_uuid,
+            dataset_getter=lambda uuid: self.completion_dataset_dao.get_completion_dataset_by_model_uuid(
+                uuid, completion_uuid
+            ),
+            metrics_getter=lambda uuid: self.completion_dataset_metrics_dao.get_completion_metrics_by_model_uuid(
+                uuid, completion_uuid
+            ),
+        )
+
     @staticmethod
     def _check_and_get_dataset_and_metrics(
         model_uuid: UUID, dataset_getter, metrics_getter
     ) -> tuple[
-        Optional[ReferenceDataset | CurrentDataset],
-        Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        Optional[ReferenceDataset | CurrentDataset | CompletionDataset],
+        Optional[
+            ReferenceDatasetMetrics | CurrentDatasetMetrics | CompletionDatasetMetrics
+        ],
     ]:
         """Check and retrieve the dataset and its metrics using the provided getters."""
         dataset = dataset_getter(model_uuid)
@@ -296,8 +331,10 @@ class MetricsService:
     def _create_model_quality_dto(
         dataset_type: DatasetType,
         model_type: ModelType,
-        dataset: Optional[ReferenceDataset | CurrentDataset],
-        metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
+        dataset: Optional[ReferenceDataset | CurrentDataset | CompletionDataset],
+        metrics: Optional[
+            ReferenceDatasetMetrics | CurrentDatasetMetrics | CompletionDatasetMetrics
+        ],
         missing_status,
     ) -> ModelQualityDTO:
         """Create a ModelQualityDTO from the provided dataset and metrics."""

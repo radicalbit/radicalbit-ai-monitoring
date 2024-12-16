@@ -4,6 +4,8 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
+from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
@@ -36,12 +38,16 @@ class MetricsServiceTest(unittest.TestCase):
         cls.current_dataset_dao: CurrentDatasetDAO = MagicMock(
             spec_set=CurrentDatasetDAO
         )
+        cls.completion_metrics_dao = MagicMock(spec_set=CompletionDatasetMetricsDAO)
+        cls.completion_dataset_dao = MagicMock(spec_set=CompletionDatasetDAO)
         cls.model_service: ModelService = MagicMock(spec_set=ModelService)
         cls.metrics_service = MetricsService(
             reference_dataset_metrics_dao=cls.reference_metrics_dao,
             reference_dataset_dao=cls.reference_dataset_dao,
             current_dataset_metrics_dao=cls.current_metrics_dao,
             current_dataset_dao=cls.current_dataset_dao,
+            completion_dataset_metrics_dao=cls.completion_metrics_dao,
+            completion_dataset_dao=cls.completion_dataset_dao,
             model_service=cls.model_service,
         )
         cls.mocks = [
@@ -49,6 +55,8 @@ class MetricsServiceTest(unittest.TestCase):
             cls.reference_dataset_dao,
             cls.current_metrics_dao,
             cls.current_dataset_dao,
+            cls.completion_metrics_dao,
+            cls.completion_dataset_dao,
         ]
 
     def test_get_reference_statistics_by_model_by_uuid(self):
@@ -664,6 +672,69 @@ class MetricsServiceTest(unittest.TestCase):
             model_type=model.model_type,
             job_status=current_dataset.status,
             model_quality_data=current_metrics.model_quality,
+        )
+
+    def test_get_completion_text_generation_model_quality_by_model_by_uuid(self):
+        status = JobStatus.SUCCEEDED
+        completion_dataset = db_mock.get_sample_completion_dataset(status=status)
+        completion_metrics = db_mock.get_sample_completion_metrics()
+        model = db_mock.get_sample_model(
+            model_type=ModelType.TEXT_GENERATION,
+            target=None,
+            features=None,
+            outputs=None,
+            timestamp=None,
+        )
+        self.model_service.get_model_by_uuid = MagicMock(return_value=model)
+        self.completion_dataset_dao.get_completion_dataset_by_model_uuid = MagicMock(
+            return_value=completion_dataset
+        )
+        self.completion_metrics_dao.get_completion_metrics_by_model_uuid = MagicMock(
+            return_value=completion_metrics
+        )
+        res = self.metrics_service.get_completion_model_quality_by_model_by_uuid(
+            model_uuid
+        )
+        self.completion_dataset_dao.get_completion_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+        self.completion_metrics_dao.get_completion_metrics_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+
+        assert res == ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.COMPLETION,
+            model_type=model.model_type,
+            job_status=completion_dataset.status,
+            model_quality_data=completion_metrics.model_quality,
+        )
+
+    def test_get_empty_completion_model_quality_by_model_by_uuid(self):
+        status = JobStatus.IMPORTING
+        completion_dataset = db_mock.get_sample_completion_dataset(status=status.value)
+        model = db_mock.get_sample_model(
+            model_type=ModelType.TEXT_GENERATION,
+            target=None,
+            features=None,
+            outputs=None,
+            timestamp=None,
+        )
+        self.model_service.get_model_by_uuid = MagicMock(return_value=model)
+        self.completion_dataset_dao.get_completion_dataset_by_model_uuid = MagicMock(
+            return_value=completion_dataset
+        )
+        res = self.metrics_service.get_completion_model_quality_by_model_by_uuid(
+            model_uuid
+        )
+        self.completion_dataset_dao.get_completion_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+
+        assert res == ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.COMPLETION,
+            model_type=model.model_type,
+            job_status=completion_dataset.status,
+            model_quality_data=None,
         )
 
 
