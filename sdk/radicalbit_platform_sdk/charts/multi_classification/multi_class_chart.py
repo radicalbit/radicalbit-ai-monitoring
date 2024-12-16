@@ -15,26 +15,41 @@ class MultiClassificationChart:
     def distribution_chart(
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
+        
+        y_axis_label = list(map((lambda metric: metric['name']),[multiclass_data.model_dump() for multiclass_data in data.reference_data]))
 
-        reference_json_data = [multi_class_data.model_dump() for multi_class_data in data.reference_data]
-        current_data_json = [multi_class_data.model_dump() for multi_class_data in data.current_data] if data.current_data else []
+        reference_data = [
+            {
+                "percentage": metric.percentage,
+                "value": metric.count,
+                "count": metric.count,
+            }
+            for metric in data.reference_data
+        ]
 
         reference_series_data = {
             'title': data.title,
             'type': 'bar',
             'name': 'Reference',
             'itemStyle': {'color': '#9B99A1'},
-            'data': reference_json_data,
+            'data': reference_data,
         }
 
-        print(reference_series_data)
+        current_data =  [
+            {
+                "percentage": metric.percentage,
+                "value": metric.count,
+                "count": metric.count,
+            }
+            for metric in data.current_data
+        ] if data.current_data else []
 
         current_series_data = {
             'title': data.title + '_current',
             'type': 'bar',
             'name': 'Current',
             'itemStyle': {'color': '#3695d9'},
-            'data': current_data_json,
+            'data': current_data,
         }
 
         series = (
@@ -62,7 +77,7 @@ class MultiClassificationChart:
                     'color': '#9b99a1',
                     'rotate': 35,
                 },
-                'data': data.x_axis_label,
+                'data': y_axis_label,
             },
             'yAxis': {
                 'type': 'value',

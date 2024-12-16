@@ -10,7 +10,4 @@ class BinaryDistributionChartData(BaseModel):
     current_data: Optional[List[ClassMetrics]] = None
 
 
-class BinaryLinearChartData(BaseModel):
-    title: str
-    reference_data: List[List[str]]
-    current_data: List[List[str]]
+
