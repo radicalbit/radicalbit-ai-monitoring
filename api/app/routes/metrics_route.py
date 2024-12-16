@@ -151,4 +151,16 @@ class MetricsRoute:
                 model_uuid, current_uuid
             )
 
+        @router.get(
+            '/{model_uuid}/completion/{completion_uuid}/model-quality',
+            status_code=200,
+            response_model=ModelQualityDTO,
+        )
+        def get_completion_model_quality_by_model_by_uuid(
+            model_uuid: UUID, completion_uuid: UUID
+        ):
+            return metrics_service.get_completion_model_quality_by_model_by_uuid(
+                model_uuid, completion_uuid
+            )
+
         return router

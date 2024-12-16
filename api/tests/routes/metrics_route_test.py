@@ -200,3 +200,26 @@ class MetricsRouteTest(unittest.TestCase):
         self.metrics_service.get_current_data_quality_by_model_by_uuid.assert_called_once_with(
             model_uuid, current_uuid
         )
+
+    def test_get_completion_model_quality_by_model_by_uuid(self):
+        model_uuid = uuid.uuid4()
+        completion_uuid = uuid.uuid4()
+        completion_metrics = db_mock.get_sample_completion_metrics()
+        model_quality = ModelQualityDTO.from_dict(
+            dataset_type=DatasetType.COMPLETION,
+            model_type=ModelType.TEXT_GENERATION,
+            job_status=JobStatus.SUCCEEDED,
+            model_quality_data=completion_metrics.model_quality,
+        )
+        self.metrics_service.get_completion_model_quality_by_model_by_uuid = MagicMock(
+            return_value=model_quality
+        )
+
+        res = self.client.get(
+            f'{self.prefix}/{model_uuid}/completion/{completion_uuid}/model-quality'
+        )
+        assert res.status_code == 200
+        assert jsonable_encoder(model_quality) == res.json()
+        self.metrics_service.get_completion_model_quality_by_model_by_uuid.assert_called_once_with(
+            model_uuid, completion_uuid
+        )
