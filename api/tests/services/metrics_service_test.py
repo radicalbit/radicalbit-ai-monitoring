@@ -693,13 +693,13 @@ class MetricsServiceTest(unittest.TestCase):
             return_value=completion_metrics
         )
         res = self.metrics_service.get_completion_model_quality_by_model_by_uuid(
-            model_uuid
+            model_uuid, completion_dataset.uuid
         )
         self.completion_dataset_dao.get_completion_dataset_by_model_uuid.assert_called_once_with(
-            model_uuid
+            model_uuid, completion_dataset.uuid
         )
         self.completion_metrics_dao.get_completion_metrics_by_model_uuid.assert_called_once_with(
-            model_uuid
+            model_uuid, completion_dataset.uuid
         )
 
         assert res == ModelQualityDTO.from_dict(
@@ -724,10 +724,10 @@ class MetricsServiceTest(unittest.TestCase):
             return_value=completion_dataset
         )
         res = self.metrics_service.get_completion_model_quality_by_model_by_uuid(
-            model_uuid
+            model_uuid, completion_dataset.uuid
         )
         self.completion_dataset_dao.get_completion_dataset_by_model_uuid.assert_called_once_with(
-            model_uuid
+            model_uuid, completion_dataset.uuid
         )
 
         assert res == ModelQualityDTO.from_dict(
