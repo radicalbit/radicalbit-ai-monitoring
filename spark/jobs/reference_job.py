@@ -146,6 +146,7 @@ if __name__ == "__main__":
             reference_dataset_path,
             reference_uuid,
             metrics_table_name,
+            dataset_table_name
         )
     except Exception as e:
         logging.exception(e)

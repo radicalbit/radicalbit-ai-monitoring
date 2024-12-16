@@ -1,7 +1,7 @@
 from ipecharts import EChartsRawWidget
 from IPython.display import display
 
-from ..utils import get_chart_header
+from ..common.utils import get_chart_header
 from .multi_class_chart_data import (
     MultiClassificationDistributionChartData,
     MultiClassificationLinearChartData,
@@ -26,6 +26,8 @@ class MultiClassificationChart:
             'itemStyle': {'color': '#9B99A1'},
             'data': reference_json_data,
         }
+
+        print(reference_series_data)
 
         current_series_data = {
             'title': data.title + '_current',

@@ -2,7 +2,7 @@ from ipecharts import EChartsRawWidget
 from IPython.display import display
 import numpy as np
 
-from ..utils import get_chart_header, get_formatted_bucket_data
+from ..common.utils import get_chart_header, get_formatted_bucket_data
 from .regression_chart_data import (
     RegressionDistributionChartData,
     RegressionPredictedActualChartData,

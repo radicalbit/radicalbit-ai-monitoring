@@ -1,6 +1,6 @@
 from ipecharts import EChartsRawWidget
 
-from ..utils import get_chart_header
+from ..common.utils import get_chart_header
 from .binary_chart_data import BinaryDistributionChartData, BinaryLinearChartData
 
 
@@ -10,19 +10,35 @@ class BinaryChart:
 
     def distribution_chart(self, data: BinaryDistributionChartData) -> EChartsRawWidget:
         assert len(data.reference_data) <= 2
-        assert len(data.y_axis_label) <= 2
 
         if data.current_data:
             assert len(data.current_data) <= 2
 
-        reference_json_data = [binary_data.model_dump() for binary_data in data.reference_data]
-        current_data_json = [binary_data.model_dump() for binary_data in data.current_data] if data.current_data else []
+        y_axis_label = list(map((lambda metric: metric['name']),[binary_data.model_dump() for binary_data in data.reference_data]))
+
+        reference_data = [
+            {
+                "percentage": metric.percentage,
+                "value": metric.count,
+                "count": metric.count,
+            }
+            for metric in data.reference_data
+        ]
+
+        current_data =  [
+            {
+                "percentage": metric.percentage,
+                "value": metric.count,
+                "count": metric.count,
+            }
+            for metric in data.current_data
+        ] if data.current_data else []
 
         reference_series_data = {
             'title': data.title,
             'type': 'bar',
             'itemStyle': {'color': '#9B99A1'},
-            'data': reference_json_data,
+            'data': reference_data,
             'color': '#9B99A1',
             'name': 'Reference',
             'label': {
@@ -37,7 +53,7 @@ class BinaryChart:
             'title': data.title + '_current',
             'type': 'bar',
             'itemStyle': {},
-            'data': current_data_json,
+            'data': current_data,
             'color': '#3695d9',
             'name': 'Current',
             'label': {
@@ -73,7 +89,7 @@ class BinaryChart:
                 'axisLine': {'show': False},
                 'splitLine': {'show': False},
                 'axisLabel': {'fontSize': 12, 'color': '#9B99A1'},
-                'data': data.y_axis_label,
+                'data': y_axis_label,
             },
             'emphasis': {'disabled': True},
             'barCategoryGap': '21%',

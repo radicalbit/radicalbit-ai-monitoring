@@ -1,8 +1,7 @@
-from .chart_data import NumericalBarChartData, ConfusionMatrixChartData
-from .chart import Chart
+from .radicalbit_sdk_chart import RadicalbitChart
+from .radicalbit_sdk_chart_data import RbitDistributionData
 
 __all__ = [
-    'ConfusionMatrixChartData',
-    'NumericalBarChartData',
-    'Chart'
+    'RadicalbitChart',
+    'RbitDistributionData'
 ]
