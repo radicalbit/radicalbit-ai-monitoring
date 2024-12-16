@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class NumericalBarChartData(BaseModel):
     title: str
-    bucket_data: List[str]
+    bucket_data: List[float]
     reference_data: List[float]
     current_data: Optional[List[float]] = None
 

@@ -1,7 +1,6 @@
-from .radicalbit_sdk_chart import RadicalbitChart
-from .radicalbit_sdk_chart_data import RbitDistributionData
+from .radicalbit_sdk_chart import RadicalbitChart,RbitChartData
 
 __all__ = [
     'RadicalbitChart',
-    'RbitDistributionData'
+    'RbitChartData'
 ]

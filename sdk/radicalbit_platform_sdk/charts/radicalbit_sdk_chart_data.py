@@ -1,16 +1,20 @@
-from typing import List, Optional
-from pydantic import BaseModel
+from typing import Optional
+from pydantic import BaseModel, ConfigDict
 
-
-from radicalbit_platform_sdk.models.dataset_data_quality import DataQuality
-from radicalbit_platform_sdk.models.model_definition import BaseModelDefinition
+from radicalbit_platform_sdk.apis.model import Model
+from radicalbit_platform_sdk.apis.model_current_dataset import ModelCurrentDataset
+from radicalbit_platform_sdk.apis.model_reference_dataset import ModelReferenceDataset
 
 class RbitBinaryDistributionData(BaseModel):
     title: str
-    reference_data: DataQuality
-    current_data: Optional[DataQuality] = None
+    reference: ModelReferenceDataset
+    current: Optional[ModelCurrentDataset] = None
 
-class RbitDistributionData(BaseModel):
-    model:BaseModelDefinition
-    reference_data: DataQuality
-    current_data: Optional[DataQuality] = None   
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+class RbitChartData(BaseModel):
+    model: Model
+    reference: ModelReferenceDataset
+    current: Optional[ModelCurrentDataset] = None  
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)

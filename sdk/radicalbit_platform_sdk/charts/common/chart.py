@@ -10,6 +10,8 @@ class Chart:
         pass
 
     def numerical_bar_chart(self, data: NumericalBarChartData) -> EChartsRawWidget:
+        
+        
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
         reference_data_json = {
@@ -67,7 +69,7 @@ class Chart:
             'series': series,
         }
 
-        option.update(get_chart_header(title=data.title))
+        option.update(get_chart_header(title=data.title)) 
 
         return EChartsRawWidget(option=option)
 
