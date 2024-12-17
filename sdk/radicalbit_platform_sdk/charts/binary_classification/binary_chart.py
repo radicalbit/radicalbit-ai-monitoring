@@ -102,4 +102,3 @@ class BinaryChart:
 
         return EChartsRawWidget(option=option)
 
-    

@@ -1,4 +1,5 @@
 from functools import reduce
+
 from ipecharts import EChartsRawWidget
 import numpy as np
 
@@ -68,14 +69,14 @@ class Chart:
             'series': series,
         }
 
-        option.update(get_chart_header(title=data.title)) 
+        option.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=option)
 
     def confusion_matrix_chart(
         self, data: ConfusionMatrixChartData
     ) -> EChartsRawWidget:
-    
+
         np_matrix = np.matrix(data.matrix)
 
         matrix_data=reduce(lambda x,y: x + y ,[ [ [xIdx,yIdx,value] for xIdx,value in enumerate(datas) ] for yIdx,datas in enumerate(reversed(data.matrix))])

@@ -1,5 +1,4 @@
 from ipecharts import EChartsRawWidget
-from IPython.display import display
 
 from ..common.utils import get_chart_header
 from .multi_class_chart_data import (
@@ -15,7 +14,7 @@ class MultiClassificationChart:
     def distribution_chart(
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
-        
+
         y_axis_label = list(map((lambda metric: metric['name']),[multiclass_data.model_dump() for multiclass_data in data.reference_data]))
 
         reference_data = [

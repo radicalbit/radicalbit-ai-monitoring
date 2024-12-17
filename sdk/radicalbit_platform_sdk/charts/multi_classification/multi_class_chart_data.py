@@ -2,8 +2,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from radicalbit_platform_sdk.apis.model_current_dataset import ModelCurrentDataset
-from radicalbit_platform_sdk.apis.model_reference_dataset import ModelReferenceDataset
 from radicalbit_platform_sdk.models.dataset_data_quality import ClassMetrics
 
 

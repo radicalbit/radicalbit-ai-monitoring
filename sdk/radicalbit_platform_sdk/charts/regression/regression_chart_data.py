@@ -2,8 +2,6 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from radicalbit_platform_sdk.models.dataset_data_quality import  NumericalTargetMetrics
-
 
 class RegressionDistributionChartData(BaseModel):
     title: str

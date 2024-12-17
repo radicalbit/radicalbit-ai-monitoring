@@ -251,6 +251,6 @@ class RegressionChart:
                 {'type': 'bar', 'itemStyle': {'color': data.color}, 'data': data.values}
             ],
         }
-        
+
 
         return EChartsRawWidget(option=options)
