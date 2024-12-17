@@ -11,6 +11,7 @@ from radicalbit_platform_sdk.apis import Model
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
     ColumnDefinition,
+    CompletionFileUpload,
     CurrentFileUpload,
     DataType,
     FieldType,
@@ -517,4 +518,74 @@ class ModelTest(unittest.TestCase):
         with pytest.raises(ClientError):
             model.load_current_dataset(
                 'tests_resources/wrong.csv', 'bucket_name', 'correlation'
+            )
+
+    @mock_aws
+    @responses.activate
+    def test_load_completion_dataset(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        bucket_name = 'test-bucket'
+        file_name = 'test.json'
+        expected_path = f's3://{bucket_name}/{model_id}/completion/{file_name}'
+        conn = boto3.resource('s3', region_name='us-east-1')
+        conn.create_bucket(Bucket=bucket_name)
+        model = Model(
+            base_url,
+            ModelDefinition(
+                uuid=model_id,
+                name='My Model',
+                model_type=ModelType.TEXT_GENERATION,
+                data_type=DataType.TEXT,
+                granularity=Granularity.HOUR,
+                features=None,
+                outputs=None,
+                target=None,
+                timestamp=None,
+                created_at=str(time.time()),
+                updated_at=str(time.time()),
+            ),
+        )
+        response = CompletionFileUpload(
+            uuid=uuid.uuid4(), path=expected_path, date='', status=JobStatus.IMPORTING
+        )
+        responses.add(
+            method=responses.POST,
+            url=f'{base_url}/api/models/{str(model_id)}/completion/bind',
+            body=response.model_dump_json(),
+            status=200,
+            content_type='application/json',
+        )
+        response = model.load_completion_dataset(
+            'tests_resources/generative_response.json', bucket_name
+        )
+        assert response.path() == expected_path
+
+    @mock_aws
+    @responses.activate
+    def test_load_completion_dataset_wrong_json(self):
+        base_url = 'http://api:9000'
+        model_id = uuid.uuid4()
+        bucket_name = 'test-bucket'
+        conn = boto3.resource('s3', region_name='us-east-1')
+        conn.create_bucket(Bucket=bucket_name)
+        model = Model(
+            base_url,
+            ModelDefinition(
+                uuid=model_id,
+                name='My Model',
+                model_type=ModelType.TEXT_GENERATION,
+                data_type=DataType.TEXT,
+                granularity=Granularity.HOUR,
+                features=None,
+                outputs=None,
+                target=None,
+                timestamp=None,
+                created_at=str(time.time()),
+                updated_at=str(time.time()),
+            ),
+        )
+        with pytest.raises(ClientError):
+            model.load_completion_dataset(
+                'tests_resources/generative_wrong_response.json', bucket_name
             )

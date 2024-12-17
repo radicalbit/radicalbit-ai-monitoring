@@ -189,3 +189,7 @@ class CurrentRegressionModelQuality(ModelQuality):
     grouped_metrics: GroupedBaseRegressionMetrics
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class CompletionTextGenerationModelQuality(ModelQuality):
+    pass

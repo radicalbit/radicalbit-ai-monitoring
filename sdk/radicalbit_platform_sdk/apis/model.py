@@ -1,5 +1,6 @@
+from io import BytesIO
 import os
-from typing import List, Optional
+from typing import Dict, List, Optional
 from uuid import UUID
 
 import boto3
@@ -8,12 +9,18 @@ import pandas as pd
 from pydantic import TypeAdapter, ValidationError
 import requests
 
-from radicalbit_platform_sdk.apis import ModelCurrentDataset, ModelReferenceDataset
+from radicalbit_platform_sdk.apis import (
+    ModelCompletionDataset,
+    ModelCurrentDataset,
+    ModelReferenceDataset,
+)
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
     AwsCredentials,
     ColumnDefinition,
+    CompletionFileUpload,
+    CompletionResponses,
     CurrentFileUpload,
     DataType,
     FileReference,
@@ -24,6 +31,7 @@ from radicalbit_platform_sdk.models import (
     OutputType,
     ReferenceFileUpload,
 )
+from radicalbit_platform_sdk.models.file_upload_result import FileCompletion
 
 
 class Model:
@@ -504,7 +512,117 @@ class Model:
             data=file_ref.model_dump_json(),
         )
 
+    def load_completion_dataset(
+        self,
+        file_name: str,
+        bucket: str,
+        object_name: Optional[str] = None,
+        aws_credentials: Optional[AwsCredentials] = None,
+    ) -> ModelCompletionDataset:
+        """Upload completion dataset to an S3 bucket and then bind it inside the platform.
+
+        Raises `ClientError` in case S3 upload fails.
+
+        :param file_name: The name of the completion file.
+        :param bucket: The name of the S3 bucket.
+        :param object_name: The optional name of the object uploaded to S3. Default value is None.
+        :param aws_credentials: AWS credentials used to connect to S3 bucket. Default value is None.
+        :return: An instance of `ModelCompletionDataset` representing the completion dataset
+        """
+
+        try:
+            json_data = pd.read_json(file_name).to_dict(orient='records')
+            validated_json_bytes = self.__validate_json(json_data)
+        except Exception as e:
+            raise ClientError(
+                f'Failed to validate JSON file {file_name}: {str(e)}'
+            ) from e
+
+        if object_name is None:
+            object_name = f'{self.__uuid}/completion/{os.path.basename(file_name)}'
+
+        try:
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id=(
+                    None if aws_credentials is None else aws_credentials.access_key_id
+                ),
+                aws_secret_access_key=(
+                    None
+                    if aws_credentials is None
+                    else aws_credentials.secret_access_key
+                ),
+                region_name=(
+                    None if aws_credentials is None else aws_credentials.default_region
+                ),
+                endpoint_url=(
+                    None
+                    if aws_credentials is None
+                    else (
+                        None
+                        if aws_credentials.endpoint_url is None
+                        else aws_credentials.endpoint_url
+                    )
+                ),
+            )
+
+            s3_client.upload_fileobj(
+                validated_json_bytes,
+                bucket,
+                object_name,
+                ExtraArgs={
+                    'Metadata': {
+                        'model_uuid': str(self.__uuid),
+                        'model_name': self.__name,
+                        'file_type': 'completion',
+                    }
+                },
+            )
+        except BotoClientError as e:
+            raise ClientError(
+                f'Unable to upload file {file_name} to remote storage: {e}'
+            ) from e
+        return self.__bind_completion_dataset(f's3://{bucket}/{object_name}')
+
+    def __bind_completion_dataset(
+        self,
+        dataset_url: str,
+    ) -> ModelCompletionDataset:
+        def __callback(response: requests.Response) -> ModelCompletionDataset:
+            try:
+                response = CompletionFileUpload.model_validate(response.json())
+                return ModelCompletionDataset(
+                    self.__base_url, self.__uuid, self.__model_type, response
+                )
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        file_completion = FileCompletion(
+            file_url=dataset_url,
+        )
+
+        return invoke(
+            method='POST',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/completion/bind',
+            valid_response_code=200,
+            func=__callback,
+            data=file_completion.model_dump_json(),
+        )
+
     def __required_headers(self) -> List[str]:
         model_columns = self.__features + self.__outputs.output
         model_columns.append(self.__target)
         return [model_column.name for model_column in model_columns]
+
+    @staticmethod
+    def __validate_json(json_data: List[Dict]) -> BytesIO:
+        try:
+            validated_data = CompletionResponses.model_validate(json_data)
+            validated_json = pd.DataFrame(validated_data.model_dump())
+            return BytesIO(validated_json.to_json(orient='records').encode('utf-8'))
+        except ValidationError as e:
+            raise ClientError(f'JSON validation error: {str(e)}') from e
+        except Exception as e:
+            raise ClientError(
+                f'Unexpected error during JSON validation: {str(e)}'
+            ) from e
