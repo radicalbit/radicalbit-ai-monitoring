@@ -4,6 +4,7 @@ from fastapi import status
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from starlette.requests import Request
 
 from app.core import get_config
 
@@ -135,4 +136,12 @@ def request_validation_exception_handler(_, err: RequestValidationError):
     return JSONResponse(
         status_code=422,  # https://www.rfc-editor.org/rfc/rfc9110.html#name-422-unprocessable-content
         content=jsonable_encoder(ErrorOut(error_message)),
+    )
+
+
+def internal_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    logger.error('Internal error occurred [%s]', exc)
+    return JSONResponse(
+        status_code=500,
+        content=jsonable_encoder(ErrorOut(f'Internal server error occurred {exc}')),
     )

@@ -535,7 +535,7 @@ class FileService:
     ) -> None:
         file_upload_config = get_config().file_upload_config
         _f_name = csv_file.filename
-        if csv_file.filename is None:
+        if csv_file.filename is None or csv_file.size == 0:
             raise InvalidFileException('The file is empty. Please enter a valid file.')
         if csv_file.size is not None and csv_file.size >= file_upload_config.max_bytes:
             raise FileTooLargeException(

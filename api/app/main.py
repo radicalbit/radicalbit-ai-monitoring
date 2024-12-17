@@ -22,6 +22,7 @@ from app.models.exceptions import (
     MetricsError,
     ModelError,
     SchemaException,
+    internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
     request_validation_exception_handler,
@@ -112,7 +113,7 @@ async def lifespan(fastapi: FastAPI):
     logger.info('Stopping service ...')
 
 
-app = FastAPI(title='Radicalbit Platform', lifespan=lifespan)
+app = FastAPI(title='Radicalbit Platform', lifespan=lifespan, debug=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -136,3 +137,4 @@ app.add_exception_handler(ModelError, model_exception_handler)
 app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
+app.add_exception_handler(Exception, internal_exception_handler)
