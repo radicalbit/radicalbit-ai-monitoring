@@ -139,7 +139,7 @@ def request_validation_exception_handler(_, err: RequestValidationError):
     )
 
 
-def internal_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+def internal_exception_handler(_, exc: Exception) -> JSONResponse:
     logger.error('Internal error occurred [%s]', exc)
     return JSONResponse(
         status_code=500,
