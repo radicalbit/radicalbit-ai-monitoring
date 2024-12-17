@@ -37,7 +37,7 @@ class MetricsRouteTest(unittest.TestCase):
         app.add_exception_handler(MetricsError, metrics_exception_handler)
         app.include_router(router, prefix=cls.prefix)
 
-        cls.client = TestClient(app)
+        cls.client = TestClient(app, raise_server_exceptions=False)
 
     def test_get_reference_statistics_by_model_by_uuid(self):
         model_uuid = uuid.uuid4()

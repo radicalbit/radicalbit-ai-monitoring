@@ -113,7 +113,7 @@ async def lifespan(fastapi: FastAPI):
     logger.info('Stopping service ...')
 
 
-app = FastAPI(title='Radicalbit Platform', lifespan=lifespan, debug=False)
+app = FastAPI(title='Radicalbit Platform', lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
