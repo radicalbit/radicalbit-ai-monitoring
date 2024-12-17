@@ -96,7 +96,7 @@ class RadicalbitChart:
                 Chart().numerical_bar_chart(data=
                     NumericalBarChartData(
                         title=f.feature_name,
-                        bucket_data=[format(value,".4f") for value in f.histogram.buckets],
+                        bucket_data=[format(value,".3f") for value in f.histogram.buckets],
                         reference_data=f.histogram.reference_values,
                         current_data=f.histogram.current_values
                     )
@@ -285,8 +285,8 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.accuracy
 
-        current_accuracy= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_accuracy = [[c.timestamp, str(data.reference.model_quality().accuracy)] for c in current_model_quality]
+        current_accuracy= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_accuracy = [[c.timestamp, str(format(data.reference.model_quality().accuracy,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="Accuracy",
@@ -298,8 +298,8 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.precision
 
-        current_precision= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_precision = [[c.timestamp, str(data.reference.model_quality().precision)] for c in current_model_quality]
+        current_precision= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_precision = [[c.timestamp, str(format(data.reference.model_quality().precision,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="Precision",
@@ -311,8 +311,8 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.recall
 
-        current_recall= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_recall = [[c.timestamp, str(data.reference.model_quality().recall)] for c in current_model_quality]
+        current_recall= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_recall = [[c.timestamp,  str(format(data.reference.model_quality().recall,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="Recall",
@@ -324,8 +324,8 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.f1
 
-        current_f1= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_f1 = [[c.timestamp, str(data.reference.model_quality().f1)] for c in current_model_quality]
+        current_f1= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_f1 = [[c.timestamp,  str(format(data.reference.model_quality().f1,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="F1",
@@ -337,8 +337,8 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.true_positive_rate
 
-        current_true_positive_rate= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_true_positive_rate = [[c.timestamp, str(data.reference.model_quality().true_positive_rate)] for c in current_model_quality]
+        current_true_positive_rate= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_true_positive_rate = [[c.timestamp,  str(format(data.reference.model_quality().true_positive_rate,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="True positive rate",
@@ -350,8 +350,8 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.false_positive_rate
 
-        current_false_positive_rate= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_false_positive_rate = [[c.timestamp, str(data.reference.model_quality().false_positive_rate)] for c in current_model_quality]
+        current_false_positive_rate= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_false_positive_rate = [[c.timestamp, str(format(data.reference.model_quality().false_positive_rate,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="False positive rate",
@@ -362,9 +362,11 @@ class RadicalbitChart:
     def log_loss_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
 
         current_model_quality = data.current.model_quality().grouped_metrics.log_loss
-
-        current_log_loss= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_log_loss = [[c.timestamp, str(data.reference.model_quality().log_loss)] for c in current_model_quality]
+        if current_model_quality == None:
+            return
+        
+        current_log_loss= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_log_loss = [[c.timestamp, str(format(data.reference.model_quality().log_loss,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="Log loss",
@@ -376,8 +378,11 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.area_under_roc
 
-        current_auc_roc= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_auc_roc=[[c.timestamp, str(data.reference.model_quality().area_under_roc)] for c in current_model_quality]
+        if current_model_quality == None:
+            return
+
+        current_auc_roc= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_auc_roc=[[c.timestamp, str(format(data.reference.model_quality().area_under_roc,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="AUC-ROC",
@@ -389,8 +394,11 @@ class RadicalbitChart:
 
         current_model_quality = data.current.model_quality().grouped_metrics.area_under_pr
         
-        current_pr_auc= [[c.timestamp, str(c.value)] for c in current_model_quality] 
-        ref_pr_auc=[[c.timestamp, str(data.reference.model_quality().area_under_pr)] for c in current_model_quality]
+        if current_model_quality == None:
+            return
+
+        current_pr_auc= [[c.timestamp, str(format(c.value,".3f") if c.value != None else 0)] for c in current_model_quality] 
+        ref_pr_auc=[[c.timestamp, str(format(data.reference.model_quality().area_under_pr,".3f"))] for c in current_model_quality]
 
         return Chart().linear_chart(data=LinearChartData(
             title="PR AUC",
@@ -404,7 +412,7 @@ class RadicalbitChart:
         
         current_data=[{
             'name': d.class_name,
-            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.recall] 
+            'values': [[k.timestamp,str(format(k.value,".3f") if k.value != None else 0)] for k in d.grouped_metrics.recall] 
         } for d in current_model_quality]
 
         reference_data=[]
@@ -413,7 +421,7 @@ class RadicalbitChart:
             for k in d.grouped_metrics.recall:
                 for h in reference_model_quality:
                     if h.class_name == d.class_name:
-                        values.append([k.timestamp,str(format(h.metrics.recall,".4f"))])
+                        values.append([k.timestamp,str(format(h.metrics.recall,".3f"))])
             element={
                 'name': d.class_name,
                 'values': values
@@ -433,7 +441,7 @@ class RadicalbitChart:
         
         current_data=[{
             'name': d.class_name,
-            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.f_measure] 
+            'values': [[k.timestamp,str(format(k.value,".3f") if k.value != None else 0)] for k in d.grouped_metrics.f_measure] 
         } for d in current_model_quality]
 
         reference_data=[]
@@ -442,7 +450,7 @@ class RadicalbitChart:
             for k in d.grouped_metrics.f_measure:
                 for h in reference_model_quality:
                     if h.class_name == d.class_name:
-                        values.append([k.timestamp,str(format(h.metrics.f_measure,".4f"))])
+                        values.append([k.timestamp,str(format(h.metrics.f_measure,".3f"))])
             element={
                 'name': d.class_name,
                 'values': values
@@ -462,7 +470,7 @@ class RadicalbitChart:
         
         current_data=[{
             'name': d.class_name,
-            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.precision] 
+            'values': [[k.timestamp,str(format(k.value,".3f") if k.value != None else 0)] for k in d.grouped_metrics.precision] 
         } for d in current_model_quality]
 
         reference_data=[]
@@ -471,7 +479,7 @@ class RadicalbitChart:
             for k in d.grouped_metrics.precision:
                 for h in reference_model_quality:
                     if h.class_name == d.class_name:
-                        values.append([k.timestamp,str(format(h.metrics.precision,".4f"))])
+                        values.append([k.timestamp,str(format(h.metrics.precision,".3f"))])
             element={
                 'name': d.class_name,
                 'values': values
@@ -491,7 +499,7 @@ class RadicalbitChart:
         
         current_data=[{
             'name': d.class_name,
-            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.false_positive_rate] 
+            'values': [[k.timestamp,str(format(k.value,".3f") if k.value != None else 0)] for k in d.grouped_metrics.false_positive_rate] 
         } for d in current_model_quality]
 
         reference_data=[]
@@ -500,7 +508,7 @@ class RadicalbitChart:
             for k in d.grouped_metrics.false_positive_rate:
                 for h in reference_model_quality:
                     if h.class_name == d.class_name:
-                        values.append([k.timestamp,str(format(h.metrics.false_positive_rate,".4f"))])
+                        values.append([k.timestamp,str(format(h.metrics.false_positive_rate,".3f"))])
             element={
                 'name': d.class_name,
                 'values': values
@@ -520,7 +528,7 @@ class RadicalbitChart:
         
         current_data=[{
             'name': d.class_name,
-            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.true_positive_rate] 
+            'values': [[k.timestamp,str(format(k.value,".3f") if k.value != None else 0)] for k in d.grouped_metrics.true_positive_rate] 
         } for d in current_model_quality]
 
         reference_data=[]
@@ -529,7 +537,7 @@ class RadicalbitChart:
             for k in d.grouped_metrics.true_positive_rate:
                 for h in reference_model_quality:
                     if h.class_name == d.class_name:
-                        values.append([k.timestamp,str(format(h.metrics.true_positive_rate,".4f"))])
+                        values.append([k.timestamp,str(format(h.metrics.true_positive_rate,".3f"))])
             element={
                 'name': d.class_name,
                 'values': values
