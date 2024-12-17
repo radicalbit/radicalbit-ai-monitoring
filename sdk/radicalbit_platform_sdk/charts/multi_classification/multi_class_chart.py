@@ -110,7 +110,7 @@ class MultiClassificationChart:
                     'lineStyle': {'width': 2.2},
                     'symbol': 'none',
                     'data': element.values,
-                } for element in data.current_data ]
+                } for element in data.current_data  ]
 
         series_reference_data = [ {
                     'name': element.name,
@@ -142,9 +142,9 @@ class MultiClassificationChart:
             },
             'grid': {
                 'bottom': 0,
-                'top': 32,
+                'top': 60,
                 'left': 0,
-                'right': 140,
+                'right': 120,
                 'containLabel': True,
             },
             'color': [
@@ -172,13 +172,11 @@ class MultiClassificationChart:
             'tooltip': {'trigger': 'axis'},
             'emphasis': {'focus': 'series'},
             'title': {
-                'text': '••• Reference',
-                'textStyle': {'fontSize': 10, 'fontWeight': '300', 'color': '#9B99A1'},
-                'right': 0,
+                'text': data.title,
+                'subTextStyle': {'fontSize': 10, 'fontWeight': '300', 'color': '#9B99A1'},
+                'subtext':'••• Reference',
             },
             'series': series,
         }
-
-        display(data.title)
 
         return EChartsRawWidget(option=options)

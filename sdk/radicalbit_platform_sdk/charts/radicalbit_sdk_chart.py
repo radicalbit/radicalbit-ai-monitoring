@@ -1,8 +1,10 @@
+from functools import reduce
 from typing import List
 from ipecharts import EChartsRawWidget
 
 from radicalbit_platform_sdk.charts.binary_classification import BinaryChart, BinaryDistributionChartData
 from radicalbit_platform_sdk.charts.multi_classification import MultiClassificationChart, MultiClassificationDistributionChartData
+from radicalbit_platform_sdk.charts.multi_classification.multi_class_chart_data import MultiClassificationLinearChartData
 from radicalbit_platform_sdk.charts.regression import RegressionChart, RegressionDistributionChartData
 
 from radicalbit_platform_sdk.charts.common.chart import Chart
@@ -94,7 +96,7 @@ class RadicalbitChart:
                 Chart().numerical_bar_chart(data=
                     NumericalBarChartData(
                         title=f.feature_name,
-                        bucket_data=f.histogram.buckets,
+                        bucket_data=[format(value,".4f") for value in f.histogram.buckets],
                         reference_data=f.histogram.reference_values,
                         current_data=f.histogram.current_values
                     )
@@ -386,7 +388,7 @@ class RadicalbitChart:
     def pr_auc_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
 
         current_model_quality = data.current.model_quality().grouped_metrics.area_under_pr
-
+        
         current_pr_auc= [[c.timestamp, str(c.value)] for c in current_model_quality] 
         ref_pr_auc=[[c.timestamp, str(data.reference.model_quality().area_under_pr)] for c in current_model_quality]
 
@@ -394,6 +396,151 @@ class RadicalbitChart:
             title="PR AUC",
             reference_data=ref_pr_auc,
             current_data=current_pr_auc
+        ))
+
+    def multiclass_recall_chart(self,data=RbitChartLinearData) -> EChartsRawWidget:
+        current_model_quality= data.current.model_quality().class_metrics
+        reference_model_quality=data.reference.model_quality().class_metrics
+        
+        current_data=[{
+            'name': d.class_name,
+            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.recall] 
+        } for d in current_model_quality]
+
+        reference_data=[]
+        for d in current_model_quality:
+            values=[]
+            for k in d.grouped_metrics.recall:
+                for h in reference_model_quality:
+                    if h.class_name == d.class_name:
+                        values.append([k.timestamp,str(format(h.metrics.recall,".4f"))])
+            element={
+                'name': d.class_name,
+                'values': values
+            }
+            reference_data.append(element)
+
+        
+        return MultiClassificationChart().linear_chart(data=MultiClassificationLinearChartData(
+            title="Recall",
+            reference_data=reference_data,
+            current_data=current_data
+        ))
+    
+    def multiclass_f1_chart(self,data=RbitChartLinearData) -> EChartsRawWidget:
+        current_model_quality= data.current.model_quality().class_metrics
+        reference_model_quality=data.reference.model_quality().class_metrics
+        
+        current_data=[{
+            'name': d.class_name,
+            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.f_measure] 
+        } for d in current_model_quality]
+
+        reference_data=[]
+        for d in current_model_quality:
+            values=[]
+            for k in d.grouped_metrics.f_measure:
+                for h in reference_model_quality:
+                    if h.class_name == d.class_name:
+                        values.append([k.timestamp,str(format(h.metrics.f_measure,".4f"))])
+            element={
+                'name': d.class_name,
+                'values': values
+            }
+            reference_data.append(element)
+
+        
+        return MultiClassificationChart().linear_chart(data=MultiClassificationLinearChartData(
+            title="F1",
+            reference_data=reference_data,
+            current_data=current_data
+        ))
+
+    def multiclass_precision_chart(self,data=RbitChartLinearData) -> EChartsRawWidget:
+        current_model_quality= data.current.model_quality().class_metrics
+        reference_model_quality=data.reference.model_quality().class_metrics
+        
+        current_data=[{
+            'name': d.class_name,
+            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.precision] 
+        } for d in current_model_quality]
+
+        reference_data=[]
+        for d in current_model_quality:
+            values=[]
+            for k in d.grouped_metrics.precision:
+                for h in reference_model_quality:
+                    if h.class_name == d.class_name:
+                        values.append([k.timestamp,str(format(h.metrics.precision,".4f"))])
+            element={
+                'name': d.class_name,
+                'values': values
+            }
+            reference_data.append(element)
+
+        
+        return MultiClassificationChart().linear_chart(data=MultiClassificationLinearChartData(
+            title="Precision",
+            reference_data=reference_data,
+            current_data=current_data
+        ))
+
+    def multiclass_false_positive_rate_chart(self,data=RbitChartLinearData) -> EChartsRawWidget:
+        current_model_quality= data.current.model_quality().class_metrics
+        reference_model_quality=data.reference.model_quality().class_metrics
+        
+        current_data=[{
+            'name': d.class_name,
+            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.false_positive_rate] 
+        } for d in current_model_quality]
+
+        reference_data=[]
+        for d in current_model_quality:
+            values=[]
+            for k in d.grouped_metrics.false_positive_rate:
+                for h in reference_model_quality:
+                    if h.class_name == d.class_name:
+                        values.append([k.timestamp,str(format(h.metrics.false_positive_rate,".4f"))])
+            element={
+                'name': d.class_name,
+                'values': values
+            }
+            reference_data.append(element)
+
+        
+        return MultiClassificationChart().linear_chart(data=MultiClassificationLinearChartData(
+            title="False positive rate",
+            reference_data=reference_data,
+            current_data=current_data
+        ))
+
+    def multiclass_true_positive_rate_chart(self,data=RbitChartLinearData) -> EChartsRawWidget:
+        current_model_quality= data.current.model_quality().class_metrics
+        reference_model_quality=data.reference.model_quality().class_metrics
+        
+        current_data=[{
+            'name': d.class_name,
+            'values': [[k.timestamp,str(format(k.value,".4f") if k.value != None else 0)] for k in d.grouped_metrics.true_positive_rate] 
+        } for d in current_model_quality]
+
+        reference_data=[]
+        for d in current_model_quality:
+            values=[]
+            for k in d.grouped_metrics.true_positive_rate:
+                for h in reference_model_quality:
+                    if h.class_name == d.class_name:
+                        values.append([k.timestamp,str(format(h.metrics.true_positive_rate,".4f"))])
+            element={
+                'name': d.class_name,
+                'values': values
+            }
+            reference_data.append(element)
+
+        
+        return MultiClassificationChart().linear_chart(data=MultiClassificationLinearChartData(
+            title="False positive rate",
+            reference_data=reference_data,
+            current_data=current_data
         ))
 
     def confusion_matrix(self,data=RbitChartResidualData) -> EChartsRawWidget:
@@ -405,31 +552,36 @@ class RadicalbitChart:
                     global_metrics=data.reference.model_quality()  
                     return Chart().confusion_matrix_chart(data=ConfusionMatrixChartData(
                         axis_label=['1','0'],
-                        matrix=[[global_metrics.true_positive_count,global_metrics.false_positive_count],[global_metrics.false_negative_count,global_metrics.true_negative_count]]
+                        matrix=[
+                            [global_metrics.true_positive_count, global_metrics.false_negative_count],
+                            [global_metrics.false_positive_count, global_metrics.true_negative_count]
+                        ]
                     ))
                 else:
                     global_metrics=data.current.model_quality().global_metrics
                     return Chart().confusion_matrix_chart(data=ConfusionMatrixChartData(
                         axis_label=['1','0'],
-                        matrix=[[global_metrics.true_positive_count,global_metrics.false_positive_count],[global_metrics.false_negative_count,global_metrics.true_negative_count]],
+                        matrix=[
+                            [global_metrics.true_positive_count, global_metrics.false_negative_count],
+                            [global_metrics.false_positive_count, global_metrics.true_negative_count]
+                            ],
                         color=['#FFFFFF','#3695d9']
                     ))
             case ModelType.MULTI_CLASS:
                 if data.current == None:
-                    model_quality=data.reference.model_quality() 
+                    model_quality=data.reference.model_quality()
                     return Chart().confusion_matrix_chart(data=ConfusionMatrixChartData(
                         axis_label=model_quality.classes,
-                        matrix=model_quality.confusion_matrix
+                        matrix=model_quality.global_metrics.confusion_matrix
                     ))
                 else:
                     model_quality=data.current.model_quality()
-                   
+
                     return Chart().confusion_matrix_chart(data=ConfusionMatrixChartData(
                         axis_label=model_quality.classes,
-                        matrix=model_quality.confusion_matrix,
+                        matrix=model_quality.global_metrics.confusion_matrix,
                         color=['#FFFFFF','#3695d9']
                     ))
-
 
     def data_quality(self,data=RbitChartData) -> List[EChartsRawWidget]:
             distribution_chart= self.distribution_chart(data=data)
@@ -442,6 +594,10 @@ class RadicalbitChart:
 
         match model_type:
             case ModelType.BINARY:
+                if data.current == None:
+                    confusion_matrix=self.confusion_matrix(data=data)
+                    return confusion_matrix
+                
                 accuracy_linear_chart= self.accuracy_linear_chart(data=data)
                 precision_linear_chart= self.precision_linear_chart(data=data)
                 recall_linear_chart= self.recall_linear_chart(data=data)
@@ -449,13 +605,25 @@ class RadicalbitChart:
                 true_positive_rate_linear_chart= self.true_positive_rate_linear_chart(data=data)
                 false_positive_rate_linear_chart= self.false_positive_rate_linear_chart(data=data)
                 log_loss_linear_chart= self.log_loss_linear_chart(data=data)
+                confusion_matrix=self.confusion_matrix(data=data)
                 auc_roc_linear_chart= self.auc_roc_linear_chart(data=data)
                 pr_auc_linear_chart= self.pr_auc_linear_chart(data=data)
                 
-                return widgets.VBox([accuracy_linear_chart, precision_linear_chart,recall_linear_chart ,f1_linear_chart ,true_positive_rate_linear_chart,false_positive_rate_linear_chart,log_loss_linear_chart, auc_roc_linear_chart,pr_auc_linear_chart])
+                return widgets.VBox([accuracy_linear_chart, precision_linear_chart,recall_linear_chart ,f1_linear_chart ,true_positive_rate_linear_chart,false_positive_rate_linear_chart,log_loss_linear_chart, confusion_matrix, auc_roc_linear_chart,pr_auc_linear_chart])
 
             case ModelType.MULTI_CLASS:
-                return self._multiclass_distribution_chart(data=data)
+                if data.current == None:
+                    confusion_matrix=self.confusion_matrix(data=data)
+                    return confusion_matrix
+                
+                confusion_matrix=self.confusion_matrix(data=data)
+                multiclass_recall_chart=self.multiclass_recall_chart(data=data)
+                multiclass_f1_chart=self.multiclass_f1_chart(data=data)
+                multiclass_precision_chart=self.multiclass_precision_chart(data=data)
+                multiclass_false_positive_rate_chart=self.multiclass_false_positive_rate_chart(data=data)
+                multiclass_true_positive_rate_chart=self.multiclass_true_positive_rate_chart(data=data)
+
+                return widgets.VBox([confusion_matrix,multiclass_recall_chart,multiclass_f1_chart, multiclass_precision_chart,multiclass_false_positive_rate_chart,multiclass_true_positive_rate_chart])
             
             case ModelType.REGRESSION:
                 if data.current == None:

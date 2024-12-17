@@ -1,3 +1,4 @@
+from functools import reduce
 from ipecharts import EChartsRawWidget
 import numpy as np
 
@@ -10,8 +11,6 @@ class Chart:
         pass
 
     def numerical_bar_chart(self, data: NumericalBarChartData) -> EChartsRawWidget:
-        
-        
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
         reference_data_json = {
@@ -77,11 +76,13 @@ class Chart:
         self, data: ConfusionMatrixChartData
     ) -> EChartsRawWidget:
         
-        assert len(data.matrix) == len(data.axis_label) * len(
+        """ assert len(data.matrix) == len(data.axis_label) * len(
             data.axis_label
-        ), 'axis_label count and matrix item count are not compatibile'
+        ), 'axis_label count and matrix item count are not compatibile' """
 
         np_matrix = np.matrix(data.matrix)
+
+        matrix_data=reduce(lambda x,y: x + y ,[ [ [xIdx,yIdx,value] for xIdx,value in enumerate(datas) ] for yIdx,datas in enumerate(reversed(data.matrix))])
 
         options = {
             'yAxis': {
@@ -90,7 +91,7 @@ class Chart:
                 'axisLine': {'show': False},
                 'splitLine': {'show': False},
                 'axisLabel': {'fontSize': 12, 'color': '#9B99A1'},
-                'data': data.axis_label,
+                'data': reversed(data.axis_label),
                 'name': 'Actual',
                 'nameGap': 25,
                 'nameLocation': 'middle',
@@ -106,7 +107,7 @@ class Chart:
                     'color': '#9b99a1',
                     'rotate': 45,
                 },
-                'data': data.axis_label.reverse(),
+                'data': data.axis_label,
                 'name': 'Predicted',
                 'nameGap': 25,
                 'nameLocation': 'middle',
@@ -127,8 +128,8 @@ class Chart:
                 'name': '',
                 'type': 'heatmap',
                 'label': {'show': True},
-                'data': data.matrix,
-            },
+                'data': matrix_data
+            }
         }
 
         return EChartsRawWidget(option=options)
