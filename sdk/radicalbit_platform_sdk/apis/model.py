@@ -1,3 +1,4 @@
+import json
 from io import BytesIO
 import os
 from typing import Dict, List, Optional
@@ -531,8 +532,9 @@ class Model:
         """
 
         try:
-            json_data = pd.read_json(file_name).to_dict(orient='records')
-            validated_json_bytes = self.__validate_json(json_data)
+            with open(file_name, 'r', encoding='utf-8') as f:
+                raw_json = json.load(f)
+            validated_json_bytes = self.__validate_json(raw_json)
         except Exception as e:
             raise ClientError(
                 f'Failed to validate JSON file {file_name}: {str(e)}'
@@ -618,8 +620,7 @@ class Model:
     def __validate_json(json_data: List[Dict]) -> BytesIO:
         try:
             validated_data = CompletionResponses.model_validate(json_data)
-            validated_json = pd.DataFrame(validated_data.model_dump())
-            return BytesIO(validated_json.to_json(orient='records').encode('utf-8'))
+            return BytesIO(validated_data.model_dump_json().encode())
         except ValidationError as e:
             raise ClientError(f'JSON validation error: {str(e)}') from e
         except Exception as e:

@@ -433,7 +433,7 @@ class FileService:
                 ],
             )
 
-            return CompletionDatasetDTO.from_current_dataset(inserted_file)
+            return CompletionDatasetDTO.from_completion_dataset(inserted_file)
 
         except NoCredentialsError as nce:
             raise HTTPException(
