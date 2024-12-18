@@ -40,7 +40,7 @@ function Name() {
 
 function ModelType() {
   const { useFormbit } = useModalContext();
-  const { form, write } = useFormbit;
+  const { form, write, error } = useFormbit;
 
   const handleOnChange = (value) => {
     write('modelType', value);
@@ -54,7 +54,7 @@ function ModelType() {
   ];
 
   return (
-    <FormField label="Model type" modifier="w-full" required>
+    <FormField label="Model type" message={error('modelType')} modifier="w-full" required>
       <Select onChange={handleOnChange} value={form.modelType}>
         {Object.values(modelTypeSelections).map((value) => (
           <Select.Option key={value}>
