@@ -82,7 +82,6 @@ class RegressionChart:
     def predicted_actual_chart(
         self, data: RegressionPredictedActualChartData
     ) -> EChartsRawWidget:
-
         np_array = np.array(data.scatter_data)
         x_max = np_array.max()
         x_min = np_array.min()
@@ -162,7 +161,6 @@ class RegressionChart:
     def residual_scatter_chart(
         self, data: RegressionResidualScatterChartData
     ) -> EChartsRawWidget:
-
         options = {
             'grid': {
                 'left': 20,
@@ -212,7 +210,6 @@ class RegressionChart:
     def residual_bucket_chart(
         self, data: RegressionResidualBucketChartData
     ) -> EChartsRawWidget:
-
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
         options = {

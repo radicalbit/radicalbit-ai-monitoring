@@ -15,8 +15,14 @@ class BinaryChart:
         if data.current_data:
             assert len(data.current_data) <= 2
 
-        reference_json_data = [binary_data.model_dump() for binary_data in data.reference_data]
-        current_data_json = [binary_data.model_dump() for binary_data in data.current_data] if data.current_data else []
+        reference_json_data = [
+            binary_data.model_dump() for binary_data in data.reference_data
+        ]
+        current_data_json = (
+            [binary_data.model_dump() for binary_data in data.current_data]
+            if data.current_data
+            else []
+        )
 
         reference_series_data = {
             'title': data.title,
@@ -87,7 +93,6 @@ class BinaryChart:
         return EChartsRawWidget(option=option)
 
     def linear_chart(self, data: BinaryLinearChartData) -> EChartsRawWidget:
-
         reference_series_data = {
             'name': 'Reference',
             'type': 'line',

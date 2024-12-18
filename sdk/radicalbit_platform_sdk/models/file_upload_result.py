@@ -26,6 +26,10 @@ class CurrentFileUpload(FileUploadResult):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
+class CompletionFileUpload(FileUploadResult):
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
 class FileReference(BaseModel):
     file_url: str
     separator: str = ','
@@ -35,3 +39,9 @@ class FileReference(BaseModel):
         populate_by_name=True,
         alias_generator=to_camel,
     )
+
+
+class FileCompletion(BaseModel):
+    file_url: str
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

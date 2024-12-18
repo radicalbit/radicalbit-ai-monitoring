@@ -30,6 +30,7 @@ from app.models.completion_response import CompletionResponses
 from app.models.dataset_dto import (
     CompletionDatasetDTO,
     CurrentDatasetDTO,
+    FileCompletion,
     FileReference,
     OrderType,
     ReferenceDatasetDTO,
@@ -395,6 +396,56 @@ class FileService:
             raise HTTPException(
                 status_code=500, detail='S3 credentials not available'
             ) from nce
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e)) from e
+
+    def bind_completion_file(
+        self, model_uuid: UUID, file_completion: FileCompletion
+    ) -> CompletionDatasetDTO:
+        model_out = self.model_svc.get_model_by_uuid(model_uuid)
+        if not model_out:
+            logger.error('Model %s not found', model_uuid)
+            raise ModelNotFoundError(f'Model {model_uuid} not found')
+        try:
+            url_parts = file_completion.file_url.replace('s3://', '').split('/')
+            self.s3_client.head_object(Bucket=url_parts[0], Key='/'.join(url_parts[1:]))
+
+            inserted_file = self.completion_dataset_dao.insert_completion_dataset(
+                CompletionDataset(
+                    uuid=uuid4(),
+                    model_uuid=model_uuid,
+                    path=file_completion.file_url,
+                    date=datetime.datetime.now(tz=datetime.UTC),
+                    status=JobStatus.IMPORTING,
+                )
+            )
+            logger.debug('File %s has been correctly stored in the db', inserted_file)
+
+            spark_config = get_config().spark_config
+            self.__submit_app(
+                app_name=str(model_out.uuid),
+                app_path=spark_config.spark_completion_app_path,
+                app_arguments=[
+                    file_completion.file_url.replace('s3://', 's3a://'),
+                    str(inserted_file.uuid),
+                    CompletionDatasetMetrics.__tablename__,
+                    CompletionDataset.__tablename__,
+                ],
+            )
+
+            return CompletionDatasetDTO.from_completion_dataset(inserted_file)
+
+        except NoCredentialsError as nce:
+            raise HTTPException(
+                status_code=500, detail='S3 credentials not available'
+            ) from nce
+        except ClientError as e:
+            if e.response['Error']['Code'] == '404':
+                raise HTTPException(
+                    status_code=404,
+                    detail=f'File {file_completion.file_url} not exists',
+                ) from None
+            raise HTTPException(status_code=500, detail=str(e)) from e
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e)) from e
 

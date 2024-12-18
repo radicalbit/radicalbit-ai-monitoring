@@ -15,9 +15,14 @@ class MultiClassificationChart:
     def distribution_chart(
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
-
-        reference_json_data = [multi_class_data.model_dump() for multi_class_data in data.reference_data]
-        current_data_json = [multi_class_data.model_dump() for multi_class_data in data.current_data] if data.current_data else []
+        reference_json_data = [
+            multi_class_data.model_dump() for multi_class_data in data.reference_data
+        ]
+        current_data_json = (
+            [multi_class_data.model_dump() for multi_class_data in data.current_data]
+            if data.current_data
+            else []
+        )
 
         reference_series_data = {
             'title': data.title,
@@ -86,27 +91,31 @@ class MultiClassificationChart:
     def linear_chart(
         self, data: MultiClassificationLinearChartData
     ) -> EChartsRawWidget:
+        series_current_data = [
+            {
+                'name': element.name,
+                'type': 'line',
+                'lineStyle': {'width': 2.2},
+                'symbol': 'none',
+                'data': element.values,
+            }
+            for element in data.current_data
+        ]
 
-        series_current_data = [{
-                    'name': element.name,
-                    'type': 'line',
-                    'lineStyle': {'width': 2.2},
-                    'symbol': 'none',
-                    'data': element.values,
-                } for element in data.current_data ]
-
-        series_reference_data = [ {
-                    'name': element.name,
-                    'type': 'line',
-                    'lineStyle': {'width': 2, 'type': 'dotted'},
-                    'symbol': 'none',
-                    'data': element.values,
-                    'endLabel': {
-                        'show': True,
-                        'color': '#9B99A1',
-                    },
-                } for element in data.reference_data]
-
+        series_reference_data = [
+            {
+                'name': element.name,
+                'type': 'line',
+                'lineStyle': {'width': 2, 'type': 'dotted'},
+                'symbol': 'none',
+                'data': element.values,
+                'endLabel': {
+                    'show': True,
+                    'color': '#9B99A1',
+                },
+            }
+            for element in data.reference_data
+        ]
 
         series = series_current_data + series_reference_data
 
