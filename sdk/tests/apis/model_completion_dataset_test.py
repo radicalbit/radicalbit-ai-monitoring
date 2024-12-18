@@ -39,13 +39,57 @@ class ModelCompletionDatasetTest(unittest.TestCase):
             body="""{
                     "datetime": "something_not_used",
                     "jobStatus": "SUCCEEDED",
-                    "modelQuality": {}
-                }""",
+                    "modelQuality":
+                        {
+                            "tokens": [
+                                {
+                                    "id":"chatcmpl",
+                                    "probs":[
+                                        {
+                                            "prob":0.27,
+                                            "token":"Sky"
+                                        },
+                                        {
+                                            "prob":0.89,
+                                            "token":" is"
+                                        },
+                                        {
+                                            "prob":0.70,
+                                            "token":" blue"
+                                        },
+                                        {
+                                            "prob":0.99,
+                                            "token":"."
+                                        }
+                                    ]
+                                }
+                            ],
+                            "mean_per_file":[
+                                {
+                                    "prob_tot_mean":0.71,
+                                    "perplex_tot_mean":1.52
+                                }
+                            ],
+                            "mean_per_phrase":[
+                                {
+                                    "id":"chatcmpl",
+                                    "prob_per_phrase":0.71,
+                                    "perplex_per_phrase":1.54
+                                }
+                            ]
+                        }
+                    }""",
         )
 
         metrics = model_completion_dataset.model_quality()
 
         assert isinstance(metrics, CompletionTextGenerationModelQuality)
+        assert metrics.tokens[0].probs[0].prob == 0.27
+        assert metrics.tokens[0].probs[0].token == 'Sky'
+        assert metrics.mean_per_file[0].prob_tot_mean == 0.71
+        assert metrics.mean_per_file[0].perplex_tot_mean == 1.52
+        assert metrics.mean_per_phrase[0].prob_per_phrase == 0.71
+        assert metrics.mean_per_phrase[0].perplex_per_phrase == 1.54
         assert model_completion_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate
