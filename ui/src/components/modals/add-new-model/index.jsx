@@ -1,5 +1,8 @@
+import {
+  RbitModal, SectionTitle, Steps,
+} from '@radicalbit/radicalbit-design-system';
 import useModals from '@Src/hooks/use-modals';
-import { RbitModal, SectionTitle, Steps } from '@radicalbit/radicalbit-design-system';
+import { ModelTypeEnum } from '@Src/store/state/models/constants';
 import ModalContextProvider, { useModalContext } from './modal-context-provider';
 import ActionsStepFourth from './step-four/actions';
 import BodyStepFour from './step-four/new-body';
@@ -9,6 +12,10 @@ import ActionsStepThree from './step-three/actions';
 import BodyStepThree from './step-three/body';
 import ActionsStepTwo from './step-two/actions';
 import BodyStepTwo from './step-two/body';
+import {
+  TextGenerationActionButton, TextGenerationBody,
+  TextGenerationHeader,
+} from './text-generation';
 
 const { Step } = Steps;
 
@@ -59,7 +66,9 @@ function Header() {
     step,
   } = useModalContext();
 
-  const { isFormInvalid: isFormInvalidStepOne } = useFormbitStepOne;
+  const { isFormInvalid: isFormInvalidStepOne, form } = useFormbitStepOne;
+  const modelType = form?.modelType;
+
   const { isFormInvalid: isFormInvalidStepTwo } = useFormbitStepTwo;
   const { isFormInvalid: isFormInvalidStepThree } = useFormbitStepThree;
   const { isFormInvalid: isFormInvalidStepFour } = useFormbitStepFour;
@@ -69,21 +78,27 @@ function Header() {
   || (step === 2 && isFormInvalidStepThree())
   || (step === 3 && isFormInvalidStepFour()) ? 'error' : undefined;
 
-  return (
-    <div className="flex flex-col gap-4">
-      <SectionTitle title="New Model" />
+  switch (modelType) {
+    case ModelTypeEnum.TEXT_GENERATION:
+      return (<TextGenerationHeader />);
 
-      <Steps className="w-3/4 self-center" current={step} direction="horizontal" status={stepStatus}>
-        <Step title="Registry" />
+    default:
+      return (
+        <div className="flex flex-col gap-4">
+          <SectionTitle title="New Model" />
 
-        <Step title="Schema" />
+          <Steps className="w-3/4 self-center" current={step} direction="horizontal" status={stepStatus}>
+            <Step title="Registry" />
 
-        <Step title="Fields" />
+            <Step title="Schema" />
 
-        <Step title="Target" />
-      </Steps>
-    </div>
-  );
+            <Step title="Fields" />
+
+            <Step title="Target" />
+          </Steps>
+        </div>
+      );
+  }
 }
 
 function Subtitles() {
@@ -146,6 +161,21 @@ function Subtitles() {
 }
 
 function Body() {
+  const { useFormbitStepOne } = useModalContext();
+
+  const { form } = useFormbitStepOne;
+  const modelType = form?.modelType;
+
+  switch (modelType) {
+    case ModelTypeEnum.TEXT_GENERATION:
+      return <TextGenerationBody />;
+
+    default:
+      return <BodyInner />;
+  }
+}
+
+function BodyInner() {
   const { step } = useModalContext();
 
   switch (step) {
@@ -165,6 +195,21 @@ function Body() {
 }
 
 function Actions() {
+  const { useFormbitStepOne } = useModalContext();
+
+  const { form } = useFormbitStepOne;
+  const modelType = form?.modelType;
+
+  switch (modelType) {
+    case ModelTypeEnum.TEXT_GENERATION:
+      return (<TextGenerationActionButton />);
+
+    default:
+      return <ActionsInner />;
+  }
+}
+
+function ActionsInner() {
   const { step } = useModalContext();
 
   switch (step) {
