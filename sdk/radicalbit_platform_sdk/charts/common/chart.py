@@ -1,7 +1,9 @@
+from functools import reduce
+
 from ipecharts import EChartsRawWidget
 import numpy as np
 
-from .chart_data import ConfusionMatrixChartData, NumericalBarChartData
+from .chart_data import ConfusionMatrixChartData, LinearChartData, NumericalBarChartData
 from .utils import get_chart_header, get_formatted_bucket_data
 
 
@@ -74,11 +76,15 @@ class Chart:
     def confusion_matrix_chart(
         self, data: ConfusionMatrixChartData
     ) -> EChartsRawWidget:
-        assert len(data.matrix) == len(data.axis_label) * len(
-            data.axis_label
-        ), 'axis_label count and matrix item count are not compatibile'
-
         np_matrix = np.matrix(data.matrix)
+
+        matrix_data = reduce(
+            lambda x, y: x + y,
+            [
+                [[xIdx, yIdx, value] for xIdx, value in enumerate(datas)]
+                for yIdx, datas in enumerate(reversed(data.matrix))
+            ],
+        )
 
         options = {
             'yAxis': {
@@ -87,7 +93,7 @@ class Chart:
                 'axisLine': {'show': False},
                 'splitLine': {'show': False},
                 'axisLabel': {'fontSize': 12, 'color': '#9B99A1'},
-                'data': data.axis_label,
+                'data': reversed(data.axis_label),
                 'name': 'Actual',
                 'nameGap': 25,
                 'nameLocation': 'middle',
@@ -103,7 +109,7 @@ class Chart:
                     'color': '#9b99a1',
                     'rotate': 45,
                 },
-                'data': data.axis_label.reverse(),
+                'data': data.axis_label,
                 'name': 'Predicted',
                 'nameGap': 25,
                 'nameLocation': 'middle',
@@ -124,8 +130,69 @@ class Chart:
                 'name': '',
                 'type': 'heatmap',
                 'label': {'show': True},
-                'data': data.matrix,
+                'data': matrix_data,
             },
         }
+
+        return EChartsRawWidget(option=options)
+
+    def linear_chart(self, data: LinearChartData) -> EChartsRawWidget:
+        reference_series_data = {
+            'name': 'Reference',
+            'type': 'line',
+            'lineStyle': {'width': 2.2, 'color': '#9B99A1', 'type': 'dotted'},
+            'symbol': 'none',
+            'data': data.reference_data,
+            'itemStyle': {'color': '#9B99A1'},
+            'endLabel': {'show': True, 'color': '#9B99A1'},
+            'color': '#9B99A1',
+        }
+
+        current_series_data = {
+            'name': data.title,
+            'type': 'line',
+            'lineStyle': {'width': 2.2, 'color': '#73B2E0'},
+            'symbol': 'none',
+            'data': data.current_data,
+            'itemStyle': {'color': '#73B2E0'},
+        }
+
+        series = [reference_series_data, current_series_data]
+
+        options = {
+            'tooltip': {
+                'trigger': 'axis',
+                'crosshairs': True,
+                'axisPointer': {'type': 'cross', 'label': {'show': True}},
+            },
+            'yAxis': {
+                'type': 'value',
+                'axisLabel': {'fontSize': 9, 'color': '#9b99a1'},
+                'splitLine': {'lineStyle': {'color': '#9f9f9f54'}},
+                'scale': True,
+            },
+            'xAxis': {
+                'type': 'time',
+                'axisTick': {'show': False},
+                'axisLine': {'show': False},
+                'splitLine': {'show': False},
+                'axisLabel': {'fontSize': 12, 'color': '#9b99a1'},
+                'scale': True,
+            },
+            'grid': {
+                'bottom': 0,
+                'top': 32,
+                'left': 0,
+                'right': 64,
+                'containLabel': True,
+            },
+            'series': series,
+            'legend': {
+                'show': True,
+                'textStyle': {'color': '#9B99A1'},
+            },
+        }
+
+        options.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=options)

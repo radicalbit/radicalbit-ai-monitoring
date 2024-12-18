@@ -8,7 +8,7 @@ def get_formatted_bucket_data(bucket_data: List[str]) -> List[str]:
     for idx, d in enumerate(bucket_data):
         close_bracket = ']' if idx == bucket_data_len - 1 else ')'
         if idx < bucket_data_len:
-            element = '[' + d + ',' + bucket_data[idx + 1] + close_bracket
+            element = '[' + str(d) + ',' + str(bucket_data[idx + 1]) + close_bracket
             bucket_data_formatted.append(element)
 
     return bucket_data_formatted

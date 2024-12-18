@@ -1,6 +1,8 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from radicalbit_platform_sdk.models.dataset_data_quality import ClassMetrics
 
 
 class MultiClassificationDistributionData(BaseModel):
@@ -11,9 +13,10 @@ class MultiClassificationDistributionData(BaseModel):
 
 class MultiClassificationDistributionChartData(BaseModel):
     title: str
-    x_axis_label: List[str]
-    reference_data: List[MultiClassificationDistributionData]
-    current_data: Optional[List[MultiClassificationDistributionData]] = None
+    reference_data: List[ClassMetrics]
+    current_data: Optional[List[ClassMetrics]] = None
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class MultiClassificationLinearData(BaseModel):
