@@ -1,0 +1,13 @@
+[
+	{
+		"id":"chatcmpl",
+		"choices":[
+			{
+				"finish_reason":"stop",
+				"index":0
+			}
+		],
+		"created":1733486708,
+		"model":"gpt-4o-2024-08-06"
+	}
+]

@@ -8,6 +8,7 @@ from fastapi_pagination import Page, Params
 from app.models.dataset_dto import (
     CompletionDatasetDTO,
     CurrentDatasetDTO,
+    FileCompletion,
     FileReference,
     OrderType,
     ReferenceDatasetDTO,
@@ -74,6 +75,16 @@ class UploadDatasetRoute:
             model_uuid: UUID, json_file: UploadFile = File(...)
         ) -> CompletionDatasetDTO:
             return file_service.upload_completion_file(model_uuid, json_file)
+
+        @router.post(
+            '/{model_uuid}/completion/bind',
+            status_code=status.HTTP_200_OK,
+            response_model=CompletionDatasetDTO,
+        )
+        def bind_completion_file(
+            model_uuid: UUID, file_completion: FileCompletion
+        ) -> CompletionDatasetDTO:
+            return file_service.bind_completion_file(model_uuid, file_completion)
 
         @router.get(
             '/{model_uuid}/reference',

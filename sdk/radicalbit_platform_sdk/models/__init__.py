@@ -1,5 +1,6 @@
 from .aws_credentials import AwsCredentials
 from .column_definition import ColumnDefinition
+from .completion_response import CompletionResponses
 from .data_type import DataType
 from .dataset_data_quality import (
     ClassificationDataQuality,
@@ -28,10 +29,17 @@ from .dataset_model_quality import (
     ModelQuality,
     MultiClassificationModelQuality,
     RegressionModelQuality,
+    CompletionTextGenerationModelQuality,
 )
 from .dataset_stats import DatasetStats
 from .field_type import FieldType
-from .file_upload_result import CurrentFileUpload, FileReference, ReferenceFileUpload
+from .file_upload_result import (
+    CurrentFileUpload,
+    FileReference,
+    ReferenceFileUpload,
+    CompletionFileUpload,
+    FileCompletion
+)
 from .job_status import JobStatus
 from .model_definition import (
     CreateModel,
@@ -53,6 +61,7 @@ __all__ = [
     'JobStatus',
     'DataType',
     'ModelType',
+    'CompletionResponses',
     'DatasetStats',
     'ModelQuality',
     'BinaryClassificationModelQuality',
@@ -61,6 +70,7 @@ __all__ = [
     'MultiClassificationModelQuality',
     'RegressionModelQuality',
     'CurrentRegressionModelQuality',
+    'CompletionTextGenerationModelQuality',
     'DataQuality',
     'ClassificationDataQuality',
     'RegressionDataQuality',
@@ -78,7 +88,9 @@ __all__ = [
     'Drift',
     'ReferenceFileUpload',
     'CurrentFileUpload',
+    'CompletionFileUpload',
     'FileReference',
+    'FileCompletion',
     'AwsCredentials',
     'SupportedTypes',
     'FieldType',

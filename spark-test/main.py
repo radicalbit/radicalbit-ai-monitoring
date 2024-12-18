@@ -26,7 +26,7 @@ spark_k8s_client.submit_app(
         path,
         str(uuid4()),
         "completion_dataset_metrics",
-        "completion_dataset"
+        "completion_dataset",
     ],
     app_name=f"{spark_image}-completion-job",
     namespace="spark",

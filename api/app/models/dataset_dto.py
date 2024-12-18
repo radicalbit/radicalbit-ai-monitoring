@@ -89,6 +89,15 @@ class FileReference(BaseModel):
     )
 
 
+class FileCompletion(BaseModel):
+    file_url: str
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+
 class OrderType(str, Enum):
     ASC = 'asc'
     DESC = 'desc'

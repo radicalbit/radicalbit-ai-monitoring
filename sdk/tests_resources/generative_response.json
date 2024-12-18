@@ -1,0 +1,96 @@
+[
+	{
+		"id":"chatcmpl",
+		"choices":[
+			{
+				"finish_reason":"stop",
+				"index":0,
+				"logprobs":{
+					"content":[
+						{
+							"token":"Sky",
+							"bytes":[
+								83,
+								107,
+								121
+							],
+							"logprob":-1.2830728,
+							"top_logprobs":[
+
+							]
+						},
+						{
+							"token":" is",
+							"bytes":[
+								32,
+								105,
+								115
+							],
+							"logprob":-0.11081739,
+							"top_logprobs":[
+
+							]
+						},
+						{
+							"token":" blue",
+							"bytes":[
+								32,
+								98,
+								108,
+								117,
+								101
+							],
+							"logprob":-0.35119465,
+							"top_logprobs":[
+
+							]
+						},
+						{
+							"token":".",
+							"bytes":[
+								46
+							],
+							"logprob":-0.000024630364,
+							"top_logprobs":[
+
+							]
+						}
+					],
+					"refusal":null
+				},
+				"message":{
+					"content":"Sky is blue.",
+					"refusal":null,
+					"role":"assistant",
+					"tool_calls":[
+
+					],
+					"parsed":null
+				}
+			}
+		],
+		"created":1733486708,
+		"model":"gpt-4o-2024-08-06",
+		"object":"chat.completion",
+		"system_fingerprint":"fp_c7ca0ebaca",
+		"usage":{
+			"completion_tokens":4,
+			"prompt_tokens":25,
+			"total_tokens":29,
+			"completion_tokens_details":{
+				"accepted_prediction_tokens":0,
+				"reasoning_tokens":0,
+				"rejected_prediction_tokens":0,
+				"audio_tokens":0,
+				"cached_tokens":null
+			},
+			"prompt_tokens_details":{
+				"accepted_prediction_tokens":0,
+				"reasoning_tokens":0,
+				"rejected_prediction_tokens":0,
+				"audio_tokens":0,
+				"cached_tokens":0
+			}
+		}
+	}
+]
