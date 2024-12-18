@@ -36,7 +36,8 @@ from radicalbit_platform_sdk.charts.regression.regression_chart_data import (
 )
 from radicalbit_platform_sdk.models import ModelType
 
-
+# ruff's check regarding list comprehension is removed in favor of greater readability in multiclass methods
+# ruff: noqa: PERF401
 class RadicalbitChart:
     def __init__(self) -> None:
         pass
