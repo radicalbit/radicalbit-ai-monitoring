@@ -136,3 +136,11 @@ def request_validation_exception_handler(_, err: RequestValidationError):
         status_code=422,  # https://www.rfc-editor.org/rfc/rfc9110.html#name-422-unprocessable-content
         content=jsonable_encoder(ErrorOut(error_message)),
     )
+
+
+def internal_exception_handler(_, exc: Exception) -> JSONResponse:
+    logger.error('Internal error occurred [%s]', exc)
+    return JSONResponse(
+        status_code=500,
+        content=jsonable_encoder(ErrorOut(f'Internal server error occurred {exc}')),
+    )

@@ -35,7 +35,7 @@ class ModelRouteTest(unittest.TestCase):
         app.add_exception_handler(ModelError, model_exception_handler)
         app.include_router(router, prefix=cls.prefix)
 
-        cls.client = TestClient(app)
+        cls.client = TestClient(app, raise_server_exceptions=False)
 
     def test_create_model(self):
         model_in = db_mock.get_sample_model_in()

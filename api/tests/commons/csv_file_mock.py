@@ -90,6 +90,10 @@ def get_uncorrect_sample_csv_file() -> UploadFile:
     return UploadFile(BytesIO(df.to_csv(index=False).encode()), filename=None)
 
 
+def get_empty_sample_csv_file() -> UploadFile:
+    return UploadFile(BytesIO(), filename='sample.csv', size=0)
+
+
 def get_file_using_sep(sep: str) -> UploadFile:
     df = get_dataframe_with_sep(sep)
     return UploadFile(
