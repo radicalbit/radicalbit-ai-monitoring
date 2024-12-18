@@ -1,5 +1,5 @@
-import json
 from io import BytesIO
+import json
 import os
 from typing import Dict, List, Optional
 from uuid import UUID
@@ -532,7 +532,7 @@ class Model:
         """
 
         try:
-            with open(file_name, 'r', encoding='utf-8') as f:
+            with open(file_name, encoding='utf-8') as f:
                 raw_json = json.load(f)
             validated_json_bytes = self.__validate_json(raw_json)
         except Exception as e:
