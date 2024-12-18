@@ -14,14 +14,18 @@ class MultiClassificationChart:
     def distribution_chart(
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
-
-        y_axis_label = [metric['name'] for metric in [binary_data.model_dump() for binary_data in data.reference_data]]
+        y_axis_label = [
+            metric['name']
+            for metric in [
+                binary_data.model_dump() for binary_data in data.reference_data
+            ]
+        ]
 
         reference_data = [
             {
-                "percentage": metric.percentage,
-                "value": metric.count,
-                "count": metric.count,
+                'percentage': metric.percentage,
+                'value': metric.count,
+                'count': metric.count,
             }
             for metric in data.reference_data
         ]
@@ -34,14 +38,18 @@ class MultiClassificationChart:
             'data': reference_data,
         }
 
-        current_data =  [
-            {
-                "percentage": metric.percentage,
-                "value": metric.count,
-                "count": metric.count,
-            }
-            for metric in data.current_data
-        ] if data.current_data else []
+        current_data = (
+            [
+                {
+                    'percentage': metric.percentage,
+                    'value': metric.count,
+                    'count': metric.count,
+                }
+                for metric in data.current_data
+            ]
+            if data.current_data
+            else []
+        )
 
         current_series_data = {
             'title': data.title + '_current',
@@ -102,27 +110,31 @@ class MultiClassificationChart:
     def linear_chart(
         self, data: MultiClassificationLinearChartData
     ) -> EChartsRawWidget:
+        series_current_data = [
+            {
+                'name': element.name,
+                'type': 'line',
+                'lineStyle': {'width': 2.2},
+                'symbol': 'none',
+                'data': element.values,
+            }
+            for element in data.current_data
+        ]
 
-        series_current_data = [{
-                    'name': element.name,
-                    'type': 'line',
-                    'lineStyle': {'width': 2.2},
-                    'symbol': 'none',
-                    'data': element.values,
-                } for element in data.current_data  ]
-
-        series_reference_data = [ {
-                    'name': element.name,
-                    'type': 'line',
-                    'lineStyle': {'width': 2, 'type': 'dotted'},
-                    'symbol': 'none',
-                    'data': element.values,
-                    'endLabel': {
-                        'show': True,
-                        'color': '#9B99A1',
-                    },
-                } for element in data.reference_data]
-
+        series_reference_data = [
+            {
+                'name': element.name,
+                'type': 'line',
+                'lineStyle': {'width': 2, 'type': 'dotted'},
+                'symbol': 'none',
+                'data': element.values,
+                'endLabel': {
+                    'show': True,
+                    'color': '#9B99A1',
+                },
+            }
+            for element in data.reference_data
+        ]
 
         series = series_current_data + series_reference_data
 
@@ -172,8 +184,12 @@ class MultiClassificationChart:
             'emphasis': {'focus': 'series'},
             'title': {
                 'text': data.title,
-                'subTextStyle': {'fontSize': 10, 'fontWeight': '300', 'color': '#9B99A1'},
-                'subtext':'••• Reference',
+                'subTextStyle': {
+                    'fontSize': 10,
+                    'fontWeight': '300',
+                    'color': '#9B99A1',
+                },
+                'subtext': '••• Reference',
             },
             'series': series,
         }

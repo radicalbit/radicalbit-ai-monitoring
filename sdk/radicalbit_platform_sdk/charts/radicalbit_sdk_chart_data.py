@@ -14,6 +14,7 @@ class RbitBinaryDistributionData(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+
 class RbitChartData(BaseModel):
     model: Model
     reference: ModelReferenceDataset
@@ -21,12 +22,14 @@ class RbitChartData(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+
 class RbitChartResidualData(BaseModel):
     model: Model
     reference: Optional[ModelReferenceDataset] = None
     current: Optional[ModelCurrentDataset] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
 
 class RbitChartLinearData(BaseModel):
     model: Model

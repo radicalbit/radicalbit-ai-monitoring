@@ -14,25 +14,34 @@ class BinaryChart:
         if data.current_data:
             assert len(data.current_data) <= 2
 
-        y_axis_label = [metric['name'] for metric in [binary_data.model_dump() for binary_data in data.reference_data]]
+        y_axis_label = [
+            metric['name']
+            for metric in [
+                binary_data.model_dump() for binary_data in data.reference_data
+            ]
+        ]
 
         reference_data = [
             {
-                "percentage": metric.percentage,
-                "value": metric.count,
-                "count": metric.count,
+                'percentage': metric.percentage,
+                'value': metric.count,
+                'count': metric.count,
             }
             for metric in data.reference_data
         ]
 
-        current_data =  [
-            {
-                "percentage": metric.percentage,
-                "value": metric.count,
-                "count": metric.count,
-            }
-            for metric in data.current_data
-        ] if data.current_data else []
+        current_data = (
+            [
+                {
+                    'percentage': metric.percentage,
+                    'value': metric.count,
+                    'count': metric.count,
+                }
+                for metric in data.current_data
+            ]
+            if data.current_data
+            else []
+        )
 
         reference_series_data = {
             'title': data.title,
@@ -101,4 +110,3 @@ class BinaryChart:
         option.update(get_chart_header(title=data.title))
 
         return EChartsRawWidget(option=option)
-

@@ -11,6 +11,7 @@ class RegressionDistributionChartData(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+
 class RegressionPredictedActualChartData(BaseModel):
     scatter_data: List[List[float]]
     coefficient: float

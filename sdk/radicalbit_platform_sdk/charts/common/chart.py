@@ -76,10 +76,15 @@ class Chart:
     def confusion_matrix_chart(
         self, data: ConfusionMatrixChartData
     ) -> EChartsRawWidget:
-
         np_matrix = np.matrix(data.matrix)
 
-        matrix_data=reduce(lambda x,y: x + y ,[ [ [xIdx,yIdx,value] for xIdx,value in enumerate(datas) ] for yIdx,datas in enumerate(reversed(data.matrix))])
+        matrix_data = reduce(
+            lambda x, y: x + y,
+            [
+                [[xIdx, yIdx, value] for xIdx, value in enumerate(datas)]
+                for yIdx, datas in enumerate(reversed(data.matrix))
+            ],
+        )
 
         options = {
             'yAxis': {
@@ -125,14 +130,13 @@ class Chart:
                 'name': '',
                 'type': 'heatmap',
                 'label': {'show': True},
-                'data': matrix_data
-            }
+                'data': matrix_data,
+            },
         }
 
         return EChartsRawWidget(option=options)
 
     def linear_chart(self, data: LinearChartData) -> EChartsRawWidget:
-
         reference_series_data = {
             'name': 'Reference',
             'type': 'line',
