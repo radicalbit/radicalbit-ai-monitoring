@@ -15,7 +15,7 @@ class MultiClassificationChart:
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
 
-        y_axis_label = list(map((lambda metric: metric['name']),[multiclass_data.model_dump() for multiclass_data in data.reference_data]))
+        y_axis_label = [metric['name'] for metric in [binary_data.model_dump() for binary_data in data.reference_data]]
 
         reference_data = [
             {
