@@ -180,7 +180,9 @@ class MultiClassificationChart:
                 'pageTextStyle': {'fontSize': 9, 'color': '#9b99a1'},
                 'textStyle': {'fontSize': 9, 'color': '#9B99A1', 'fontWeight': '300'},
             },
-            'tooltip': {'trigger': 'axis'},
+            'tooltip': {
+                'trigger': 'axis',
+            },
             'emphasis': {'focus': 'series'},
             'title': {
                 'text': data.title,
@@ -195,3 +197,5 @@ class MultiClassificationChart:
         }
 
         return EChartsRawWidget(option=options)
+    
+    

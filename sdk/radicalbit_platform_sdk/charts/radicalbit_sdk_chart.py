@@ -3,33 +3,34 @@ from typing import List
 from ipecharts import EChartsRawWidget
 import ipywidgets as widgets
 
-from radicalbit_platform_sdk.charts.binary_classification import (
+from .binary_classification.binary_chart import (
     BinaryChart,
     BinaryDistributionChartData,
 )
-from radicalbit_platform_sdk.charts.common.chart import Chart
-from radicalbit_platform_sdk.charts.common.chart_data import (
+
+from .common.chart import Chart
+from .common.chart_data import (
     ConfusionMatrixChartData,
     LinearChartData,
     NumericalBarChartData,
 )
-from radicalbit_platform_sdk.charts.multi_classification import (
+from .multi_classification.multi_class_chart import (
     MultiClassificationChart,
     MultiClassificationDistributionChartData,
 )
-from radicalbit_platform_sdk.charts.multi_classification.multi_class_chart_data import (
+from .multi_classification.multi_class_chart_data import (
     MultiClassificationLinearChartData,
 )
-from radicalbit_platform_sdk.charts.radicalbit_sdk_chart_data import (
+from .radicalbit_sdk_chart_data import (
     RbitChartData,
     RbitChartLinearData,
     RbitChartResidualData,
 )
-from radicalbit_platform_sdk.charts.regression import (
+from .regression.regression_chart import (
     RegressionChart,
     RegressionDistributionChartData,
 )
-from radicalbit_platform_sdk.charts.regression.regression_chart_data import (
+from .regression.regression_chart_data import (
     RegressionPredictedActualChartData,
     RegressionResidualBucketChartData,
     RegressionResidualScatterChartData,
@@ -53,6 +54,8 @@ class RadicalbitChart:
                 return self._multiclass_distribution_chart(data=data)
             case ModelType.REGRESSION:
                 return self._regression_distribution_chart(data=data)
+            case _:
+                return
 
     def _binary_distribution_chart(self, data=RbitChartData) -> EChartsRawWidget:
         title = data.model.target().name
@@ -839,6 +842,9 @@ class RadicalbitChart:
                     )
                 )
 
+            case _:
+                return    
+
     def data_quality(self, data=RbitChartData) -> List[EChartsRawWidget]:
         distribution_chart = self.distribution_chart(data=data)
         numerical_feature_chart = self.numerical_feature_chart(data=data)
@@ -949,3 +955,6 @@ class RadicalbitChart:
                         variance_linear_chart,
                     ]
                 )
+
+            case _:
+                return
