@@ -197,5 +197,3 @@ class MultiClassificationChart:
         }
 
         return EChartsRawWidget(option=options)
-    
-    

@@ -3,11 +3,9 @@ from typing import List
 from ipecharts import EChartsRawWidget
 import ipywidgets as widgets
 
-from .binary_classification.binary_chart import (
-    BinaryChart,
-    BinaryDistributionChartData,
-)
+from radicalbit_platform_sdk.models import ModelType
 
+from .binary_classification.binary_chart import BinaryChart, BinaryDistributionChartData
 from .common.chart import Chart
 from .common.chart_data import (
     ConfusionMatrixChartData,
@@ -35,7 +33,6 @@ from .regression.regression_chart_data import (
     RegressionResidualBucketChartData,
     RegressionResidualScatterChartData,
 )
-from radicalbit_platform_sdk.models import ModelType
 
 
 # ruff's check regarding list comprehension is removed in favor of greater readability in multiclass methods
@@ -55,7 +52,7 @@ class RadicalbitChart:
             case ModelType.REGRESSION:
                 return self._regression_distribution_chart(data=data)
             case _:
-                return
+                return None
 
     def _binary_distribution_chart(self, data=RbitChartData) -> EChartsRawWidget:
         title = data.model.target().name
@@ -238,8 +235,8 @@ class RadicalbitChart:
             cur_model_quality = data.current.model_quality().global_metrics
             histogram = cur_model_quality.residuals.histogram
 
-            bucket_data=[format(value, '.3f') for value in histogram.buckets]
-            histogram_data=[format(value, '.3f') for value in histogram.values]
+            bucket_data = [format(value, '.3f') for value in histogram.buckets]
+            histogram_data = [format(value, '.3f') for value in histogram.values]
 
             return RegressionChart().residual_bucket_chart(
                 data=RegressionResidualBucketChartData(
@@ -265,9 +262,19 @@ class RadicalbitChart:
     def mse_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.mse
 
-        current_mse = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_mse = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_mse = [
-            [c.timestamp, str(format(data.reference.model_quality().mse, '.3f') if data.reference.model_quality().mse is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().mse, '.3f')
+                    if data.reference.model_quality().mse is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -282,9 +289,19 @@ class RadicalbitChart:
     def rmse_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.rmse
 
-        current_rmse = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_rmse = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_rmse = [
-            [c.timestamp, str(format(data.reference.model_quality().rmse, '.3f') if data.reference.model_quality().rmse is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().rmse, '.3f')
+                    if data.reference.model_quality().rmse is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -299,9 +316,19 @@ class RadicalbitChart:
     def mae_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.mae
 
-        current_mae = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_mae = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_mae = [
-            [c.timestamp, str(format(data.reference.model_quality().mae, '.3f') if data.reference.model_quality().mae is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().mae, '.3f')
+                    if data.reference.model_quality().mae is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -316,9 +343,19 @@ class RadicalbitChart:
     def mape_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.mape
 
-        current_mape = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_mape = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_mape = [
-            [c.timestamp, str(format(data.reference.model_quality().mape, '.3f') if data.reference.model_quality().mape is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().mape, '.3f')
+                    if data.reference.model_quality().mape is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -333,9 +370,19 @@ class RadicalbitChart:
     def r2_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.r2
 
-        current_r2 = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_r2 = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_r2 = [
-            [c.timestamp, str(format(data.reference.model_quality().r2, '.3f') if data.reference.model_quality().r2 is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().r2, '.3f')
+                    if data.reference.model_quality().r2 is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -348,9 +395,19 @@ class RadicalbitChart:
     def adj_r2_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.adj_r2
 
-        current_adj_r2 = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_adj_r2 = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_adj_r2 = [
-            [c.timestamp, str(format(data.reference.model_quality().adj_r2, '.3f') if data.reference.model_quality().adj_r2 is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().adj_r2, '.3f')
+                    if data.reference.model_quality().adj_r2 is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -365,9 +422,19 @@ class RadicalbitChart:
     def variance_linear_chart(self, data=RbitChartLinearData) -> EChartsRawWidget:
         current_model_quality = data.current.model_quality().grouped_metrics.variance
 
-        current_variance = [[c.timestamp, str(format(c.value,'.3f') if c.value is not None else 0)] for c in current_model_quality]
+        current_variance = [
+            [c.timestamp, str(format(c.value, '.3f') if c.value is not None else 0)]
+            for c in current_model_quality
+        ]
         ref_variance = [
-            [c.timestamp, str(format(data.reference.model_quality().variance, '.3f') if data.reference.model_quality().variance is not None else 0)]
+            [
+                c.timestamp,
+                str(
+                    format(data.reference.model_quality().variance, '.3f')
+                    if data.reference.model_quality().variance is not None
+                    else 0
+                ),
+            ]
             for c in current_model_quality
         ]
 
@@ -843,7 +910,7 @@ class RadicalbitChart:
                 )
 
             case _:
-                return    
+                return None
 
     def data_quality(self, data=RbitChartData) -> List[EChartsRawWidget]:
         distribution_chart = self.distribution_chart(data=data)
@@ -957,4 +1024,4 @@ class RadicalbitChart:
                 )
 
             case _:
-                return
+                return None
