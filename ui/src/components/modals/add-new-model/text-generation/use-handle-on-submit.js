@@ -20,7 +20,7 @@ export default () => {
 
   const [triggerAddNewModel, args] = useAddNewModelMutation();
 
-  const isSubmitDisabled = !isDirty || isFormInvalid();
+  const isSubmitDisabled = !isDirty || isFormInvalid() || args.isLoading;
 
   const handleOnSubmit = () => {
     if (isSubmitDisabled || args.isLoading) {
