@@ -155,6 +155,28 @@ class Model:
             func=__callback,
         )
 
+    def get_completion_datasets(self) -> List[ModelCompletionDataset]:
+        def __callback(response: requests.Response) -> List[ModelCompletionDataset]:
+            try:
+                adapter = TypeAdapter(List[CompletionFileUpload])
+                completions = adapter.validate_python(response.json())
+
+                return [
+                    ModelCompletionDataset(
+                        self.__base_url, self.__uuid, self.__model_type, completion
+                    )
+                    for completion in completions
+                ]
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/completion/all',
+            valid_response_code=200,
+            func=__callback,
+        )
+
     def load_reference_dataset(
         self,
         file_name: str,
