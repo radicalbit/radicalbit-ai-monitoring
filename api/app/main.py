@@ -11,6 +11,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.core import get_config
 from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
+from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
@@ -56,11 +57,13 @@ reference_dataset_metrics_dao = ReferenceDatasetMetricsDAO(database)
 current_dataset_dao = CurrentDatasetDAO(database)
 current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
 completion_dataset_dao = CompletionDatasetDAO(database)
+completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
 
 model_service = ModelService(
     model_dao=model_dao,
     reference_dataset_dao=reference_dataset_dao,
     current_dataset_dao=current_dataset_dao,
+    completion_dataset_dao=completion_dataset_dao,
 )
 s3_config = get_config().s3_config
 
@@ -93,6 +96,8 @@ metrics_service = MetricsService(
     reference_dataset_dao=reference_dataset_dao,
     current_dataset_metrics_dao=current_dataset_metrics_dao,
     current_dataset_dao=current_dataset_dao,
+    completion_dataset_metrics_dao=completion_dataset_metrics_dao,
+    completion_dataset_dao=completion_dataset_dao,
     model_service=model_service,
 )
 spark_k8s_service = SparkK8SService(spark_k8s_client)

@@ -9,6 +9,7 @@ from pydantic.alias_generators import to_camel
 from app.db.dao.current_dataset_dao import CurrentDataset
 from app.db.dao.model_dao import Model
 from app.db.dao.reference_dataset_dao import ReferenceDataset
+from app.db.tables.completion_dataset_table import CompletionDataset
 from app.models.inferred_schema_dto import FieldType, SupportedTypes
 from app.models.job_status import JobStatus
 from app.models.metrics.percentages_dto import Percentages
@@ -244,8 +245,10 @@ class ModelOut(BaseModel):
     updated_at: str
     latest_reference_uuid: Optional[UUID]
     latest_current_uuid: Optional[UUID]
-    latest_reference_job_status: JobStatus
-    latest_current_job_status: JobStatus
+    latest_completion_uuid: Optional[UUID]
+    latest_reference_job_status: Optional[JobStatus]
+    latest_current_job_status: Optional[JobStatus]
+    latest_completion_job_status: Optional[JobStatus]
     percentages: Optional[Percentages]
 
     model_config = ConfigDict(
@@ -257,25 +260,34 @@ class ModelOut(BaseModel):
         model: Model,
         latest_reference_dataset: Optional[ReferenceDataset] = None,
         latest_current_dataset: Optional[CurrentDataset] = None,
+        latest_completion_dataset: Optional[CompletionDataset] = None,
         percentages: Optional[Percentages] = None,
     ):
-        latest_reference_uuid = (
-            latest_reference_dataset.uuid if latest_reference_dataset else None
-        )
-        latest_current_uuid = (
-            latest_current_dataset.uuid if latest_current_dataset else None
-        )
+        latest_reference_uuid = None
+        latest_current_uuid = None
+        latest_completion_uuid = None
+        latest_reference_job_status = None
+        latest_current_job_status = None
+        latest_completion_job_status = None
 
-        latest_reference_job_status = (
-            latest_reference_dataset.status
-            if latest_reference_dataset
-            else JobStatus.MISSING_REFERENCE
-        )
-        latest_current_job_status = (
-            latest_current_dataset.status
-            if latest_current_dataset
-            else JobStatus.MISSING_CURRENT
-        )
+        if model.model_type == ModelType.TEXT_GENERATION:
+            if latest_completion_dataset:
+                latest_completion_uuid = latest_completion_dataset.uuid
+                latest_completion_job_status = latest_completion_dataset.status
+            else:
+                latest_completion_job_status = JobStatus.MISSING_COMPLETION
+        else:
+            if latest_reference_dataset:
+                latest_reference_uuid = latest_reference_dataset.uuid
+                latest_reference_job_status = latest_reference_dataset.status
+            else:
+                latest_reference_job_status = JobStatus.MISSING_REFERENCE
+
+            if latest_current_dataset:
+                latest_current_uuid = latest_current_dataset.uuid
+                latest_current_job_status = latest_current_dataset.status
+            else:
+                latest_current_job_status = JobStatus.MISSING_CURRENT
 
         return ModelOut(
             uuid=model.uuid,
@@ -294,7 +306,9 @@ class ModelOut(BaseModel):
             updated_at=str(model.updated_at),
             latest_reference_uuid=latest_reference_uuid,
             latest_current_uuid=latest_current_uuid,
+            latest_completion_uuid=latest_completion_uuid,
             latest_reference_job_status=latest_reference_job_status,
             latest_current_job_status=latest_current_job_status,
+            latest_completion_job_status=latest_completion_job_status,
             percentages=percentages,
         )

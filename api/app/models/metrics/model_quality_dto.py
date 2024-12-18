@@ -192,6 +192,39 @@ class CurrentRegressionModelQuality(BaseModel):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
+class TokenProb(BaseModel):
+    prob: float
+    token: str
+
+
+class TokenData(BaseModel):
+    id: str
+    probs: List[TokenProb]
+
+
+class MeanPerFile(BaseModel):
+    prob_tot_mean: float
+    perplex_tot_mean: float
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class MeanPerPhrase(BaseModel):
+    id: str
+    prob_per_phrase: float
+    perplex_per_phrase: float
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class CompletionTextGenerationModelQuality(BaseModel):
+    tokens: List[TokenData]
+    mean_per_file: List[MeanPerFile]
+    mean_per_phrase: List[MeanPerPhrase]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
 class ModelQualityDTO(BaseModel):
     job_status: JobStatus
     model_quality: Optional[
@@ -201,6 +234,7 @@ class ModelQualityDTO(BaseModel):
         | CurrentMultiClassificationModelQuality
         | RegressionModelQuality
         | CurrentRegressionModelQuality
+        | CompletionTextGenerationModelQuality
     ]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
@@ -251,6 +285,10 @@ class ModelQualityDTO(BaseModel):
             return ModelQualityDTO._create_regression_model_quality(
                 dataset_type=dataset_type, model_quality_data=model_quality_data
             )
+        if model_type == ModelType.TEXT_GENERATION:
+            return ModelQualityDTO._create_text_generation_model_quality(
+                dataset_type=dataset_type, model_quality_data=model_quality_data
+            )
         raise MetricsInternalError(f'Invalid model type {model_type}')
 
     @staticmethod
@@ -287,4 +325,14 @@ class ModelQualityDTO(BaseModel):
             return RegressionModelQuality(**model_quality_data)
         if dataset_type == DatasetType.CURRENT:
             return CurrentRegressionModelQuality(**model_quality_data)
+        raise MetricsInternalError(f'Invalid dataset type {dataset_type}')
+
+    @staticmethod
+    def _create_text_generation_model_quality(
+        dataset_type: DatasetType,
+        model_quality_data: Dict,
+    ) -> CompletionTextGenerationModelQuality:
+        """Create a text generation model quality instance based on dataset type."""
+        if dataset_type == DatasetType.COMPLETION:
+            return CompletionTextGenerationModelQuality(**model_quality_data)
         raise MetricsInternalError(f'Invalid dataset type {dataset_type}')

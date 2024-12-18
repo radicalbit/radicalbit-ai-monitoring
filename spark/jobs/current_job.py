@@ -202,7 +202,7 @@ if __name__ == "__main__":
             current_uuid,
             reference_dataset_path,
             metrics_table_name,
-            dataset_table_name
+            dataset_table_name,
         )
     except Exception as e:
         logging.exception(e)
