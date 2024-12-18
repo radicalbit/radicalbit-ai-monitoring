@@ -20,6 +20,8 @@ const {
   useGetModelByUUIDQuery,
   useGetModelsQuery,
   useGetOverallModelListQuery,
+  useGetCompletionModelQualityQuery,
+  useGetCompletionImportsQuery,
 } = modelsApiSlice;
 
 const useGetReferenceImportsQueryWithPolling = () => {
@@ -157,7 +159,7 @@ const useGetCurrentDriftQueryWithPolling = () => {
   return result;
 };
 
-const useGetModelQueryWithPolling = () => {
+const useGetModelsQueryWithPolling = () => {
   const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.MODELS));
   const result = useGetModelsQuery({ queryParams });
 
@@ -181,14 +183,40 @@ const useGetOverallModelListQueryWithPolling = () => {
   return result;
 };
 
+const useGetCompletionModelQualityQueryWithPolling = () => {
+  const { uuid } = useParams();
+  const { data: model } = useGetModelByUUIDQuery({ uuid });
+  const latestCompletionUuid = model?.latestCompletionUuid;
+
+  const result = useGetCompletionModelQualityQuery({ uuid, latestCompletionUuid }, { skip: !latestCompletionUuid });
+  const status = result.data?.jobStatus;
+  const isCompletionImporting = status === JOB_STATUS.IMPORTING;
+
+  useGetCompletionModelQualityQuery({ uuid, latestCompletionUuid }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isCompletionImporting });
+
+  return result;
+};
+
+const useGetCompletionImportsQueryWithPolling = () => {
+  const { uuid } = useParams();
+
+  const { data } = useGetCompletionImportsQuery({ uuid });
+  const status = data?.items[0]?.status;
+  const isReferenceImporting = status === JOB_STATUS.IMPORTING;
+
+  useGetCompletionImportsQuery({ uuid }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isReferenceImporting });
+};
+
 export {
   useGetCurrentDataQualityQueryWithPolling,
   useGetCurrentDriftQueryWithPolling,
   useGetCurrentImportsQueryWithPolling,
   useGetCurrentModelQualityQueryWithPolling,
-  useGetCurrentStatisticsQueryWithPolling, useGetModelQueryWithPolling,
+  useGetCurrentStatisticsQueryWithPolling, useGetModelsQueryWithPolling,
   useGetOverallModelListQueryWithPolling, useGetReferenceDataQualityQueryWithPolling,
   useGetReferenceImportsQueryWithPolling,
   useGetReferenceModelQualityQueryWithPolling,
   useGetReferenceStatisticsQueryWithPolling,
+  useGetCompletionModelQualityQueryWithPolling,
+  useGetCompletionImportsQueryWithPolling,
 };

@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import BinaryClassificationMetrics from './binary-classification';
 import MultiClassificationMetrics from './multi-classification';
 import RegressionMetrics from './regression';
+import TextGenerationMetrics from './text-generation';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
@@ -26,6 +27,9 @@ export function ModelDetails() {
 
     case ModelTypeEnum.MULTI_CLASSIFICATION:
       return <MultiClassificationMetrics />;
+
+    case ModelTypeEnum.TEXT_GENERATION:
+      return <TextGenerationMetrics />;
 
     default:
       return false;

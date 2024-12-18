@@ -6,6 +6,7 @@ import ImportReferenceButton from '@Components/ImportButton/import-reference-but
 import { selectIsShowConfettiForModelCreation } from '@State/global-configuration/selectors';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
+import ImportCompletionButton from '@Components/ImportButton/import-completion-button';
 
 function JobStatus({ jobStatus }) {
   const { uuid: modelUUID } = useParams();
@@ -57,6 +58,22 @@ function JobStatus({ jobStatus }) {
           actions={(<ImportCurrentDatasetButton type="primary" />)}
           description="Import a new dataset to see the outcome"
           title="No current dataset imported yet"
+        />
+      );
+    }
+
+    case JOB_STATUS.MISSING_COMPLETION: {
+      return (
+        <Void
+          actions={(<ImportCompletionButton Button type="primary" />)}
+          description={(
+            <>
+              Upload a JSON file to analyze and visualize the data.
+              <br />
+              This will allow you to see the outcome of your analysis.
+            </>
+          )}
+          title={`Import a Completion File${isShowConfettiFroModel ? ' 🥳' : ''}`}
         />
       );
     }

@@ -1,7 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import { JOB_STATUS } from '@Src/constants';
-import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
+import { useGetModelsQueryWithPolling } from '@State/models/polling-hook';
 import { selectors as layoutSelectors } from '@State/layout';
 import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useEffect, useState } from 'react';
@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import {
   useNavigate, useParams, useSearchParams,
 } from 'react-router-dom';
+import { ModelTypeEnum } from '@Src/store/state/models/constants';
 
 const commonChildrenMenu = [
   { label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW },
@@ -25,10 +26,10 @@ export default function SecondaryColumnModelsContent() {
 
   const isSecondaryColumnCollapsed = useSelector(selectHasSecondaryColumnCollapsed);
 
-  const { data } = useGetModelQueryWithPolling();
+  const { data } = useGetModelsQueryWithPolling();
   const modelList = data?.items ?? [];
   const modelListMenuItem = modelList.map(({
-    uuid: modelUUID, name, latestReferenceJobStatus, latestCurrentJobStatus,
+    uuid: modelUUID, name, latestReferenceJobStatus, latestCurrentJobStatus, modelType,
   }) => {
     const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;
     return {
@@ -40,7 +41,14 @@ export default function SecondaryColumnModelsContent() {
 
         </div>),
       key: modelUUID,
-      children: commonChildrenMenu,
+      children: (() => {
+        switch (modelType) {
+          case ModelTypeEnum.TEXT_GENERATION:
+            return [{ label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW }];
+          default:
+            return commonChildrenMenu;
+        }
+      })(),
       className: uuid === modelUUID ? Menu.HIDE_EXPAND_ICON : '',
     };
   });
