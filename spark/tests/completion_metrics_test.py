@@ -25,7 +25,7 @@ def test_compute_prob(spark_fixture, input_file):
     completion_metrics_service = CompletionMetrics()
     df = completion_metrics_service.remove_columns(input_file)
     df = completion_metrics_service.compute_prob(df)
-    assert {"id", "logprob", "token", "prob"} == set(df.columns)
+    assert {"id", "logprob", "message_content", "token", "prob"} == set(df.columns)
     assert not df.rdd.isEmpty()
 
 

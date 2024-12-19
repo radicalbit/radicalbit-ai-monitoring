@@ -32,7 +32,7 @@ class UploadDatasetRouteTest(unittest.TestCase):
         app = FastAPI(title='Radicalbit Platform', debug=True)
         app.include_router(router, prefix=cls.prefix)
 
-        cls.client = TestClient(app)
+        cls.client = TestClient(app, raise_server_exceptions=False)
 
     def test_upload_reference(self):
         file = csv.get_correct_sample_csv_file()

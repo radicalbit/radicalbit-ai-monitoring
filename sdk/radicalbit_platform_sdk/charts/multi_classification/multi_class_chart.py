@@ -1,7 +1,6 @@
 from ipecharts import EChartsRawWidget
-from IPython.display import display
 
-from ..utils import get_chart_header
+from ..common.utils import get_chart_header
 from .multi_class_chart_data import (
     MultiClassificationDistributionChartData,
     MultiClassificationLinearChartData,
@@ -15,29 +14,49 @@ class MultiClassificationChart:
     def distribution_chart(
         self, data: MultiClassificationDistributionChartData
     ) -> EChartsRawWidget:
-        reference_json_data = [
-            multi_class_data.model_dump() for multi_class_data in data.reference_data
+        y_axis_label = [
+            metric['name']
+            for metric in [
+                binary_data.model_dump() for binary_data in data.reference_data
+            ]
         ]
-        current_data_json = (
-            [multi_class_data.model_dump() for multi_class_data in data.current_data]
-            if data.current_data
-            else []
-        )
+
+        reference_data = [
+            {
+                'percentage': metric.percentage,
+                'value': metric.count,
+                'count': metric.count,
+            }
+            for metric in data.reference_data
+        ]
 
         reference_series_data = {
             'title': data.title,
             'type': 'bar',
             'name': 'Reference',
             'itemStyle': {'color': '#9B99A1'},
-            'data': reference_json_data,
+            'data': reference_data,
         }
+
+        current_data = (
+            [
+                {
+                    'percentage': metric.percentage,
+                    'value': metric.count,
+                    'count': metric.count,
+                }
+                for metric in data.current_data
+            ]
+            if data.current_data
+            else []
+        )
 
         current_series_data = {
             'title': data.title + '_current',
             'type': 'bar',
             'name': 'Current',
             'itemStyle': {'color': '#3695d9'},
-            'data': current_data_json,
+            'data': current_data,
         }
 
         series = (
@@ -65,7 +84,7 @@ class MultiClassificationChart:
                     'color': '#9b99a1',
                     'rotate': 35,
                 },
-                'data': data.x_axis_label,
+                'data': y_axis_label,
             },
             'yAxis': {
                 'type': 'value',
@@ -134,9 +153,9 @@ class MultiClassificationChart:
             },
             'grid': {
                 'bottom': 0,
-                'top': 32,
+                'top': 60,
                 'left': 0,
-                'right': 140,
+                'right': 120,
                 'containLabel': True,
             },
             'color': [
@@ -161,16 +180,20 @@ class MultiClassificationChart:
                 'pageTextStyle': {'fontSize': 9, 'color': '#9b99a1'},
                 'textStyle': {'fontSize': 9, 'color': '#9B99A1', 'fontWeight': '300'},
             },
-            'tooltip': {'trigger': 'axis'},
+            'tooltip': {
+                'trigger': 'axis',
+            },
             'emphasis': {'focus': 'series'},
             'title': {
-                'text': '••• Reference',
-                'textStyle': {'fontSize': 10, 'fontWeight': '300', 'color': '#9B99A1'},
-                'right': 0,
+                'text': data.title,
+                'subTextStyle': {
+                    'fontSize': 10,
+                    'fontWeight': '300',
+                    'color': '#9B99A1',
+                },
+                'subtext': '••• Reference',
             },
             'series': series,
         }
-
-        display(data.title)
 
         return EChartsRawWidget(option=options)

@@ -2,6 +2,7 @@ completion_metric_results = {
     "tokens": [
         {
             "id": "chatcmpl-AcWID2SsE5iuK6z5AhNCKv3WUcCxN",
+            "message_content": "Sure, go ahead. What's up?",
             "probs": [
                 {"token": "Sure", "prob": 0.541987419128418},
                 {"token": ",", "prob": 0.9025230407714844},
@@ -15,6 +16,7 @@ completion_metric_results = {
         },
         {
             "id": "chatcmpl-AcYMMPLnpkksCdLze3M8nnqQbfqVG",
+            "message_content": "Certainly! Just let me know how.",
             "probs": [
                 {"token": "Certainly", "prob": 0.022015240043401718},
                 {"token": "!", "prob": 0.8896080851554871},

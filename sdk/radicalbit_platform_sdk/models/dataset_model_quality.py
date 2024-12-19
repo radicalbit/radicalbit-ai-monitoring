@@ -191,5 +191,35 @@ class CurrentRegressionModelQuality(ModelQuality):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
+class TokenProb(BaseModel):
+    prob: float
+    token: str
+
+
+class TokenData(BaseModel):
+    id: str
+    message_content: str
+    probs: List[TokenProb]
+
+
+class MeanPerFile(BaseModel):
+    prob_tot_mean: float
+    perplex_tot_mean: float
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class MeanPerPhrase(BaseModel):
+    id: str
+    prob_per_phrase: float
+    perplex_per_phrase: float
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
 class CompletionTextGenerationModelQuality(ModelQuality):
-    pass
+    tokens: List[TokenData]
+    mean_per_file: List[MeanPerFile]
+    mean_per_phrase: List[MeanPerPhrase]
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

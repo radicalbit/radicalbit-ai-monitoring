@@ -2,7 +2,7 @@ from ipecharts import EChartsRawWidget
 from IPython.display import display
 import numpy as np
 
-from ..utils import get_chart_header, get_formatted_bucket_data
+from ..common.utils import get_chart_header, get_formatted_bucket_data
 from .regression_chart_data import (
     RegressionDistributionChartData,
     RegressionPredictedActualChartData,
@@ -162,6 +162,7 @@ class RegressionChart:
         self, data: RegressionResidualScatterChartData
     ) -> EChartsRawWidget:
         options = {
+            'title': {'text': 'Residuals plot', 'textStyle': {'fontSize': 14}},
             'grid': {
                 'left': 20,
                 'right': 0,
@@ -213,11 +214,12 @@ class RegressionChart:
         bucket_data_formatted = get_formatted_bucket_data(bucket_data=data.bucket_data)
 
         options = {
+            'title': {'text': 'Residuals', 'textStyle': {'fontSize': 14}},
             'grid': {
                 'left': 0,
                 'right': 20,
                 'bottom': 0,
-                'top': 10,
+                'top': 30,
                 'containLabel': True,
             },
             'xAxis': {
@@ -243,7 +245,7 @@ class RegressionChart:
             'barGap': '0',
             'itemStyle': {'borderWidth': 1, 'borderColor': 'rgba(201, 25, 25, 1)'},
             'series': [
-                {'type': 'bar', 'itemStyle': {'color': '#3695d9'}, 'data': data.values}
+                {'type': 'bar', 'itemStyle': {'color': data.color}, 'data': data.values}
             ],
         }
 

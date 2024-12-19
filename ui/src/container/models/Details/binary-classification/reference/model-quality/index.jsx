@@ -40,8 +40,8 @@ function BinaryClassificationModelQualityMetrics() {
     };
 
     const confusionMatrixData = [
-      [data.modelQuality.truePositiveCount, data.modelQuality.falsePositiveCount],
-      [data.modelQuality.falseNegativeCount, data.modelQuality.trueNegativeCount],
+      [data.modelQuality.truePositiveCount, data.modelQuality.falseNegativeCount],
+      [data.modelQuality.falsePositiveCount, data.modelQuality.trueNegativeCount],
     ];
 
     return (

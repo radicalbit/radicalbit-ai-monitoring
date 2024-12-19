@@ -64,6 +64,11 @@ class FileServiceTest(unittest.TestCase):
         with pytest.raises(InvalidFileException):
             self.files_service.validate_file(file, sep=',', columns=['a', 'b'])
 
+    def test_validate_empty_file_error(self):
+        file = csv.get_empty_sample_csv_file()
+        with pytest.raises(InvalidFileException):
+            self.files_service.validate_file(file, sep=',', columns=[])
+
     def test_infer_schema_ok(self):
         file = csv.get_correct_sample_csv_file()
         schema = FileService.infer_schema(file)

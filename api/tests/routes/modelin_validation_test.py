@@ -15,7 +15,7 @@ class TestValidationModelRoute(unittest.TestCase):
     def setUp(self):
         self.model_service = MagicMock(spec_set=ModelService)
         self.prefix = '/api/models'
-        self.client = TestClient(main.app)
+        self.client = TestClient(main.app, raise_server_exceptions=False)
 
     def test_request_validation_exception_handler(self):
         modelin_data = get_model_sample_wrong(

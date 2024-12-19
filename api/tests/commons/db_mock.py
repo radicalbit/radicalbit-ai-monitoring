@@ -550,6 +550,7 @@ model_quality_completion_dict = {
     'tokens': [
         {
             'id': 'chatcmpl',
+            'message_content': 'Sky is blue.',
             'probs': [
                 {'prob': 0.27718424797058105, 'token': 'Sky'},
                 {'prob': 0.8951022028923035, 'token': ' is'},
