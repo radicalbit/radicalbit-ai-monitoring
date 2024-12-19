@@ -1,12 +1,18 @@
 import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
+import WordBarChart from '@Container/models/Details/text-generation/overview/model-quality/feature-list/chart';
+import {
+  faExpand, faFire, faMinimize, faTextHeight,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   Board,
-  NewHeader, Spinner, Tag, Tooltip,
+  FontAwesomeIcon,
+  NewHeader, Spinner, Tag,
+  Tooltip,
 } from '@radicalbit/radicalbit-design-system';
-import { Virtuoso } from 'react-virtuoso';
 import { numberFormatter } from '@Src/constants';
-import WordBarChart from '@Container/models/Details/text-generation/overview/model-quality/feature-list/chart';
 import MarkdownToJsx, { RuleType } from 'markdown-to-jsx';
+import { useState } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 import useGetFilteredFeatures from './use-get-filtered-features';
 
 function TextGenerationFeatureList() {
@@ -28,13 +34,74 @@ function TextGenerationFeatureList() {
 }
 
 function TokenBoard({ token }) {
+  console.debug('🚀 ~ TokenBoard ~ token:', token);
+  const [collapsed, setCollapsed] = useState(true);
+  const [showHeatText, setShowHeatText] = useState(false);
   const { meanPerPhrase } = useGetFilteredFeatures();
 
+  const messageContent = token.message_content;
   const perplexity = meanPerPhrase?.find((el) => el.id === token.id)?.perplexPerPhrase;
   const probability = meanPerPhrase?.find(({ id }) => id === token.id)?.probPerPhrase;
 
   const formattedPerplexity = perplexity ? Number.parseFloat(perplexity).toExponential(2) : '--';
   const formattedProbability = perplexity ? Number.parseFloat(probability).toExponential(2) : '--';
+
+  const handleOnClick = () => setCollapsed(!collapsed);
+  const handleOnToggle = () => setShowHeatText(!showHeatText);
+
+  if (collapsed) {
+    return (
+      <Board
+        key={token.id}
+        header={(
+          <NewHeader
+            details={{
+              one: (
+                <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
+              ),
+            }}
+            title={(
+              <div className="flex flex-row gap-4">
+                <Tag type="secondary-light">
+                  Perplexity
+                  {' '}
+
+                  { formattedPerplexity}
+
+                </Tag>
+
+                <Tag>
+                  Confidence
+                  {' '}
+
+                  {formattedProbability}
+                </Tag>
+              </div>
+          )}
+          />
+        )}
+        main={(
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
+              <div className="flex flex-col basis-11/12 gap-4">
+                {messageContent.substr(0, 600)}
+              </div>
+
+              <div className="basis-1/12">
+                <WordHint probs={token.probs.toSpliced(5)} />
+              </div>
+            </div>
+
+            {/*   <WordBarChart dataset={token} /> */}
+          </div>
+      )}
+        modifier="my-4 "
+        size="small"
+
+      />
+    );
+  }
+
   return (
     <Board
       key={token.id}
@@ -42,36 +109,48 @@ function TokenBoard({ token }) {
         <NewHeader
           details={{
             one: (
+              <FontAwesomeIcon icon={showHeatText ? faTextHeight : faFire} onClick={handleOnToggle} />
+            ),
+            two: (
+              <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
+            ),
+          }}
+          title={(
+            <div className="flex flex-row gap-4">
               <Tag type="secondary-light">
                 Perplexity
                 {' '}
 
                 { formattedPerplexity}
 
-              </Tag>),
-            two: (
+              </Tag>
+
               <Tag>
                 Confidence
                 {' '}
 
                 {formattedProbability}
-              </Tag>),
-          }}
+              </Tag>
+            </div>
+        )}
         />
-    )}
+      )}
       main={(
         <div className="flex flex-col gap-4">
-          <div className="flex flex-row gap-4">
-            <div className="basis-11/12">
-              <WordHintWithoutEffect token={token} />
-            </div>
+          <div className="flex flex-row gap-4 overflow-auto max-h-[40rem]">
+            {!showHeatText && (
+              <Markdown>
+                {messageContent}
+              </Markdown>
+            )}
 
-            <div className="basis-1/12">
-              <WordHint token={token} />
-            </div>
+            {showHeatText && (
+            <WordHint probs={token.probs} />
+            )}
+
           </div>
 
-          {/*   <WordBarChart dataset={token} /> */}
+          <WordBarChart dataset={token} />
         </div>
     )}
       modifier="my-4 "
@@ -80,11 +159,9 @@ function TokenBoard({ token }) {
   );
 }
 
-function WordHint({ token }) {
-  const { probs } = token;
-
+function WordHint({ probs }) {
   const regeExp = /\n/g;
-  if (!token) {
+  if (!probs) {
     return false;
   }
 
@@ -108,24 +185,6 @@ function WordHint({ token }) {
           </Tooltip>
         );
       })}
-    </div>
-  );
-}
-
-function WordHintWithoutEffect({ token }) {
-  const { probs } = token;
-
-  const text = probs.reduce((acc, value) => acc + value.token, '');
-
-  if (!token) {
-    return false;
-  }
-
-  return (
-    <div>
-      <Markdown>
-        {text}
-      </Markdown>
     </div>
   );
 }

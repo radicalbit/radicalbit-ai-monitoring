@@ -25,8 +25,8 @@ export default function chartOptions(dataset) {
 
   options.grid.bottom = 40;
   options.barWidth = 30;
-  options.dataZoom[0].minSpan = 5;
-  options.dataZoom[0].maxSpan = 5;
+  options.dataZoom[0].minSpan = 4;
+  options.dataZoom[0].maxSpan = 4;
 
   return options;
 }

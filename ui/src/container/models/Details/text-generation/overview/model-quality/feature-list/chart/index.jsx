@@ -34,7 +34,7 @@ function WordBarChart({ dataset }) {
         echarts={echarts}
         onChartReady={handleOnChartReady}
         option={chartOptions(dataset, CHART_COLOR.REFERENCE, CHART_COLOR.CURRENT)}
-        style={{ height: '10rem', width: '100%' }}
+        style={{ height: '15rem', width: '100%' }}
       />
     </div>
   );
