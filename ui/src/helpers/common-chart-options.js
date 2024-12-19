@@ -250,6 +250,7 @@ const barSeriesOptions = (title, color, data) => {
   if (data) {
     options.data = data;
   }
+
   return options;
 };
 

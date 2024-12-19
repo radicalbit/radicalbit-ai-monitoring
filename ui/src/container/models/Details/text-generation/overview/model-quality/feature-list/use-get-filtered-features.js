@@ -4,7 +4,8 @@ import { useGetCompletionModelQualityQueryWithPolling } from '@Src/store/state/m
 
 export default () => {
   const { data } = useGetCompletionModelQualityQueryWithPolling();
-  const items = data?.modelQuality?.tokens ?? [];
+  const tokens = data?.modelQuality?.tokens ?? [];
+  const meanPerPhrase = data?.modelQuality?.meanPerPhrase ?? [];
 
   // const { form: { __metadata: { isNumericalSelected, isCategoricalSelected, selectedFeatures } } } = useFormbitContext();
 
@@ -16,5 +17,5 @@ export default () => {
     return [];
   } */
 
-  return items;
+  return { tokens, meanPerPhrase };
 };
