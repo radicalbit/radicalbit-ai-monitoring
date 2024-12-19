@@ -202,6 +202,8 @@ class TokenData(BaseModel):
     message_content: str
     probs: List[TokenProb]
 
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
 
 class MeanPerFile(BaseModel):
     prob_tot_mean: float
