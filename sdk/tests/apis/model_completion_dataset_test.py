@@ -43,7 +43,8 @@ class ModelCompletionDatasetTest(unittest.TestCase):
                         {
                             "tokens": [
                                 {
-                                    "id":"chatcmpl",
+                                    "id": "chatcmpl",
+                                    "message_content": "Sky is blue.",
                                     "probs":[
                                         {
                                             "prob":0.27,
@@ -84,6 +85,7 @@ class ModelCompletionDatasetTest(unittest.TestCase):
         metrics = model_completion_dataset.model_quality()
 
         assert isinstance(metrics, CompletionTextGenerationModelQuality)
+        assert metrics.tokens[0].message_content == 'Sky is blue.'
         assert metrics.tokens[0].probs[0].prob == 0.27
         assert metrics.tokens[0].probs[0].token == 'Sky'
         assert metrics.mean_per_file[0].prob_tot_mean == 0.71

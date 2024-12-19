@@ -38,20 +38,25 @@ class CompletionMetrics:
         return df
 
     def compute_prob(self, df: DataFrame):
-        df = df.select(F.explode("choices").alias("element"), F.col("id"))
         df = df.select(
-            F.col("id"), F.explode("element.logprobs.content").alias("content")
+            F.explode("choices").alias("element"),
+            F.col("id"),
         )
-        df = df.select("id", "content.logprob", "content.token").withColumn(
-            "prob", self.compute_probability_udf("logprob")
+        df = df.select(
+            F.col("id"),
+            F.col("element.message.content").alias("message_content"),
+            F.explode("element.logprobs.content").alias("content"),
         )
+        df = df.select(
+            "id", "message_content", "content.logprob", "content.token"
+        ).withColumn("prob", self.compute_probability_udf("logprob"))
         return df
 
     def extract_metrics(self, df: DataFrame) -> CompletionMetricsModel:
         df = self.remove_columns(df)
         df = self.compute_prob(df)
         df_prob = df.drop("logprob")
-        df_prob = df_prob.groupBy("id").agg(
+        df_prob = df_prob.groupBy("id", "message_content").agg(
             F.collect_list(F.struct("token", "prob")).alias("probs")
         )
         df_mean_values = df.groupBy("id").agg(
@@ -66,9 +71,11 @@ class CompletionMetrics:
             F.mean("prob_per_phrase").alias("prob_tot_mean"),
             F.mean("perplex_per_phrase").alias("perplex_tot_mean"),
         )
+        df_prob = df_prob.orderBy("id")
         tokens = [
             {
                 "id": row["id"],
+                "message_content": row["message_content"],
                 "probs": [
                     {"token": prob["token"], "prob": prob["prob"]}
                     for prob in row["probs"]
