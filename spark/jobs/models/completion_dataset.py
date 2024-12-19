@@ -9,6 +9,7 @@ class Prob(BaseModel):
 
 class Probs(BaseModel):
     id: str
+    message_content: str
     probs: List[Prob]
 
     model_config = ConfigDict(ser_json_inf_nan="null")

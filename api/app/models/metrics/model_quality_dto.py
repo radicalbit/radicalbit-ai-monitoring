@@ -199,6 +199,7 @@ class TokenProb(BaseModel):
 
 class TokenData(BaseModel):
     id: str
+    message_content: str
     probs: List[TokenProb]
 
 
