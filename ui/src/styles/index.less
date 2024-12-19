@@ -1,6 +1,11 @@
 :root .dark, .light .dark {
     --coo-white-bk: rgb(48 55 65);
+  
+}
 
+
+:root{
+  --text-gen-opacity:1
 }
 
 
@@ -12,4 +17,18 @@ html {
     overflow: hidden !important;
     margin: 0;
   }
+}
+
+.text-gen-color{
+  font-weight: bold;
+  color: rgba(54,149,217, var(--text-gen-opacity));
+  cursor: pointer;
+  padding:.2rem;
+
+}
+
+
+.text-gen-color:hover{
+  border:1px solid black;
+  padding:.2rem;
 }
