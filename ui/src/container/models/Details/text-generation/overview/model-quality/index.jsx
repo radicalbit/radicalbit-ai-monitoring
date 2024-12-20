@@ -4,6 +4,8 @@ import { useGetCompletionModelQualityQueryWithPolling } from '@State/models/poll
 import { memo } from 'react';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import TextGenerationFeatureList from './feature-list';
+import BoardRow from './board-row';
+import SearchFeatureList from './search-filter';
 
 const initialValues = {
   __metadata: {
@@ -19,6 +21,10 @@ function TextGenerationModelQualityMetrics() {
     return (
       <FormbitContextProvider initialValues={initialValues}>
         <div className="flex flex-col gap-4 p-4 h-full">
+          <BoardRow />
+
+          <SearchFeatureList />
+
           <TextGenerationFeatureList />
         </div>
       </FormbitContextProvider>
