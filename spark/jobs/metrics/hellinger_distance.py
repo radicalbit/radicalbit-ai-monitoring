@@ -167,7 +167,6 @@ class HellingerDistance:
             bins = self.__compute_bins_for_continuous_data(
                 column=column, method="sturges"
             )
-            print(f"Bins number: {bins}")
 
             x1, reference_pdf = self.__calculate_kde_continuous_pdf(
                 df=self.reference_data, column_name=column, bins=bins
