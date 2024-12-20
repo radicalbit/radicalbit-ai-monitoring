@@ -215,6 +215,14 @@ function ColoredTokenBoard({ token }) {
 
                   {formattedProbability}
                 </Tag>
+
+                <Tag type="full">
+                  nome_modello
+                </Tag>
+
+                <Tag type="full">
+                  rbit_timestamp
+                </Tag>
               </div>
             )}
           />
@@ -252,6 +260,7 @@ function ColoredTokenBoard({ token }) {
             two: (
               <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
             ),
+
           }}
           title={(
             <div className="flex flex-row gap-4">
@@ -267,6 +276,14 @@ function ColoredTokenBoard({ token }) {
                 {' '}
 
                 {formattedProbability}
+              </Tag>
+
+              <Tag type="full">
+                nome_modello
+              </Tag>
+
+              <Tag type="full">
+                rbit_timestamp
               </Tag>
             </div>
           )}
