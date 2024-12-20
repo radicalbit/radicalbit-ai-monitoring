@@ -1,7 +1,7 @@
 from typing import Tuple, Optional, Dict
+import numpy as np
 from pyspark.sql import functions as F
 from pyspark.sql import DataFrame
-import numpy as np
 from scipy.stats import gaussian_kde
 
 
@@ -79,15 +79,19 @@ class HellingerDistance:
         Bins number, int
         """
 
+        n = self.reference_data.count()
+
         if method == "sturges":
-            n = self.reference_data.count()
             return int(np.ceil(np.log2(n) + 1))
 
         elif method == "freedman":
-            n = self.reference_data.count()
             # Calculate the 25th and 75th percentiles
-            percentiles = self.reference_data.approxQuantile(column, [0.25, 0.75], 0.0)
-            q1, q3 = percentiles[0], percentiles[1]
+            calculated_percentile = self.reference_data.select(
+                F.percentile(column, 0.25), F.percentile(column, 0.75)
+            ).collect()[0]
+
+            q1, q3 = calculated_percentile[0], calculated_percentile[1]
+            print(q1, q3)
             iqr = q3 - q1
             bin_width = (2 * iqr) / (n ** (1 / 3))
 
@@ -202,5 +206,7 @@ class HellingerDistance:
         """
         if not None:
             return {
-                "HellingerDistance": self.__hellinger_distance(column_name=on_column, data_type=data_type)
+                "HellingerDistance": self.__hellinger_distance(
+                    column_name=on_column, data_type=data_type
+                )
             }
