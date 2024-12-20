@@ -1,6 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
+import getJobStatus from '@Helpers/get-spinner-job-status';
 import { columnFactory } from '@Src/components/smart-table/utils';
-import { JOB_STATUS, numberFormatter } from '@Src/constants';
+import { numberFormatter } from '@Src/constants';
 import { ModelTypeEnumLabel } from '@State/models/constants';
 import { RelativeDateTime, Truncate } from '@radicalbit/radicalbit-design-system';
 
@@ -13,8 +14,12 @@ export const getColumns = (
     key: 'name',
     width: '3%',
     align: 'center',
-    render: ({ latestCurrentJobStatus, latestReferenceJobStatus }) => {
-      const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;
+    render: ({
+      modelType, latestCurrentJobStatus, latestReferenceJobStatus, latestCompletionJobStatus,
+    }) => {
+      const jobStatus = getJobStatus({
+        modelType, latestCurrentJobStatus, latestReferenceJobStatus, latestCompletionJobStatus,
+      });
       return (
         <JobStatusPin jobStatus={jobStatus} />
       );

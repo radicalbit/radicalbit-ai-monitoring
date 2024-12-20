@@ -42,8 +42,39 @@ html {
   padding:.2rem;
 }
 
+.text-gen-colored-red{
+  font-weight: bold;
+  //border:2px solid rgba(246,0,0, var(--text-gen-opacity));
+  color: rgba(246,0,0, var(--text-gen-opacity));
+  cursor: pointer;
+  
+}
+
+.text-gen-colored-green{
+  font-weight: bold;
+  cursor: pointer;
+  color:rgba(77,182,148, var(--text-gen-opacity));
+  //border:2px solid rgba(77,182,148, var(--text-gen-opacity));
+  
+}
+
 
 .text-gen-color:hover{
   border:1px solid black;
   padding:.2rem;
+}
+
+
+.minimap{
+  background-color: black;
+  
+  > span{
+    font-size: .3rem;
+    padding: 0;
+    font-weight: bold;
+  }
+  >i{
+    padding: 0;
+    font-size: .2rem;
+  }
 }

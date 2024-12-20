@@ -31,7 +31,7 @@ function TextGenerationFeatureList() {
     <Spinner fullHeight fullWidth>
       <Virtuoso
         data={tokens}
-        itemContent={(_, token) => <TokenBoard token={token} />}
+        itemContent={(_, token) => <ColoredTokenBoard token={token} />}
         totalCount={tokens.length}
       />
     </Spinner>
@@ -44,7 +44,7 @@ function TokenBoard({ token }) {
 
   const { meanPerPhrase } = useGetFilteredFeatures();
 
-  const messageContent = token.message_content;
+  const { messageContent } = token;
 
   const perplexity = meanPerPhrase?.find(
     (el) => el.id === token.id,
@@ -68,10 +68,7 @@ function TokenBoard({ token }) {
           <NewHeader
             details={{
               one: (
-                <FontAwesomeIcon
-                  icon={collapsed ? faExpand : faMinimize}
-                  onClick={handleOnClick}
-                />
+                <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
               ),
             }}
             title={(
@@ -102,7 +99,7 @@ function TokenBoard({ token }) {
               </div>
 
               <div className="basis-1/12">
-                <WordHint probs={token.probs.toSpliced(5)} />
+                <Minimap probs={token.probs.toSpliced(80)} />
               </div>
             </div>
 
@@ -122,16 +119,10 @@ function TokenBoard({ token }) {
         <NewHeader
           details={{
             one: (
-              <FontAwesomeIcon
-                icon={showHeatText ? faTextHeight : faFire}
-                onClick={handleOnToggle}
-              />
+              <FontAwesomeIcon icon={showHeatText ? faTextHeight : faFire} onClick={handleOnToggle} />
             ),
             two: (
-              <FontAwesomeIcon
-                icon={collapsed ? faExpand : faMinimize}
-                onClick={handleOnClick}
-              />
+              <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
             ),
           }}
           title={(
@@ -156,9 +147,145 @@ function TokenBoard({ token }) {
       main={(
         <div className="flex flex-col gap-4">
           <div className="flex flex-row gap-4 overflow-auto max-h-[40rem]">
-            {!showHeatText && <Markdown>{messageContent}</Markdown>}
+            <div className="flex flex-col basis-11/12 gap-4">
+              {!showHeatText && <Markdown>{messageContent}</Markdown>}
 
-            {showHeatText && <WordHint probs={token.probs} />}
+              {showHeatText && <ColoredWordHint probs={token.probs} />}
+            </div>
+
+            <div className="basis-1/12">
+              <Minimap probs={token.probs.toSpliced(300)} />
+            </div>
+          </div>
+
+          <WordBarChart dataset={token} />
+        </div>
+      )}
+      modifier="my-4 "
+      size="small"
+    />
+  );
+}
+
+function ColoredTokenBoard({ token }) {
+  const [collapsed, setCollapsed] = useState(true);
+  const [showHeatText, setShowHeatText] = useState(true);
+
+  const { meanPerPhrase } = useGetFilteredFeatures();
+
+  const { messageContent } = token;
+
+  const perplexity = meanPerPhrase?.find(
+    (el) => el.id === token.id,
+  )?.perplexPerPhrase;
+
+  const probability = meanPerPhrase?.find(
+    ({ id }) => id === token.id,
+  )?.probPerPhrase;
+
+  const formattedPerplexity = perplexity ? numberFormatter().format(perplexity) : '--';
+  const formattedProbability = perplexity ? numberFormatter().format(probability) : '--';
+
+  const handleOnClick = () => setCollapsed(!collapsed);
+  const handleOnToggle = () => setShowHeatText(!showHeatText);
+
+  if (collapsed) {
+    return (
+      <Board
+        key={token.id}
+        header={(
+          <NewHeader
+            details={{
+              one: (
+                <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
+              ),
+            }}
+            title={(
+              <div className="flex flex-row gap-4">
+                <Tag type="full">
+                  Perplexity
+                  {' '}
+
+                  {formattedPerplexity}
+                </Tag>
+
+                <Tag type="full">
+                  Probability
+                  {' '}
+
+                  {formattedProbability}
+                </Tag>
+              </div>
+            )}
+          />
+        )}
+        main={(
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-row gap-4">
+              <div className="flex flex-col basis-11/12 gap-4">
+                <ColoredWordHint probs={token.probs.toSpliced(90)} withDot />
+              </div>
+
+              <div className="basis-1/12">
+                <Minimap probs={token.probs.toSpliced(80)} />
+              </div>
+            </div>
+
+            {/*   <WordBarChart dataset={token} /> */}
+          </div>
+        )}
+        modifier="my-4 "
+        size="small"
+      />
+    );
+  }
+
+  return (
+    <Board
+      key={token.id}
+      header={(
+        <NewHeader
+          details={{
+            one: (
+              <FontAwesomeIcon icon={showHeatText ? faTextHeight : faFire} onClick={handleOnToggle} />
+            ),
+            two: (
+              <FontAwesomeIcon icon={collapsed ? faExpand : faMinimize} onClick={handleOnClick} />
+            ),
+          }}
+          title={(
+            <div className="flex flex-row gap-4">
+              <Tag type="full">
+                Perplexity
+                {' '}
+
+                {formattedPerplexity}
+              </Tag>
+
+              <Tag type="full">
+                Probability
+                {' '}
+
+                {formattedProbability}
+              </Tag>
+            </div>
+          )}
+        />
+      )}
+      main={(
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row gap-4 overflow-auto max-h-[40rem]">
+
+            <div className="flex flex-col basis-11/12 gap-4">
+              {!showHeatText && <Markdown>{messageContent}</Markdown>}
+
+              {showHeatText && <ColoredWordHint probs={token.probs} />}
+            </div>
+
+            <div className="basis-1/12">
+              <Minimap probs={token.probs.toSpliced(300)} />
+            </div>
+
           </div>
 
           <WordBarChart dataset={token} />
@@ -184,12 +311,7 @@ function WordHint({ probs }) {
         if (regeExp.test(p.token)) {
           return (
             <Tooltip placement="top" title={numberFormatter().format(p.prob)}>
-              <i
-                className={className}
-                style={{
-                  '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob,
-                }}
-              >
+              <i className={className} style={{ '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob }}>
                 \n
                 {' '}
               </i>
@@ -198,17 +320,81 @@ function WordHint({ probs }) {
         }
         return (
           <Tooltip placement="top" title={numberFormatter().format(p.prob)}>
-            <span
-              className={className}
-              style={{
-                '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob,
-              }}
-            >
+            <span className={className} style={{ '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob }}>
               {p.token}
             </span>
           </Tooltip>
         );
       })}
+    </div>
+  );
+}
+
+function ColoredWordHint({ probs, withDot = false }) {
+  const regeExp = /\n/g;
+  if (!probs) {
+    return false;
+  }
+
+  return (
+    <div className="flex flex-row flex-wrap gap-1 ">
+      {probs.map((p) => {
+        const className = p.prob > 0.5 ? 'text-gen-colored-green' : 'text-gen-colored-red';
+
+        if (regeExp.test(p.token)) {
+          return (
+            <Tooltip placement="top" title={numberFormatter().format(p.prob)}>
+              <i className={className} style={{ '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob }}>
+                \n
+                {' '}
+              </i>
+            </Tooltip>
+          );
+        }
+        return (
+          <Tooltip placement="top" title={numberFormatter().format(p.prob)}>
+            <span className={className} style={{ '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob }}>
+              {p.token}
+            </span>
+          </Tooltip>
+        );
+      })}
+
+      {withDot && (<span>...</span>) }
+    </div>
+  );
+}
+
+function Minimap({ probs }) {
+  const regeExp = /\n/g;
+  if (!probs) {
+    return false;
+  }
+
+  return (
+    <div className="flex flex-row flex-wrap gap-1 minimap overlow-auto max-h-[30rem]">
+      {probs.map((p) => {
+        const className = p.prob > 0.5 ? 'text-gen-color-green ' : 'text-gen-color-red';
+
+        if (regeExp.test(p.token)) {
+          return (
+            <Tooltip placement="top" title={numberFormatter().format(p.prob)}>
+              <i className={className} style={{ '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob }}>
+                \n
+                {' '}
+              </i>
+            </Tooltip>
+          );
+        }
+        return (
+          <Tooltip placement="top" title={numberFormatter().format(p.prob)}>
+            <span className={className} style={{ '--text-gen-opacity': p.prob > 0.5 ? p.prob : 1 - p.prob }}>
+              {p.token}
+            </span>
+          </Tooltip>
+        );
+      })}
+
     </div>
   );
 }

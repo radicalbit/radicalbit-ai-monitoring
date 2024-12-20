@@ -71,7 +71,6 @@ function GlobalPerplexityBoard() {
 
 function GlobalProbabilityBoard() {
   const { data } = useGetCompletionModelQualityQueryWithPolling();
-  console.debug('🚀 ~ GlobalProbabilityBoard ~ data:', data);
   const counter = data?.modelQuality?.meanPerFile[0].probTotMean ?? 0;
 
   return (

@@ -165,7 +165,8 @@ const useGetModelsQueryWithPolling = () => {
 
   const isReferencePending = result.data?.items.some((d) => d.latestReferenceJobStatus === JOB_STATUS.IMPORTING);
   const isCurrentPending = result.data?.items.some((d) => d.latestCurrentJobStatus === JOB_STATUS.IMPORTING);
-  const isPending = isReferencePending || isCurrentPending;
+  const isCompletionPending = result.data?.items.some((d) => d.latestCompletionJobStatus === JOB_STATUS.IMPORTING);
+  const isPending = isReferencePending || isCurrentPending || isCompletionPending;
 
   useGetModelsQuery({ queryParams }, { pollingInterval: DEFAULT_POLLING_INTERVAL, skip: !isPending });
 

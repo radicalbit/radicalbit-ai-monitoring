@@ -9,7 +9,7 @@ import SearchFeatureList from './search-filter';
 
 const initialValues = {
   __metadata: {
-    selectedFeatures: [],
+    searchToken: '',
   },
 };
 

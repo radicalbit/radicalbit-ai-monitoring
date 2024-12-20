@@ -65,7 +65,7 @@ function JobStatus({ jobStatus }) {
     case JOB_STATUS.MISSING_COMPLETION: {
       return (
         <Void
-          actions={(<ImportCompletionButton Button type="primary" />)}
+          actions={(<ImportCompletionButton Button type="primary" withConfetti />)}
           description={(
             <>
               Upload a JSON file to analyze and visualize the data.
