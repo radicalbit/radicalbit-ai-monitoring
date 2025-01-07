@@ -1,8 +1,10 @@
-from typing import Tuple, Optional, Dict
+from typing import Tuple, Optional, Dict, List
 import numpy as np
-from pyspark.sql import functions as F
+from pyspark.sql import functions as f
 from pyspark.sql import DataFrame
+from pyspark import RDD, rdd
 from scipy.stats import gaussian_kde
+import itertools
 
 
 class HellingerDistance:
@@ -20,6 +22,8 @@ class HellingerDistance:
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
+        self.reference_data_length = self.reference_data.count()
+        self.current_data_length = self.current_data.count()
 
     @staticmethod
     def __calculate_category_percentages(df: DataFrame, column_name: str) -> DataFrame:
@@ -34,14 +38,30 @@ class HellingerDistance:
         DataFrame with two columns: category and percentage
         """
 
-        category_counts = df.groupBy(column_name).agg(F.count("*").alias("count"))
+        category_counts = df.groupBy(column_name).agg(f.count("*").alias("count"))
         total_count = df.count()
         result_df = category_counts.withColumn(
-            "percentage", (F.col("count") / F.lit(total_count))
+            "percentage", (f.col("count") / f.lit(total_count))
         )
         return result_df.select(
-            F.col(column_name).alias("category"), F.col("percentage")
+            f.col(column_name).alias("category"), f.col("percentage")
         ).orderBy("category")
+
+    @staticmethod
+    def __calculate_kde_continuous_pdf_on_partition(
+        df: DataFrame, column_name: str, bins: int
+    ) -> List:
+        def __compute_kde_on_partition(iterator):
+            array_on_parts = np.array(list(iterator)).reshape(-1)
+            kde = gaussian_kde(array_on_parts)
+            x = np.linspace(min(array_on_parts), max(array_on_parts), bins)
+            pdf = kde.evaluate(x)
+            yield x, pdf / np.sum(pdf), len(array_on_parts)
+
+        rdd_data = df.select(column_name).rdd
+        # print(rdd_data.getNumPartitions()) # 12 partitions
+        # print(rdd_data.collect())
+        return rdd_data.mapPartitions(__compute_kde_on_partition).collect()
 
     @staticmethod
     def __calculate_kde_continuous_pdf(
@@ -59,6 +79,7 @@ class HellingerDistance:
         Tuple with two objects: the interpolation points and the pdf
         """
 
+        # np_array = df.select(column_name).toPandas().to_numpy().reshape(-1)
         np_array = np.array(df.select(column_name).rdd.flatMap(lambda xi: xi).collect())
         kde = gaussian_kde(np_array)
         x = np.linspace(min(np_array), max(np_array), bins)
@@ -66,48 +87,22 @@ class HellingerDistance:
         return x, pdf / np.sum(pdf)
 
     def __compute_bins_for_continuous_data(
-        self, column: str, method: str = "sturges"
+        self, column_name: str, method: str = "sturges"
     ) -> int:
         """
-        Calculate the number of bins using the Sturges rule (default) or the Freedman-Diaconis Rule.
+        Calculate the number of bins using the Sturges rule.
 
         Parameters:
         column: it is the column to use for binning computation
-        method: it is the method to use for the binning. By default, Sturges rule is applied.
 
         Return:
         Bins number, int
         """
+        return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
-        n = self.reference_data.count()
-
-        if method == "sturges":
-            return int(np.ceil(np.log2(n) + 1))
-
-        elif method == "freedman":
-            # Calculate the 25th and 75th percentiles
-            calculated_percentile = self.reference_data.select(
-                F.percentile(column, 0.25), F.percentile(column, 0.75)
-            ).collect()[0]
-
-            q1, q3 = calculated_percentile[0], calculated_percentile[1]
-            print(q1, q3)
-            iqr = q3 - q1
-            bin_width = (2 * iqr) / (n ** (1 / 3))
-
-            # Find the minimum and maximum values
-            min_max = self.reference_data.agg(
-                F.min(column).alias("min_value"), F.max(column).alias("max_value")
-            ).collect()[0]
-
-            min_value = int(min_max["min_value"])
-            max_value = int(min_max["max_value"])
-
-            data_range = max_value - min_value
-
-            return int(np.ceil(data_range / bin_width))
-
-    def __hellinger_distance(self, column_name: str, data_type: str) -> Optional[float]:
+    def __hellinger_distance(
+        self, column_name: str, data_type: str, process_on_partitions: bool
+    ) -> Optional[float]:
         """
         Compute the Hellinger Distasnce according to the data type (discrete or continuous).
 
@@ -168,30 +163,102 @@ class HellingerDistance:
             )
 
         elif data_type == "continuous":
-            bins = self.__compute_bins_for_continuous_data(
-                column=column, method="sturges"
-            )
+            bins = self.__compute_bins_for_continuous_data(column_name=column)
 
-            x1, reference_pdf = self.__calculate_kde_continuous_pdf(
-                df=self.reference_data, column_name=column, bins=bins
-            )
+            if process_on_partitions:
+                reference_pdf_part = self.__calculate_kde_continuous_pdf_on_partition(
+                    df=self.reference_data, column_name=column, bins=bins
+                )
 
-            x2, current_pdf = self.__calculate_kde_continuous_pdf(
-                df=self.current_data, column_name=column, bins=bins
-            )
+                current_pdf_part = self.__calculate_kde_continuous_pdf_on_partition(
+                    df=self.current_data, column_name=column, bins=bins
+                )
 
-            common_x = np.linspace(
-                min(x1.min(), x2.min()), max(x1.max(), x2.max()), bins
-            )
-            reference_values = np.interp(common_x, x1, reference_pdf)
-            current_values = np.interp(common_x, x2, current_pdf)
+                flat_x1_ref = list(
+                    itertools.chain(*[list(i[0]) for i in reference_pdf_part])
+                )
+                ref_x1_min = min(flat_x1_ref)
+                ref_x1_max = max(flat_x1_ref)
 
-            return np.sqrt(
-                0.5 * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
-            )
+                flat_x2_cur = list(
+                    itertools.chain(*[list(i[0]) for i in current_pdf_part])
+                )
+                cur_x2_min = min(flat_x2_cur)
+                cur_x2_max = max(flat_x2_cur)
 
-        else:
-            return None
+                # Find grid for both ref and current
+                common_x_part = np.linspace(
+                    min(ref_x1_min.min(), cur_x2_min.min()),
+                    max(ref_x1_max.max(), cur_x2_max.max()),
+                    bins,
+                )
+
+                # Compute weights based on sample size (data in the partition)
+                ref_weights = [
+                    i[2] / self.reference_data_length for i in reference_pdf_part
+                ]
+                cur_weights = [
+                    i[2] / self.current_data_length for i in current_pdf_part
+                ]
+
+                # Overall KDE
+                ref_overall_kde_pdf = sum(
+                    [
+                        w * x
+                        for w, x in zip(ref_weights, [i[1] for i in reference_pdf_part])
+                    ]
+                )
+                cur_overall_kde_pdf = sum(
+                    [
+                        w * x
+                        for w, x in zip(cur_weights, [i[1] for i in current_pdf_part])
+                    ]
+                )
+
+                percentile_values_for_x = np.linspace(0, 100, bins)
+
+                reference_values_part = np.interp(
+                    common_x_part,
+                    np.percentile(flat_x1_ref, percentile_values_for_x),
+                    ref_overall_kde_pdf,
+                )
+
+                current_values_part = np.interp(
+                    common_x_part,
+                    np.percentile(flat_x2_cur, percentile_values_for_x),
+                    cur_overall_kde_pdf,
+                )
+
+                return np.sqrt(
+                    0.5
+                    * np.sum(
+                        (np.sqrt(reference_values_part) - np.sqrt(current_values_part))
+                        ** 2
+                    )
+                )
+
+            else:
+                x1, reference_pdf = self.__calculate_kde_continuous_pdf(
+                    df=self.reference_data, column_name=column, bins=bins
+                )
+
+                x2, current_pdf = self.__calculate_kde_continuous_pdf(
+                    df=self.current_data, column_name=column, bins=bins
+                )
+
+                common_x = np.linspace(
+                    min(x1.min(), x2.min()), max(x1.max(), x2.max()), bins
+                )
+
+                reference_values = np.interp(common_x, x1, reference_pdf)
+                current_values = np.interp(common_x, x2, current_pdf)
+
+                print(len(common_x), len(x1), len(reference_pdf))
+
+                return np.sqrt(
+                    0.5
+                    * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
+                )
 
     def return_distance(self, on_column: str, data_type: str) -> Dict:
         """
@@ -204,9 +271,9 @@ class HellingerDistance:
         Returns:
         The distance, Dict.
         """
-        if not None:
-            return {
-                "HellingerDistance": self.__hellinger_distance(
-                    column_name=on_column, data_type=data_type
-                )
-            }
+
+        return {
+            "HellingerDistance": self.__hellinger_distance(
+                column_name=on_column, data_type=data_type, process_on_partitions=True
+            )
+        }
