@@ -14,9 +14,11 @@ class HellingerDistance:
         Initializes the Hellinger Distance object with necessary data and parameters.
 
         Parameters:
-        - spark_session (SparkSession): The SparkSession object.
-        - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data.
-        - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data.
+        - spark_session (SparkSession): The SparkSession object
+        - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
+        - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
+        - reference_data_length (int): The reference length
+        - current_data_length (int): The current length
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
@@ -30,8 +32,8 @@ class HellingerDistance:
         Creates a new dataframe with categories and their percentages
 
         Parameters:
-        df: spark DataFrame
-        column_name: str, name of the categorical column
+        - df (pyspark.sql.DataFrame): The spark df
+        - column_name (str): The name of the categorical column
 
         Returns:
         DataFrame with two columns: category and percentage
@@ -50,6 +52,18 @@ class HellingerDistance:
     def __calculate_kde_continuous_pdf_on_partition(
         df: DataFrame, column_name: str, bins: int
     ) -> List:
+        """
+        Estimate the probability density function using KDE for each partition (workers).
+
+        Parameters:
+        - df (pyspark.sql.DataFrame): The spark df
+        - column_name (str): The name of the continuous column
+        - bins (int): The number of bins
+
+        Returns:
+        A list with the KDE processing for each worker.
+        """
+
         def __compute_kde_on_partition(iterator):
             array_on_parts = np.array(list(iterator)).reshape(-1)
             kde = gaussian_kde(array_on_parts)
@@ -58,8 +72,6 @@ class HellingerDistance:
             yield x, pdf / np.sum(pdf), len(array_on_parts)
 
         rdd_data = df.select(column_name).rdd
-        # print(rdd_data.getNumPartitions()) # 12 partitions
-        # print(rdd_data.collect())
         return rdd_data.mapPartitions(__compute_kde_on_partition).collect()
 
     @staticmethod
@@ -70,9 +82,9 @@ class HellingerDistance:
         Estimate the probability density function using KDE.
 
         Parameters:
-        df: spark DataFrame
-        column_name: str, name of the categorical column
-        bins: the number of bins to use
+        - df (pyspark.sql.DataFrame): The spark df
+        - column_name (str): The name of the continuous column
+        - bins (int): The number of bins
 
         Returns:
         Tuple with two objects: the interpolation points and the pdf
@@ -85,17 +97,12 @@ class HellingerDistance:
         pdf = kde.evaluate(x)
         return x, pdf / np.sum(pdf)
 
-    def __compute_bins_for_continuous_data(
-        self, column_name: str, method: str = "sturges"
-    ) -> int:
+    def __compute_bins_for_continuous_data(self) -> int:
         """
         Calculate the number of bins using the Sturges rule.
 
-        Parameters:
-        column: it is the column to use for binning computation
-
-        Return:
-        Bins number, int
+        Returns:
+        Bins number as integer.
         """
         return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
@@ -106,11 +113,12 @@ class HellingerDistance:
         Compute the Hellinger Distasnce according to the data type (discrete or continuous).
 
         Parameters:
-        column_name: str
-        data_type: str
+        - column_name (str): The name of the column
+        - data_type (str): The type of the field (discrete or continuous)
+        - process_on_partitions (bool): it True, partition processing is activated
 
         Returns:
-        The Hellinger Distance value or a None if the data_type is not valid.
+        The Hellinger Distance value.
         """
         column = column_name
 
@@ -162,7 +170,7 @@ class HellingerDistance:
             )
 
         elif data_type == "continuous":
-            bins = self.__compute_bins_for_continuous_data(column_name=column)
+            bins = self.__compute_bins_for_continuous_data()
 
             if process_on_partitions:
                 reference_pdf_part = self.__calculate_kde_continuous_pdf_on_partition(
@@ -264,11 +272,11 @@ class HellingerDistance:
         Returns the Hellinger Distance.
 
         Parameters:
-        on_column: the column to use for the distance computation
-        data_type: the type of the field (discrete or continuous)
+        - on_column (str): The column to use for the distance computation
+        - data_type (str): The type of the field (discrete or continuous)
 
         Returns:
-        The distance, Dict.
+        The distance as a dictionary.
         """
 
         return {
