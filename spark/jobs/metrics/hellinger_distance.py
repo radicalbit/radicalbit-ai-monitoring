@@ -260,8 +260,6 @@ class HellingerDistance:
                 reference_values = np.interp(common_x, x1, reference_pdf)
                 current_values = np.interp(common_x, x2, current_pdf)
 
-                print(len(common_x), len(x1), len(reference_pdf))
-
                 return np.sqrt(
                     0.5
                     * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
