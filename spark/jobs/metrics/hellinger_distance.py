@@ -2,7 +2,6 @@ from typing import Tuple, Optional, Dict, List
 import numpy as np
 from pyspark.sql import functions as f
 from pyspark.sql import DataFrame
-from pyspark import RDD, rdd
 from scipy.stats import gaussian_kde
 import itertools
 
