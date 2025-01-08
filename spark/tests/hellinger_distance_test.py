@@ -1,5 +1,4 @@
 import pytest
-from pyspark.sql import SparkSession
 from pyspark.sql import Row
 from jobs.metrics.hellinger_distance import (
     HellingerDistance,
