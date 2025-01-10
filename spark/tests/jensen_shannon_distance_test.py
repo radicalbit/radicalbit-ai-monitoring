@@ -1,9 +1,7 @@
 import pytest
 from pyspark.sql import DataFrame
 from pyspark.sql import Row
-from jobs.metrics.jensen_shannon_distance import (
-    JensenShannonDistance
-)
+from jobs.metrics.jensen_shannon_distance import JensenShannonDistance
 
 
 @pytest.fixture(scope="module")
@@ -49,6 +47,7 @@ def test_return_distance_discrete(jensen_shannon_distance):
     assert (
         0 <= result["JensenShannonDistance"] <= 1
     ), "Distance should be between 0 and 1."
+
 
 def test_calculate_category_percentages(jensen_shannon_distance):
     """Test the __calculate_category_percentages method."""

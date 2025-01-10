@@ -15,8 +15,6 @@ class JensenShannonDistance:
         - spark_session (SparkSession): The SparkSession object
         - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
-        - reference_data_length (int): The reference length
-        - current_data_length (int): The current length
         - rbit_prefix (str): A prefix to assign to temporary fields
         - percentiles (list): The list with the percentiles to bucketize continuous variables
         - relative_error (float): The error to assign to approxQuantile
@@ -24,8 +22,6 @@ class JensenShannonDistance:
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
-        self.reference_data_length = self.reference_data.count()
-        self.current_data_length = self.current_data.count()
         self.rbit_prefix = "rbit_spark"
         self.percentiles = [i / 10 for i in range(1, 10)]
         self.relative_error = 0.05
@@ -44,10 +40,13 @@ class JensenShannonDistance:
         DataFrame with two columns: category and percentage
         """
 
+        df = df.filter(f.col(column_name).isNotNull())
+        total_count = df.count()
+
         category_counts = df.groupBy(column_name).agg(
             f.count("*").alias(f"{self.rbit_prefix}_count")
         )
-        total_count = df.count()
+
         result_df = category_counts.withColumn(
             f"{self.rbit_prefix}_percentage",
             (f.col(f"{self.rbit_prefix}_count") / f.lit(total_count)),
@@ -71,8 +70,13 @@ class JensenShannonDistance:
         Returns:
         - A Tuple of DataFrames containing reference and current percentages
         """
-        reference = df_reference.select(column_name)
-        current = df_current.select(column_name)
+        reference = df_reference.select(column_name).filter(
+            f.col(column_name).isNotNull()
+        )
+        current = df_current.select(column_name).filter(f.col(column_name).isNotNull())
+
+        reference_count = reference.count()
+        current_count = current.count()
 
         reference_quantiles = reference.approxQuantile(
             column_name, self.percentiles, 0.01
@@ -96,10 +100,7 @@ class JensenShannonDistance:
         reference_bucket_percentages = (
             reference_bucket_counts.withColumn(
                 f"{self.rbit_prefix}_percentage",
-                (
-                    f.col(f"{self.rbit_prefix}_count")
-                    / f.lit(self.reference_data_length)
-                ),
+                (f.col(f"{self.rbit_prefix}_count") / f.lit(reference_count)),
             )
             .select(
                 f.col(f"{self.rbit_prefix}_bucket"),
@@ -107,8 +108,6 @@ class JensenShannonDistance:
             )
             .orderBy(f"{self.rbit_prefix}_bucket")
         )
-
-        reference_bucket_percentages.show()
 
         current_with_buckets = bucketizer.setHandleInvalid("keep").transform(current)
 
@@ -119,7 +118,7 @@ class JensenShannonDistance:
         current_bucket_percentages = (
             current_bucket_counts.withColumn(
                 f"{self.rbit_prefix}_percentage",
-                (f.col(f"{self.rbit_prefix}_count") / f.lit(self.current_data_length)),
+                (f.col(f"{self.rbit_prefix}_count") / f.lit(current_count)),
             )
             .select(
                 f.col(f"{self.rbit_prefix}_bucket"),
