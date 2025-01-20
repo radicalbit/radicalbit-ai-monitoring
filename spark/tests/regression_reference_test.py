@@ -17,7 +17,7 @@ from jobs.utils.models import (
     FieldTypes,
     Granularity,
 )
-from tests.utils.pytest_utils import my_approx
+from tests.utils.pytest_utils import my_approx, prefix_id
 import tests.results.regression_reference_results as res
 
 
@@ -126,6 +126,7 @@ def reference_dataset(reference_bike):
     yield ReferenceDataset(
         raw_dataframe=reference_bike,
         model=model,
+        prefix_id=prefix_id
     )
 
 
@@ -212,6 +213,7 @@ def reference_dataset_nulls(spark_fixture, reference_bike_nulls):
     yield ReferenceDataset(
         raw_dataframe=reference_bike_nulls,
         model=model,
+        prefix_id=prefix_id
     )
 
 
@@ -296,13 +298,14 @@ def reference_dataset_abalone(spark_fixture, reference_abalone):
     yield ReferenceDataset(
         raw_dataframe=reference_abalone,
         model=model,
+        prefix_id=prefix_id
     )
 
 
 def test_model_quality_metrics(reference_dataset):
     assert reference_dataset.reference_count == 731
 
-    regression_service = ReferenceMetricsRegressionService(reference=reference_dataset)
+    regression_service = ReferenceMetricsRegressionService(reference=reference_dataset, prefix_id=prefix_id)
     model_quality_metrics = regression_service.calculate_model_quality()
 
     assert not deepdiff.DeepDiff(
@@ -316,6 +319,7 @@ def test_model_quality_metrics(reference_dataset):
 def test_model_quality_abalone(reference_dataset_abalone):
     metrics_service = ReferenceMetricsRegressionService(
         reference=reference_dataset_abalone,
+        prefix_id=prefix_id
     )
 
     model_quality = metrics_service.calculate_model_quality()
@@ -336,7 +340,7 @@ def test_statistics_metrics(reference_dataset):
 
 
 def test_data_quality_metrics(reference_dataset):
-    regression_service = ReferenceMetricsRegressionService(reference=reference_dataset)
+    regression_service = ReferenceMetricsRegressionService(reference=reference_dataset, prefix_id=prefix_id)
     data_quality = regression_service.calculate_data_quality()
 
     features = res.test_data_quality_metrics_res["feature_metrics"]
@@ -364,7 +368,7 @@ def test_data_quality_metrics(reference_dataset):
 
 def test_model_quality_metrics_nulls(reference_dataset_nulls):
     regression_service = ReferenceMetricsRegressionService(
-        reference=reference_dataset_nulls
+        reference=reference_dataset_nulls, prefix_id=prefix_id
     )
     model_quality_metrics = regression_service.calculate_model_quality()
 

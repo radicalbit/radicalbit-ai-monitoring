@@ -18,6 +18,8 @@ from utils.models import (
     FieldTypes,
 )
 import tests.results.jobs_results as res
+from tests.utils.pytest_utils import prefix_id
+
 
 
 @pytest.fixture()
@@ -315,7 +317,7 @@ def bc_model_joined():
 def reg_current_dataset_abalone(reg_current_test_abalone, reg_model_abalone):
     yield CurrentDataset(
         raw_dataframe=reg_current_test_abalone,
-        model=reg_model_abalone,
+        model=reg_model_abalone, prefix_id=prefix_id
     )
 
 
@@ -323,7 +325,7 @@ def reg_current_dataset_abalone(reg_current_test_abalone, reg_model_abalone):
 def reg_reference_dataset_abalone(reg_reference_test_abalone, reg_model_abalone):
     yield ReferenceDataset(
         raw_dataframe=reg_reference_test_abalone,
-        model=reg_model_abalone,
+        model=reg_model_abalone, prefix_id=prefix_id
     )
 
 
@@ -331,7 +333,7 @@ def reg_reference_dataset_abalone(reg_reference_test_abalone, reg_model_abalone)
 def mc_current_dataset_target_string(mc_current_target_string, mc_model_target_string):
     yield CurrentDataset(
         raw_dataframe=mc_current_target_string,
-        model=mc_model_target_string,
+        model=mc_model_target_string, prefix_id=prefix_id
     )
 
 
@@ -341,7 +343,7 @@ def mc_reference_dataset_target_string(
 ):
     yield ReferenceDataset(
         raw_dataframe=mc_reference_target_string,
-        model=mc_model_target_string,
+        model=mc_model_target_string, prefix_id=prefix_id
     )
 
 
@@ -350,6 +352,7 @@ def bc_current_dataset_joined(bc_current_joined, bc_model_joined):
     yield CurrentDataset(
         raw_dataframe=bc_current_joined,
         model=bc_model_joined,
+        prefix_id=prefix_id
     )
 
 
@@ -358,6 +361,7 @@ def bc_reference_dataset_joined(bc_reference_joined, bc_model_joined):
     yield ReferenceDataset(
         raw_dataframe=bc_reference_joined,
         model=bc_model_joined,
+        prefix_id=prefix_id
     )
 
 
@@ -372,8 +376,9 @@ def test_reg_abalone(
         reg_current_dataset_abalone,
         reg_reference_dataset_abalone,
         reg_model_abalone,
+        prefix_id
     )
-    ref_record = ref_compute_metrics(reg_reference_dataset_abalone, reg_model_abalone)
+    ref_record = ref_compute_metrics(reg_reference_dataset_abalone, reg_model_abalone, prefix_id)
 
     assert not deepdiff.DeepDiff(
         cur_record,
@@ -401,9 +406,10 @@ def test_mc_target_string(
         mc_current_dataset_target_string,
         mc_reference_dataset_target_string,
         mc_model_target_string,
+        prefix_id
     )
     ref_record = ref_compute_metrics(
-        mc_reference_dataset_target_string, mc_model_target_string
+        mc_reference_dataset_target_string, mc_model_target_string, prefix_id
     )
 
     assert not deepdiff.DeepDiff(
@@ -432,8 +438,9 @@ def test_bc_joined(
         bc_current_dataset_joined,
         bc_reference_dataset_joined,
         bc_model_joined,
+        prefix_id
     )
-    ref_record = ref_compute_metrics(bc_reference_dataset_joined, bc_model_joined)
+    ref_record = ref_compute_metrics(bc_reference_dataset_joined, bc_model_joined, prefix_id)
 
     assert not deepdiff.DeepDiff(
         cur_record,

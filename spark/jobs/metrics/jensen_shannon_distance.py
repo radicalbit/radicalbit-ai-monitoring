@@ -7,7 +7,7 @@ from scipy.spatial.distance import jensenshannon
 
 
 class JensenShannonDistance:
-    def __init__(self, spark_session, reference_data, current_data) -> None:
+    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Jensen-Shannon Distance object with necessary data and parameters.
 
@@ -22,7 +22,7 @@ class JensenShannonDistance:
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
-        self.rbit_prefix = "rbit_spark"
+        self.prefix_id = prefix_id
         self.percentiles = [i / 10 for i in range(1, 10)]
         self.relative_error = 0.05
 
@@ -44,17 +44,17 @@ class JensenShannonDistance:
         total_count = df.count()
 
         category_counts = df.groupBy(column_name).agg(
-            f.count("*").alias(f"{self.rbit_prefix}_count")
+            f.count("*").alias(f"{self.prefix_id}_count")
         )
 
         result_df = category_counts.withColumn(
-            f"{self.rbit_prefix}_percentage",
-            (f.col(f"{self.rbit_prefix}_count") / f.lit(total_count)),
+            f"{self.prefix_id}_percentage",
+            (f.col(f"{self.prefix_id}_count") / f.lit(total_count)),
         )
         return result_df.select(
-            f.col(column_name).alias(f"{self.rbit_prefix}_category"),
-            f.col(f"{self.rbit_prefix}_percentage"),
-        ).orderBy(f"{self.rbit_prefix}_category")
+            f.col(column_name).alias(f"{self.prefix_id}_category"),
+            f.col(f"{self.prefix_id}_percentage"),
+        ).orderBy(f"{self.prefix_id}_category")
 
     def __bucketize_continuous_values(
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
@@ -86,7 +86,7 @@ class JensenShannonDistance:
         bucketizer = Bucketizer(
             splits=reference_buckets,
             inputCol=column_name,
-            outputCol=f"{self.rbit_prefix}_bucket",
+            outputCol=f"{self.prefix_id}_bucket",
         )
 
         reference_with_buckets = bucketizer.setHandleInvalid("keep").transform(
@@ -94,37 +94,37 @@ class JensenShannonDistance:
         )
 
         reference_bucket_counts = reference_with_buckets.groupBy(
-            f"{self.rbit_prefix}_bucket"
-        ).agg(f.count("*").alias(f"{self.rbit_prefix}_count"))
+            f"{self.prefix_id}_bucket"
+        ).agg(f.count("*").alias(f"{self.prefix_id}_count"))
 
         reference_bucket_percentages = (
             reference_bucket_counts.withColumn(
-                f"{self.rbit_prefix}_percentage",
-                (f.col(f"{self.rbit_prefix}_count") / f.lit(reference_count)),
+                f"{self.prefix_id}_percentage",
+                (f.col(f"{self.prefix_id}_count") / f.lit(reference_count)),
             )
             .select(
-                f.col(f"{self.rbit_prefix}_bucket"),
-                f.col(f"{self.rbit_prefix}_percentage"),
+                f.col(f"{self.prefix_id}_bucket"),
+                f.col(f"{self.prefix_id}_percentage"),
             )
-            .orderBy(f"{self.rbit_prefix}_bucket")
+            .orderBy(f"{self.prefix_id}_bucket")
         )
 
         current_with_buckets = bucketizer.setHandleInvalid("keep").transform(current)
 
         current_bucket_counts = current_with_buckets.groupBy(
-            f"{self.rbit_prefix}_bucket"
-        ).agg(f.count("*").alias(f"{self.rbit_prefix}_count"))
+            f"{self.prefix_id}_bucket"
+        ).agg(f.count("*").alias(f"{self.prefix_id}_count"))
 
         current_bucket_percentages = (
             current_bucket_counts.withColumn(
-                f"{self.rbit_prefix}_percentage",
-                (f.col(f"{self.rbit_prefix}_count") / f.lit(current_count)),
+                f"{self.prefix_id}_percentage",
+                (f.col(f"{self.prefix_id}_count") / f.lit(current_count)),
             )
             .select(
-                f.col(f"{self.rbit_prefix}_bucket"),
-                f.col(f"{self.rbit_prefix}_percentage"),
+                f.col(f"{self.prefix_id}_bucket"),
+                f.col(f"{self.prefix_id}_percentage"),
             )
-            .orderBy(f"{self.rbit_prefix}_bucket")
+            .orderBy(f"{self.prefix_id}_bucket")
         )
 
         return reference_bucket_percentages, current_bucket_percentages
@@ -183,16 +183,16 @@ class JensenShannonDistance:
 
             reference_category_dict = (
                 reference_category_percentages.toPandas()
-                .set_index(f"{self.rbit_prefix}_category")[
-                    f"{self.rbit_prefix}_percentage"
+                .set_index(f"{self.prefix_id}_category")[
+                    f"{self.prefix_id}_percentage"
                 ]
                 .to_dict()
             )
 
             current_category_dict = (
                 current_category_percentages.toPandas()
-                .set_index(f"{self.rbit_prefix}_category")[
-                    f"{self.rbit_prefix}_percentage"
+                .set_index(f"{self.prefix_id}_category")[
+                    f"{self.prefix_id}_percentage"
                 ]
                 .to_dict()
             )
@@ -218,16 +218,16 @@ class JensenShannonDistance:
 
             reference_bucket_dict = (
                 reference_bucket_percentage.toPandas()
-                .set_index(f"{self.rbit_prefix}_bucket")[
-                    f"{self.rbit_prefix}_percentage"
+                .set_index(f"{self.prefix_id}_bucket")[
+                    f"{self.prefix_id}_percentage"
                 ]
                 .to_dict()
             )
 
             current_bucket_dict = (
                 current_bucket_percentage.toPandas()
-                .set_index(f"{self.rbit_prefix}_bucket")[
-                    f"{self.rbit_prefix}_percentage"
+                .set_index(f"{self.prefix_id}_bucket")[
+                    f"{self.prefix_id}_percentage"
                 ]
                 .to_dict()
             )

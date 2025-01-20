@@ -13,11 +13,11 @@ from models.data_quality import (
     ClassMetrics,
     MultiClassDataQuality,
 )
-from utils.misc import rbit_prefix
+# from utils.misc import rbit_prefix
 
 
 class ReferenceMetricsMulticlassService:
-    def __init__(self, reference: ReferenceDataset):
+    def __init__(self, reference: ReferenceDataset, prefix_id: str):
         self.reference = reference
         index_label_map, indexed_reference = reference.get_string_indexed_dataframe()
         self.index_label_map = index_label_map
@@ -38,6 +38,7 @@ class ReferenceMetricsMulticlassService:
             "recallByLabel": "recall",
             "fMeasureByLabel": "f_measure",
         }
+        self.prefix_id = prefix_id
 
     def __evaluate_multi_class_classification(
         self, dataset: DataFrame, metric_name: str, class_index: float
@@ -45,8 +46,8 @@ class ReferenceMetricsMulticlassService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
-                labelCol=f"{rbit_prefix}_{self.reference.model.target.name}-idx",
+                predictionCol=f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
+                labelCol=f"{self.prefix_id}_{self.reference.model.target.name}-idx",
                 metricLabel=class_index,
             ).evaluate(dataset)
         except Exception:
@@ -110,8 +111,8 @@ class ReferenceMetricsMulticlassService:
             )
             .select(
                 *[
-                    f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
-                    f"{rbit_prefix}_{self.reference.model.target.name}-idx",
+                    f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
+                    f"{self.prefix_id}_{self.reference.model.target.name}-idx",
                 ]
             )
             .rdd
@@ -143,6 +144,7 @@ class ReferenceMetricsMulticlassService:
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
+            prefix_id=self.prefix_id
         )
 
     def calculate_class_metrics(self, column) -> List[ClassMetrics]:
@@ -150,6 +152,7 @@ class ReferenceMetricsMulticlassService:
             class_column=column,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
+            prefix_id=self.prefix_id
         )
 
     def calculate_data_quality(self) -> MultiClassDataQuality:

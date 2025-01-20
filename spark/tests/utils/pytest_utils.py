@@ -1,6 +1,8 @@
 import pytest
 from _pytest.python_api import ApproxMapping
+import uuid
 
+prefix_id = str(uuid.uuid4())
 
 def my_approx(expected, rel=None, abs=None, nan_ok=True):
     """Source: https://stackoverflow.com/questions/56046524/check-if-python-dictionaries-are-equal-allowing-small-difference-for-floats"""

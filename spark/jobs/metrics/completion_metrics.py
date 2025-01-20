@@ -83,7 +83,6 @@ class CompletionMetrics:
             }
             for row in df_prob.toLocalIterator()
         ]
-
         res = {
             "tokens": tokens,
             "mean_per_phrase": df_mean_values.toPandas().to_dict(orient="records"),

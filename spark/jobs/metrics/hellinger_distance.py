@@ -9,7 +9,7 @@ import itertools
 class HellingerDistance:
     """Class for performing the Hellinger Distance using Pyspark."""
 
-    def __init__(self, spark_session, reference_data, current_data) -> None:
+    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Hellinger Distance object with necessary data and parameters.
 
@@ -25,9 +25,10 @@ class HellingerDistance:
         self.current_data = current_data
         self.reference_data_length = self.reference_data.count()
         self.current_data_length = self.current_data.count()
+        self.prefix_id = prefix_id
 
     @staticmethod
-    def __calculate_category_percentages(df: DataFrame, column_name: str) -> DataFrame:
+    def __calculate_category_percentages(df: DataFrame, column_name: str, prefix_id: str) -> DataFrame:
         """
         Creates a new dataframe with categories and their percentages
 
@@ -39,14 +40,14 @@ class HellingerDistance:
         DataFrame with two columns: category and percentage
         """
 
-        category_counts = df.groupBy(column_name).agg(f.count("*").alias("count"))
+        category_counts = df.groupBy(column_name).agg(f.count("*").alias(f"{prefix_id}_count"))
         total_count = df.count()
         result_df = category_counts.withColumn(
-            "percentage", (f.col("count") / f.lit(total_count))
+            f"{prefix_id}_percentage", (f.col(f"{prefix_id}_count") / f.lit(total_count))
         )
         return result_df.select(
-            f.col(column_name).alias("category"), f.col("percentage")
-        ).orderBy("category")
+            f.col(column_name).alias(f"{prefix_id}_category"), f.col(f"{prefix_id}_percentage")
+        ).orderBy(f"{prefix_id}_category")
 
     @staticmethod
     def __calculate_kde_continuous_pdf_on_partition(
@@ -124,22 +125,22 @@ class HellingerDistance:
 
         if data_type == "discrete":
             reference_category_percentages = self.__calculate_category_percentages(
-                df=self.reference_data, column_name=column
+                df=self.reference_data, column_name=column, prefix_id=self.prefix_id
             )
 
             current_category_percentages = self.__calculate_category_percentages(
-                df=self.current_data, column_name=column
+                df=self.current_data, column_name=column, prefix_id=self.prefix_id
             )
 
             reference_category_dict = (
                 reference_category_percentages.toPandas()
-                .set_index("category")["percentage"]
+                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
                 .to_dict()
             )
 
             current_category_dict = (
                 current_category_percentages.toPandas()
-                .set_index("category")["percentage"]
+                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
                 .to_dict()
             )
 

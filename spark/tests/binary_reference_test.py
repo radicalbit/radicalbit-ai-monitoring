@@ -18,7 +18,7 @@ from jobs.utils.models import (
     Granularity,
 )
 from jobs.utils.reference_binary import ReferenceMetricsService
-from tests.utils.pytest_utils import my_approx
+from tests.utils.pytest_utils import my_approx, prefix_id
 import tests.results.binary_reference_results as res
 
 
@@ -146,8 +146,8 @@ def test_calculation(spark_fixture, dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -262,8 +262,8 @@ def test_calculation_reference_joined(spark_fixture, reference_joined):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_joined)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_joined, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -347,8 +347,8 @@ def test_calculation_complete(spark_fixture, complete_dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=complete_dataset)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=complete_dataset, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -433,8 +433,8 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=easy_dataset)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=easy_dataset, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -518,8 +518,8 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_cat_missing)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_cat_missing, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -604,9 +604,9 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
     )
 
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=dataset_with_datetime
+        model=model, raw_dataframe=dataset_with_datetime, prefix_id=prefix_id
     )
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -712,8 +712,8 @@ def test_calculation_enhanced_data(spark_fixture, enhanced_data):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=enhanced_data)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=enhanced_data, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -796,9 +796,9 @@ def test_calculation_dataset_bool_missing(spark_fixture, dataset_bool_missing):
     )
 
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=dataset_bool_missing
+        model=model, raw_dataframe=dataset_bool_missing, prefix_id=prefix_id
     )
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     model_quality = metrics_service.calculate_model_quality()
@@ -882,8 +882,8 @@ def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_with_nulls)
-    metrics_service = ReferenceMetricsService(reference_dataset)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_with_nulls, prefix_id=prefix_id)
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
 
     model_quality = metrics_service.calculate_model_quality()
 

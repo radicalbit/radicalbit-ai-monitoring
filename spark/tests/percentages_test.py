@@ -22,6 +22,7 @@ import tests.results.percentage_results as res
 from utils.current_binary import CurrentMetricsService
 from utils.current_multiclass import CurrentMetricsMulticlassService
 from utils.current_regression import CurrentMetricsRegressionService
+from tests.utils.pytest_utils import prefix_id
 
 
 @pytest.fixture()
@@ -147,13 +148,14 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
     )
 
     current_dataframe, reference_dataframe = dataset_perfect_classes
-    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe)
+    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id)
+    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id)
 
     metrics_service = CurrentMetricsMulticlassService(
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id
     )
 
     model_quality = metrics_service.calculate_model_quality()
@@ -162,6 +164,7 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
+        prefix_id=prefix_id
     )
 
     percentages = PercentageCalculator.calculate_percentages(
@@ -171,6 +174,7 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
         model=model,
+        prefix_id=prefix_id
     )
     assert not deepdiff.DeepDiff(
         percentages,
@@ -244,21 +248,23 @@ def test_percentage_easy_dataset(spark_fixture, easy_dataset):
     )
 
     raw_current_dataset, raw_reference_dataset = easy_dataset
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=raw_reference_dataset
+        model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
 
     metrics_service = CurrentMetricsService(
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id
     )
 
     drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
+        prefix_id=prefix_id
     )
 
     model_quality = metrics_service.calculate_model_quality_with_group_by_timestamp()
@@ -270,6 +276,7 @@ def test_percentage_easy_dataset(spark_fixture, easy_dataset):
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
         model=model,
+        prefix_id=prefix_id
     )
     assert not deepdiff.DeepDiff(
         percentages,
@@ -357,21 +364,23 @@ def test_percentages_abalone(spark_fixture, test_dataset_abalone):
     )
 
     raw_current_dataset, raw_reference_dataset = test_dataset_abalone
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=raw_reference_dataset
+        model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
 
     drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
+        prefix_id=prefix_id
     )
 
     metrics_service = CurrentMetricsRegressionService(
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id
     )
 
     model_quality = metrics_service.calculate_model_quality()
@@ -383,6 +392,7 @@ def test_percentages_abalone(spark_fixture, test_dataset_abalone):
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
         model=model,
+        prefix_id=prefix_id
     )
 
     assert not deepdiff.DeepDiff(
@@ -446,21 +456,23 @@ def test_percentages_dataset_talk(spark_fixture, dataset_talk):
     )
 
     raw_reference_dataset, raw_current_dataset = dataset_talk
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=raw_reference_dataset
+        model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
 
     drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
+        prefix_id=prefix_id
     )
 
     metrics_service = CurrentMetricsMulticlassService(
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id
     )
 
     model_quality = metrics_service.calculate_model_quality()
@@ -472,6 +484,7 @@ def test_percentages_dataset_talk(spark_fixture, dataset_talk):
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
         model=model,
+        prefix_id=prefix_id
     )
 
     assert not deepdiff.DeepDiff(
@@ -528,21 +541,23 @@ def test_percentages_dataset_demo(spark_fixture, dataset_demo):
     )
 
     raw_reference_dataset, raw_current_dataset = dataset_demo
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset)
+    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=raw_reference_dataset
+        model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
 
     drift = DriftCalculator.calculate_drift(
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
+        prefix_id=prefix_id
     )
 
     metrics_service = CurrentMetricsMulticlassService(
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id
     )
 
     model_quality = metrics_service.calculate_model_quality()
@@ -554,6 +569,7 @@ def test_percentages_dataset_demo(spark_fixture, dataset_demo):
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
         model=model,
+        prefix_id=prefix_id
     )
 
     assert not deepdiff.DeepDiff(

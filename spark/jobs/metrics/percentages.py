@@ -24,7 +24,8 @@ class PercentageCalculator:
         model_quality_current,
         current_dataset: CurrentDataset,
         reference_dataset: ReferenceDataset,
-        model,
+        prefix_id: str,
+        model
     ):
         # Compute percentage of drift
         perc_drift = {
@@ -50,14 +51,16 @@ class PercentageCalculator:
 
         match model.model_type:
             case ModelType.BINARY:
-                metrics_service = ReferenceMetricsService(reference=reference_dataset)
+                metrics_service = ReferenceMetricsService(reference=reference_dataset, prefix_id=prefix_id)
             case ModelType.MULTI_CLASS:
                 metrics_service = ReferenceMetricsMulticlassService(
-                    reference=reference_dataset
+                    reference=reference_dataset,
+                    prefix_id=prefix_id
                 )
             case ModelType.REGRESSION:
                 metrics_service = ReferenceMetricsRegressionService(
-                    reference=reference_dataset
+                    reference=reference_dataset,
+                    prefix_id=prefix_id
                 )
 
         model_quality_reference = metrics_service.calculate_model_quality()
