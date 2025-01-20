@@ -20,6 +20,7 @@ from metrics.drift_calculator import DriftCalculator
 import tests.results.drift_calculator_results as res
 from tests.utils.pytest_utils import prefix_id
 
+
 @pytest.fixture()
 def drift_dataset(spark_fixture, test_data_dir):
     yield (
@@ -150,7 +151,9 @@ def test_drift(spark_fixture, drift_dataset):
     )
 
     raw_current_dataset, raw_reference_dataset = drift_dataset
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id
+    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
@@ -159,7 +162,7 @@ def test_drift(spark_fixture, drift_dataset):
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
     assert not deepdiff.DeepDiff(
@@ -234,7 +237,9 @@ def test_drift_small(spark_fixture, drift_small_dataset):
     )
 
     raw_current_dataset, raw_reference_dataset = drift_small_dataset
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id
+    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
@@ -242,7 +247,7 @@ def test_drift_small(spark_fixture, drift_small_dataset):
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
     assert not deepdiff.DeepDiff(
@@ -317,7 +322,9 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
     )
 
     raw_current_dataset, raw_reference_dataset = drift_dataset_bool
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id
+    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
@@ -325,7 +332,7 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
     assert not deepdiff.DeepDiff(
@@ -400,7 +407,9 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
     )
 
     raw_current_dataset, raw_reference_dataset = drift_dataset_bigger_file
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id
+    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
@@ -408,7 +417,7 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
     assert not deepdiff.DeepDiff(
@@ -499,7 +508,9 @@ def test_drift_bike(spark_fixture, drift_dataset_bike):
     )
 
     raw_current_dataset, raw_reference_dataset = drift_dataset_bike
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id
+    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
@@ -507,7 +518,7 @@ def test_drift_bike(spark_fixture, drift_dataset_bike):
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
     assert not deepdiff.DeepDiff(
@@ -686,7 +697,9 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
     )
 
     raw_current_dataset, raw_reference_dataset = drift_dataset_phone
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current_dataset, prefix_id=prefix_id
+    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=raw_reference_dataset, prefix_id=prefix_id
     )
@@ -694,7 +707,7 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         spark_session=spark_fixture,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
     assert not deepdiff.DeepDiff(

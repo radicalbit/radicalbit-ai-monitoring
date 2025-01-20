@@ -133,7 +133,11 @@ class CategoricalFeatureMetrics(FeatureMetrics):
 
     @classmethod
     def from_dict(
-        cls, feature_name: str, global_metrics: Dict, categories_metrics: Dict, prefix_id: str
+        cls,
+        feature_name: str,
+        global_metrics: Dict,
+        categories_metrics: Dict,
+        prefix_id: str,
     ) -> "CategoricalFeatureMetrics":
         count: Dict = categories_metrics.get(f"{prefix_id}_count")
         freq: Dict = categories_metrics.get(f"{prefix_id}_freq")

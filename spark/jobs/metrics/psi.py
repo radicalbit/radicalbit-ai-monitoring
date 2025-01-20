@@ -42,7 +42,9 @@ class PSI:
     def calculate_psi(self, feature) -> dict:
         # first compute bucket as a list from 0 to 10 (or distinct().count() of the values in columns)
 
-        current = self.current_data.withColumn(f"{self.prefix_id}_type", F.lit("current"))
+        current = self.current_data.withColumn(
+            f"{self.prefix_id}_type", F.lit("current")
+        )
         reference = self.reference_data.withColumn(
             f"{self.prefix_id}_type", F.lit("reference")
         )

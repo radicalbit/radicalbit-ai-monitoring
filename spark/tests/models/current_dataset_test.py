@@ -18,7 +18,6 @@ from utils.models import (
 from tests.utils.pytest_utils import prefix_id
 
 
-
 @pytest.fixture()
 def dataset_target_string(spark_fixture, test_data_dir):
     yield (
@@ -102,13 +101,16 @@ def test_indexer(spark_fixture, dataset_target_string):
     )
 
     current_dataframe, reference_dataframe = dataset_target_string
-    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id
+    )
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
     index_label_map, indexed_dataset = current_dataset.get_string_indexed_dataframe(
         reference_dataset
     )
-
 
     assert index_label_map == {
         "0.0": "HEALTHY",
@@ -171,8 +173,12 @@ def test_indexer_numbers(spark_fixture, dataset_indexing):
     )
 
     current_dataframe, reference_dataframe = dataset_indexing
-    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id
+    )
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
     index_label_map, indexed_dataset = current_dataset.get_string_indexed_dataframe(
         reference_dataset

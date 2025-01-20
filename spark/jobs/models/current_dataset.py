@@ -113,13 +113,17 @@ class CurrentDataset:
         """
         predictions_df_current = self.current.select(
             self.model.outputs.prediction.name
-        ).withColumnRenamed(self.model.outputs.prediction.name, f"{self.prefix_id}_classes")
+        ).withColumnRenamed(
+            self.model.outputs.prediction.name, f"{self.prefix_id}_classes"
+        )
         target_df_current = self.current.select(
             self.model.target.name
         ).withColumnRenamed(self.model.target.name, f"{self.prefix_id}_classes")
         predictions_df_reference = reference.reference.select(
             self.model.outputs.prediction.name
-        ).withColumnRenamed(self.model.outputs.prediction.name, f"{self.prefix_id}_classes")
+        ).withColumnRenamed(
+            self.model.outputs.prediction.name, f"{self.prefix_id}_classes"
+        )
         target_df_reference = reference.reference.select(
             self.model.target.name
         ).withColumnRenamed(self.model.target.name, f"{self.prefix_id}_classes")
@@ -135,7 +139,9 @@ class CurrentDataset:
                 f"{self.prefix_id}_classes_index",
                 (
                     F.row_number().over(
-                        Window.partitionBy(F.lit("A")).orderBy(f"{self.prefix_id}_classes")
+                        Window.partitionBy(F.lit("A")).orderBy(
+                            f"{self.prefix_id}_classes"
+                        )
                     )
                     - 1
                 ).cast(DoubleType()),
@@ -162,7 +168,8 @@ class CurrentDataset:
                 how="inner",
             )
             .withColumnRenamed(
-                f"{self.prefix_id}_classes_index", f"{self.prefix_id}_{self.model.target.name}-idx"
+                f"{self.prefix_id}_classes_index",
+                f"{self.prefix_id}_{self.model.target.name}-idx",
             )
             .drop(f"{self.prefix_id}_classes")
         )

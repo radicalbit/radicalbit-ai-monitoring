@@ -20,7 +20,9 @@ from utils.db import update_job_status, write_to_db
 from pyspark.sql import SparkSession
 
 
-def compute_metrics(spark_session, current_dataset, reference_dataset, model, current_id):
+def compute_metrics(
+    spark_session, current_dataset, reference_dataset, model, current_id
+):
     complete_record = {}
     match model.model_type:
         case ModelType.BINARY:
@@ -28,7 +30,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model, cu
                 spark_session=spark_session,
                 current=current_dataset,
                 reference=reference_dataset,
-                prefix_id=current_id
+                prefix_id=current_id,
             )
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -43,7 +45,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model, cu
                 drift=drift,
                 model_quality_current=model_quality,
                 model=model,
-                prefix_id=current_id
+                prefix_id=current_id,
             )
             complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
                 "utf-8"
@@ -61,7 +63,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model, cu
                 spark_session=spark_session,
                 current=current_dataset,
                 reference=reference_dataset,
-                prefix_id=current_id
+                prefix_id=current_id,
             )
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -74,7 +76,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model, cu
                 drift=drift,
                 model_quality_current=model_quality,
                 model=model,
-                prefix_id=current_id
+                prefix_id=current_id,
             )
 
             complete_record["STATISTICS"] = statistics.model_dump_json(
@@ -93,7 +95,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model, cu
                 reference=reference_dataset,
                 current=current_dataset,
                 spark_session=spark_session,
-                prefix_id=current_id
+                prefix_id=current_id,
             )
             statistics = calculate_statistics_current(current_dataset)
             data_quality = metrics_service.calculate_data_quality(is_current=True)
@@ -106,7 +108,7 @@ def compute_metrics(spark_session, current_dataset, reference_dataset, model, cu
                 drift=drift,
                 model_quality_current=model_quality,
                 model=model,
-                prefix_id=current_id
+                prefix_id=current_id,
             )
 
             complete_record["STATISTICS"] = statistics.model_dump_json(
@@ -154,16 +156,20 @@ def main(
         )
 
     raw_current = spark_session.read.csv(current_dataset_path, header=True)
-    current_dataset = CurrentDataset(model=model, raw_dataframe=raw_current, prefix_id=current_uuid)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=raw_current, prefix_id=current_uuid
+    )
     raw_reference = spark_session.read.csv(reference_dataset_path, header=True)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_reference, prefix_id=current_uuid)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_reference, prefix_id=current_uuid
+    )
 
     complete_record = compute_metrics(
         spark_session=spark_session,
         current_dataset=current_dataset,
         reference_dataset=reference_dataset,
         model=model,
-        current_id=current_uuid
+        current_id=current_uuid,
     )
     complete_record.update({"UUID": str(uuid.uuid4()), "CURRENT_UUID": current_uuid})
 

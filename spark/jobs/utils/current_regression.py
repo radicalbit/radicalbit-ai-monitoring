@@ -25,7 +25,7 @@ class CurrentMetricsRegressionService:
         spark_session: SparkSession,
         current: CurrentDataset,
         reference: ReferenceDataset,
-        prefix_id: str
+        prefix_id: str,
     ):
         self.spark_session = spark_session
         self.current = current
@@ -38,14 +38,16 @@ class CurrentMetricsRegressionService:
             model=self.current.model,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         ).model_dump(serialize_as_any=True)
         metrics["grouped_metrics"] = (
             self.calculate_regression_model_quality_group_by_timestamp()
         )
         metrics["global_metrics"]["residuals"] = (
             ModelQualityRegressionCalculator.residual_metrics(
-                model=self.current.model, dataframe=self.current.current, prefix_id=self.prefix_id
+                model=self.current.model,
+                dataframe=self.current.current,
+                prefix_id=self.prefix_id,
             )
         )
         return metrics
@@ -113,7 +115,7 @@ class CurrentMetricsRegressionService:
                         group_dataset,
                         group_dataset.count(),
                         metric_name,
-                        self.prefix_id
+                        self.prefix_id,
                     ),
                 }
                 for group, group_dataset in zip(list_of_time_group, array_of_groups)
@@ -128,14 +130,15 @@ class CurrentMetricsRegressionService:
             current_count=self.current.current_count,
             reference_dataframe=self.reference.reference,
             spark_session=self.spark_session,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
         return DataQualityCalculator.categorical_metrics(
             model=self.current.model,
             dataframe=self.current.current,
-            dataframe_count=self.current.current_count, prefix_id=self.prefix_id
+            dataframe_count=self.current.current_count,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_target_metrics(self) -> NumericalTargetMetrics:
@@ -152,7 +155,7 @@ class CurrentMetricsRegressionService:
             curr_count=self.current.current_count,
             ref_df=self.reference.reference,
             spark_session=self.spark_session,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
     def calculate_data_quality(
@@ -179,5 +182,5 @@ class CurrentMetricsRegressionService:
             spark_session=self.spark_session,
             reference_dataset=self.reference,
             current_dataset=self.current,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )

@@ -113,7 +113,9 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_target_int, prefix_id=prefix_id)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset_target_int, prefix_id=prefix_id
+    )
 
     multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
@@ -361,7 +363,9 @@ def test_calculation_dataset_with_nulls(spark_fixture, dataset_with_nulls):
     )
 
     reference_dataframe = dataset_with_nulls
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
     multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
@@ -427,7 +431,9 @@ def test_calculation_dataset_indexing(spark_fixture, dataset_indexing):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_indexing, prefix_id=prefix_id)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset_indexing, prefix_id=prefix_id
+    )
 
     multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 

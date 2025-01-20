@@ -250,7 +250,9 @@ class Chi2Test:
 
         ref_fr = np.array(
             concatenated_data.groupBy(f"{self.prefix_id}_value")
-            .agg(cnt_cond(F.col("type") == "reference").alias(f"{self.prefix_id}_count"))
+            .agg(
+                cnt_cond(F.col("type") == "reference").alias(f"{self.prefix_id}_count")
+            )
             .select(f"{self.prefix_id}_count")
             .rdd.flatMap(lambda x: x)
             .collect()

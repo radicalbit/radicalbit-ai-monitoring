@@ -19,8 +19,8 @@ from utils.misc import split_dict
 from utils.models import ModelOut
 from utils.spark import check_not_null
 
-class DataQualityCalculator:
 
+class DataQualityCalculator:
     @staticmethod
     def numerical_metrics(
         model: ModelOut, dataframe: DataFrame, dataframe_count: int
@@ -172,7 +172,7 @@ class DataQualityCalculator:
                 feature_name=feature_name,
                 global_metrics=metrics,
                 categories_metrics=count_distinct_categories.get(feature_name),
-                prefix_id=prefix_id
+                prefix_id=prefix_id,
             )
             for feature_name, metrics in global_data_quality.items()
         ]
@@ -183,7 +183,6 @@ class DataQualityCalculator:
     def class_metrics(
         class_column: str, dataframe: DataFrame, dataframe_count: int, prefix_id: str
     ) -> List[ClassMetrics]:
-
         class_metrics_dict = (
             dataframe.select(class_column)
             .filter(F.isnotnull(class_column))
@@ -214,7 +213,7 @@ class DataQualityCalculator:
         reference_dataframe: DataFrame,
         spark_session: SparkSession,
         columns: List[str],
-        prefix_id: str
+        prefix_id: str,
     ) -> Dict[str, Histogram]:
         current = current_dataframe.withColumn(f"{prefix_id}_type", F.lit("current"))
         reference = reference_dataframe.withColumn(
@@ -301,7 +300,7 @@ class DataQualityCalculator:
         current_count: int,
         reference_dataframe: DataFrame,
         spark_session: SparkSession,
-        prefix_id: str
+        prefix_id: str,
     ) -> List[NumericalFeatureMetrics]:
         numerical_features = [
             numerical.name for numerical in model.get_numerical_features()
@@ -377,7 +376,7 @@ class DataQualityCalculator:
                 reference_dataframe,
                 spark_session,
                 numerical_features,
-                prefix_id
+                prefix_id,
             )
         )
 
@@ -415,7 +414,7 @@ class DataQualityCalculator:
         curr_count: int,
         ref_df: DataFrame,
         spark_session: SparkSession,
-        prefix_id: str
+        prefix_id: str,
     ):
         target_metrics = DataQualityCalculator.regression_target_metrics_for_dataframe(
             target_column, curr_df, curr_count

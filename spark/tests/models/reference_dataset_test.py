@@ -17,7 +17,6 @@ from utils.models import (
 from tests.utils.pytest_utils import prefix_id
 
 
-
 @pytest.fixture()
 def dataset_target_string(spark_fixture, test_data_dir):
     yield spark_fixture.read.csv(
@@ -155,7 +154,9 @@ def test_indexer_numbers(spark_fixture, dataset_indexing):
     )
 
     reference_dataframe = dataset_indexing
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
     index_label_map, indexed_dataset = reference_dataset.get_string_indexed_dataframe()
 

@@ -5,7 +5,6 @@ from jobs.metrics.jensen_shannon_distance import JensenShannonDistance
 from tests.utils.pytest_utils import prefix_id
 
 
-
 @pytest.fixture(scope="module")
 def reference_data(spark_fixture):
     """Fixture to create reference data for testing."""
@@ -35,7 +34,7 @@ def jensen_shannon_distance(spark_fixture, reference_data, current_data):
         spark_session=spark_fixture,
         reference_data=reference_data,
         current_data=current_data,
-        prefix_id=prefix_id
+        prefix_id=prefix_id,
     )
 
 

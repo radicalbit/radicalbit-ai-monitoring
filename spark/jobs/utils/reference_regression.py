@@ -21,13 +21,13 @@ class ReferenceMetricsRegressionService:
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         ).model_dump()
 
         metrics["residuals"] = ModelQualityRegressionCalculator.residual_metrics(
             model=self.reference.model,
             dataframe=self.reference.reference,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
         return metrics
@@ -44,7 +44,7 @@ class ReferenceMetricsRegressionService:
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
     def calculate_target_metrics(self) -> NumericalTargetMetrics:

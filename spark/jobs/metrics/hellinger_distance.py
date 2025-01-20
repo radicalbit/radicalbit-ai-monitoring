@@ -28,7 +28,9 @@ class HellingerDistance:
         self.prefix_id = prefix_id
 
     @staticmethod
-    def __calculate_category_percentages(df: DataFrame, column_name: str, prefix_id: str) -> DataFrame:
+    def __calculate_category_percentages(
+        df: DataFrame, column_name: str, prefix_id: str
+    ) -> DataFrame:
         """
         Creates a new dataframe with categories and their percentages
 
@@ -40,13 +42,17 @@ class HellingerDistance:
         DataFrame with two columns: category and percentage
         """
 
-        category_counts = df.groupBy(column_name).agg(f.count("*").alias(f"{prefix_id}_count"))
+        category_counts = df.groupBy(column_name).agg(
+            f.count("*").alias(f"{prefix_id}_count")
+        )
         total_count = df.count()
         result_df = category_counts.withColumn(
-            f"{prefix_id}_percentage", (f.col(f"{prefix_id}_count") / f.lit(total_count))
+            f"{prefix_id}_percentage",
+            (f.col(f"{prefix_id}_count") / f.lit(total_count)),
         )
         return result_df.select(
-            f.col(column_name).alias(f"{prefix_id}_category"), f.col(f"{prefix_id}_percentage")
+            f.col(column_name).alias(f"{prefix_id}_category"),
+            f.col(f"{prefix_id}_percentage"),
         ).orderBy(f"{prefix_id}_category")
 
     @staticmethod

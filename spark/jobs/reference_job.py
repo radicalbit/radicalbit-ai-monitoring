@@ -23,7 +23,9 @@ def compute_metrics(reference_dataset, model, reference_uuid):
     complete_record = {}
     match model.model_type:
         case ModelType.BINARY:
-            metrics_service = ReferenceMetricsService(reference=reference_dataset, prefix_id=reference_uuid)
+            metrics_service = ReferenceMetricsService(
+                reference=reference_dataset, prefix_id=reference_uuid
+            )
             model_quality = metrics_service.calculate_model_quality()
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -38,8 +40,7 @@ def compute_metrics(reference_dataset, model, reference_uuid):
             )
         case ModelType.MULTI_CLASS:
             metrics_service = ReferenceMetricsMulticlassService(
-                reference=reference_dataset,
-                prefix_id=reference_uuid
+                reference=reference_dataset, prefix_id=reference_uuid
             )
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -55,8 +56,7 @@ def compute_metrics(reference_dataset, model, reference_uuid):
             )
         case ModelType.REGRESSION:
             metrics_service = ReferenceMetricsRegressionService(
-                reference=reference_dataset,
-                prefix_id=reference_uuid
+                reference=reference_dataset, prefix_id=reference_uuid
             )
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
@@ -103,7 +103,9 @@ def main(
         )
 
     raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=raw_dataframe, prefix_id=reference_uuid)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=raw_dataframe, prefix_id=reference_uuid
+    )
 
     complete_record = compute_metrics(reference_dataset, model, reference_uuid)
 

@@ -183,17 +183,13 @@ class JensenShannonDistance:
 
             reference_category_dict = (
                 reference_category_percentages.toPandas()
-                .set_index(f"{self.prefix_id}_category")[
-                    f"{self.prefix_id}_percentage"
-                ]
+                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
                 .to_dict()
             )
 
             current_category_dict = (
                 current_category_percentages.toPandas()
-                .set_index(f"{self.prefix_id}_category")[
-                    f"{self.prefix_id}_percentage"
-                ]
+                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
                 .to_dict()
             )
 
@@ -218,17 +214,13 @@ class JensenShannonDistance:
 
             reference_bucket_dict = (
                 reference_bucket_percentage.toPandas()
-                .set_index(f"{self.prefix_id}_bucket")[
-                    f"{self.prefix_id}_percentage"
-                ]
+                .set_index(f"{self.prefix_id}_bucket")[f"{self.prefix_id}_percentage"]
                 .to_dict()
             )
 
             current_bucket_dict = (
                 current_bucket_percentage.toPandas()
-                .set_index(f"{self.prefix_id}_bucket")[
-                    f"{self.prefix_id}_percentage"
-                ]
+                .set_index(f"{self.prefix_id}_bucket")[f"{self.prefix_id}_percentage"]
                 .to_dict()
             )
 

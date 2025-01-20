@@ -62,7 +62,7 @@ class CurrentMetricsService:
         spark_session: SparkSession,
         current: CurrentDataset,
         reference: ReferenceDataset,
-        prefix_id: str
+        prefix_id: str,
     ):
         self.spark_session = spark_session
         self.current = current
@@ -76,7 +76,7 @@ class CurrentMetricsService:
             current_count=self.current.current_count,
             reference_dataframe=self.reference.reference,
             spark_session=self.spark_session,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
@@ -84,7 +84,7 @@ class CurrentMetricsService:
             model=self.current.model,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
     def calculate_class_metrics(self, column) -> List[ClassMetrics]:
@@ -92,7 +92,7 @@ class CurrentMetricsService:
             class_column=column,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
@@ -461,5 +461,5 @@ class CurrentMetricsService:
             spark_session=self.spark_session,
             reference_dataset=self.reference,
             current_dataset=self.current,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )

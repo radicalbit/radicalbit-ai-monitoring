@@ -25,7 +25,7 @@ class ModelQualityRegressionCalculator:
         dataframe: DataFrame,
         dataframe_count: int,
         metric_name: RegressionMetricType,
-        prefix_id: str
+        prefix_id: str,
     ) -> float:
         try:
             dataframe = dataframe.withColumn(
@@ -42,7 +42,11 @@ class ModelQualityRegressionCalculator:
                     n: float = dataframe_count
                     r2: float = (
                         ModelQualityRegressionCalculator.eval_model_quality_metric(
-                            model, dataframe, dataframe_count, RegressionMetricType.R2, prefix_id
+                            model,
+                            dataframe,
+                            dataframe_count,
+                            RegressionMetricType.R2,
+                            prefix_id,
                         )
                     )
                     return 1 - (1 - r2) * ((n - 1) / (n - p - 1))
@@ -90,11 +94,7 @@ class ModelQualityRegressionCalculator:
         return ModelQualityRegression(
             **{
                 metric_name.value: ModelQualityRegressionCalculator.eval_model_quality_metric(
-                    model,
-                    dataframe,
-                    dataframe_count,
-                    metric_name,
-                    prefix_id
+                    model, dataframe, dataframe_count, metric_name, prefix_id
                 )
                 for metric_name in RegressionMetricType
             }
@@ -198,9 +198,7 @@ class ModelQualityRegressionCalculator:
                 & is_not_null(model.target.name)
             )
             .select(model.outputs.prediction.name, model.target.name)
-            .withColumnRenamed(
-                model.outputs.prediction.name, f"{prefix_id}_regr_pred"
-            )
+            .withColumnRenamed(model.outputs.prediction.name, f"{prefix_id}_regr_pred")
         )
 
         va = VectorAssembler(inputCols=[model.target.name], outputCol="features")

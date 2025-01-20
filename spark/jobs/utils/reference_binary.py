@@ -214,7 +214,7 @@ class ReferenceMetricsService:
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
     def calculate_class_metrics(self, column) -> List[ClassMetrics]:
@@ -222,7 +222,7 @@ class ReferenceMetricsService:
             class_column=column,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
-            prefix_id=self.prefix_id
+            prefix_id=self.prefix_id,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
