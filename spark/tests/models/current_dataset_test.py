@@ -15,6 +15,7 @@ from utils.models import (
     ModelType,
     DataType,
 )
+from tests.utils.pytest_utils import prefix_id
 
 
 @pytest.fixture()
@@ -100,8 +101,12 @@ def test_indexer(spark_fixture, dataset_target_string):
     )
 
     current_dataframe, reference_dataframe = dataset_target_string
-    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id
+    )
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
     index_label_map, indexed_dataset = current_dataset.get_string_indexed_dataframe(
         reference_dataset
@@ -168,8 +173,12 @@ def test_indexer_numbers(spark_fixture, dataset_indexing):
     )
 
     current_dataframe, reference_dataframe = dataset_indexing
-    current_dataset = CurrentDataset(model=model, raw_dataframe=current_dataframe)
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe)
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id
+    )
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
     index_label_map, indexed_dataset = current_dataset.get_string_indexed_dataframe(
         reference_dataset

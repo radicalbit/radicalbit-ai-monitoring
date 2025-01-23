@@ -11,11 +11,11 @@ from pyspark.sql.window import Window
 
 from utils.models import ModelOut, ModelType, ColumnDefinition
 from utils.spark import apply_schema_to_dataframe
-from utils.misc import rbit_prefix
+# from utils.misc import rbit_prefix
 
 
 class ReferenceDataset:
-    def __init__(self, model: ModelOut, raw_dataframe: DataFrame):
+    def __init__(self, model: ModelOut, raw_dataframe: DataFrame, prefix_id: str):
         reference_schema = self.spark_schema(model)
         reference_dataset = apply_schema_to_dataframe(raw_dataframe, reference_schema)
 
@@ -24,6 +24,7 @@ class ReferenceDataset:
             *[c for c in reference_schema.names if c in reference_dataset.columns]
         )
         self.reference_count = self.reference.count()
+        self.prefix_id = prefix_id
 
     @staticmethod
     def spark_schema(model: ModelOut):
@@ -137,7 +138,7 @@ class ReferenceDataset:
             )
             .withColumnRenamed(
                 "classes_index",
-                f"{rbit_prefix}_{self.model.outputs.prediction.name}-idx",
+                f"{self.prefix_id}_{self.model.outputs.prediction.name}-idx",
             )
             .drop("classes")
         )
@@ -149,7 +150,7 @@ class ReferenceDataset:
                 how="inner",
             )
             .withColumnRenamed(
-                "classes_index", f"{rbit_prefix}_{self.model.target.name}-idx"
+                "classes_index", f"{self.prefix_id}_{self.model.target.name}-idx"
             )
             .drop("classes")
         )

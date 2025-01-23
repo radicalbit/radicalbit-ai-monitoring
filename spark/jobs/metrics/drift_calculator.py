@@ -14,6 +14,7 @@ class DriftCalculator:
         spark_session: SparkSession,
         reference_dataset: ReferenceDataset,
         current_dataset: CurrentDataset,
+        prefix_id: str,
     ):
         drift_result = dict()
         drift_result["feature_metrics"] = []
@@ -26,6 +27,7 @@ class DriftCalculator:
             spark_session=spark_session,
             reference_data=reference_dataset.reference,
             current_data=current_dataset.current,
+            prefix_id=prefix_id,
         )
 
         for column in categorical_features:
@@ -78,6 +80,7 @@ class DriftCalculator:
             spark_session=spark_session,
             reference_data=reference_dataset.reference,
             current_data=current_dataset.current,
+            prefix_id=prefix_id,
         )
         for column in int_features:
             feature_dict_to_append = {

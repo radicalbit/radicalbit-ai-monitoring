@@ -16,7 +16,7 @@ from jobs.utils.models import (
     FieldTypes,
     Granularity,
 )
-from tests.utils.pytest_utils import my_approx
+from tests.utils.pytest_utils import my_approx, prefix_id
 from utils.reference_multiclass import ReferenceMetricsMulticlassService
 import tests.results.multiclass_reference_results as res
 
@@ -113,9 +113,11 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_target_int)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset_target_int, prefix_id=prefix_id
+    )
 
-    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset)
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     data_quality = multiclass_service.calculate_data_quality()
@@ -195,10 +197,10 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
     )
 
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=dataset_target_string
+        model=model, raw_dataframe=dataset_target_string, prefix_id=prefix_id
     )
 
-    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset)
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     data_quality = multiclass_service.calculate_data_quality()
@@ -278,10 +280,10 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
     )
 
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=dataset_perfect_classes
+        model=model, raw_dataframe=dataset_perfect_classes, prefix_id=prefix_id
     )
 
-    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset)
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
     stats = calculate_statistics_reference(reference_dataset)
     data_quality = multiclass_service.calculate_data_quality()
@@ -361,9 +363,11 @@ def test_calculation_dataset_with_nulls(spark_fixture, dataset_with_nulls):
     )
 
     reference_dataframe = dataset_with_nulls
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=reference_dataframe)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
 
-    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset)
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
     model_quality = multiclass_service.calculate_model_quality()
 
@@ -427,9 +431,11 @@ def test_calculation_dataset_indexing(spark_fixture, dataset_indexing):
         updated_at=str(datetime.datetime.now()),
     )
 
-    reference_dataset = ReferenceDataset(model=model, raw_dataframe=dataset_indexing)
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset_indexing, prefix_id=prefix_id
+    )
 
-    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset)
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
 
     model_quality = multiclass_service.calculate_model_quality()
 

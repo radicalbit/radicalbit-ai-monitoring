@@ -18,7 +18,6 @@ from models.data_quality import (
 )
 from models.reference_dataset import ReferenceDataset
 from .spark import is_not_null
-from .misc import rbit_prefix
 
 
 class ReferenceMetricsService:
@@ -43,8 +42,9 @@ class ReferenceMetricsService:
         "fMeasureByLabel": "f_measure",
     }
 
-    def __init__(self, reference: ReferenceDataset):
+    def __init__(self, reference: ReferenceDataset, prefix_id: str):
         self.reference = reference
+        self.prefix_id = prefix_id
 
     def __evaluate_binary_classification(
         self, dataset: DataFrame, metric_name: str
@@ -161,7 +161,7 @@ class ReferenceMetricsService:
                 & is_not_null(self.reference.model.outputs.prediction_proba.name)
             )
             .withColumn(
-                f"{rbit_prefix}_prediction_proba_class0",
+                f"{self.prefix_id}_prediction_proba_class0",
                 F.when(
                     F.col(self.reference.model.outputs.prediction.name) == 0,
                     F.col(self.reference.model.outputs.prediction_proba.name),
@@ -170,7 +170,7 @@ class ReferenceMetricsService:
                 ),
             )
             .withColumn(
-                f"{rbit_prefix}_prediction_proba_class1",
+                f"{self.prefix_id}_prediction_proba_class1",
                 F.when(
                     F.col(self.reference.model.outputs.prediction.name) == 1,
                     F.col(self.reference.model.outputs.prediction_proba.name),
@@ -178,7 +178,7 @@ class ReferenceMetricsService:
                     1 - F.col(self.reference.model.outputs.prediction_proba.name)
                 ),
             )
-            .withColumn(f"{rbit_prefix}_weight_logloss_def", F.lit(1.0))
+            .withColumn(f"{self.prefix_id}_weight_logloss_def", F.lit(1.0))
             .withColumn(
                 self.reference.model.outputs.prediction.name,
                 F.col(self.reference.model.outputs.prediction.name).cast(DoubleType()),
@@ -192,11 +192,11 @@ class ReferenceMetricsService:
         dataset_proba_vector = dataset_with_proba.select(
             self.reference.model.outputs.prediction.name,
             self.reference.model.target.name,
-            f"{rbit_prefix}_weight_logloss_def",
+            f"{self.prefix_id}_weight_logloss_def",
             F.array(
-                F.col(f"{rbit_prefix}_prediction_proba_class0"),
-                F.col(f"{rbit_prefix}_prediction_proba_class1"),
-            ).alias(f"{rbit_prefix}_prediction_proba_vector"),
+                F.col(f"{self.prefix_id}_prediction_proba_class0"),
+                F.col(f"{self.prefix_id}_prediction_proba_class1"),
+            ).alias(f"{self.prefix_id}_prediction_proba_vector"),
         ).rdd
 
         metrics = MulticlassMetrics(dataset_proba_vector)
@@ -214,6 +214,7 @@ class ReferenceMetricsService:
             model=self.reference.model,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_class_metrics(self, column) -> List[ClassMetrics]:
@@ -221,6 +222,7 @@ class ReferenceMetricsService:
             class_column=column,
             dataframe=self.reference.reference,
             dataframe_count=self.reference.reference_count,
+            prefix_id=self.prefix_id,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
