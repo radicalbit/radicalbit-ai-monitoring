@@ -6,6 +6,10 @@ import svgr from 'vite-plugin-svgr';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), svgr({ include: '**/*.svg' })],
+  optimizeDeps: {
+    force: true,
+    include: ['@radicalbit/radicalbit-design-system'],
+  },
   resolve: {
     alias: {
       '@Api': path.resolve(__dirname, 'src/api/'),
