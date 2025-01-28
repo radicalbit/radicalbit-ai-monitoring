@@ -97,7 +97,7 @@ function RegressionModelQualityMetricsInner() {
   }
 
   return (
-    <div className="flex flex-col gap-4 py-4 px-4 h-full w-full">
+    <div className="flex flex-col gap-4 py-4 px-4 h-full">
       <div>
         <PerformanceBoard />
 
