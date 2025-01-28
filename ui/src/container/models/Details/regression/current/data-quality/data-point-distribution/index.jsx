@@ -72,10 +72,7 @@ function DataPointDistributionCounter() {
             <div className="text-3xl">{letter}</div>
           </div>
 
-          <p>
-            {`${fullNumber} data point`}
-          </p>
-
+          <span>{`${fullNumber} data point`}</span>
         </div>
       )}
       modifier="h-full shadow"
