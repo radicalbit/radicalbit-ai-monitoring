@@ -42,9 +42,8 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="basis-1/6">
-        <DataPointDistributionCounter />
-      </div>
+
+      <DataPointDistributionCounter />
 
       <DataPointDistributionChart />
 
@@ -65,7 +64,7 @@ function DataPointDistributionCounter() {
     <Board
       header={<SectionTitle size="small" title="Reference" />}
       main={(
-        <div className="flex flex-col h-full items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4">
           <div className="flex flex-row items-end ">
 
             {/* FIXME: inline style */}
@@ -78,7 +77,7 @@ function DataPointDistributionCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="basis-1/6 shadow"
       size="small"
       type="secondary"
     />
@@ -110,7 +109,7 @@ function DataPointDistributionChart() {
           }}
           title={<SectionTitle size="small" title={title} />}
         />
-)}
+      )}
       main={(
         <ReactEchartsCore
           echarts={echarts}
@@ -120,7 +119,7 @@ function DataPointDistributionChart() {
         />
 
       )}
-      modifier="w-full h-full shadow"
+      modifier="w-full shadow"
       size="small"
     />
   );
