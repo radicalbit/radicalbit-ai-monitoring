@@ -34,8 +34,8 @@ function Body() {
   return (
     <Tabs
       activeKey={activeTab}
-      fullHeight
       items={tabs}
+      modifier="h-[96%]"
       noBorder
       onChange={onChangeTab}
     />

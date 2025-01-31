@@ -85,7 +85,7 @@ function Header() {
     default:
       return (
         <div className="flex flex-col gap-4">
-          <SectionTitle title="New Model" />
+          <SectionTitle align="center" title="New Model" titleColor="primary" />
 
           <Steps className="w-3/4 self-center" current={step} direction="horizontal" status={stepStatus}>
             <Step title="Registry" />
@@ -114,45 +114,69 @@ function Subtitles() {
     case 2:
       return (
         <div className="flex justify-between">
-          <div className="flex items-center justify-center basis-1/2">
-            <div className="text-center">
-              <strong>
-                Select from the
-                {' '}
+          <div className="basis-1/2">
+            <SectionTitle
+              align="center"
+              size="small"
+              title={(
+                <p>
+                  <strong>
+                    Select from the
+                    {' '}
 
-                {variables.length}
-              </strong>
+                    {variables.length}
+                  </strong>
 
-              {' '}
+                  {' '}
 
-              columns in
-              <br />
+                  columns in
+                  <br />
 
-              your schema the variables you are interested in
-            </div>
+                  your schema the variables you are interested in
+                </p>
+              )}
+              titleWeight="normal"
+            />
           </div>
 
-          <div className="flex items-center justify-center basis-1/2">
-            <div className="text-center">
-              <strong>Check</strong>
+          <div className="basis-1/2">
 
-              {' '}
+            <SectionTitle
+              align="center"
+              modifier="basis-1/2"
+              size="small"
+              title={(
+                <p>
+                  <strong>Check</strong>
 
-              that this section contains
-              <br />
+                  {' '}
 
-              <strong>features, target, predictions and timestamp</strong>
-            </div>
+                  that this section contains
+                  <br />
 
+                  <strong>features, target, predictions and timestamp</strong>
+                </p>
+              )}
+              titleWeight="normal"
+            />
           </div>
+
         </div>
       );
 
     case 3:
       return (
-        <div className="flex justify-center">
-          Identify ground truth (target), timestamp, prediction, and probability fields.
-        </div>
+        <SectionTitle
+          align="center"
+          size="small"
+          title={(
+            <p>
+              Identify ground truth (target), timestamp, prediction, and probability fields.
+            </p>
+        )}
+          titleWeight="normal"
+        />
+
       );
 
     default:

@@ -1,4 +1,4 @@
-import { FormField } from '@radicalbit/radicalbit-design-system';
+import { FormField, Spinner } from '@radicalbit/radicalbit-design-system';
 import { useModalContext } from '../modal-context-provider';
 import {
   Algorithm, DataType, Framework, Granularity, ModelType, Name,
@@ -9,8 +9,8 @@ function Body() {
   const { error } = useFormbit;
 
   return (
-    <div className="flex flex-row justify-center">
-      <div className="flex flex-col gap-4 w-full max-w-[400px] items-center">
+    <div className="w-full flex justify-center">
+      <Spinner isFormWrapper modifier="max-w-[400px]">
         <Name />
 
         <div className="flex flex-row gap-4 w-full">
@@ -25,10 +25,10 @@ function Body() {
 
         <Algorithm />
 
-        <FormField message={error('silent.backend')} />
-      </div>
-    </div>
+        {error('silent.backend') && <FormField message={error('silent.backend')} />}
+      </Spinner>
 
+    </div>
   );
 }
 

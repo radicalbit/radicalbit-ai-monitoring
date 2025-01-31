@@ -1,4 +1,6 @@
-import { Button, FormField, SectionTitle } from '@radicalbit/radicalbit-design-system';
+import {
+  Button, FormField, SectionTitle, Spinner,
+} from '@radicalbit/radicalbit-design-system';
 import {
   Algorithm, DataType, Framework, Granularity, ModelType, Name,
 } from './form-fields';
@@ -6,7 +8,7 @@ import { useModalContext } from '../modal-context-provider';
 import useHandleOnSubmit from './use-handle-on-submit';
 
 function TextGenerationHeader() {
-  return <SectionTitle title="New Model" />;
+  return <SectionTitle align="center" title="New Model" titleColor="primary" />;
 }
 
 function TextGenerationBody() {
@@ -14,8 +16,8 @@ function TextGenerationBody() {
   const { error } = useFormbit;
 
   return (
-    <div className="flex flex-row justify-center">
-      <div className="flex flex-col gap-4 w-full max-w-[400px] items-center">
+    <div className="w-full flex justify-center">
+      <Spinner isFormWrapper modifier="max-w-[400px]">
         <Name />
 
         <div className="flex flex-row gap-4 w-full">
@@ -30,8 +32,9 @@ function TextGenerationBody() {
 
         <Algorithm />
 
-        <FormField message={error('silent.backend')} />
-      </div>
+        {error('silent.backend') && <FormField message={error('silent.backend')} />}
+      </Spinner>
+
     </div>
 
   );
