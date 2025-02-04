@@ -16,7 +16,7 @@ from models.data_quality import (
     MultiClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
-from utils.misc import create_time_format, rbit_prefix
+from utils.misc import create_time_format
 from utils.models import Granularity
 
 
@@ -26,6 +26,7 @@ class CurrentMetricsMulticlassService:
         spark_session: SparkSession,
         current: CurrentDataset,
         reference: ReferenceDataset,
+        prefix_id: str,
     ):
         self.spark_session = spark_session
         self.current = current
@@ -51,6 +52,7 @@ class CurrentMetricsMulticlassService:
             "recallByLabel": "recall",
             "fMeasureByLabel": "f_measure",
         }
+        self.prefix_id = prefix_id
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.calculate_combined_data_quality_numerical(
@@ -59,6 +61,7 @@ class CurrentMetricsMulticlassService:
             current_count=self.current.current_count,
             reference_dataframe=self.reference.reference,
             spark_session=self.spark_session,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
@@ -66,6 +69,7 @@ class CurrentMetricsMulticlassService:
             model=self.current.model,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_class_metrics(self, column) -> List[ClassMetrics]:
@@ -73,14 +77,15 @@ class CurrentMetricsMulticlassService:
             class_column=column,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_multiclass_model_quality_group_by_timestamp(self):
         if self.current.model.granularity == Granularity.WEEK:
             dataset_with_group = self.indexed_current.select(
                 [
-                    f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
-                    f"{rbit_prefix}_{self.current.model.target.name}-idx",
+                    f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
+                    f"{self.prefix_id}_{self.current.model.target.name}-idx",
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -105,8 +110,8 @@ class CurrentMetricsMulticlassService:
         else:
             dataset_with_group = self.indexed_current.select(
                 [
-                    f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
-                    f"{rbit_prefix}_{self.current.model.target.name}-idx",
+                    f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
+                    f"{self.prefix_id}_{self.current.model.target.name}-idx",
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -169,8 +174,8 @@ class CurrentMetricsMulticlassService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=f"{rbit_prefix}_{self.current.model.outputs.prediction.name}-idx",
-                labelCol=f"{rbit_prefix}_{self.current.model.target.name}-idx",
+                predictionCol=f"{self.prefix_id}_{self.current.model.outputs.prediction.name}-idx",
+                labelCol=f"{self.prefix_id}_{self.current.model.target.name}-idx",
                 metricLabel=class_index,
             ).evaluate(dataset)
         except Exception:
@@ -190,8 +195,8 @@ class CurrentMetricsMulticlassService:
     def __calc_confusion_matrix(self):
         prediction_and_labels = self.indexed_current.select(
             *[
-                f"{rbit_prefix}_{self.reference.model.outputs.prediction.name}-idx",
-                f"{rbit_prefix}_{self.reference.model.target.name}-idx",
+                f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
+                f"{self.prefix_id}_{self.reference.model.target.name}-idx",
             ]
         ).rdd
         multiclass_metrics_calculator = MulticlassMetrics(prediction_and_labels)
@@ -229,4 +234,5 @@ class CurrentMetricsMulticlassService:
             spark_session=self.spark_session,
             reference_dataset=self.reference,
             current_dataset=self.current,
+            prefix_id=self.prefix_id,
         )

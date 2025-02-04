@@ -11,7 +11,7 @@ from scipy.stats import chisquare
 class Chi2Test:
     """Class for performing a chi-square test of independence using Pyspark."""
 
-    def __init__(self, spark_session, reference_data, current_data) -> None:
+    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Chi2Test object with necessary data and parameters.
 
@@ -25,6 +25,7 @@ class Chi2Test:
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
+        self.prefix_id = prefix_id
 
     def __have_same_size(self) -> bool:
         """
@@ -228,12 +229,12 @@ class Chi2Test:
 
         self.reference = (
             self.reference_data.select(reference_column)
-            .withColumnRenamed(reference_column, "value")
+            .withColumnRenamed(reference_column, f"{self.prefix_id}_value")
             .na.drop()
         )
         self.current = (
             self.current_data.select(current_column)
-            .withColumnRenamed(current_column, "value")
+            .withColumnRenamed(current_column, f"{self.prefix_id}_value")
             .na.drop()
         )
         self.reference_size = self.reference.count()
@@ -248,16 +249,18 @@ class Chi2Test:
             return F.sum(F.when(cond, 1).otherwise(0))
 
         ref_fr = np.array(
-            concatenated_data.groupBy("value")
-            .agg(cnt_cond(F.col("type") == "reference").alias("count"))
-            .select("count")
+            concatenated_data.groupBy(f"{self.prefix_id}_value")
+            .agg(
+                cnt_cond(F.col("type") == "reference").alias(f"{self.prefix_id}_count")
+            )
+            .select(f"{self.prefix_id}_count")
             .rdd.flatMap(lambda x: x)
             .collect()
         )
         cur_fr = np.array(
-            concatenated_data.groupBy("value")
-            .agg(cnt_cond(F.col("type") == "current").alias("count"))
-            .select("count")
+            concatenated_data.groupBy(f"{self.prefix_id}_value")
+            .agg(cnt_cond(F.col("type") == "current").alias(f"{self.prefix_id}_count"))
+            .select(f"{self.prefix_id}_count")
             .rdd.flatMap(lambda x: x)
             .collect()
         )

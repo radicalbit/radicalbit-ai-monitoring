@@ -3,7 +3,6 @@ from math import inf
 import pyspark.sql.functions as F
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql.types import IntegerType
-from utils.misc import rbit_prefix
 
 
 class PSI:
@@ -12,7 +11,7 @@ class PSI:
     It is designed to compare two sample distributions and determine if they differ significantly.
     """
 
-    def __init__(self, spark_session, reference_data, current_data) -> None:
+    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Population Stability Index with the provided data and parameters.
 
@@ -24,6 +23,7 @@ class PSI:
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
+        self.prefix_id = prefix_id
 
     @staticmethod
     def sub_psi(e_perc, a_perc):
@@ -42,14 +42,16 @@ class PSI:
     def calculate_psi(self, feature) -> dict:
         # first compute bucket as a list from 0 to 10 (or distinct().count() of the values in columns)
 
-        current = self.current_data.withColumn(f"{rbit_prefix}_type", F.lit("current"))
+        current = self.current_data.withColumn(
+            f"{self.prefix_id}_type", F.lit("current")
+        )
         reference = self.reference_data.withColumn(
-            f"{rbit_prefix}_type", F.lit("reference")
+            f"{self.prefix_id}_type", F.lit("reference")
         )
 
         reference_and_current = (
-            current.select([feature, f"{rbit_prefix}_type"])
-            .unionByName(reference.select([feature, f"{rbit_prefix}_type"]))
+            current.select([feature, f"{self.prefix_id}_type"])
+            .unionByName(reference.select([feature, f"{self.prefix_id}_type"]))
             .dropna()
         )
 
@@ -95,12 +97,12 @@ class PSI:
         result = bucketizer.setHandleInvalid("keep").transform(reference_and_current)
 
         current_df = (
-            result.filter(F.col(f"{rbit_prefix}_type") == "current")
+            result.filter(F.col(f"{self.prefix_id}_type") == "current")
             .groupBy("bucket")
             .agg(F.count(F.col(feature)).alias("curr_count"))
         )
         reference_df = (
-            result.filter(F.col(f"{rbit_prefix}_type") == "reference")
+            result.filter(F.col(f"{self.prefix_id}_type") == "reference")
             .groupBy("bucket")
             .agg(F.count(F.col(feature)).alias("ref_count"))
         )

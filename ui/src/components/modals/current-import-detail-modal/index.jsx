@@ -91,7 +91,7 @@ function Header() {
           </>
         ),
       }}
-      prefix={<FontAwesomeIcon icon={faArrowLeft} onClick={handleOnCancel} />}
+      prefix={<FontAwesomeIcon enableColorMode icon={faArrowLeft} onClick={handleOnCancel} />}
       title={(
         <SectionTitle
           subtitle={subtitle}

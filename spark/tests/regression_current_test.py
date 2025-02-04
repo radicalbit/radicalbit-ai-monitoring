@@ -18,6 +18,7 @@ from utils.models import (
     FieldTypes,
 )
 import tests.results.regression_current_results as res
+from tests.utils.pytest_utils import prefix_id
 
 
 @pytest.fixture()
@@ -219,6 +220,7 @@ def current_dataset_abalone(current_test_abalone, model_test_abalone):
     yield CurrentDataset(
         raw_dataframe=current_test_abalone,
         model=model_test_abalone,
+        prefix_id=prefix_id,
     )
 
 
@@ -227,22 +229,21 @@ def reference_dataset_abalone(reference_test_abalone, model_test_abalone):
     yield ReferenceDataset(
         raw_dataframe=reference_test_abalone,
         model=model_test_abalone,
+        prefix_id=prefix_id,
     )
 
 
 @pytest.fixture()
 def current_dataset(current_bike_dataframe, model):
     yield CurrentDataset(
-        raw_dataframe=current_bike_dataframe,
-        model=model,
+        raw_dataframe=current_bike_dataframe, model=model, prefix_id=prefix_id
     )
 
 
 @pytest.fixture()
 def reference_dataset(reference_bike_dataframe, model):
     yield ReferenceDataset(
-        raw_dataframe=reference_bike_dataframe,
-        model=model,
+        raw_dataframe=reference_bike_dataframe, model=model, prefix_id=prefix_id
     )
 
 
@@ -265,6 +266,7 @@ def test_data_quality(spark_fixture, current_dataset, reference_dataset):
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id,
     )
 
     data_quality = metrics_service.calculate_data_quality(is_current=True)
@@ -296,6 +298,7 @@ def test_model_quality(spark_fixture, current_dataset, reference_dataset):
         spark_session=spark_fixture,
         current=current_dataset,
         reference=reference_dataset,
+        prefix_id=prefix_id,
     )
 
     model_quality = metrics_service.calculate_model_quality()
@@ -315,6 +318,7 @@ def test_model_quality_abalone(
         spark_session=spark_fixture,
         current=current_dataset_abalone,
         reference=reference_dataset_abalone,
+        prefix_id=prefix_id,
     )
 
     model_quality = metrics_service.calculate_model_quality()

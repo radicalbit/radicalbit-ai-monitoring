@@ -1,5 +1,8 @@
 import pytest
 from _pytest.python_api import ApproxMapping
+import uuid
+
+prefix_id = str(uuid.uuid4())
 
 
 def my_approx(expected, rel=None, abs=None, nan_ok=True):

@@ -49,7 +49,7 @@ function TransfertList() {
         onChange={handleChange}
         oneWay
         render={(item) => (
-          <div className="flex flex-row gap-2">
+          <div className="flex flex-row gap-2 items-center">
             <div>{item.title}</div>
 
             <small>

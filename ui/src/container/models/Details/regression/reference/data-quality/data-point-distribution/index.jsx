@@ -42,9 +42,8 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="basis-1/6">
-        <DataPointDistributionCounter />
-      </div>
+
+      <DataPointDistributionCounter />
 
       <DataPointDistributionChart />
 
@@ -74,11 +73,11 @@ function DataPointDistributionCounter() {
             <div className="text-3xl">{letter}</div>
           </div>
 
-          <p>{`${fullNumber} data point`}</p>
+          <span>{`${fullNumber} data point`}</span>
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="basis-1/6 shadow"
       size="small"
       type="secondary"
     />
@@ -120,7 +119,7 @@ function DataPointDistributionChart() {
           />
         </div>
       )}
-      modifier="w-full h-full shadow overflow-auto max-w-full "
+      modifier="w-full shadow overflow-auto max-w-full "
       size="small"
     />
   );

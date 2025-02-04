@@ -19,7 +19,7 @@ from models.data_quality import (
     BinaryClassDataQuality,
 )
 from models.reference_dataset import ReferenceDataset
-from .misc import create_time_format, rbit_prefix
+from .misc import create_time_format
 from .models import Granularity
 from .spark import is_not_null
 
@@ -62,10 +62,12 @@ class CurrentMetricsService:
         spark_session: SparkSession,
         current: CurrentDataset,
         reference: ReferenceDataset,
+        prefix_id: str,
     ):
         self.spark_session = spark_session
         self.current = current
         self.reference = reference
+        self.prefix_id = prefix_id
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.calculate_combined_data_quality_numerical(
@@ -74,6 +76,7 @@ class CurrentMetricsService:
             current_count=self.current.current_count,
             reference_dataframe=self.reference.reference,
             spark_session=self.spark_session,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_data_quality_categorical(self) -> List[CategoricalFeatureMetrics]:
@@ -81,6 +84,7 @@ class CurrentMetricsService:
             model=self.current.model,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
+            prefix_id=self.prefix_id,
         )
 
     def calculate_class_metrics(self, column) -> List[ClassMetrics]:
@@ -88,6 +92,7 @@ class CurrentMetricsService:
             class_column=column,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
+            prefix_id=self.prefix_id,
         )
 
         # FIXME this should be avoided if we are sure that we have all classes in the file
@@ -391,7 +396,7 @@ class CurrentMetricsService:
                 & is_not_null(self.current.model.outputs.prediction_proba.name)
             )
             .withColumn(
-                f"{rbit_prefix}_prediction_proba_class0",
+                f"{self.prefix_id}_prediction_proba_class0",
                 F.when(
                     F.col(self.current.model.outputs.prediction.name) == 0,
                     F.col(self.current.model.outputs.prediction_proba.name),
@@ -400,7 +405,7 @@ class CurrentMetricsService:
                 ),
             )
             .withColumn(
-                f"{rbit_prefix}_prediction_proba_class1",
+                f"{self.prefix_id}_prediction_proba_class1",
                 F.when(
                     F.col(self.current.model.outputs.prediction.name) == 1,
                     F.col(self.current.model.outputs.prediction_proba.name),
@@ -408,7 +413,7 @@ class CurrentMetricsService:
                     1 - F.col(self.current.model.outputs.prediction_proba.name)
                 ),
             )
-            .withColumn(f"{rbit_prefix}_weight_logloss_def", F.lit(1.0))
+            .withColumn(f"{self.prefix_id}_weight_logloss_def", F.lit(1.0))
             .withColumn(
                 self.current.model.outputs.prediction.name,
                 F.col(self.current.model.outputs.prediction.name).cast(DoubleType()),
@@ -422,11 +427,11 @@ class CurrentMetricsService:
         dataset_proba_vector = dataset_with_proba.select(
             self.current.model.outputs.prediction.name,
             self.current.model.target.name,
-            f"{rbit_prefix}_weight_logloss_def",
+            f"{self.prefix_id}_weight_logloss_def",
             F.array(
-                F.col(f"{rbit_prefix}_prediction_proba_class0"),
-                F.col(f"{rbit_prefix}_prediction_proba_class1"),
-            ).alias(f"{rbit_prefix}_prediction_proba_vector"),
+                F.col(f"{self.prefix_id}_prediction_proba_class0"),
+                F.col(f"{self.prefix_id}_prediction_proba_class1"),
+            ).alias(f"{self.prefix_id}_prediction_proba_vector"),
         ).rdd
 
         metrics = MulticlassMetrics(dataset_proba_vector)
@@ -456,4 +461,5 @@ class CurrentMetricsService:
             spark_session=self.spark_session,
             reference_dataset=self.reference,
             current_dataset=self.current,
+            prefix_id=self.prefix_id,
         )

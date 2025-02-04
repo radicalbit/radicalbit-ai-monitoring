@@ -15,7 +15,7 @@ from models.data_quality import (
     ClassMetrics,
     NumericalTargetMetrics,
 )
-from utils.misc import split_dict, rbit_prefix
+from utils.misc import split_dict
 from utils.models import ModelOut
 from utils.spark import check_not_null
 
@@ -117,7 +117,7 @@ class DataQualityCalculator:
 
     @staticmethod
     def categorical_metrics(
-        model: ModelOut, dataframe: DataFrame, dataframe_count: int
+        model: ModelOut, dataframe: DataFrame, dataframe_count: int, prefix_id: str
     ) -> List[CategoricalFeatureMetrics]:
         categorical_features = [
             categorical.name for categorical in model.get_categorical_features()
@@ -155,10 +155,10 @@ class DataQualityCalculator:
                 dataframe.select(column)
                 .filter(F.isnotnull(column))
                 .groupBy(column)
-                .agg(*[F.count(check_not_null(column)).alias("count")])
+                .agg(*[F.count(check_not_null(column)).alias(f"{prefix_id}_count")])
                 .withColumn(
-                    "freq",
-                    F.col("count") / dataframe_count,
+                    f"{prefix_id}_freq",
+                    F.col(f"{prefix_id}_count") / dataframe_count,
                 )
                 .toPandas()
                 .set_index(column)
@@ -172,6 +172,7 @@ class DataQualityCalculator:
                 feature_name=feature_name,
                 global_metrics=metrics,
                 categories_metrics=count_distinct_categories.get(feature_name),
+                prefix_id=prefix_id,
             )
             for feature_name, metrics in global_data_quality.items()
         ]
@@ -180,17 +181,17 @@ class DataQualityCalculator:
 
     @staticmethod
     def class_metrics(
-        class_column: str, dataframe: DataFrame, dataframe_count: int
+        class_column: str, dataframe: DataFrame, dataframe_count: int, prefix_id: str
     ) -> List[ClassMetrics]:
         class_metrics_dict = (
             dataframe.select(class_column)
             .filter(F.isnotnull(class_column))
             .groupBy(class_column)
-            .agg(*[F.count(check_not_null(class_column)).alias("count")])
+            .agg(*[F.count(check_not_null(class_column)).alias(f"{prefix_id}_count")])
             .orderBy(class_column)
             .withColumn(
-                "percentage",
-                (F.col("count") / dataframe_count) * 100,
+                f"{prefix_id}_percentage",
+                (F.col(f"{prefix_id}_count") / dataframe_count) * 100,
             )
             .toPandas()
             .set_index(class_column)
@@ -200,8 +201,8 @@ class DataQualityCalculator:
         return [
             ClassMetrics(
                 name=str(label),
-                count=metrics["count"],
-                percentage=metrics["percentage"],
+                count=metrics[f"{prefix_id}_count"],
+                percentage=metrics[f"{prefix_id}_percentage"],
             )
             for label, metrics in class_metrics_dict.items()
         ]
@@ -212,16 +213,17 @@ class DataQualityCalculator:
         reference_dataframe: DataFrame,
         spark_session: SparkSession,
         columns: List[str],
+        prefix_id: str,
     ) -> Dict[str, Histogram]:
-        current = current_dataframe.withColumn(f"{rbit_prefix}_type", F.lit("current"))
+        current = current_dataframe.withColumn(f"{prefix_id}_type", F.lit("current"))
         reference = reference_dataframe.withColumn(
-            f"{rbit_prefix}_type", F.lit("reference")
+            f"{prefix_id}_type", F.lit("reference")
         )
 
         def create_histogram(feature: str):
             reference_and_current = current.select(
-                [feature, f"{rbit_prefix}_type"]
-            ).unionByName(reference.select([feature, f"{rbit_prefix}_type"]))
+                [feature, f"{prefix_id}_type"]
+            ).unionByName(reference.select([feature, f"{prefix_id}_type"]))
 
             max_value = reference_and_current.agg(
                 F.max(
@@ -260,12 +262,12 @@ class DataQualityCalculator:
             )
 
             current_df = (
-                result.filter(F.col(f"{rbit_prefix}_type") == "current")
+                result.filter(F.col(f"{prefix_id}_type") == "current")
                 .groupBy("bucket")
                 .agg(F.count(F.col(feature)).alias("curr_count"))
             )
             reference_df = (
-                result.filter(F.col(f"{rbit_prefix}_type") == "reference")
+                result.filter(F.col(f"{prefix_id}_type") == "reference")
                 .groupBy("bucket")
                 .agg(F.count(F.col(feature)).alias("ref_count"))
             )
@@ -298,6 +300,7 @@ class DataQualityCalculator:
         current_count: int,
         reference_dataframe: DataFrame,
         spark_session: SparkSession,
+        prefix_id: str,
     ) -> List[NumericalFeatureMetrics]:
         numerical_features = [
             numerical.name for numerical in model.get_numerical_features()
@@ -373,6 +376,7 @@ class DataQualityCalculator:
                 reference_dataframe,
                 spark_session,
                 numerical_features,
+                prefix_id,
             )
         )
 
@@ -410,12 +414,13 @@ class DataQualityCalculator:
         curr_count: int,
         ref_df: DataFrame,
         spark_session: SparkSession,
+        prefix_id: str,
     ):
         target_metrics = DataQualityCalculator.regression_target_metrics_for_dataframe(
             target_column, curr_df, curr_count
         )
         _histogram = DataQualityCalculator.calculate_combined_histogram(
-            curr_df, ref_df, spark_session, [target_column]
+            curr_df, ref_df, spark_session, [target_column], prefix_id
         )
         histogram = _histogram[target_column]
 

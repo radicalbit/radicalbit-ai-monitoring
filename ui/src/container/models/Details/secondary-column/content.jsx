@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import {
   useNavigate, useParams, useSearchParams,
 } from 'react-router-dom';
+import { useIsDarkMode } from '@Components/dark-mode/hooks';
 
 const commonChildrenMenu = [
   { label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW },
@@ -23,6 +24,9 @@ export default function SecondaryColumnModelsContent() {
   const { uuid } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const isDarkMode = useIsDarkMode();
+  const theme = isDarkMode ? 'dark' : 'light';
 
   const isSecondaryColumnCollapsed = useSelector(selectHasSecondaryColumnCollapsed);
 
@@ -94,6 +98,7 @@ export default function SecondaryColumnModelsContent() {
       onOpenChange={onOpenChange}
       openKeys={openKeys}
       selectedKeys={selectedKeys}
+      theme={theme}
     />
   );
 }
