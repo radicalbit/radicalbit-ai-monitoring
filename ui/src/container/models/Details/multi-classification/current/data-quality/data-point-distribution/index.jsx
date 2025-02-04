@@ -49,7 +49,7 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="flex flex-col gap-4 basis-1/6">
+      <div className="flex flex-col gap-4 basis-1/6 ">
         <DataPointDistributionCounter />
 
         <ClassCounter />
@@ -86,7 +86,7 @@ function DataPointDistributionCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="shadow"
       size="small"
       type="primary"
     />
@@ -112,7 +112,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="shadow"
       size="small"
       type="secondary"
     />
@@ -152,16 +152,14 @@ function DataPointDistributionChart() {
         />
 )}
       main={(
-        <div>
-          <ReactEchartsCore
-            echarts={echarts}
-            onChartReady={handleOnChartReady}
-            option={chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics)}
-            style={{ height: '20rem', width: '100%' }}
-          />
-        </div>
+        <ReactEchartsCore
+          echarts={echarts}
+          onChartReady={handleOnChartReady}
+          option={chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics)}
+          style={{ height: '20rem', width: '100%' }}
+        />
       )}
-      modifier="w-full h-full shadow overflow-auto max-w-full "
+      modifier="w-full shadow overflow-auto max-w-full "
       size="small"
     />
   );

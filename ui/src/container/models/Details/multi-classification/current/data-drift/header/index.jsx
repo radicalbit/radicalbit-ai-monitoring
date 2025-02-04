@@ -5,17 +5,13 @@ import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 function DataDriftHeader() {
   return (
     <div className="flex gap-4 mt-4">
-      <div className="basis-1/3">
-        <TotalFeaturesCounter />
-      </div>
 
-      <div className="basis-1/3">
-        <CategoricalFeaturesCounter />
-      </div>
+      <TotalFeaturesCounter />
 
-      <div className="basis-1/3">
-        <NumericalFeaturesCounter />
-      </div>
+      <CategoricalFeaturesCounter />
+
+      <NumericalFeaturesCounter />
+
     </div>
   );
 }
@@ -38,7 +34,7 @@ function TotalFeaturesCounter() {
             <div>Features with drift</div>
           </div>
           )}
-        modifier="h-full shadow"
+        modifier="shadow basis-1/3"
         size="small"
       />
     );
@@ -62,7 +58,7 @@ function TotalFeaturesCounter() {
           <div>Features with drift</div>
         </div>
         )}
-      modifier="h-full shadow"
+      modifier="shadow basis-1/3"
       size="small"
       type="primary"
     />
@@ -90,7 +86,7 @@ function CategoricalFeaturesCounter() {
             <div>Categorical with drift</div>
           </div>
           )}
-        modifier="h-full"
+        modifier="shadow basis-1/3"
         size="small"
       />
     );
@@ -117,7 +113,7 @@ function CategoricalFeaturesCounter() {
           <div>Categorical with drift</div>
         </div>
         )}
-      modifier="h-full"
+      modifier="shadow basis-1/3"
       size="small"
     />
   );
@@ -144,7 +140,7 @@ function NumericalFeaturesCounter() {
             <div>Numerical with drift</div>
           </div>
           )}
-        modifier="h-full shadow"
+        modifier="shadow basis-1/3"
         size="small"
       />
     );
@@ -171,7 +167,7 @@ function NumericalFeaturesCounter() {
           <div>Numerical with drift</div>
         </div>
         )}
-      modifier="h-full shadow"
+      modifier="shadow basis-1/3"
       size="small"
     />
   );

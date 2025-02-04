@@ -10,13 +10,8 @@ export default function BottomMenu() {
   const items = [
     {
       key: 'Documentation',
-
-      label: (
-        <>
-          <span className="anticon"><FontAwesomeIcon icon={faCircleQuestion} /></span>
-
-          <span>Documentation</span>
-        </>),
+      label: <span>Documentation</span>,
+      icon: <FontAwesomeIcon icon={faCircleQuestion} />,
       onClick: handleReadDocumentation,
     },
   ];
@@ -24,7 +19,7 @@ export default function BottomMenu() {
   return (
     <Menu
       items={items}
-      selectedKeys={undefined}
+      selectedKeys={[]}
     />
   );
 }

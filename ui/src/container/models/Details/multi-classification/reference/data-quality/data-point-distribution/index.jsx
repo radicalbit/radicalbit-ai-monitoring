@@ -76,11 +76,11 @@ function DataPointDistributionCounter() {
             <div className="text-3xl">{letter}</div>
           </div>
 
-          <p>{`${fullNumber} data point`}</p>
+          <span>{`${fullNumber} data point`}</span>
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="shadow"
       size="small"
       type="secondary"
     />
@@ -106,7 +106,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="shadow"
       size="small"
       type="secondary"
     />
@@ -150,7 +150,7 @@ function DataPointDistributionChart() {
           />
         </div>
       )}
-      modifier="w-full h-full shadow overflow-auto max-w-full "
+      modifier="w-full shadow overflow-auto max-w-full "
       size="small"
     />
   );

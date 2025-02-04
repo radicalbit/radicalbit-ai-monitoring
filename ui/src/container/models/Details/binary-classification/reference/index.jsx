@@ -49,14 +49,12 @@ export default function ReferenceDashboard() {
   }
 
   return (
-    <div className="h-full">
-      <Tabs
-        activeKey={activeTab}
-        fullHeight
-        items={tabs}
-        noBorder
-        onChange={onChangeTab}
-      />
-    </div>
+    <Tabs
+      activeKey={activeTab}
+      fullHeight
+      items={tabs}
+      noBorder
+      onChange={onChangeTab}
+    />
   );
 }

@@ -43,9 +43,8 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="basis-1/6">
-        <DataPointDistributionCounter />
-      </div>
+
+      <DataPointDistributionCounter />
 
       <DataPointDistributionChart />
 
@@ -64,7 +63,7 @@ function DataPointDistributionCounter() {
     <Board
       header={<SectionTitle size="small" title="Current" />}
       main={(
-        <div className="flex flex-col h-full items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-4">
           <div className="flex flex-row items-end ">
             {/* FIXME: inline style */}
             <div className="font-bold text-6xl" style={{ fontFamily: 'var(--coo-header-font)' }}>{figures}</div>
@@ -72,13 +71,10 @@ function DataPointDistributionCounter() {
             <div className="text-3xl">{letter}</div>
           </div>
 
-          <p>
-            {`${fullNumber} data point`}
-          </p>
-
+          <span>{`${fullNumber} data point`}</span>
         </div>
       )}
-      modifier="h-full shadow"
+      modifier="shadow basis-1/6"
       size="small"
       type="primary"
     />
@@ -114,18 +110,16 @@ function DataPointDistributionChart() {
           }}
           title={<SectionTitle size="small" title={title} />}
         />
-)}
-      main={(
-        <div>
-          <ReactEchartsCore
-            echarts={echarts}
-            onChartReady={handleOnChartReady}
-            option={chartOptions(title, referenceClassMetrics, currentClassMetrics)}
-            style={{ height: '100%' }}
-          />
-        </div>
       )}
-      modifier="w-full h-full shadow"
+      main={(
+        <ReactEchartsCore
+          echarts={echarts}
+          onChartReady={handleOnChartReady}
+          option={chartOptions(title, referenceClassMetrics, currentClassMetrics)}
+          style={{ height: '100%' }}
+        />
+      )}
+      modifier="w-full shadow"
       size="small"
     />
   );

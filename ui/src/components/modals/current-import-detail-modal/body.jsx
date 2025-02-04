@@ -32,17 +32,13 @@ function Body() {
   const tabs = useGetTabs();
 
   return (
-    <div className="flex flex-col gap-4 p-4 h-full">
-      <div className="px-4 pt-4 h-[99%]">
-        <Tabs
-          activeKey={activeTab}
-          fullHeight
-          items={tabs}
-          noBorder
-          onChange={onChangeTab}
-        />
-      </div>
-    </div>
+    <Tabs
+      activeKey={activeTab}
+      items={tabs}
+      modifier="h-[96%]"
+      noBorder
+      onChange={onChangeTab}
+    />
   );
 }
 
