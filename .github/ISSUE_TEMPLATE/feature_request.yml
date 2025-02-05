@@ -1,5 +1,6 @@
 name: "Create a new task for Radicalbit AI Monitoring"
 description: "Create a new task for Radicalbit AI Monitoring"
+title: "As [Role] wants to [Action] in order to [Outcome] "
 labels: "Feature+Request"
 body:
 - type: markdown
@@ -21,19 +22,29 @@ body:
     label: "Please describe your task requirements"
     description: "A clear and concise description of what the task requirement is."
     placeholder: >
-      Title: [Role] wants to [Action] in order to [Outcome]
-      
       Description:
       As a [Role], I want to [Action/Goal], so that [Benefit/Reason].
-      
-      Acceptance Criteria:
+  validations:
+    required: true
+
+- type: textarea
+  attributes:
+    label: "Acceptance Criteria"
+    description: "Acceptance Criteria"
+    placeholder: > 
       ✅ The feature allows [User] to [Specific Action].
       ✅ The system provides [Expected Output or Behavior] when [Condition/Event].
       ✅ Error handling is implemented for [Edge Case/Scenario].
       ✅ The solution meets [Performance/Security/Usability] requirements.
       ✅ Tests cover [Unit/Integration/E2E] scenarios.
-      
-      Additional Notes:
-      [Any relevant information, such as dependencies or UI considerations]
   validations:
     required: true
+
+- type: textarea
+  attributes:
+    label: "Additional Notes"
+    description: "Additional Notes"
+    placeholder: > 
+      [Any relevant information, such as dependencies or UI considerations]
+  validations:
+    required: false
