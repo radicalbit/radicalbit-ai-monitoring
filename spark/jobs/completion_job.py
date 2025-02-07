@@ -6,17 +6,17 @@ from pyspark.sql.types import StructField, StructType, StringType
 
 from metrics.completion_metrics import CompletionMetrics
 from utils.models import JobStatus
-from utils.db import update_job_status, write_to_db, get_model_name
+from utils.db import update_job_status, write_to_db
 
 from pyspark.sql import SparkSession, DataFrame
 
 import logging
 
 
-def compute_metrics(df: DataFrame, model_name: str) -> dict:
+def compute_metrics(df: DataFrame) -> dict:
     complete_record = {}
     completion_service = CompletionMetrics()
-    model_quality = completion_service.extract_metrics(df, model_name)
+    model_quality = completion_service.extract_metrics(df)
     complete_record["MODEL_QUALITY"] = orjson.dumps(
         model_quality.model_dump(serialize_as_any=True)
     ).decode("utf-8")
@@ -50,8 +50,7 @@ def main(
             "fs.s3a.connection.ssl.enabled", "false"
         )
     df = spark_session.read.option("multiline", "true").json(completion_dataset_path)
-    model_name = get_model_name(completion_uuid, dataset_table_name)
-    complete_record = compute_metrics(df, model_name)
+    complete_record = compute_metrics(df)
 
     complete_record.update(
         {"UUID": str(uuid.uuid4()), "COMPLETION_UUID": completion_uuid}
