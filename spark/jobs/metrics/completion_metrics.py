@@ -2,7 +2,7 @@ import pyspark.sql.functions as F
 import numpy as np
 from pyspark.sql import DataFrame
 from pyspark.sql.types import FloatType
-
+from datetime import datetime, timezone
 from models.completion_dataset import CompletionMetricsModel
 
 
@@ -52,7 +52,7 @@ class CompletionMetrics:
         ).withColumn("prob", self.compute_probability_udf("logprob"))
         return df
 
-    def extract_metrics(self, df: DataFrame) -> CompletionMetricsModel:
+    def extract_metrics(self, df: DataFrame, model_name: str) -> CompletionMetricsModel:
         df = self.remove_columns(df)
         df = self.compute_prob(df)
         df_prob = df.drop("logprob")
@@ -80,12 +80,22 @@ class CompletionMetrics:
                     {"token": prob["token"], "prob": prob["prob"]}
                     for prob in row["probs"]
                 ],
+                "timestamp": datetime.now(timezone.utc).strftime(
+                    "%Y-%m-%d %H:%M:%S %Z"
+                ),
+                "model_name": model_name,
+                "total_token": len(row["probs"]),
+                "prob": df_mean_values.filter(F.col("id") == row["id"])
+                .select("prob_per_phrase")
+                .first()[0],
+                "perplex": df_mean_values.filter(F.col("id") == row["id"])
+                .select("perplex_per_phrase")
+                .first()[0],
             }
             for row in df_prob.toLocalIterator()
         ]
         res = {
             "tokens": tokens,
-            "mean_per_phrase": df_mean_values.toPandas().to_dict(orient="records"),
             "mean_per_file": df.toPandas().to_dict(orient="records"),
         }
         return CompletionMetricsModel(**res)
