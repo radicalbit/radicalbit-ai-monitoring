@@ -38,29 +38,6 @@ def update_job_status(file_uuid: str, status: str, dataset_table_name: str):
             )
             conn.commit()
 
-
-def get_model_name(completion_uuid: str, dataset_table_name):
-    with psycopg2.connect(
-        host=db_host,
-        dbname=db_name,
-        user=user,
-        password=password,
-        port=db_port,
-        options=f"-c search_path=dbo,{postgres_schema}",
-    ) as conn:
-        with conn.cursor() as cur:
-            cur.execute(
-                f"""
-                SELECT "model"."NAME"
-                FROM "model"
-                JOIN "{dataset_table_name}" ON "model"."UUID" = "{dataset_table_name}"."MODEL_UUID"
-                WHERE "{dataset_table_name}"."UUID" = %s
-                """,
-                (completion_uuid,),
-            )
-            return cur.fetchone()[0]
-
-
 def write_to_db(
     spark_session: SparkSession,
     record: Dict,
