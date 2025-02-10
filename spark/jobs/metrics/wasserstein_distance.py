@@ -30,7 +30,7 @@ class WassersteinDistance:
         df_reference: DataFrame, df_current: DataFrame, column_name: str
     ) -> float:
         """
-        Estimate the probability density function using KDE.
+        Estimate the distance from reference and current values.
 
         Parameters:
         - df (pyspark.sql.DataFrame): The spark df
