@@ -5,6 +5,7 @@ from pyspark.sql.types import FloatType
 from models.completion_dataset import CompletionMetricsModel
 from datetime import datetime
 
+
 class CompletionMetrics:
     def __init__(self):
         pass
@@ -39,7 +40,7 @@ class CompletionMetrics:
             F.col("usage.completion_tokens").alias("tot_tokens"),
             F.col("id"),
             F.col("model"),
-            F.col("created")
+            F.col("created"),
         )
         df = df.select(
             F.col("id"),
@@ -50,7 +51,13 @@ class CompletionMetrics:
             F.explode("element.logprobs.content").alias("content"),
         )
         df = df.select(
-            "id", "message_content", "content.logprob", "content.token", "model", "created", "tot_tokens"
+            "id",
+            "message_content",
+            "content.logprob",
+            "content.token",
+            "model",
+            "created",
+            "tot_tokens",
         ).withColumn("prob", self.compute_probability_udf("logprob"))
         return df
 
@@ -58,9 +65,9 @@ class CompletionMetrics:
         df = self.remove_columns(df)
         df = self.compute_prob(df)
         df_prob = df.drop("logprob")
-        df_prob = df_prob.groupBy("id", "message_content", "model", "created", "tot_tokens").agg(
-            F.collect_list(F.struct("token", "prob")).alias("probs")
-        )
+        df_prob = df_prob.groupBy(
+            "id", "message_content", "model", "created", "tot_tokens"
+        ).agg(F.collect_list(F.struct("token", "prob")).alias("probs"))
         df_mean_values = df.groupBy("id").agg(
             self.compute_prob_mean_per_phrase(F.collect_list("prob")).alias(
                 "prob_per_phrase"
@@ -82,7 +89,9 @@ class CompletionMetrics:
                     {"token": prob["token"], "prob": prob["prob"]}
                     for prob in row["probs"]
                 ],
-                "timestamp": datetime.fromtimestamp(row["created"]).strftime('%Y-%m-%d %H:%M:%S'),
+                "timestamp": datetime.fromtimestamp(row["created"]).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
                 "model_name": row["model"],
                 "total_token": row["tot_tokens"],
                 "prob": df_mean_values.filter(F.col("id") == row["id"])
