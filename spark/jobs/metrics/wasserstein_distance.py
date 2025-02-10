@@ -16,14 +16,10 @@ class WassersteinDistance:
         - spark_session (SparkSession): The SparkSession object
         - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
-        - reference_data_length (int): The reference length
-        - current_data_length (int): The current length
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
-        self.reference_data_length = self.reference_data.count()
-        self.current_data_length = self.current_data.count()
 
     @staticmethod
     def __wasserstein_distance(
@@ -38,7 +34,7 @@ class WassersteinDistance:
         - bins (int): The number of bins
 
         Returns:
-        Tuple with two objects: the interpolation points and the pdf
+        Float with computed distance
         """
 
         reference_values = np.array(
@@ -59,7 +55,7 @@ class WassersteinDistance:
 
     def return_distance(self, on_column: str) -> Dict:
         """
-        Returns the Wasserstein Distance.
+        Returns the Wasserstein Distance as a dictionary.
 
         Parameters:
         - on_column (str): The column to use for the distance computation
