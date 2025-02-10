@@ -38,6 +38,7 @@ def update_job_status(file_uuid: str, status: str, dataset_table_name: str):
             )
             conn.commit()
 
+
 def write_to_db(
     spark_session: SparkSession,
     record: Dict,
