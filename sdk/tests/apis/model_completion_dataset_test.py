@@ -63,11 +63,11 @@ class ModelCompletionDatasetTest(unittest.TestCase):
                                             "token":"."
                                         }
                                     ],
-                                    "timestamp":"2024-12-09 11:32:41",
+                                    "rbit_timestamp":"2024-12-09 11:32:41",
                                     "total_token":8,
                                     "model_name":"gpt-4o-2024-08-06",
-                                    "perplex":2.190884828567505,
-                                    "prob":0.6227279901504517
+                                    "perplexity":2.190884828567505,
+                                    "probability":0.6227279901504517
                                 }
                             ],
                             "mean_per_file":[
