@@ -201,11 +201,11 @@ class TokenData(BaseModel):
     id: str
     message_content: str
     probs: List[TokenProb]
-    timestamp: str
+    rbit_timestamp: str
     model_name: str
     total_token: int
-    prob: float
-    perplex: float
+    probability: float
+    perplexity: float
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 

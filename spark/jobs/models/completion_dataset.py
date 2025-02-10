@@ -11,11 +11,11 @@ class Probs(BaseModel):
     id: str
     message_content: str
     probs: List[Prob]
-    timestamp: str
+    rbit_timestamp: str
     model_name: str
     total_token: int
-    perplex: confloat(ge=1)
-    prob: confloat(ge=0, le=1)
+    perplexity: confloat(ge=1)
+    probability: confloat(ge=0, le=1)
 
     model_config = ConfigDict(ser_json_inf_nan="null")
 

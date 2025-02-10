@@ -89,15 +89,15 @@ class CompletionMetrics:
                     {"token": prob["token"], "prob": prob["prob"]}
                     for prob in row["probs"]
                 ],
-                "timestamp": datetime.fromtimestamp(row["created"]).strftime(
+                "rbit_timestamp": datetime.fromtimestamp(row["created"]).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 ),
                 "model_name": row["model"],
                 "total_token": row["tot_tokens"],
-                "prob": df_mean_values.filter(F.col("id") == row["id"])
+                "probability": df_mean_values.filter(F.col("id") == row["id"])
                 .select("prob_per_phrase")
                 .first()[0],
-                "perplex": df_mean_values.filter(F.col("id") == row["id"])
+                "perplexity": df_mean_values.filter(F.col("id") == row["id"])
                 .select("perplex_per_phrase")
                 .first()[0],
             }
