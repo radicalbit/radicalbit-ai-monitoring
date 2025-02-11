@@ -286,6 +286,8 @@ class HellingerDistance:
 
         return {
             "HellingerDistance": self.__hellinger_distance(
+                # We set process_on_partition=False until we find a strategy to
+                # automatically select the proper processing type.
                 column_name=on_column, data_type=data_type, process_on_partitions=False
             )
         }
