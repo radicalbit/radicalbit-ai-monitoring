@@ -286,6 +286,6 @@ class HellingerDistance:
 
         return {
             "HellingerDistance": self.__hellinger_distance(
-                column_name=on_column, data_type=data_type, process_on_partitions=True
+                column_name=on_column, data_type=data_type, process_on_partitions=False
             )
         }
