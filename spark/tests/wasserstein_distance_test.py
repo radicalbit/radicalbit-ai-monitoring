@@ -49,7 +49,7 @@ def wasserstein_distance(spark_fixture, reference_data, current_data):
 
 def test_return_distance(wasserstein_distance):
     """Test the return_distance method for Wasserstein Distance computation."""
-    result = wasserstein_distance.return_distance(on_column="value")
+    result = wasserstein_distance.compute_distance(on_column="value")
     assert "WassersteinDistance" in result, "The result should contain 'WassersteinDistance'."
     assert result["WassersteinDistance"] >= 0, "Distance should be non-negative."
 
@@ -64,4 +64,4 @@ def test_wasserstein_distance_on_categorical_data(spark_fixture, categorical_dat
     )
 
     with pytest.raises(Exception, match="could not convert string to float"):
-        wasserstein_distance.return_distance(on_column="value")
+        wasserstein_distance.compute_distance(on_column="value")
