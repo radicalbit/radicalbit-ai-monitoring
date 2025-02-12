@@ -122,7 +122,7 @@ class HellingerDistance:
         Parameters:
         - column_name (str): The name of the column
         - data_type (str): The type of the field (discrete or continuous)
-        - process_on_partitions (bool): it True, partition processing is activated (False by default)
+        - process_on_partitions (bool): If it is True, partition processing is activated (False by default)
 
         Returns:
         The Hellinger Distance value.
