@@ -114,7 +114,7 @@ class HellingerDistance:
         return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
     def __hellinger_distance(
-        self, column_name: str, data_type: str, process_on_partitions: bool
+        self, column_name: str, data_type: str, process_on_partitions: bool = False
     ) -> Optional[float]:
         """
         Compute the Hellinger Distasnce according to the data type (discrete or continuous).
@@ -122,7 +122,7 @@ class HellingerDistance:
         Parameters:
         - column_name (str): The name of the column
         - data_type (str): The type of the field (discrete or continuous)
-        - process_on_partitions (bool): it True, partition processing is activated
+        - process_on_partitions (bool): it True, partition processing is activated (False by default)
 
         Returns:
         The Hellinger Distance value.
@@ -272,7 +272,7 @@ class HellingerDistance:
                     * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
                 )
 
-    def return_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: str) -> Dict:
         """
         Returns the Hellinger Distance.
 
