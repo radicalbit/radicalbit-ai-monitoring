@@ -29,9 +29,10 @@ class WassersteinDistance:
         Estimate the distance from reference and current values.
 
         Parameters:
-        - df (pyspark.sql.DataFrame): The spark df
+        - df_reference (pyspark.sql.DataFrame): The reference dataset
+        - df_current (pyspark.sql.DataFrame): The current dataset
         - column_name (str): The name of the continuous column
-        - bins (int): The number of bins
+
 
         Returns:
         Float with computed distance
@@ -53,7 +54,7 @@ class WassersteinDistance:
 
         return wasserstein_distance(reference_values, current_values)
 
-    def return_distance(self, on_column: str) -> Dict:
+    def compute_distance(self, on_column: str) -> Dict:
         """
         Returns the Wasserstein Distance as a dictionary.
 
