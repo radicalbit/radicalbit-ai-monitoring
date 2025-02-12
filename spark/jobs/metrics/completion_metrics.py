@@ -2,8 +2,8 @@ import pyspark.sql.functions as F
 import numpy as np
 from pyspark.sql import DataFrame
 from pyspark.sql.types import FloatType
-
 from models.completion_dataset import CompletionMetricsModel
+from datetime import datetime
 
 
 class CompletionMetrics:
@@ -28,11 +28,8 @@ class CompletionMetrics:
     @staticmethod
     def remove_columns(df: DataFrame) -> DataFrame:
         df = df.drop(
-            "model",
             "object",
-            "created",
             "system_fingerprint",
-            "usage",
             "service_tier",
         )
         return df
@@ -40,15 +37,27 @@ class CompletionMetrics:
     def compute_prob(self, df: DataFrame):
         df = df.select(
             F.explode("choices").alias("element"),
+            F.col("usage.completion_tokens").alias("tot_tokens"),
             F.col("id"),
+            F.col("model"),
+            F.col("created"),
         )
         df = df.select(
             F.col("id"),
+            F.col("model"),
+            F.col("created"),
+            F.col("tot_tokens"),
             F.col("element.message.content").alias("message_content"),
             F.explode("element.logprobs.content").alias("content"),
         )
         df = df.select(
-            "id", "message_content", "content.logprob", "content.token"
+            "id",
+            "message_content",
+            "content.logprob",
+            "content.token",
+            "model",
+            "created",
+            "tot_tokens",
         ).withColumn("prob", self.compute_probability_udf("logprob"))
         return df
 
@@ -56,9 +65,9 @@ class CompletionMetrics:
         df = self.remove_columns(df)
         df = self.compute_prob(df)
         df_prob = df.drop("logprob")
-        df_prob = df_prob.groupBy("id", "message_content").agg(
-            F.collect_list(F.struct("token", "prob")).alias("probs")
-        )
+        df_prob = df_prob.groupBy(
+            "id", "message_content", "model", "created", "tot_tokens"
+        ).agg(F.collect_list(F.struct("token", "prob")).alias("probs"))
         df_mean_values = df.groupBy("id").agg(
             self.compute_prob_mean_per_phrase(F.collect_list("prob")).alias(
                 "prob_per_phrase"
@@ -80,12 +89,22 @@ class CompletionMetrics:
                     {"token": prob["token"], "prob": prob["prob"]}
                     for prob in row["probs"]
                 ],
+                "rbit_timestamp": datetime.fromtimestamp(row["created"]).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+                "model_name": row["model"],
+                "total_token": row["tot_tokens"],
+                "probability": df_mean_values.filter(F.col("id") == row["id"])
+                .select("prob_per_phrase")
+                .first()[0],
+                "perplexity": df_mean_values.filter(F.col("id") == row["id"])
+                .select("perplex_per_phrase")
+                .first()[0],
             }
             for row in df_prob.toLocalIterator()
         ]
         res = {
             "tokens": tokens,
-            "mean_per_phrase": df_mean_values.toPandas().to_dict(orient="records"),
             "mean_per_file": df.toPandas().to_dict(orient="records"),
         }
         return CompletionMetricsModel(**res)

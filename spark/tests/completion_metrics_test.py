@@ -18,14 +18,26 @@ def test_remove_columns(spark_fixture, input_file):
     df = completion_metrics_service.remove_columns(input_file)
     assert "id" in df.columns
     assert "choices" in df.columns
-    assert len(df.columns) == 2
+    assert "usage" in df.columns
+    assert "model" in df.columns
+    assert "created" in df.columns
+    assert len(df.columns) == 5
 
 
 def test_compute_prob(spark_fixture, input_file):
     completion_metrics_service = CompletionMetrics()
     df = completion_metrics_service.remove_columns(input_file)
     df = completion_metrics_service.compute_prob(df)
-    assert {"id", "logprob", "message_content", "token", "prob"} == set(df.columns)
+    assert {
+        "id",
+        "logprob",
+        "message_content",
+        "token",
+        "prob",
+        "model",
+        "created",
+        "tot_tokens",
+    } == set(df.columns)
     assert not df.rdd.isEmpty()
 
 
@@ -35,7 +47,6 @@ def test_extract_metrics(spark_fixture, input_file):
         completion_metrics_service.extract_metrics(input_file)
     )
     assert len(completion_metrics_model.tokens) > 0
-    assert len(completion_metrics_model.mean_per_phrase) > 0
     assert len(completion_metrics_model.mean_per_file) > 0
 
 
