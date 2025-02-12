@@ -56,7 +56,7 @@ def test_hellinger_distance_discrete(spark_fixture, discrete_data):
     reference_data, current_data = discrete_data
     hd = HellingerDistance(spark_fixture, reference_data, current_data, prefix_id)
 
-    result = hd.return_distance(on_column="category", data_type="discrete")
+    result = hd.compute_distance(on_column="category", data_type="discrete")
 
     assert "HellingerDistance" in result
     assert isinstance(result["HellingerDistance"], float)
@@ -68,7 +68,7 @@ def test_hellinger_distance_continuous(spark_fixture, continuous_data):
     reference_data, current_data = continuous_data
     hd = HellingerDistance(spark_fixture, reference_data, current_data, prefix_id)
 
-    result = hd.return_distance(on_column="value", data_type="continuous")
+    result = hd.compute_distance(on_column="value", data_type="continuous")
 
     assert "HellingerDistance" in result
     assert isinstance(result["HellingerDistance"], float)
@@ -80,6 +80,6 @@ def test_invalid_data_type(spark_fixture, discrete_data):
     reference_data, current_data = discrete_data
     hd = HellingerDistance(spark_fixture, reference_data, current_data, prefix_id)
 
-    result = hd.return_distance(on_column="category", data_type="invalid")
+    result = hd.compute_distance(on_column="category", data_type="invalid")
 
     assert result["HellingerDistance"] is None
