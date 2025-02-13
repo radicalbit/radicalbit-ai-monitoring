@@ -3,6 +3,6 @@
   "position": 4,
   "link": {
     "type": "generated-index",
-    "description": "In this section are exposed all classes implemented inside the [Python SDK](https://pypi.org/project/radicalbit-platform-sdk/). and all available methods to render a Charts into a Jupyter notebook, as they are used on the platform "
+    "description": "In this section are exposed all classes and all available methods to render a Charts into a Jupyter notebook, as they are used on the platform "
   }
 }
