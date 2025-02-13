@@ -842,7 +842,7 @@ class RadicalbitChart:
 
         return MultiClassificationChart().linear_chart(
             data=MultiClassificationLinearChartData(
-                title='False positive rate',
+                title='True positive rate',
                 reference_data=reference_data,
                 current_data=current_data,
             )

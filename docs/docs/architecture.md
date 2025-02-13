@@ -23,5 +23,5 @@ It covers all the implemented APIs, starting from model creation and ending with
 
 ## SDK
 
-To interact with API programmatically, a [_Python SDK_](python-sdk.md) is provided.
+To interact with API programmatically, a [_Python SDK_](/sdk/python-sdk.md) is provided.
 The SDK implements all functionalities exposed via REST API.
