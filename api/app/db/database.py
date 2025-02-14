@@ -67,7 +67,7 @@ class Database:
 
     def init_mappings(self):
         logger.info('Initiating DB orm mappings')
-        Reflected.prepare(self._engine)
+        Reflected.prepare(self._engine, reflect_views=True)
 
     def begin_session(self) -> Session:
         return self._SessionFactory.begin()
