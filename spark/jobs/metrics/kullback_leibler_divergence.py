@@ -15,15 +15,13 @@ class KullbackLeiblerDivergence:
         - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
         - prefix_id (str): A prefix to assign to temporary fields
-        - percentiles (list): The list with the percentiles to bucketize continuous variables
-        - relative_error (float): The error to assign to approxQuantile
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
         self.prefix_id = prefix_id
-        self.percentiles = [i / 10 for i in range(1, 10)]
-        self.relative_error = 0.05
+        self.percentiles = [i / 10 for i in range(1, 10)]  # percentiles to bucketize continuous variables
+        self.relative_error = 0.05  # the error to assign to approxQuantile
 
     def __calculate_category_percentages(
         self, df: DataFrame, column_name: str
