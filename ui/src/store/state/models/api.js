@@ -240,6 +240,54 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
 
     }),
+
+    importCompletionData: builder.mutation({
+      query: ({ file, modelUUID }) => {
+        const data = new FormData();
+
+        data.append('model_uuid', modelUUID);
+        data.append('json_file', file);
+
+        return ({
+          baseUrl: import.meta.env.VITE_BASE_URL,
+          url: `/models/${modelUUID}/completion/upload`,
+          method: 'post',
+          data,
+          formData: true,
+        });
+      },
+      invalidatesTags: (result, __, { modelUUID }) => {
+        if (result) {
+          return [
+            { type: API_TAGS.COMPLETION_IMPORT, id: modelUUID },
+            { type: API_TAGS.MODEL, id: modelUUID },
+            { type: API_TAGS.MODELS },
+            { type: API_TAGS.OVERALL_MODELS },
+
+          ];
+        }
+        return [];
+      },
+    }),
+
+    getCompletionImports: builder.query({
+      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.COMPLETION_IMPORT, id: uuid }],
+      query: ({ uuid }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/models/${uuid}/completion`,
+        method: 'get',
+      }),
+    }),
+
+    getCompletionModelQuality: builder.query({
+      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.COMPLETION_IMPORT, id: uuid }],
+      query: ({ uuid, latestCompletionUuid }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/models/${uuid}/completion/${latestCompletionUuid}/model-quality`,
+        method: 'get',
+      }),
+    }),
+
   }),
 
 });

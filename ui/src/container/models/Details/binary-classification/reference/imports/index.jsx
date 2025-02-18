@@ -53,6 +53,7 @@ function FeedbackTable() {
       modifier="w-full"
       namespace={NamespaceEnum.REFERENCE_IMPORT}
       recordCount={recordCount}
+      rowHoverable={false}
       rowKey={({ uuid }) => `${uuid}`}
     />
 

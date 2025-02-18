@@ -38,6 +38,7 @@ function OutputsTab() {
       dataSource={outputs.sort((a, b) => b.outputType.length - a.outputType.length)}
       pagination={{ pageSize: 200, hideOnSinglePage: true }}
       rowClassName={handleRowClassName}
+      rowHoverable={false}
       rowKey={({ name }) => name}
     />
   );
