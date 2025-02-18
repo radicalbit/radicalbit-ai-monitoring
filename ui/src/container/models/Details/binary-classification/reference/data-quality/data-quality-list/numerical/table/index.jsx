@@ -1,20 +1,17 @@
 import { DataTable } from '@radicalbit/radicalbit-design-system';
 import { numberFormatter } from '@Src/constants';
+import { memo, useCallback } from 'react';
 import columns from './columns';
 
 function NumericalTable({ data }) {
-  if (!data) {
-    return false;
-  }
-
-  const leftTableData = (el) => [
+  const leftTableData = useCallback((el) => [
     { label: 'Avg', value: el?.mean ?? '--' },
     { label: 'Std', value: el?.std ?? '--' },
     { label: 'Min', value: el?.min ?? '--' },
     { label: 'Max', value: el?.max ?? '--' },
-  ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' }));
+  ].map((o) => ({ ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' })), []);
 
-  const centerTableData = (el) => [
+  const centerTableData = useCallback((el) => [
     { label: 'Percentile 25', value: el?.medianMetrics?.perc25 ?? '--' },
     { label: 'Median', value: el?.medianMetrics?.median ?? '--' },
     { label: 'Percentile 75', value: el?.medianMetrics?.perc75 ?? '--' },
@@ -24,7 +21,11 @@ function NumericalTable({ data }) {
       return o;
     }
     return { ...o, value: (o.value !== '--') ? numberFormatter().format(o.value) : '--' };
-  });
+  }), []);
+
+  if (!data) {
+    return false;
+  }
 
   return (
     <div className="flex flex-row gap-4">
@@ -35,6 +36,7 @@ function NumericalTable({ data }) {
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
+        rowHoverable={false}
         rowKey={({ label }) => label}
         size="small"
       />
@@ -46,6 +48,7 @@ function NumericalTable({ data }) {
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
+        rowHoverable={false}
         rowKey={({ label }) => label}
         size="small"
       />
@@ -54,4 +57,4 @@ function NumericalTable({ data }) {
   );
 }
 
-export default NumericalTable;
+export default memo(NumericalTable);

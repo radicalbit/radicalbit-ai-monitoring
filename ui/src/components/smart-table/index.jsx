@@ -46,6 +46,7 @@ function SmartTableInner({
   rowClassName,
   rowKey,
   rowSelection,
+  rowHoverable = true,
 }) {
   const dispatch = useDispatch();
 
@@ -92,6 +93,7 @@ function SmartTableInner({
       onRow={onRow}
       pagination={showPagination && clonedPagination}
       rowClassName={rowClassName}
+      rowHoverable={rowHoverable}
       rowKey={rowKey}
       rowSelection={rowSelection}
       scroll={fixedHeader && { y: fixedHeader }}

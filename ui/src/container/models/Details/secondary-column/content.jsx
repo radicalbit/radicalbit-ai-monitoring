@@ -1,8 +1,9 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
-import { JOB_STATUS } from '@Src/constants';
-import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
+import getJobStatus from '@Helpers/get-spinner-job-status';
+import { ModelTypeEnum } from '@Src/store/state/models/constants';
 import { selectors as layoutSelectors } from '@State/layout';
+import { useGetModelsQueryWithPolling } from '@State/models/polling-hook';
 import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -29,12 +30,15 @@ export default function SecondaryColumnModelsContent() {
 
   const isSecondaryColumnCollapsed = useSelector(selectHasSecondaryColumnCollapsed);
 
-  const { data } = useGetModelQueryWithPolling();
+  const { data } = useGetModelsQueryWithPolling();
   const modelList = data?.items ?? [];
   const modelListMenuItem = modelList.map(({
-    uuid: modelUUID, name, latestReferenceJobStatus, latestCurrentJobStatus,
+    uuid: modelUUID, name, latestReferenceJobStatus, latestCurrentJobStatus, latestCompletionJobStatus, modelType,
   }) => {
-    const jobStatus = latestReferenceJobStatus === JOB_STATUS.SUCCEEDED ? latestCurrentJobStatus : latestReferenceJobStatus;
+    const jobStatus = getJobStatus({
+      modelType, latestReferenceJobStatus, latestCurrentJobStatus, latestCompletionJobStatus,
+    });
+
     return {
       label: (
         <div className="flex gap-2 items-center">
@@ -44,7 +48,14 @@ export default function SecondaryColumnModelsContent() {
 
         </div>),
       key: modelUUID,
-      children: commonChildrenMenu,
+      children: (() => {
+        switch (modelType) {
+          case ModelTypeEnum.TEXT_GENERATION:
+            return [{ label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW }];
+          default:
+            return commonChildrenMenu;
+        }
+      })(),
       className: uuid === modelUUID ? Menu.HIDE_EXPAND_ICON : '',
     };
   });

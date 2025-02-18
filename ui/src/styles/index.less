@@ -1,8 +1,6 @@
-:root .dark, .light .dark {
-    --coo-white-bk: rgb(48 55 65);
-
+:root{
+  --text-gen-opacity:1
 }
-
 
 html {
   font-size: 14px;
@@ -11,5 +9,28 @@ html {
     height: 100%;
     overflow: hidden !important;
     margin: 0;
+  }
+}
+
+
+.text-prob{
+  cursor: pointer;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.2;
+  color:var(--coo-dark);
+  font-size: 14px;
+  line-height: 1.2;
+
+  &-danger{
+    background-color: rgba(240,0,0, var(--text-gen-opacity))
+  }
+
+  &-warning{
+    background-color: rgba(251,228,5, var(--text-gen-opacity)) 
+  }
+
+  &-success{
+    background-color: rgba(77,182,148, var(--text-gen-opacity))
   }
 }

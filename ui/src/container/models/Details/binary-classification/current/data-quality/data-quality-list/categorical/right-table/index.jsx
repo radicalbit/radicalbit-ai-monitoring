@@ -13,6 +13,7 @@ function CategoricalRightTable({ data }) {
       modifier="w-full"
       pagination={false}
       rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+      rowHoverable={false}
       rowKey={({ name }) => name}
       scroll={{ y: '12rem' }}
       size="small"

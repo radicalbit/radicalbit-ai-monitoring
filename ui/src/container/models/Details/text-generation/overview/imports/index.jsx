@@ -1,22 +1,21 @@
 import SmartTable from '@Components/smart-table';
 // @ts-ignore
-import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-button';
+import ImportCompletionButton from '@Components/ImportButton/import-completion-button';
 import { NamespaceEnum } from '@Src/constants';
-import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { modelsApiSlice } from '@State/models/api';
-import { useGetCurrentImportsQueryWithPolling } from '@State/models/polling-hook';
+import { useGetCompletionImportsQueryWithPolling } from '@State/models/polling-hook';
 import { Spin, Void } from '@radicalbit/radicalbit-design-system';
-import { useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { getColumns } from './columns';
 
-const { useGetCurrentImportsQuery } = modelsApiSlice;
+const { useGetCompletionImportsQuery } = modelsApiSlice;
 
 export default function Imports() {
-  useGetCurrentImportsQueryWithPolling();
+  useGetCompletionImportsQueryWithPolling();
 
   const { uuid } = useParams();
-  const { data, isLoading } = useGetCurrentImportsQuery({ uuid });
+
+  const { data, isLoading } = useGetCompletionImportsQuery({ uuid });
   const importList = data?.items ?? [];
 
   if (isLoading) {
@@ -25,20 +24,10 @@ export default function Imports() {
 
   if (importList.length === 0) {
     return (
-
       <Void
-        actions={(<ImportCurrentDatasetButton type="primary" />)}
-        description={(
-          <>
-            Ther is no data available
-            <br />
-
-            {'Import a dataset or with Python following these '}
-
-            <strong>instructions</strong>
-          </>
-          )}
-        title="No current dataset imported yet"
+        actions={<ImportCompletionButton type="primary" />}
+        description="Import a completion file to see the outcome"
+        title="No completion data imported yet"
       />
     );
   }
@@ -54,9 +43,8 @@ export default function Imports() {
 
 function FeedbackTable() {
   const { uuid: modelUUID } = useParams();
-  const queryParams = useSelector((state) => contextConfigurationSelectors.selectQueryParamsSelector(state, NamespaceEnum.CURRENT_IMPORT));
 
-  const { data } = useGetCurrentImportsQuery({ uuid: modelUUID, queryParams });
+  const { data } = useGetCompletionImportsQuery({ uuid: modelUUID });
   const items = data?.items || [];
   const recordCount = data?.total;
 
@@ -65,9 +53,8 @@ function FeedbackTable() {
       columns={getColumns}
       dataSource={items}
       modifier="w-full"
-      namespace={NamespaceEnum.CURRENT_IMPORT}
+      namespace={NamespaceEnum.COMPLETION_IMPORT}
       recordCount={recordCount}
-      rowHoverable={false}
       rowKey={({ uuid }) => `${uuid}`}
     />
 
@@ -77,7 +64,7 @@ function FeedbackTable() {
 function FeedBackHeader() {
   const { uuid } = useParams();
 
-  const { data } = useGetCurrentImportsQuery({ uuid });
+  const { data } = useGetCompletionImportsQuery({ uuid });
   const totalCounter = data?.total;
 
   return (
@@ -86,7 +73,7 @@ function FeedBackHeader() {
         {`${totalCounter} Dataset`}
       </div>
 
-      <ImportCurrentDatasetButton />
+      <ImportCompletionButton />
     </div>
   );
 }
