@@ -10,6 +10,8 @@ import SearchFeatureList from './search-filter';
 const initialValues = {
   __metadata: {
     searchToken: '',
+    isSearchForModelName: false,
+    isSearchForTimestamp: false,
   },
 };
 
@@ -31,7 +33,7 @@ function TextGenerationModelQualityMetrics() {
     );
   }
 
-  return (<JobStatus jobStatus={jobStatus} />);
+  return <JobStatus jobStatus={jobStatus} />;
 }
 
 export default memo(TextGenerationModelQualityMetrics);
