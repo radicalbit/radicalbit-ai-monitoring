@@ -1,5 +1,3 @@
-/* import { FEATURE_TYPE } from '@Container/models/Details/constants';
-import { useFormbitContext } from '@radicalbit/formbit'; */
 import { useFormbitContext } from '@radicalbit/formbit';
 import { useGetCompletionModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
 
@@ -9,13 +7,38 @@ export default () => {
 
   const meanPerPhrase = data?.modelQuality?.meanPerPhrase ?? [];
 
-  const { form: { __metadata: { searchToken } } } = useFormbitContext();
+  const { form } = useFormbitContext();
+  const metadata = form?.__metadata;
 
   if (!data) {
     return [];
   }
 
-  const filteredTokens = tokens.filter(({ messageContent }) => messageContent.toLowerCase().includes(searchToken.toLowerCase()));
+  const filteredTokens = getFilteredTokens({ tokens, metadata });
 
   return { tokens: filteredTokens, meanPerPhrase };
+};
+
+const getFilteredTokens = ({ tokens, metadata }) => {
+  const searchToken = metadata?.searchToken;
+  const isSearchForModelName = metadata?.isSearchForModelName;
+  const isSearchForTimestamp = metadata?.isSearchForTimestamp;
+
+  if (!isSearchForModelName && !isSearchForTimestamp) {
+    return tokens.filter(({ messageContent }) => messageContent.toLowerCase().includes(searchToken.toLowerCase()));
+  }
+
+  if (isSearchForModelName && isSearchForTimestamp) {
+    return tokens.filter(({ messageContent }) => messageContent.toLowerCase().includes(searchToken.toLowerCase()));
+  }
+
+  if (isSearchForModelName) {
+    return tokens.filter(({ modelName }) => modelName.toLowerCase().includes(searchToken.toLowerCase()));
+  }
+
+  if (isSearchForTimestamp) {
+    return tokens.filter(({ rbitTimestamp }) => rbitTimestamp.toLowerCase().includes(searchToken.toLowerCase()));
+  }
+
+  return tokens;
 };
