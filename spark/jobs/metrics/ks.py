@@ -1,15 +1,21 @@
+from typing import List
+
 import numpy as np
 from math import ceil, sqrt
 from numpy import linspace, interp
+from pyspark.sql import SparkSession, DataFrame
+
+from metrics.drift_factory_pattern import DriftDetector, DriftDetectionResult, DriftAlgorithmType
+from utils.models import FieldTypes
 
 
-class KolmogorovSmirnovTest:
+class KolmogorovSmirnovTest(DriftDetector):
     """
     This class implements the Kolmogorov-Smirnov test as described in the paper: https://arxiv.org/pdf/2312.09380.
     It is designed to compare two sample distributions and determine if they differ significantly.
     """
 
-    def __init__(self, reference_data, current_data, alpha, phi) -> None:
+    def __init__(self, spark_session: SparkSession, reference_data: DataFrame, current_data: DataFrame, prefix_id: str, alpha: float = 0.05, phi: float = 0.004) -> None:
         """
         Initializes the KolmogorovSmirnovTest with the provided data and parameters.
 
@@ -19,12 +25,35 @@ class KolmogorovSmirnovTest:
         - alpha (float): The significance level for the hypothesis test.
         - phi (float): ϕ defines the precision of the KS test statistic.
         """
+        self.spark_session = spark_session
+        self.prefix_id = prefix_id
         self.reference_data = reference_data
         self.current_data = current_data
         self.alpha = alpha
         self.phi = phi
         self.reference_size = self.reference_data.count()
         self.current_size = self.current_data.count()
+
+    @property
+    def supported_feature_types(self) -> List[FieldTypes]:
+        return [FieldTypes.numerical]
+
+    def detect_drift(self, feature: str) -> DriftDetectionResult:
+        feature_dict_to_append = {
+            "feature_name": feature,
+            "field_type": FieldTypes.numerical.value,
+            "drift_calc": {
+                "type": DriftAlgorithmType.KS,
+            },
+        }
+        result_tmp = self.test(feature, feature)
+        feature_dict_to_append["drift_calc"]["value"] = float(
+            result_tmp["ks_statistic"]
+        )
+        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+            result_tmp["ks_statistic"] > result_tmp["critical_value"]
+        )
+        return DriftDetectionResult.model_validate(feature_dict_to_append)
 
     @staticmethod
     def __eps45(n, delta) -> float:

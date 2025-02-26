@@ -10,6 +10,8 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
+from metrics.drift_factory_pattern import DriftAlgorithmType
+
 
 class JobStatus(str, Enum):
     IMPORTING = "IMPORTING"
@@ -50,11 +52,17 @@ class Granularity(str, Enum):
     WEEK = "WEEK"
     MONTH = "MONTH"
 
+class DriftMethod(BaseModel):
+    name: DriftAlgorithmType
+    threshold: Optional[float] = None
+    p_value: Optional[float] = None
+
 
 class ColumnDefinition(BaseModel):
     name: str
     type: SupportedTypes
     field_type: FieldTypes
+    drift: Optional[DriftMethod] = None
 
     def is_numerical(self) -> bool:
         return self.field_type == FieldTypes.numerical

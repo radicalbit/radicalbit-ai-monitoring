@@ -1,9 +1,13 @@
 import os
+import sys
+
 from conf import create_secrets
 from uuid import uuid4
 from spark_on_k8s.k8s.sync_client import KubernetesClientManager
 from spark_on_k8s.client import SparkOnK8S
 
+import json
+from models import ModelOut
 envs = ["KUBECONFIG_FILE_PATH", "JOB_NAME", "SPARK_IMAGE"]
 
 for var in envs:
@@ -19,14 +23,29 @@ spark_k8s_client = SparkOnK8S(k8s_client_manager=k8s_client_manager)
 
 path = "s3a://test-bucket/metrics_one.json"
 
+
+# Load and validate JSON
+def load_and_validate_json():
+    # Load JSON data
+    with open("./modelout.json", 'r') as f:
+        data = json.load(f)
+
+    # Validate with Pydantic
+    validated_data = ModelOut.model_validate(data[0])
+    return validated_data
+
+current_path = ""
+reference_path = ""
 spark_k8s_client.submit_app(
     image=spark_image,
     app_path=f"local:///opt/spark/custom_jobs/{job_name}_job.py",
     app_arguments=[
-        path,
+        load_and_validate_json(),
+        current_path,
         str(uuid4()),
-        "completion_dataset_metrics",
-        "completion_dataset",
+        reference_path,
+        "current_dataset_metrics",
+        "current_dataset",
     ],
     app_name=f"{spark_image}-completion-job",
     namespace="spark",
@@ -35,3 +54,5 @@ spark_k8s_client.submit_app(
     image_pull_policy="IfNotPresent",
     secret_values=create_secrets(),
 )
+
+
