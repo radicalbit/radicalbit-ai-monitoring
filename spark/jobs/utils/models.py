@@ -10,8 +10,6 @@ from pyspark.sql.types import (
     TimestampType,
 )
 
-from metrics.drift_factory_pattern import DriftAlgorithmType
-
 
 class JobStatus(str, Enum):
     IMPORTING = "IMPORTING"
@@ -52,6 +50,16 @@ class Granularity(str, Enum):
     WEEK = "WEEK"
     MONTH = "MONTH"
 
+
+class DriftAlgorithmType(str, Enum):
+    HELLINGER = "hellinger"
+    WASSERSTEIN = "wasserstein"
+    KS = "ks"
+    JS = "js"
+    PSI = "psi"
+    CHI2 = "chi2"
+
+
 class DriftMethod(BaseModel):
     name: DriftAlgorithmType
     threshold: Optional[float] = None
@@ -62,7 +70,7 @@ class ColumnDefinition(BaseModel):
     name: str
     type: SupportedTypes
     field_type: FieldTypes
-    drift: Optional[DriftMethod] = None
+    drift: Optional[List[DriftMethod]] = None
 
     def is_numerical(self) -> bool:
         return self.field_type == FieldTypes.numerical
@@ -133,3 +141,15 @@ class ModelOut(BaseModel):
 
     def get_categorical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_categorical()]
+
+
+class DriftCalc(BaseModel):
+    type: str
+    value: float
+    has_drift: bool
+
+
+class DriftDetectionResult(BaseModel):
+    feature_name: str
+    field_type: str
+    drift_calc: DriftCalc

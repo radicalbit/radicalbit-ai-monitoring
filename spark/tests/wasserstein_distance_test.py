@@ -3,7 +3,6 @@ from pyspark.sql import Row
 from jobs.metrics.wasserstein_distance import WassersteinDistance
 
 
-
 @pytest.fixture(scope="module")
 def reference_data(spark_fixture):
     """Fixture to create reference data for testing."""
@@ -50,9 +49,10 @@ def wasserstein_distance(spark_fixture, reference_data, current_data):
 def test_return_distance(wasserstein_distance):
     """Test the return_distance method for Wasserstein Distance computation."""
     result = wasserstein_distance.compute_distance(on_column="value")
-    assert "WassersteinDistance" in result, "The result should contain 'WassersteinDistance'."
+    assert (
+        "WassersteinDistance" in result
+    ), "The result should contain 'WassersteinDistance'."
     assert result["WassersteinDistance"] >= 0, "Distance should be non-negative."
-
 
 
 def test_wasserstein_distance_on_categorical_data(spark_fixture, categorical_data):

@@ -1,5 +1,4 @@
 import os
-import sys
 
 from conf import create_secrets
 from uuid import uuid4
@@ -8,6 +7,7 @@ from spark_on_k8s.client import SparkOnK8S
 
 import json
 from models import ModelOut
+
 envs = ["KUBECONFIG_FILE_PATH", "JOB_NAME", "SPARK_IMAGE"]
 
 for var in envs:
@@ -24,25 +24,25 @@ spark_k8s_client = SparkOnK8S(k8s_client_manager=k8s_client_manager)
 path = "s3a://test-bucket/metrics_one.json"
 
 
-# Load and validate JSON
-def load_and_validate_json():
-    # Load JSON data
-    with open("./modelout.json", 'r') as f:
+def load_json():
+    with open("./modelout.json", "r") as f:
         data = json.load(f)
+    return json.dumps(data, indent=2)
 
-    # Validate with Pydantic
-    validated_data = ModelOut.model_validate(data[0])
-    return validated_data
 
-current_path = ""
-reference_path = ""
+print(json.dumps(load_json(), indent=2))
+print(ModelOut.model_validate_json(load_json()))
+
+
+current_path = "s3a://test-bucket/df_current1-5cac31fe358e0efaab9d8ea844d3f15b.csv"
+reference_path = "s3a://test-bucket/df_reference-1894ad2a37bbcc09d7bbc333f368208c.csv"
 spark_k8s_client.submit_app(
     image=spark_image,
     app_path=f"local:///opt/spark/custom_jobs/{job_name}_job.py",
     app_arguments=[
-        load_and_validate_json(),
+        load_json(),
         current_path,
-        str(uuid4()),
+        "8aa09366-5d37-4721-a20a-7f6638fb6d27",
         reference_path,
         "current_dataset_metrics",
         "current_dataset",
@@ -54,5 +54,3 @@ spark_k8s_client.submit_app(
     image_pull_policy="IfNotPresent",
     secret_values=create_secrets(),
 )
-
-

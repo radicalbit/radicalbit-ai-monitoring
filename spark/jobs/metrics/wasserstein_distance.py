@@ -4,11 +4,30 @@ from pyspark.sql import functions as f
 from pyspark.sql import DataFrame
 from scipy.stats import wasserstein_distance
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
 
-class WassersteinDistance:
+
+class WassersteinDistance(DriftDetector):
     """Class for performing the Wasserstein Distance using Pyspark."""
 
-    def __init__(self, spark_session, reference_data, current_data) -> None:
+    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
+        feature_dict_to_append = {"drift_calc": {}}
+        result_tmp = self.compute_distance(feature.name)
+        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.WASSERSTEIN
+        feature_dict_to_append["drift_calc"]["value"] = float(
+            result_tmp["WassersteinDistance"]
+        )
+        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+            result_tmp["WassersteinDistance"] <= limit
+        )
+        return feature_dict_to_append
+
+    @property
+    def supported_feature_types(self) -> list[FieldTypes]:
+        return [FieldTypes.numerical]
+
+    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Wasserstein Distance object with necessary data and parameters.
 
@@ -20,6 +39,7 @@ class WassersteinDistance:
         self.spark_session = spark_session
         self.reference_data = reference_data
         self.current_data = current_data
+        self.prefix_id = prefix_id
 
     @staticmethod
     def __wasserstein_distance(
@@ -49,7 +69,6 @@ class WassersteinDistance:
             .filter(f.col(column_name).isNotNull())
             .rdd.flatMap(lambda xi: xi)
             .collect()
-
         )
 
         return wasserstein_distance(reference_values, current_values)

@@ -5,8 +5,34 @@ from pyspark.sql import functions as f
 from pyspark.ml.feature import Bucketizer
 from scipy.spatial.distance import jensenshannon
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
 
-class JensenShannonDistance:
+
+class JensenShannonDistance(DriftDetector):
+    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
+        # feature_dict_to_append = {
+        #     "feature_name": feature.name,
+        #     "field_type": feature.field_type.value,
+        #     "drift_calc": {
+        #         "type": DriftAlgorithmType.JS,
+        #     },
+        # }
+        feature_dict_to_append = {"drift_calc": {}}
+        result_tmp = self.return_distance(feature.name, feature.field_type.value)
+        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.JS
+        feature_dict_to_append["drift_calc"]["value"] = float(
+            result_tmp["JensenShannonDistance"]
+        )
+        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+            result_tmp["JensenShannonDistance"] <= limit
+        )
+        return feature_dict_to_append
+
+    @property
+    def supported_feature_types(self) -> list[FieldTypes]:
+        return [FieldTypes.categorical, FieldTypes.numerical]
+
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Jensen-Shannon Distance object with necessary data and parameters.
@@ -172,7 +198,7 @@ class JensenShannonDistance:
             ]
             return reference_dict, current_dict
 
-        if data_type == "discrete":
+        if data_type == "categorical":
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column
             )
@@ -203,7 +229,7 @@ class JensenShannonDistance:
 
             return jensenshannon(reference_values, current_values)
 
-        elif data_type == "continuous":
+        elif data_type == "numerical":
             reference_bucket_percentage, current_bucket_percentage = (
                 self.__bucketize_continuous_values(
                     df_reference=self.reference_data,
