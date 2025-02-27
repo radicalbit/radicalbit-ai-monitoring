@@ -8,14 +8,20 @@ import numpy as np
 from pyspark.sql import SparkSession, DataFrame
 from scipy.stats import chisquare
 
-from metrics.drift_factory_pattern import DriftDetector, DriftDetectionResult, DriftAlgorithmType
-from utils.models import FieldTypes
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
 
 class Chi2Test(DriftDetector):
     """Class for performing a chi-square test of independence using Pyspark."""
 
-    def __init__(self, spark_session: SparkSession, reference_data: DataFrame, current_data: DataFrame, prefix_id: str) -> None:
+    def __init__(
+        self,
+        spark_session: SparkSession,
+        reference_data: DataFrame,
+        current_data: DataFrame,
+        prefix_id: str,
+    ) -> None:
         """
         Initializes the Chi2Test object with necessary data and parameters.
 
@@ -35,20 +41,15 @@ class Chi2Test(DriftDetector):
     def supported_feature_types(self) -> List[FieldTypes]:
         return [FieldTypes.categorical]
 
-    def detect_drift(self, feature: str) -> DriftDetectionResult:
-        feature_dict_to_append = {
-            "feature_name": feature,
-            "field_type": FieldTypes.categorical.value,
-            "drift_calc": {
-                "type": DriftAlgorithmType.CHI2,
-            },
-        }
-        result_tmp = self.test_goodness_fit(feature, feature)
+    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
+        feature_dict_to_append = {"drift_calc": {}}
+        result_tmp = self.test_goodness_fit(feature.name, feature.name)
+        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.CHI2
         feature_dict_to_append["drift_calc"]["value"] = float(result_tmp["pValue"])
         feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["pValue"] <= 0.05
+            result_tmp["pValue"] <= limit
         )
-        return DriftDetectionResult.model_validate(feature_dict_to_append)
+        return feature_dict_to_append
 
     def __have_same_size(self) -> bool:
         """

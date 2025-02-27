@@ -5,9 +5,28 @@ from pyspark.sql import DataFrame
 from scipy.stats import gaussian_kde
 import itertools
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
-class HellingerDistance:
+
+class HellingerDistance(DriftDetector):
     """Class for performing the Hellinger Distance using Pyspark."""
+
+    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
+        feature_dict_to_append = {"drift_calc": {}}
+        result_tmp = self.return_distance(feature.name, feature.field_type.value)
+        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.HELLINGER
+        feature_dict_to_append["drift_calc"]["value"] = float(
+            result_tmp["HellingerDistance"]
+        )
+        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
+            result_tmp["HellingerDistance"] <= limit
+        )
+        return feature_dict_to_append
+
+    @property
+    def supported_feature_types(self) -> list[FieldTypes]:
+        return [FieldTypes.categorical, FieldTypes.numerical]
 
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
@@ -129,7 +148,7 @@ class HellingerDistance:
         """
         column = column_name
 
-        if data_type == "discrete":
+        if data_type == "categorical":
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column, prefix_id=self.prefix_id
             )
@@ -176,7 +195,7 @@ class HellingerDistance:
                 0.5 * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
             )
 
-        elif data_type == "continuous":
+        elif data_type == "numerical":
             bins = self.__compute_bins_for_continuous_data()
 
             if process_on_partitions:

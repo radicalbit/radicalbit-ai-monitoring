@@ -207,7 +207,7 @@ services:
     profiles: ["spark-test"]
     build: ./spark-test
     environment:
-      JOB_NAME: "completion"
+      JOB_NAME: "current"
       KUBECONFIG_FILE_PATH: "/opt/kubeconfig/kubeconfig.yaml"
       SPARK_IMAGE: "radicalbit-spark-py:develop"
     volumes:

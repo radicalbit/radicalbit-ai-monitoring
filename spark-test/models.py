@@ -2,11 +2,14 @@ from pydantic import BaseModel
 from enum import Enum
 from typing import Optional, List
 from uuid import UUID
+from pydantic import Field
+
 
 class FieldTypes(str, Enum):
     categorical = "categorical"
     numerical = "numerical"
     datetime = "datetime"
+
 
 class DriftAlgorithmType(str, Enum):
     HELLINGER = "hellinger"
@@ -16,10 +19,12 @@ class DriftAlgorithmType(str, Enum):
     PSI = "psi"
     CHI2 = "chi2"
 
+
 class DriftMethod(BaseModel):
     name: DriftAlgorithmType
     threshold: Optional[float] = None
     p_value: Optional[float] = None
+
 
 class SupportedTypes(str, Enum):
     string = "string"
@@ -28,18 +33,18 @@ class SupportedTypes(str, Enum):
     bool = "bool"
     datetime = "datetime"
 
+
 class ColumnDefinition(BaseModel):
     name: str
     type: SupportedTypes
     field_type: FieldTypes
-    drift: Optional[DriftMethod] = None
+    drift: Optional[List[DriftMethod]] = None
+
 
 class OutputType(BaseModel):
     prediction: ColumnDefinition
     prediction_proba: Optional[ColumnDefinition] = None
     output: List[ColumnDefinition]
-
-
 
 
 class ModelType(str, Enum):
@@ -60,7 +65,6 @@ class Granularity(str, Enum):
     DAY = "DAY"
     WEEK = "WEEK"
     MONTH = "MONTH"
-
 
 
 class ModelOut(BaseModel):

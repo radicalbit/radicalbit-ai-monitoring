@@ -1,16 +1,10 @@
 from pyspark.sql import SparkSession
-
-from metrics.chi2 import Chi2Test
-from metrics.drift_factory_pattern import DriftAlgorithmType, DriftDetectionResult, FeatureDriftManager
-from metrics.ks import KolmogorovSmirnovTest
-from metrics.psi import PSI
+from metrics.drift_factory_pattern import FeatureDriftManager
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
-from utils.models import FieldTypes
 
 
 class DriftCalculator:
-
     @staticmethod
     def calculate_drift(
         spark_session: SparkSession,
@@ -18,8 +12,15 @@ class DriftCalculator:
         current_dataset: CurrentDataset,
         prefix_id: str,
     ):
-        drift_manager = FeatureDriftManager(spark_session, reference_dataset.reference, current_dataset.current, prefix_id)
-        drift_results = drift_manager.compute_drift_for_all_features(reference_dataset.model.features)
+        drift_manager = FeatureDriftManager(
+            spark_session,
+            reference_dataset.reference,
+            current_dataset.current,
+            prefix_id,
+        )
+        drift_results = drift_manager.compute_drift_for_all_features(
+            reference_dataset.model.features
+        )
         return drift_results
 
         # categorical_features = [

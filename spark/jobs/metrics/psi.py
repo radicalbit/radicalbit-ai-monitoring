@@ -6,8 +6,8 @@ import pyspark.sql.functions as F
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql.types import IntegerType
 from pyspark.sql import SparkSession, DataFrame
-from metrics.drift_factory_pattern import DriftDetector, DriftDetectionResult, DriftAlgorithmType
-from utils.models import FieldTypes
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
 
 class PSI(DriftDetector):
@@ -16,7 +16,13 @@ class PSI(DriftDetector):
     It is designed to compare two sample distributions and determine if they differ significantly.
     """
 
-    def __init__(self, spark_session: SparkSession, reference_data: DataFrame, current_data: DataFrame, prefix_id: str) -> None:
+    def __init__(
+        self,
+        spark_session: SparkSession,
+        reference_data: DataFrame,
+        current_data: DataFrame,
+        prefix_id: str,
+    ) -> None:
         """
         Initializes the Population Stability Index with the provided data and parameters.
 
@@ -34,24 +40,15 @@ class PSI(DriftDetector):
     def supported_feature_types(self) -> List[FieldTypes]:
         return [FieldTypes.numerical]
 
-    def detect_drift(self, feature: str) -> DriftDetectionResult:
-        feature_dict_to_append = {
-            "feature_name": feature,
-            "field_type": FieldTypes.numerical.value,
-            "drift_calc": {
-                "type": DriftAlgorithmType.PSI,
-            },
-        }
-        result_tmp = psi_obj.calculate_psi(feature)
-        feature_dict_to_append["drift_calc"]["value"] = float(
-            result_tmp["psi_value"]
-        )
+    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
+        feature_dict_to_append = {"drift_calc": {}}
+        result_tmp = self.calculate_psi(feature.name)
+        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.PSI
+        feature_dict_to_append["drift_calc"]["value"] = float(result_tmp["psi_value"])
         feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["psi_value"] >= 0.1
+            result_tmp["psi_value"] >= limit
         )
-        return DriftDetectionResult.model_validate(feature_dict_to_append)
-
-
+        return feature_dict_to_append
 
     @staticmethod
     def sub_psi(e_perc, a_perc):
