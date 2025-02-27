@@ -64,7 +64,7 @@ class FeatureDriftManager:
             feature_dict_to_append = {
                 "feature_name": feature.name,
                 "field_type": FieldTypes.categorical.value,
-                "drift_calc": []
+                "drift_calc": [],
             }
             results["feature_metrics"].append(feature_dict_to_append)
             if feature.drift:
