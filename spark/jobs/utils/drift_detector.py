@@ -6,7 +6,7 @@ from utils.models import FieldTypes, ColumnDefinition
 class DriftDetector(ABC):
     @abstractmethod
     def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
-      pass
+        pass
 
     @property
     @abstractmethod
