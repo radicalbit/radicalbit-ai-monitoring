@@ -13,6 +13,11 @@ completion_metric_results = {
                 {"token": " up", "prob": 0.9211180806159973},
                 {"token": "?", "prob": 0.9999502301216125},
             ],
+            "rbit_timestamp": "2024-12-09 11:32:41",
+            "model_name": "gpt-4o-2024-08-06",
+            "total_token": 8,
+            "perplexity": 2.190884828567505,
+            "probability": 0.6227279901504517,
         },
         {
             "id": "chatcmpl-AcYMMPLnpkksCdLze3M8nnqQbfqVG",
@@ -27,18 +32,11 @@ completion_metric_results = {
                 {"token": " how", "prob": 0.49005329608917236},
                 {"token": ".", "prob": 0.9663926959037781},
             ],
-        },
-    ],
-    "mean_per_phrase": [
-        {
-            "id": "chatcmpl-AcWID2SsE5iuK6z5AhNCKv3WUcCxN",
-            "prob_per_phrase": 0.6227279901504517,
-            "perplex_per_phrase": 2.190884828567505,
-        },
-        {
-            "id": "chatcmpl-AcYMMPLnpkksCdLze3M8nnqQbfqVG",
-            "prob_per_phrase": 0.61042720079422,
-            "perplex_per_phrase": 4.080123424530029,
+            "rbit_timestamp": "2024-12-09 13:45:06",
+            "model_name": "gpt-4o-2024-08-06",
+            "total_token": 8,
+            "perplexity": 4.080123424530029,
+            "probability": 0.61042720079422,
         },
     ],
     "mean_per_file": [

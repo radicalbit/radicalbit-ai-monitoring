@@ -62,20 +62,18 @@ class ModelCompletionDatasetTest(unittest.TestCase):
                                             "prob":0.99,
                                             "token":"."
                                         }
-                                    ]
+                                    ],
+                                    "rbit_timestamp":"2024-12-09 11:32:41",
+                                    "total_token":8,
+                                    "model_name":"gpt-4o-2024-08-06",
+                                    "perplexity":2.190884828567505,
+                                    "probability":0.6227279901504517
                                 }
                             ],
                             "mean_per_file":[
                                 {
                                     "prob_tot_mean":0.71,
                                     "perplex_tot_mean":1.52
-                                }
-                            ],
-                            "mean_per_phrase":[
-                                {
-                                    "id":"chatcmpl",
-                                    "prob_per_phrase":0.71,
-                                    "perplex_per_phrase":1.54
                                 }
                             ]
                         }
@@ -90,8 +88,6 @@ class ModelCompletionDatasetTest(unittest.TestCase):
         assert metrics.tokens[0].probs[0].token == 'Sky'
         assert metrics.mean_per_file[0].prob_tot_mean == 0.71
         assert metrics.mean_per_file[0].perplex_tot_mean == 1.52
-        assert metrics.mean_per_phrase[0].prob_per_phrase == 0.71
-        assert metrics.mean_per_phrase[0].perplex_per_phrase == 1.54
         assert model_completion_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

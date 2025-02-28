@@ -200,6 +200,11 @@ class TokenData(BaseModel):
     id: str
     message_content: str
     probs: List[TokenProb]
+    rbit_timestamp: str
+    model_name: str
+    total_token: int
+    probability: float
+    perplexity: float
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
@@ -222,6 +227,5 @@ class MeanPerPhrase(BaseModel):
 class CompletionTextGenerationModelQuality(ModelQuality):
     tokens: List[TokenData]
     mean_per_file: List[MeanPerFile]
-    mean_per_phrase: List[MeanPerPhrase]
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)

@@ -1,7 +1,7 @@
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import SmartTable from '@Components/smart-table';
 import { NamespaceEnum } from '@Src/constants';
-import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
+import { useGetModelsQueryWithPolling } from '@State/models/polling-hook';
 import {
   NewHeader,
   SectionTitle,
@@ -14,7 +14,7 @@ function WorkInProgress() {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const { data = [], isLoading, isError } = useGetModelQueryWithPolling();
+  const { data = [], isLoading, isError } = useGetModelsQueryWithPolling();
   const models = data.items || [];
   const wipModels = models.filter(({ latestCurrentUuid, latestReferenceUuid }) => !latestCurrentUuid || !latestReferenceUuid);
 

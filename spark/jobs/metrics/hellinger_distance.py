@@ -133,7 +133,7 @@ class HellingerDistance(DriftDetector):
         return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
     def __hellinger_distance(
-        self, column_name: str, data_type: str, process_on_partitions: bool
+        self, column_name: str, data_type: str, process_on_partitions: bool = False
     ) -> Optional[float]:
         """
         Compute the Hellinger Distasnce according to the data type (discrete or continuous).
@@ -141,7 +141,7 @@ class HellingerDistance(DriftDetector):
         Parameters:
         - column_name (str): The name of the column
         - data_type (str): The type of the field (discrete or continuous)
-        - process_on_partitions (bool): it True, partition processing is activated
+        - process_on_partitions (bool): If it is True, partition processing is activated (False by default)
 
         Returns:
         The Hellinger Distance value.
@@ -291,7 +291,7 @@ class HellingerDistance(DriftDetector):
                     * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
                 )
 
-    def return_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: str) -> Dict:
         """
         Returns the Hellinger Distance.
 
@@ -305,6 +305,8 @@ class HellingerDistance(DriftDetector):
 
         return {
             "HellingerDistance": self.__hellinger_distance(
-                column_name=on_column, data_type=data_type, process_on_partitions=True
+                # We set process_on_partition=False until we find a strategy to
+                # automatically select the proper processing type.
+                column_name=on_column, data_type=data_type, process_on_partitions=False
             )
         }

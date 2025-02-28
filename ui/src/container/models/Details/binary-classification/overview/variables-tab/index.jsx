@@ -76,6 +76,7 @@ function VariablesTabInner() {
         dataSource={variables.sort((a, b) => b.rowType.length - a.rowType.length)}
         pagination={{ pageSize: 20, hideOnSinglePage: true }}
         rowClassName={handleRowClassName}
+        rowHoverable={false}
         rowKey={({ name }) => name}
       />
     </div>

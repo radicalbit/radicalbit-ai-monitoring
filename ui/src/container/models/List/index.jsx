@@ -5,7 +5,7 @@ import { MAIN_LAYOUT_DARK_MODE_CONFIGURATION, MAIN_LAYOUT_LIGHT_MODE_CONFIGURATI
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import useModals from '@Src/hooks/use-modals';
-import { useGetModelQueryWithPolling } from '@State/models/polling-hook';
+import { useGetModelsQueryWithPolling } from '@State/models/polling-hook';
 import { Button, Spinner, Void } from '@radicalbit/radicalbit-design-system';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getColumns } from './columns';
@@ -14,7 +14,7 @@ export function ModelsList() {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const { data, isLoading, isError } = useGetModelQueryWithPolling();
+  const { data, isLoading, isError } = useGetModelsQueryWithPolling();
   const models = data?.items || [];
   const count = data?.total || 0;
 
@@ -55,6 +55,7 @@ export function ModelsList() {
             }),
           })}
           recordCount={count}
+          rowHoverable={false}
           rowKey={({ uuid }) => uuid}
         />
       )}

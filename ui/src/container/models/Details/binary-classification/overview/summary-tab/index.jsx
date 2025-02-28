@@ -88,6 +88,7 @@ function ReferenceCurrentLatestComparison() {
               modifier="basis-1/2"
               pagination={false}
               rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+              rowHoverable={false}
               rowKey={({ label }) => label}
               size="small"
             />
@@ -98,6 +99,7 @@ function ReferenceCurrentLatestComparison() {
               modifier="basis-1/2"
               pagination={false}
               rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+              rowHoverable={false}
               rowKey={({ label }) => label}
               size="small"
             />
@@ -122,6 +124,7 @@ function ReferenceCurrentLatestComparison() {
             modifier="basis-1/2"
             pagination={false}
             rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+            rowHoverable={false}
             rowKey={({ label }) => label}
             size="small"
           />
@@ -132,6 +135,7 @@ function ReferenceCurrentLatestComparison() {
             modifier="basis-1/2"
             pagination={false}
             rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+            rowHoverable={false}
             rowKey={({ label }) => label}
             size="small"
           />
@@ -164,6 +168,7 @@ function Currents({ currentUUID }) {
             modifier="basis-1/2"
             pagination={false}
             rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+            rowHoverable={false}
             rowKey={({ label }) => label}
             size="small"
           />
@@ -174,6 +179,7 @@ function Currents({ currentUUID }) {
             modifier="basis-1/2"
             pagination={false}
             rowClassName={() => DataTable.ROW_NOT_CLICKABLE}
+            rowHoverable={false}
             rowKey={({ label }) => label}
             size="small"
           />

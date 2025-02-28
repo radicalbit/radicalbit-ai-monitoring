@@ -35,6 +35,7 @@ function NumericalTable({ data }) {
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
+        rowHoverable={false}
         rowKey={({ label }) => label}
         size="small"
       />
@@ -46,6 +47,7 @@ function NumericalTable({ data }) {
         noHead
         pagination={false}
         rowClassName={DataTable.ROW_NOT_CLICKABLE}
+        rowHoverable={false}
         rowKey={({ label }) => label}
         size="small"
       />
