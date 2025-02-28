@@ -47,7 +47,7 @@ class KolmogorovSmirnovTest(DriftDetector):
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
         if not kwargs["p_value"]:
-            raise AttributeError(f"p_value is not defined in kwargs")
+            raise AttributeError("p_value is not defined in kwargs")
         p_value = self.__critical_value(significance_level=kwargs["p_value"])
         result_tmp = self.test(feature.name, feature.name)
         feature_dict_to_append["type"] = DriftAlgorithmType.KS

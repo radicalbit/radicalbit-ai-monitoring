@@ -15,7 +15,9 @@ from utils.models import (
     ModelType,
     OutputType,
     SupportedTypes,
-    FieldTypes, DriftAlgorithmType, DriftMethod,
+    FieldTypes,
+    DriftAlgorithmType,
+    DriftMethod,
 )
 import tests.results.jobs_results as res
 from tests.utils.pytest_utils import prefix_id
@@ -23,6 +25,7 @@ from tests.utils.pytest_utils import prefix_id
 drift_chi2 = [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05).model_dump()]
 drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05).model_dump()]
 drift_psi = [DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1).model_dump()]
+
 
 @pytest.fixture()
 def reg_current_test_abalone(spark_fixture, test_data_dir):
@@ -106,50 +109,58 @@ def reg_model_abalone():
     granularity = Granularity.MONTH
     features = [
         ColumnDefinition(
-            name="Sex", type=SupportedTypes.string, field_type=FieldTypes.categorical,
-            drift=drift_chi2
+            name="Sex",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="Length", type=SupportedTypes.float, field_type=FieldTypes.numerical,
-            drift=drift_ks
+            name="Length",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="Diameter", type=SupportedTypes.float, field_type=FieldTypes.numerical,
-            drift=drift_ks
+            name="Diameter",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="Height", type=SupportedTypes.float, field_type=FieldTypes.numerical,
-            drift=drift_ks
+            name="Height",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Whole_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_chi2
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="Shucked_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Viscera_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Shell_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_chi2
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="pred_id",
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2
+            drift=drift_chi2,
         ),
     ]
     yield ModelOut(
@@ -196,20 +207,28 @@ def mc_model_target_string():
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical,
-            drift=drift_chi2
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical,
-            drift=drift_chi2
+            name="cat2",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical,
-            drift=drift_ks
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical,
-            drift=drift_ks
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     yield ModelOut(
