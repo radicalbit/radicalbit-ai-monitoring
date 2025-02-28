@@ -10,7 +10,7 @@ from metrics.kullback_leibler_divergence import KullbackLeiblerDivergence
 from metrics.psi import PSI
 from metrics.wasserstein_distance import WassersteinDistance
 from utils.drift_detector import DriftDetector
-from utils.models import ColumnDefinition, DriftAlgorithmType, FieldTypes
+from utils.models import ColumnDefinition, DriftAlgorithmType
 
 
 class FeatureDriftManager:
@@ -81,7 +81,6 @@ class FeatureDriftManager:
                         "p_value": drift_method.p_value,
                         "threshold": drift_method.threshold,
                     }
-                    limit = drift_method.p_value or drift_method.threshold
                     drift_algorithm = drift_method.name
                     # maybe check if feature name exists both reference and current
                     detector = self.detectors[drift_algorithm]

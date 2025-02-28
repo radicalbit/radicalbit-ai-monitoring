@@ -44,7 +44,7 @@ class Chi2Test(DriftDetector):
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
         if not kwargs["p_value"]:
-            raise AttributeError(f"p_value is not defined in kwargs")
+            raise AttributeError("p_value is not defined in kwargs")
         p_value = kwargs["p_value"]
         result_tmp = self.test_goodness_fit(feature.name, feature.name)
         feature_dict_to_append["type"] = DriftAlgorithmType.CHI2

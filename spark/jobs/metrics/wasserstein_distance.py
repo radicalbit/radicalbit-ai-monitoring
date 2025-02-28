@@ -14,7 +14,7 @@ class WassersteinDistance(DriftDetector):
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
         if not kwargs["threshold"]:
-            raise AttributeError(f"threshold is not defined in kwargs")
+            raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
         result_tmp = self.compute_distance(feature.name)
         feature_dict_to_append["type"] = DriftAlgorithmType.WASSERSTEIN
