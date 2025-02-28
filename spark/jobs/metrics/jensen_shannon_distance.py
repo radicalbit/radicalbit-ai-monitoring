@@ -16,8 +16,6 @@ class JensenShannonDistance:
         - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
         - rbit_prefix (str): A prefix to assign to temporary fields
-        - percentiles (list): The list with the percentiles to bucketize continuous variables
-        - relative_error (float): The error to assign to approxQuantile
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
@@ -60,7 +58,7 @@ class JensenShannonDistance:
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
     ) -> Tuple[DataFrame, DataFrame]:
         """
-        This function creates buckets from the reference and uses the same to split current data.
+        This function creates 10 buckets from the reference and uses the same to split current data.
 
         Parameters:
         - df_reference (DataFrame): The reference
@@ -79,7 +77,7 @@ class JensenShannonDistance:
         current_count = current.count()
 
         reference_quantiles = reference.approxQuantile(
-            column_name, self.percentiles, 0.01
+            column_name, self.percentiles, self.relative_error
         )
         reference_buckets = [-float(np.inf)] + reference_quantiles + [float(np.inf)]
 
@@ -234,7 +232,7 @@ class JensenShannonDistance:
 
             return jensenshannon(reference_values, current_values)
 
-    def return_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: str) -> Dict:
         """
         Returns the Jensen-Shannon Distance.
 
