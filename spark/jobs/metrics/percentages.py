@@ -47,10 +47,7 @@ class PercentageCalculator:
         )
         perc_drift = {
             "value": 1 - (len(feature_with_drifts) / len(drift["feature_metrics"])),
-            "details": [
-                {"feature_name": x, "score": 1.0}
-                for x in feature_with_drifts
-            ],
+            "details": [{"feature_name": x, "score": 1.0} for x in feature_with_drifts],
         }
 
         # Compute percentage of model quality

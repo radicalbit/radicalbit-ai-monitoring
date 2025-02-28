@@ -6,6 +6,7 @@ from metrics.chi2 import Chi2Test
 from metrics.hellinger_distance import HellingerDistance
 from metrics.jensen_shannon_distance import JensenShannonDistance
 from metrics.ks import KolmogorovSmirnovTest
+from metrics.kullback_leibler_divergence import KullbackLeiblerDivergence
 from metrics.psi import PSI
 from metrics.wasserstein_distance import WassersteinDistance
 from utils.drift_detector import DriftDetector
@@ -51,6 +52,13 @@ class FeatureDriftManager:
             WassersteinDistance(spark_session, reference_data, current_data, prefix_id),
         )
 
+        self._register_detector(
+            DriftAlgorithmType.KL,
+            KullbackLeiblerDivergence(
+                spark_session, reference_data, current_data, prefix_id
+            ),
+        )
+
     def _register_detector(
         self, name: DriftAlgorithmType, detector: DriftDetector
     ) -> None:
@@ -63,16 +71,20 @@ class FeatureDriftManager:
         for idx, feature in enumerate(features):
             feature_dict_to_append = {
                 "feature_name": feature.name,
-                "field_type": FieldTypes.categorical.value,
+                "field_type": feature.field_type.value,
                 "drift_calc": [],
             }
             results["feature_metrics"].append(feature_dict_to_append)
             if feature.drift:
                 for drift_method in feature.drift:
+                    params = {
+                        "p_value": drift_method.p_value,
+                        "threshold": drift_method.threshold,
+                    }
                     limit = drift_method.p_value or drift_method.threshold
                     drift_algorithm = drift_method.name
                     # maybe check if feature name exists both reference and current
                     detector = self.detectors[drift_algorithm]
-                    result = detector.detect_drift(feature, limit)
+                    result = detector.detect_drift(feature, **params)
                     results["feature_metrics"][idx]["drift_calc"].append(result)
         return results

@@ -41,14 +41,15 @@ class Chi2Test(DriftDetector):
     def supported_feature_types(self) -> List[FieldTypes]:
         return [FieldTypes.categorical]
 
-    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
-        feature_dict_to_append = {"drift_calc": {}}
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["p_value"]:
+            raise AttributeError(f"p_value is not defined in kwargs")
+        p_value = kwargs["p_value"]
         result_tmp = self.test_goodness_fit(feature.name, feature.name)
-        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.CHI2
-        feature_dict_to_append["drift_calc"]["value"] = float(result_tmp["pValue"])
-        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["pValue"] <= limit
-        )
+        feature_dict_to_append["type"] = DriftAlgorithmType.CHI2
+        feature_dict_to_append["value"] = float(result_tmp["pValue"])
+        feature_dict_to_append["has_drift"] = bool(result_tmp["pValue"] <= p_value)
         return feature_dict_to_append
 
     def __have_same_size(self) -> bool:

@@ -1,4 +1,5 @@
 import datetime
+import json
 import uuid
 
 import deepdiff
@@ -19,6 +20,11 @@ from jobs.utils.models import (
 from metrics.drift_calculator import DriftCalculator
 import tests.results.drift_calculator_results as res
 from tests.utils.pytest_utils import prefix_id
+from utils.models import DriftMethod, DriftAlgorithmType
+
+drift_chi2 = [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05).model_dump()]
+drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05).model_dump()]
+drift_psi = [DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1).model_dump()]
 
 
 @pytest.fixture()
@@ -121,16 +127,28 @@ def test_drift(spark_fixture, drift_dataset):
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat2",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -207,16 +225,28 @@ def test_drift_small(spark_fixture, drift_small_dataset):
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat2",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -250,6 +280,7 @@ def test_drift_small(spark_fixture, drift_small_dataset):
         prefix_id=prefix_id,
     )
 
+    print(json.dumps(drift, indent=2))
     assert not deepdiff.DeepDiff(
         drift,
         res.test_drift_small_res,
@@ -292,16 +323,28 @@ def test_drift_boolean(spark_fixture, drift_dataset_bool):
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="bool1", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+            name="bool1",
+            type=SupportedTypes.bool,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -377,16 +420,28 @@ def test_drift_bigger_file(spark_fixture, drift_dataset_bigger_file):
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat2",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -453,41 +508,70 @@ def test_drift_bike(spark_fixture, drift_dataset_bike):
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="season", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name="season",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="yr", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name="yr",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="mnth", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name="mnth",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="holiday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name="holiday",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="weekday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name="weekday",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="workingday",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="weathersit",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="temp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="temp",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="atemp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="atemp",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="hum", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="hum",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="windspeed", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="windspeed",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -555,7 +639,10 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name="target",
+        type=SupportedTypes.float,
+        field_type=FieldTypes.numerical,
+        drift=drift_ks,
     )
     timestamp = ColumnDefinition(
         name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
@@ -566,117 +653,157 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
             name="brand_name",
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="model", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="model",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="price", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name="price",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
-            name="rating", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="rating",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="has_5g", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+            name="has_5g",
+            type=SupportedTypes.bool,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="has_nfc", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+            name="has_nfc",
+            type=SupportedTypes.bool,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="has_ir_blaster",
             type=SupportedTypes.bool,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="processor_brand",
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num_cores", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name="num_cores",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="processor_speed",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="battery_capacity",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="fast_charging_available",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="fast_charging",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="ram_capacity",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="internal_memory",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="screen_size",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="refresh_rate",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="num_rear_cameras",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="num_front_cameras",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="os", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="os",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="primary_camera_rear",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="primary_camera_front",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="extended_memory_available",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="extended_upto",
             type=SupportedTypes.float,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="resolution_width",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="resolution_height",
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
     ]
     model = ModelOut(
