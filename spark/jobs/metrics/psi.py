@@ -40,14 +40,15 @@ class PSI(DriftDetector):
     def supported_feature_types(self) -> List[FieldTypes]:
         return [FieldTypes.numerical]
 
-    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
-        feature_dict_to_append = {"drift_calc": {}}
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["threshold"]:
+            raise AttributeError(f"threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
         result_tmp = self.calculate_psi(feature.name)
-        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.PSI
-        feature_dict_to_append["drift_calc"]["value"] = float(result_tmp["psi_value"])
-        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["psi_value"] >= limit
-        )
+        feature_dict_to_append["type"] = DriftAlgorithmType.PSI
+        feature_dict_to_append["value"] = float(result_tmp["psi_value"])
+        feature_dict_to_append["has_drift"] = bool(result_tmp["psi_value"] >= threshold)
         return feature_dict_to_append
 
     @staticmethod

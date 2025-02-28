@@ -10,22 +10,16 @@ from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
 
 
 class JensenShannonDistance(DriftDetector):
-    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
-        # feature_dict_to_append = {
-        #     "feature_name": feature.name,
-        #     "field_type": feature.field_type.value,
-        #     "drift_calc": {
-        #         "type": DriftAlgorithmType.JS,
-        #     },
-        # }
-        feature_dict_to_append = {"drift_calc": {}}
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if kwargs["threshold"]:
+            raise AttributeError(f"threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
         result_tmp = self.return_distance(feature.name, feature.field_type.value)
-        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.JS
-        feature_dict_to_append["drift_calc"]["value"] = float(
-            result_tmp["JensenShannonDistance"]
-        )
-        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["JensenShannonDistance"] <= limit
+        feature_dict_to_append["type"] = DriftAlgorithmType.JS
+        feature_dict_to_append["value"] = float(result_tmp["JensenShannonDistance"])
+        feature_dict_to_append["has_drift"] = bool(
+            result_tmp["JensenShannonDistance"] <= threshold
         )
         return feature_dict_to_append
 

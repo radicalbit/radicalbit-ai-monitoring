@@ -97,7 +97,7 @@ def test_kl_divergence_zero_case(spark_fixture):
         prefix_id="test",
     )
 
-    result = kl_div.compute_distance(on_column="value", data_type="discrete")
+    result = kl_div.compute_distance(on_column="value", data_type="categorical")
     assert (
         result["KullbackLeiblerDivergence"] == 0.0
     ), "KL divergence should be zero for identical distributions."
@@ -114,7 +114,7 @@ def test_kl_divergence_with_missing_category(spark_fixture, reference_data_categ
         prefix_id="test",
     )
 
-    result = kl_div.compute_distance(on_column="value", data_type="discrete")
+    result = kl_div.compute_distance(on_column="value", data_type="categorical")
     assert (
         result["KullbackLeiblerDivergence"] is None
     ), "KL divergence should be None when a category has zero probability."

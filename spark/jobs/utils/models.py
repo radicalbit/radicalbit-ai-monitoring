@@ -58,12 +58,15 @@ class DriftAlgorithmType(str, Enum):
     JS = "js"
     PSI = "psi"
     CHI2 = "chi2"
+    KL = "kullback"
 
 
 class DriftMethod(BaseModel):
     name: DriftAlgorithmType
     threshold: Optional[float] = None
     p_value: Optional[float] = None
+    alpha: Optional[float] = None
+    phi: Optional[float] = None
 
 
 class ColumnDefinition(BaseModel):

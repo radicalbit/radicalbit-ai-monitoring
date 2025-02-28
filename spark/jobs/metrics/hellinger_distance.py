@@ -12,15 +12,16 @@ from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 class HellingerDistance(DriftDetector):
     """Class for performing the Hellinger Distance using Pyspark."""
 
-    def detect_drift(self, feature: ColumnDefinition, limit: float) -> dict:
-        feature_dict_to_append = {"drift_calc": {}}
-        result_tmp = self.return_distance(feature.name, feature.field_type.value)
-        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.HELLINGER
-        feature_dict_to_append["drift_calc"]["value"] = float(
-            result_tmp["HellingerDistance"]
-        )
-        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["HellingerDistance"] <= limit
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["threshold"]:
+            raise AttributeError(f"threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
+        result_tmp = self.compute_distance(feature.name, feature.field_type.value)
+        feature_dict_to_append["type"] = DriftAlgorithmType.HELLINGER
+        feature_dict_to_append["value"] = float(result_tmp["HellingerDistance"])
+        feature_dict_to_append["has_drift"] = bool(
+            result_tmp["HellingerDistance"] <= threshold
         )
         return feature_dict_to_append
 
@@ -307,6 +308,8 @@ class HellingerDistance(DriftDetector):
             "HellingerDistance": self.__hellinger_distance(
                 # We set process_on_partition=False until we find a strategy to
                 # automatically select the proper processing type.
-                column_name=on_column, data_type=data_type, process_on_partitions=False
+                column_name=on_column,
+                data_type=data_type,
+                process_on_partitions=False,
             )
         }

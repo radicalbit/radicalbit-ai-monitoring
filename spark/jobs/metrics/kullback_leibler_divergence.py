@@ -4,8 +4,28 @@ from typing import Tuple, Dict, Optional
 from pyspark.sql import functions as f
 from pyspark.ml.feature import Bucketizer
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
 
-class KullbackLeiblerDivergence:
+
+class KullbackLeiblerDivergence(DriftDetector):
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["threshold"]:
+            raise AttributeError(f"threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
+        result_tmp = self.compute_distance(feature.name, feature.field_type.value)
+        feature_dict_to_append["type"] = DriftAlgorithmType.KL
+        feature_dict_to_append["value"] = float(result_tmp["KullbackLeiblerDivergence"])
+        feature_dict_to_append["has_drift"] = bool(
+            result_tmp["KullbackLeiblerDivergence"] <= threshold
+        )
+        return feature_dict_to_append
+
+    @property
+    def supported_feature_types(self) -> list[FieldTypes]:
+        return [FieldTypes.numerical, FieldTypes.categorical]
+
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the KL-div object with necessary data and parameters.
@@ -20,7 +40,9 @@ class KullbackLeiblerDivergence:
         self.reference_data = reference_data
         self.current_data = current_data
         self.prefix_id = prefix_id
-        self.percentiles = [i / 10 for i in range(1, 10)]  # percentiles to bucketize continuous variables
+        self.percentiles = [
+            i / 10 for i in range(1, 10)
+        ]  # percentiles to bucketize continuous variables
         self.relative_error = 0.05  # the error to assign to approxQuantile
 
     def __calculate_category_percentages(

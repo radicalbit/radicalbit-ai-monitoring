@@ -21,7 +21,6 @@ class KolmogorovSmirnovTest(DriftDetector):
         reference_data: DataFrame,
         current_data: DataFrame,
         prefix_id: str,
-        alpha: float = 0.05,
         phi: float = 0.004,
     ) -> None:
         """
@@ -30,14 +29,13 @@ class KolmogorovSmirnovTest(DriftDetector):
         Parameters:
         - reference_data (DataFrame): The reference data as a Spark DataFrame.
         - current_data (DataFrame): The current data as a Spark DataFrame.
-        - alpha (float): The significance level for the hypothesis test.
+        - p_value (float): The significance level for the hypothesis test.
         - phi (float): ϕ defines the precision of the KS test statistic.
         """
         self.spark_session = spark_session
         self.prefix_id = prefix_id
         self.reference_data = reference_data
         self.current_data = current_data
-        self.alpha = alpha
         self.phi = phi
         self.reference_size = self.reference_data.count()
         self.current_size = self.current_data.count()
@@ -46,16 +44,15 @@ class KolmogorovSmirnovTest(DriftDetector):
     def supported_feature_types(self) -> List[FieldTypes]:
         return [FieldTypes.numerical]
 
-    def detect_drift(self, feature: ColumnDefinition, limit: float = None) -> dict:
-        feature_dict_to_append = {"drift_calc": {}}
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["p_value"]:
+            raise AttributeError(f"p_value is not defined in kwargs")
+        p_value = self.__critical_value(significance_level=kwargs["p_value"])
         result_tmp = self.test(feature.name, feature.name)
-        feature_dict_to_append["drift_calc"]["type"] = DriftAlgorithmType.KS
-        feature_dict_to_append["drift_calc"]["value"] = float(
-            result_tmp["ks_statistic"]
-        )
-        feature_dict_to_append["drift_calc"]["has_drift"] = bool(
-            result_tmp["ks_statistic"] > limit
-        )
+        feature_dict_to_append["type"] = DriftAlgorithmType.KS
+        feature_dict_to_append["value"] = float(result_tmp["ks_statistic"])
+        feature_dict_to_append["has_drift"] = bool(result_tmp["ks_statistic"] > p_value)
         return feature_dict_to_append
 
     @staticmethod
@@ -121,10 +118,6 @@ class KolmogorovSmirnovTest(DriftDetector):
         d_j = max(abs(f_xj - f_yj))
         d_ks = max(d_i, d_j)
 
-        critical_value = self.__critical_value(significance_level=self.alpha)
-
         return {
-            "critical_value": critical_value,
             "ks_statistic": round(d_ks, 10),
-            "alpha": self.alpha,
         }
