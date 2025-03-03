@@ -30,10 +30,6 @@ def load_json():
     return json.dumps(data, indent=2)
 
 
-print(json.dumps(load_json(), indent=2))
-print(ModelOut.model_validate_json(load_json()))
-
-
 current_path = "s3a://test-bucket/df_current1-5cac31fe358e0efaab9d8ea844d3f15b.csv"
 reference_path = "s3a://test-bucket/df_reference-1894ad2a37bbcc09d7bbc333f368208c.csv"
 spark_k8s_client.submit_app(
