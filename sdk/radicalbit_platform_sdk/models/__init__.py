@@ -17,7 +17,6 @@ from .dataset_data_quality import (
 )
 from .dataset_drift import (
     Drift,
-    DriftAlgorithm,
     FeatureDrift,
     FeatureDriftCalculation,
 )
@@ -50,6 +49,8 @@ from .model_definition import (
 )
 from .model_type import ModelType
 from .supported_types import SupportedTypes
+from .drift_algorithm_type import DriftAlgorithmType
+from .drift_method import DriftMethod
 
 __all__ = [
     'OutputType',
@@ -63,6 +64,8 @@ __all__ = [
     'ModelType',
     'CompletionResponses',
     'DatasetStats',
+    'DriftMethod',
+    'DriftAlgorithmType',
     'ModelQuality',
     'BinaryClassificationModelQuality',
     'CurrentBinaryClassificationModelQuality',
@@ -82,7 +85,6 @@ __all__ = [
     'NumericalFeatureMetrics',
     'CategoryFrequency',
     'CategoricalFeatureMetrics',
-    'DriftAlgorithm',
     'FeatureDriftCalculation',
     'FeatureDrift',
     'Drift',

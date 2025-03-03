@@ -10,6 +10,7 @@ from app.db.dao.current_dataset_dao import CurrentDataset
 from app.db.dao.model_dao import Model
 from app.db.dao.reference_dataset_dao import ReferenceDataset
 from app.db.tables.completion_dataset_table import CompletionDataset
+from app.models.drift_algorithm_type import DriftAlgorithmType
 from app.models.inferred_schema_dto import FieldType, SupportedTypes
 from app.models.job_status import JobStatus
 from app.models.metrics.percentages_dto import Percentages
@@ -36,10 +37,36 @@ class Granularity(str, Enum):
     MONTH = 'MONTH'
 
 
+class DriftMethod(BaseModel):
+    name: DriftAlgorithmType
+    threshold: Optional[float] = None
+    p_value: Optional[float] = None
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+    @model_validator(mode='after')
+    def validate_drift_method(self) -> Self:
+        match self.name:
+            case DriftAlgorithmType.CHI2 | DriftAlgorithmType.KS:
+                if self.p_value is None:
+                    raise ValueError(f'{self.name.value} requires a p_value')
+            case (
+                DriftAlgorithmType.HELLINGER
+                | DriftAlgorithmType.JS
+                | DriftAlgorithmType.WASSERSTEIN
+                | DriftAlgorithmType.PSI
+                | DriftAlgorithmType.KL
+            ):
+                if self.threshold is None:
+                    raise ValueError(f'{self.name.value} requires a threshold')
+        return self
+
+
 class ColumnDefinition(BaseModel, validate_assignment=True):
     name: str
     type: SupportedTypes
     field_type: FieldType
+    drift: Optional[List[DriftMethod]] = None
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
@@ -67,6 +94,48 @@ class ColumnDefinition(BaseModel, validate_assignment=True):
                 raise ValueError(
                     f'column {self.name} with type {self.type} can not have filed type {self.field_type}'
                 )
+
+    @model_validator(mode='after')
+    def validate_drift_algorithms(self) -> Self:
+        if self.drift:
+            for method in self.drift:
+                match method.name:
+                    case DriftAlgorithmType.CHI2:
+                        if self.field_type != FieldType.categorical:
+                            raise ValueError(
+                                f'{method.name.value} can only be used with categorical fields'
+                            )
+                    case (
+                        DriftAlgorithmType.KS
+                        | DriftAlgorithmType.WASSERSTEIN
+                        | DriftAlgorithmType.PSI
+                    ):
+                        if self.field_type != FieldType.numerical:
+                            raise ValueError(
+                                f'{method.name.value} can only be used with numerical fields'
+                            )
+                    case (
+                        DriftAlgorithmType.HELLINGER
+                        | DriftAlgorithmType.JS
+                        | DriftAlgorithmType.KL
+                    ):
+                        if self.field_type not in {
+                            FieldType.categorical,
+                            FieldType.numerical,
+                        }:
+                            raise ValueError(
+                                f'{method.name.value} can only be used with categorical or numerical fields'
+                            )
+        return self
+
+    def _get_default_drift_methods(self) -> List[DriftMethod]:
+        match self.field_type:
+            case FieldType.categorical:
+                return [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05)]
+            case FieldType.numerical:
+                return [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05)]
+            case _:
+                return []
 
 
 class OutputType(BaseModel, validate_assignment=True):
@@ -204,6 +273,20 @@ class ModelIn(BaseModel, validate_assignment=True):
             return self
         if not self.timestamp.type == SupportedTypes.datetime:
             raise ValueError('timestamp must be a datetime')
+        return self
+
+    @model_validator(mode='after')
+    def validate_drift_scope(self) -> Self:
+        for field in ['output', 'target', 'timestamp']:
+            column = getattr(self, field, None)
+            if column and column.drift is not None:
+                raise ValueError('Drift can only be enabled on the features field')
+
+        if self.features:
+            for feature in self.features:
+                if feature.drift is None:
+                    feature.drift = feature._get_default_drift_methods()
+
         return self
 
     def to_model(self) -> Model:

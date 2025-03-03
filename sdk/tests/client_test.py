@@ -18,6 +18,7 @@ from radicalbit_platform_sdk.models import (
     OutputType,
     SupportedTypes,
 )
+from radicalbit_platform_sdk.models.drift_method import ModelDriftMethod
 
 
 class ClientTest(unittest.TestCase):
@@ -264,6 +265,7 @@ class ClientTest(unittest.TestCase):
     @responses.activate
     def test_search_models(self):
         base_url = 'http://api:9000'
+        model_drift_method = ModelDriftMethod(FieldType.categorical)
 
         model_definition = ModelDefinition(
             name='My Model',
@@ -275,6 +277,7 @@ class ClientTest(unittest.TestCase):
                     name='feature_column',
                     type=SupportedTypes.string,
                     field_type=FieldType.categorical,
+                    drift=model_drift_method.drift_methods(),
                 )
             ],
             outputs=OutputType(
@@ -321,6 +324,7 @@ class ClientTest(unittest.TestCase):
         assert models[0].data_type() == model_definition.data_type
         assert models[0].granularity() == model_definition.granularity
         assert models[0].features() == model_definition.features
+        assert models[0].features()[0].drift == model_drift_method.drift_methods()
         assert models[0].outputs() == model_definition.outputs
         assert models[0].target() == model_definition.target
         assert models[0].timestamp() == model_definition.timestamp
