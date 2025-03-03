@@ -2,7 +2,6 @@ from pydantic import BaseModel
 from enum import Enum
 from typing import Optional, List
 from uuid import UUID
-from pydantic import Field
 
 
 class FieldTypes(str, Enum):
