@@ -52,13 +52,13 @@ class Granularity(str, Enum):
 
 
 class DriftAlgorithmType(str, Enum):
-    HELLINGER = "hellinger"
-    WASSERSTEIN = "wasserstein"
-    KS = "ks"
-    JS = "js"
-    PSI = "psi"
-    CHI2 = "chi2"
-    KL = "kullback"
+    HELLINGER = "HELLINGER"
+    WASSERSTEIN = "WASSERSTEIN"
+    KS = "KS"
+    JS = "JS"
+    PSI = "PSI"
+    CHI2 = "CHI2"
+    KL = "KULLBACK"
 
 
 class DriftMethod(BaseModel):

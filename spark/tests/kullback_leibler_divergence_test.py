@@ -61,7 +61,7 @@ def kl_div_categorical(
 def test_compute_distance_continuous(kl_div_continuous):
     """Test the computation of KL divergence for continuous data."""
     result = kl_div_continuous.compute_distance(
-        on_column="value", data_type="continuous"
+        on_column="value", data_type="numerical"
     )
     assert (
         "KullbackLeiblerDivergence" in result
@@ -74,7 +74,7 @@ def test_compute_distance_continuous(kl_div_continuous):
 def test_compute_distance_categorical(kl_div_categorical):
     """Test the computation of KL divergence for categorical data."""
     result = kl_div_categorical.compute_distance(
-        on_column="value", data_type="discrete"
+        on_column="value", data_type="categorical"
     )
     assert (
         "KullbackLeiblerDivergence" in result

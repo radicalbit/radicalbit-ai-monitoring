@@ -43,6 +43,7 @@ def wasserstein_distance(spark_fixture, reference_data, current_data):
         spark_session=spark_fixture,
         reference_data=reference_data,
         current_data=current_data,
+        prefix_id="",
     )
 
 
@@ -61,6 +62,7 @@ def test_wasserstein_distance_on_categorical_data(spark_fixture, categorical_dat
         spark_session=spark_fixture,
         reference_data=categorical_data,
         current_data=categorical_data,
+        prefix_id="",
     )
 
     with pytest.raises(Exception, match="could not convert string to float"):
