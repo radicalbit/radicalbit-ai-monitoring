@@ -40,7 +40,7 @@ def jensen_shannon_distance(spark_fixture, reference_data, current_data):
 
 def test_return_distance_discrete(jensen_shannon_distance):
     """Test the return_distance method for discrete data."""
-    result = jensen_shannon_distance.return_distance(
+    result = jensen_shannon_distance.compute_distance(
         on_column="category", data_type="categorical"
     )
     assert (

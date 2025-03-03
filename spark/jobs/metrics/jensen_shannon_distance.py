@@ -15,7 +15,7 @@ class JensenShannonDistance(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        result_tmp = self.return_distance(feature.name, feature.field_type.value)
+        result_tmp = self.compute_distance(feature.name, feature.field_type.value)
         feature_dict_to_append["type"] = DriftAlgorithmType.JS
         feature_dict_to_append["value"] = float(result_tmp["JensenShannonDistance"])
         feature_dict_to_append["has_drift"] = bool(
@@ -36,8 +36,6 @@ class JensenShannonDistance(DriftDetector):
         - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
         - rbit_prefix (str): A prefix to assign to temporary fields
-        - percentiles (list): The list with the percentiles to bucketize continuous variables
-        - relative_error (float): The error to assign to approxQuantile
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
@@ -80,7 +78,7 @@ class JensenShannonDistance(DriftDetector):
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
     ) -> Tuple[DataFrame, DataFrame]:
         """
-        This function creates buckets from the reference and uses the same to split current data.
+        This function creates 10 buckets from the reference and uses the same to split current data.
 
         Parameters:
         - df_reference (DataFrame): The reference
@@ -99,7 +97,7 @@ class JensenShannonDistance(DriftDetector):
         current_count = current.count()
 
         reference_quantiles = reference.approxQuantile(
-            column_name, self.percentiles, 0.01
+            column_name, self.percentiles, self.relative_error
         )
         reference_buckets = [-float(np.inf)] + reference_quantiles + [float(np.inf)]
 
@@ -254,7 +252,7 @@ class JensenShannonDistance(DriftDetector):
 
             return jensenshannon(reference_values, current_values)
 
-    def return_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: str) -> Dict:
         """
         Returns the Jensen-Shannon Distance.
 
