@@ -3,7 +3,7 @@ import numpy as np
 from pyspark.sql import DataFrame
 from pyspark.sql.types import FloatType
 from models.completion_dataset import CompletionMetricsModel
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class CompletionMetrics:
@@ -89,9 +89,9 @@ class CompletionMetrics:
                     {"token": prob["token"], "prob": prob["prob"]}
                     for prob in row["probs"]
                 ],
-                "rbit_timestamp": datetime.fromtimestamp(row["created"]).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                ),
+                "rbit_timestamp": datetime.fromtimestamp(
+                    row["created"], tz=timezone.utc
+                ).strftime("%Y-%m-%d %H:%M:%S"),
                 "model_name": row["model"],
                 "total_token": row["tot_tokens"],
                 "probability": df_mean_values.filter(F.col("id") == row["id"])

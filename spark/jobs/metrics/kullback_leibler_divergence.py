@@ -193,7 +193,7 @@ class KullbackLeiblerDivergence(DriftDetector):
             ]
             return reference_dict, current_dict
 
-        if data_type == "discrete":
+        if data_type == "categorical":
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column
             )
@@ -230,7 +230,7 @@ class KullbackLeiblerDivergence(DriftDetector):
                 )
             )
 
-        elif data_type == "continuous":
+        elif data_type == "numerical":
             reference_bucket_percentage, current_bucket_percentage = (
                 self.__bucketize_continuous_values(
                     df_reference=self.reference_data,

@@ -12,7 +12,7 @@ from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
 class JensenShannonDistance(DriftDetector):
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
-        if kwargs["threshold"]:
+        if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
         result_tmp = self.return_distance(feature.name, feature.field_type.value)

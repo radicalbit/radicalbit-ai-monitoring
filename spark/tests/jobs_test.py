@@ -136,7 +136,7 @@ def reg_model_abalone():
             name="Whole_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_chi2,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Shucked_weight",
@@ -154,7 +154,7 @@ def reg_model_abalone():
             name="Shell_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_chi2,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="pred_id",
@@ -284,49 +284,70 @@ def bc_model_joined():
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="age", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name="age",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
-            name="sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="sex",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
             name="chest_pain_type",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="resting_blood_pressure",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
-            name="cholesterol", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name="cholesterol",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="fasting_blood_sugar",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
-            name="resting_ecg", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name="resting_ecg",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="max_heart_rate_achieved",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="exercise_induced_angina",
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
         ColumnDefinition(
             name="st_depression",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="st_slope", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name="st_slope",
+            type=SupportedTypes.int,
+            field_type=FieldTypes.numerical,
+            drift=drift_psi,
         ),
     ]
     yield ModelOut(
@@ -447,7 +468,6 @@ def test_mc_target_string(
     ref_record = ref_compute_metrics(
         mc_reference_dataset_target_string, mc_model_target_string, prefix_id
     )
-
     assert not deepdiff.DeepDiff(
         cur_record,
         res.test_mc_target_string_current_res,
