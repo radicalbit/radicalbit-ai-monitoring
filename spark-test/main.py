@@ -1,12 +1,10 @@
 import os
 
 from conf import create_secrets
-from uuid import uuid4
 from spark_on_k8s.k8s.sync_client import KubernetesClientManager
 from spark_on_k8s.client import SparkOnK8S
 
 import json
-from models import ModelOut
 
 envs = ["KUBECONFIG_FILE_PATH", "JOB_NAME", "SPARK_IMAGE"]
 
