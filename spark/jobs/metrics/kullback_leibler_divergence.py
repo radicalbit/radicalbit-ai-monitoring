@@ -14,7 +14,7 @@ class KullbackLeiblerDivergence(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        result_tmp = self.compute_distance(feature.name, feature.field_type.value)
+        result_tmp = self.compute_distance(feature.name, feature.field_type)
         feature_dict_to_append["type"] = DriftAlgorithmType.KL
         feature_dict_to_append["value"] = float(result_tmp["KullbackLeiblerDivergence"])
         feature_dict_to_append["has_drift"] = bool(
@@ -149,7 +149,7 @@ class KullbackLeiblerDivergence(DriftDetector):
         return reference_bucket_percentages, current_bucket_percentages
 
     def __kullback_leibler_divergence(
-        self, column_name: str, data_type: str
+        self, column_name: str, data_type: FieldTypes
     ) -> Optional[float]:
         """
         Compute the KL-div according to the data type (discrete or continuous).
@@ -193,7 +193,7 @@ class KullbackLeiblerDivergence(DriftDetector):
             ]
             return reference_dict, current_dict
 
-        if data_type == "categorical":
+        if data_type == FieldTypes.categorical:
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column
             )
@@ -230,7 +230,7 @@ class KullbackLeiblerDivergence(DriftDetector):
                 )
             )
 
-        elif data_type == "numerical":
+        elif data_type == FieldTypes.numerical:
             reference_bucket_percentage, current_bucket_percentage = (
                 self.__bucketize_continuous_values(
                     df_reference=self.reference_data,
@@ -267,7 +267,7 @@ class KullbackLeiblerDivergence(DriftDetector):
                 )
             )
 
-    def compute_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Kullback-Leibler Divergence.
 
