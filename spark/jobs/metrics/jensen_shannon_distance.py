@@ -15,7 +15,7 @@ class JensenShannonDistance(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        result_tmp = self.return_distance(feature.name, feature.field_type.value)
+        result_tmp = self.compute_distance(feature.name, feature.field_type)
         feature_dict_to_append["type"] = DriftAlgorithmType.JS
         feature_dict_to_append["value"] = float(result_tmp["JensenShannonDistance"])
         feature_dict_to_append["has_drift"] = bool(
@@ -147,7 +147,9 @@ class JensenShannonDistance(DriftDetector):
 
         return reference_bucket_percentages, current_bucket_percentages
 
-    def __jensen_shannon_distance(self, column_name: str, data_type: str) -> float:
+    def __jensen_shannon_distance(
+        self, column_name: str, data_type: FieldTypes
+    ) -> float:
         """
         Compute the Jensen-Shannon Distance according to the data type (discrete or continuous).
 
@@ -190,7 +192,7 @@ class JensenShannonDistance(DriftDetector):
             ]
             return reference_dict, current_dict
 
-        if data_type == "categorical":
+        if data_type == FieldTypes.categorical:
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column
             )
@@ -221,7 +223,7 @@ class JensenShannonDistance(DriftDetector):
 
             return jensenshannon(reference_values, current_values)
 
-        elif data_type == "numerical":
+        elif data_type == FieldTypes.numerical:
             reference_bucket_percentage, current_bucket_percentage = (
                 self.__bucketize_continuous_values(
                     df_reference=self.reference_data,
@@ -252,7 +254,7 @@ class JensenShannonDistance(DriftDetector):
 
             return jensenshannon(reference_values, current_values)
 
-    def compute_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Jensen-Shannon Distance.
 

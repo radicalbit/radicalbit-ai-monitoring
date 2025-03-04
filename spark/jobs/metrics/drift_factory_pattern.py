@@ -82,7 +82,7 @@ class FeatureDriftManager:
                         "threshold": drift_method.threshold,
                     }
                     drift_algorithm = drift_method.name
-                    # maybe check if feature name exists both reference and current
+                    # TODO maybe check if feature name exists both reference and current
                     detector = self.detectors[drift_algorithm]
                     result = detector.detect_drift(feature, **params)
                     results["feature_metrics"][idx]["drift_calc"].append(result)

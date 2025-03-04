@@ -17,7 +17,7 @@ class HellingerDistance(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        result_tmp = self.compute_distance(feature.name, feature.field_type.value)
+        result_tmp = self.compute_distance(feature.name, feature.field_type)
         feature_dict_to_append["type"] = DriftAlgorithmType.HELLINGER
         feature_dict_to_append["value"] = float(result_tmp["HellingerDistance"])
         feature_dict_to_append["has_drift"] = bool(
@@ -134,7 +134,10 @@ class HellingerDistance(DriftDetector):
         return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
     def __hellinger_distance(
-        self, column_name: str, data_type: str, process_on_partitions: bool = False
+        self,
+        column_name: str,
+        data_type: FieldTypes,
+        process_on_partitions: bool = False,
     ) -> Optional[float]:
         """
         Compute the Hellinger Distasnce according to the data type (discrete or continuous).
@@ -149,7 +152,7 @@ class HellingerDistance(DriftDetector):
         """
         column = column_name
 
-        if data_type == "categorical":
+        if data_type == FieldTypes.categorical:
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column, prefix_id=self.prefix_id
             )
@@ -196,7 +199,7 @@ class HellingerDistance(DriftDetector):
                 0.5 * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
             )
 
-        elif data_type == "numerical":
+        elif data_type == FieldTypes.numerical:
             bins = self.__compute_bins_for_continuous_data()
 
             if process_on_partitions:
@@ -292,7 +295,7 @@ class HellingerDistance(DriftDetector):
                     * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
                 )
 
-    def compute_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Hellinger Distance.
 
