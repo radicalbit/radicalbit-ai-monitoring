@@ -1,30 +1,59 @@
+from typing import List
+
 import numpy as np
 from math import ceil, sqrt
 from numpy import linspace, interp
+from pyspark.sql import SparkSession, DataFrame
+
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
 
-class KolmogorovSmirnovTest:
+class KolmogorovSmirnovTest(DriftDetector):
     """
     This class implements the Kolmogorov-Smirnov test as described in the paper: https://arxiv.org/pdf/2312.09380.
     It is designed to compare two sample distributions and determine if they differ significantly.
     """
 
-    def __init__(self, reference_data, current_data, alpha, phi) -> None:
+    def __init__(
+        self,
+        spark_session: SparkSession,
+        reference_data: DataFrame,
+        current_data: DataFrame,
+        prefix_id: str,
+        phi: float = 0.004,
+    ) -> None:
         """
         Initializes the KolmogorovSmirnovTest with the provided data and parameters.
 
         Parameters:
         - reference_data (DataFrame): The reference data as a Spark DataFrame.
         - current_data (DataFrame): The current data as a Spark DataFrame.
-        - alpha (float): The significance level for the hypothesis test.
+        - p_value (float): The significance level for the hypothesis test.
         - phi (float): ϕ defines the precision of the KS test statistic.
         """
+        self.spark_session = spark_session
+        self.prefix_id = prefix_id
         self.reference_data = reference_data
         self.current_data = current_data
-        self.alpha = alpha
         self.phi = phi
         self.reference_size = self.reference_data.count()
         self.current_size = self.current_data.count()
+
+    @property
+    def supported_feature_types(self) -> List[FieldTypes]:
+        return [FieldTypes.numerical]
+
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["p_value"]:
+            raise AttributeError("p_value is not defined in kwargs")
+        p_value = self.__critical_value(significance_level=kwargs["p_value"])
+        result_tmp = self.test(feature.name, feature.name)
+        feature_dict_to_append["type"] = DriftAlgorithmType.KS
+        feature_dict_to_append["value"] = float(result_tmp["ks_statistic"])
+        feature_dict_to_append["has_drift"] = bool(result_tmp["ks_statistic"] > p_value)
+        return feature_dict_to_append
 
     @staticmethod
     def __eps45(n, delta) -> float:
@@ -89,10 +118,6 @@ class KolmogorovSmirnovTest:
         d_j = max(abs(f_xj - f_yj))
         d_ks = max(d_i, d_j)
 
-        critical_value = self.__critical_value(significance_level=self.alpha)
-
         return {
-            "critical_value": critical_value,
             "ks_statistic": round(d_ks, 10),
-            "alpha": self.alpha,
         }

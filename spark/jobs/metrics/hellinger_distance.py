@@ -5,9 +5,29 @@ from pyspark.sql import DataFrame
 from scipy.stats import gaussian_kde
 import itertools
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
-class HellingerDistance:
+
+class HellingerDistance(DriftDetector):
     """Class for performing the Hellinger Distance using Pyspark."""
+
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["threshold"]:
+            raise AttributeError("threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
+        result_tmp = self.compute_distance(feature.name, feature.field_type)
+        feature_dict_to_append["type"] = DriftAlgorithmType.HELLINGER
+        feature_dict_to_append["value"] = float(result_tmp["HellingerDistance"])
+        feature_dict_to_append["has_drift"] = bool(
+            result_tmp["HellingerDistance"] <= threshold
+        )
+        return feature_dict_to_append
+
+    @property
+    def supported_feature_types(self) -> list[FieldTypes]:
+        return [FieldTypes.categorical, FieldTypes.numerical]
 
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
@@ -114,7 +134,10 @@ class HellingerDistance:
         return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
     def __hellinger_distance(
-        self, column_name: str, data_type: str, process_on_partitions: bool = False
+        self,
+        column_name: str,
+        data_type: FieldTypes,
+        process_on_partitions: bool = False,
     ) -> Optional[float]:
         """
         Compute the Hellinger Distasnce according to the data type (discrete or continuous).
@@ -129,7 +152,7 @@ class HellingerDistance:
         """
         column = column_name
 
-        if data_type == "discrete":
+        if data_type == FieldTypes.categorical:
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column, prefix_id=self.prefix_id
             )
@@ -176,7 +199,7 @@ class HellingerDistance:
                 0.5 * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
             )
 
-        elif data_type == "continuous":
+        elif data_type == FieldTypes.numerical:
             bins = self.__compute_bins_for_continuous_data()
 
             if process_on_partitions:
@@ -272,7 +295,7 @@ class HellingerDistance:
                     * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
                 )
 
-    def compute_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Hellinger Distance.
 
@@ -288,6 +311,8 @@ class HellingerDistance:
             "HellingerDistance": self.__hellinger_distance(
                 # We set process_on_partition=False until we find a strategy to
                 # automatically select the proper processing type.
-                column_name=on_column, data_type=data_type, process_on_partitions=False
+                column_name=on_column,
+                data_type=data_type,
+                process_on_partitions=False,
             )
         }

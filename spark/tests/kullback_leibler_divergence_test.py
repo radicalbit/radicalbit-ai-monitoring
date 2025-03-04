@@ -61,7 +61,7 @@ def kl_div_categorical(
 def test_compute_distance_continuous(kl_div_continuous):
     """Test the computation of KL divergence for continuous data."""
     result = kl_div_continuous.compute_distance(
-        on_column="value", data_type="continuous"
+        on_column="value", data_type="numerical"
     )
     assert (
         "KullbackLeiblerDivergence" in result
@@ -74,7 +74,7 @@ def test_compute_distance_continuous(kl_div_continuous):
 def test_compute_distance_categorical(kl_div_categorical):
     """Test the computation of KL divergence for categorical data."""
     result = kl_div_categorical.compute_distance(
-        on_column="value", data_type="discrete"
+        on_column="value", data_type="categorical"
     )
     assert (
         "KullbackLeiblerDivergence" in result
@@ -97,7 +97,7 @@ def test_kl_divergence_zero_case(spark_fixture):
         prefix_id="test",
     )
 
-    result = kl_div.compute_distance(on_column="value", data_type="discrete")
+    result = kl_div.compute_distance(on_column="value", data_type="categorical")
     assert (
         result["KullbackLeiblerDivergence"] == 0.0
     ), "KL divergence should be zero for identical distributions."
@@ -114,7 +114,7 @@ def test_kl_divergence_with_missing_category(spark_fixture, reference_data_categ
         prefix_id="test",
     )
 
-    result = kl_div.compute_distance(on_column="value", data_type="discrete")
+    result = kl_div.compute_distance(on_column="value", data_type="categorical")
     assert (
         result["KullbackLeiblerDivergence"] is None
     ), "KL divergence should be None when a category has zero probability."

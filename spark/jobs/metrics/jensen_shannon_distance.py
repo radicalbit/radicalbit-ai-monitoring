@@ -5,8 +5,28 @@ from pyspark.sql import functions as f
 from pyspark.ml.feature import Bucketizer
 from scipy.spatial.distance import jensenshannon
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
 
-class JensenShannonDistance:
+
+class JensenShannonDistance(DriftDetector):
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["threshold"]:
+            raise AttributeError("threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
+        result_tmp = self.compute_distance(feature.name, feature.field_type)
+        feature_dict_to_append["type"] = DriftAlgorithmType.JS
+        feature_dict_to_append["value"] = float(result_tmp["JensenShannonDistance"])
+        feature_dict_to_append["has_drift"] = bool(
+            result_tmp["JensenShannonDistance"] <= threshold
+        )
+        return feature_dict_to_append
+
+    @property
+    def supported_feature_types(self) -> list[FieldTypes]:
+        return [FieldTypes.categorical, FieldTypes.numerical]
+
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
         """
         Initializes the Jensen-Shannon Distance object with necessary data and parameters.
@@ -127,7 +147,9 @@ class JensenShannonDistance:
 
         return reference_bucket_percentages, current_bucket_percentages
 
-    def __jensen_shannon_distance(self, column_name: str, data_type: str) -> float:
+    def __jensen_shannon_distance(
+        self, column_name: str, data_type: FieldTypes
+    ) -> float:
         """
         Compute the Jensen-Shannon Distance according to the data type (discrete or continuous).
 
@@ -170,7 +192,7 @@ class JensenShannonDistance:
             ]
             return reference_dict, current_dict
 
-        if data_type == "discrete":
+        if data_type == FieldTypes.categorical:
             reference_category_percentages = self.__calculate_category_percentages(
                 df=self.reference_data, column_name=column
             )
@@ -201,7 +223,7 @@ class JensenShannonDistance:
 
             return jensenshannon(reference_values, current_values)
 
-        elif data_type == "continuous":
+        elif data_type == FieldTypes.numerical:
             reference_bucket_percentage, current_bucket_percentage = (
                 self.__bucketize_continuous_values(
                     df_reference=self.reference_data,
@@ -232,7 +254,7 @@ class JensenShannonDistance:
 
             return jensenshannon(reference_values, current_values)
 
-    def compute_distance(self, on_column: str, data_type: str) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Jensen-Shannon Distance.
 

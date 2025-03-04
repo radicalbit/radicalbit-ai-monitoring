@@ -18,6 +18,20 @@ import numpy as np
 
 class PercentageCalculator:
     @staticmethod
+    def extract_drift_bool_values(drifts: list) -> list:
+        """
+        Feature is appended if there is at least one drift
+        """
+        features_with_drift = []
+        for feature_metric in drifts:
+            feature_name = feature_metric["feature_name"]
+            drift_calc = feature_metric["drift_calc"]
+            if any(calc.get("has_drift", False) for calc in drift_calc):
+                features_with_drift.append(feature_name)
+
+        return features_with_drift
+
+    @staticmethod
     def calculate_percentages(
         spark_session: SparkSession,
         drift,
@@ -28,23 +42,12 @@ class PercentageCalculator:
         model,
     ):
         # Compute percentage of drift
+        feature_with_drifts = PercentageCalculator.extract_drift_bool_values(
+            drift["feature_metrics"]
+        )
         perc_drift = {
-            "value": 1
-            - (
-                len(
-                    [
-                        x
-                        for x in drift["feature_metrics"]
-                        if x["drift_calc"]["has_drift"]
-                    ]
-                )
-                / len(drift["feature_metrics"])
-            ),
-            "details": [
-                {"feature_name": x["feature_name"], "score": 1.0}
-                for x in drift["feature_metrics"]
-                if x["drift_calc"]["has_drift"]
-            ],
+            "value": 1 - (len(feature_with_drifts) / len(drift["feature_metrics"])),
+            "details": [{"feature_name": x, "score": 1.0} for x in feature_with_drifts],
         }
 
         # Compute percentage of model quality

@@ -23,6 +23,11 @@ from utils.current_binary import CurrentMetricsService
 from utils.current_multiclass import CurrentMetricsMulticlassService
 from utils.current_regression import CurrentMetricsRegressionService
 from tests.utils.pytest_utils import prefix_id
+from utils.models import DriftMethod, DriftAlgorithmType
+
+drift_chi2 = [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05).model_dump()]
+drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05).model_dump()]
+drift_psi = [DriftMethod(name=DriftAlgorithmType.PSI, p_value=0.1).model_dump()]
 
 
 @pytest.fixture()
@@ -118,16 +123,28 @@ def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_clas
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat2",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -222,16 +239,28 @@ def test_percentage_easy_dataset(spark_fixture, easy_dataset):
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat1",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="cat2",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num1",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="num2",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
     ]
     model = ModelOut(
@@ -315,41 +344,58 @@ def test_percentages_abalone(spark_fixture, test_dataset_abalone):
     granularity = Granularity.MONTH
     features = [
         ColumnDefinition(
-            name="Sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name="Sex",
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
         ColumnDefinition(
-            name="Length", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="Length",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="Diameter", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="Diameter",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
-            name="Height", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name="Height",
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Whole_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Shucked_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Viscera_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="Shell_weight",
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name="pred_id",
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
+            drift=drift_chi2,
         ),
     ]
     model = ModelOut(
