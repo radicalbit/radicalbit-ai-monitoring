@@ -1,17 +1,28 @@
+from typing import List
+
 import numpy as np
 from math import inf
 import pyspark.sql.functions as F
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql.types import IntegerType
+from pyspark.sql import SparkSession, DataFrame
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
 
-class PSI:
+class PSI(DriftDetector):
     """
     This class implements the PSI (population stability index).
     It is designed to compare two sample distributions and determine if they differ significantly.
     """
 
-    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
+    def __init__(
+        self,
+        spark_session: SparkSession,
+        reference_data: DataFrame,
+        current_data: DataFrame,
+        prefix_id: str,
+    ) -> None:
         """
         Initializes the Population Stability Index with the provided data and parameters.
 
@@ -24,6 +35,21 @@ class PSI:
         self.reference_data = reference_data
         self.current_data = current_data
         self.prefix_id = prefix_id
+
+    @property
+    def supported_feature_types(self) -> List[FieldTypes]:
+        return [FieldTypes.numerical]
+
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["threshold"]:
+            raise AttributeError("threshold is not defined in kwargs")
+        threshold = kwargs["threshold"]
+        result_tmp = self.calculate_psi(feature.name)
+        feature_dict_to_append["type"] = DriftAlgorithmType.PSI
+        feature_dict_to_append["value"] = float(result_tmp["psi_value"])
+        feature_dict_to_append["has_drift"] = bool(result_tmp["psi_value"] >= threshold)
+        return feature_dict_to_append
 
     @staticmethod
     def sub_psi(e_perc, a_perc):

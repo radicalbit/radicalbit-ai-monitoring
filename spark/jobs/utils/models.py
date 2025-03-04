@@ -51,10 +51,29 @@ class Granularity(str, Enum):
     MONTH = "MONTH"
 
 
+class DriftAlgorithmType(str, Enum):
+    HELLINGER = "HELLINGER"
+    WASSERSTEIN = "WASSERSTEIN"
+    KS = "KS"
+    JS = "JS"
+    PSI = "PSI"
+    CHI2 = "CHI2"
+    KL = "KULLBACK"
+
+
+class DriftMethod(BaseModel):
+    name: DriftAlgorithmType
+    threshold: Optional[float] = None
+    p_value: Optional[float] = None
+    alpha: Optional[float] = None
+    phi: Optional[float] = None
+
+
 class ColumnDefinition(BaseModel):
     name: str
     type: SupportedTypes
     field_type: FieldTypes
+    drift: Optional[List[DriftMethod]] = None
 
     def is_numerical(self) -> bool:
         return self.field_type == FieldTypes.numerical
@@ -125,3 +144,15 @@ class ModelOut(BaseModel):
 
     def get_categorical_features(self) -> List[ColumnDefinition]:
         return [feature for feature in self.features if feature.is_categorical()]
+
+
+class DriftCalc(BaseModel):
+    type: str
+    value: float
+    has_drift: bool
+
+
+class DriftDetectionResult(BaseModel):
+    feature_name: str
+    field_type: str
+    drift_calc: DriftCalc

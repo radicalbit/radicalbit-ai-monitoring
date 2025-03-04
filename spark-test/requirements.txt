@@ -1,1 +1,2 @@
 spark-on-k8s==0.10.1
+pydantic

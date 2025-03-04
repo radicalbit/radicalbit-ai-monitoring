@@ -1,17 +1,27 @@
-from typing import Dict
+from typing import Dict, List
 import pyspark.sql
 from pyspark.ml.stat import ChiSquareTest
 from pyspark.ml.feature import VectorAssembler, StringIndexer
 from pyspark.ml import Pipeline
 import pyspark.sql.functions as F
 import numpy as np
+from pyspark.sql import SparkSession, DataFrame
 from scipy.stats import chisquare
 
+from utils.drift_detector import DriftDetector
+from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
 
-class Chi2Test:
+
+class Chi2Test(DriftDetector):
     """Class for performing a chi-square test of independence using Pyspark."""
 
-    def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
+    def __init__(
+        self,
+        spark_session: SparkSession,
+        reference_data: DataFrame,
+        current_data: DataFrame,
+        prefix_id: str,
+    ) -> None:
         """
         Initializes the Chi2Test object with necessary data and parameters.
 
@@ -26,6 +36,21 @@ class Chi2Test:
         self.reference_data = reference_data
         self.current_data = current_data
         self.prefix_id = prefix_id
+
+    @property
+    def supported_feature_types(self) -> List[FieldTypes]:
+        return [FieldTypes.categorical]
+
+    def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
+        feature_dict_to_append = {}
+        if not kwargs["p_value"]:
+            raise AttributeError("p_value is not defined in kwargs")
+        p_value = kwargs["p_value"]
+        result_tmp = self.test_goodness_fit(feature.name, feature.name)
+        feature_dict_to_append["type"] = DriftAlgorithmType.CHI2
+        feature_dict_to_append["value"] = float(result_tmp["pValue"])
+        feature_dict_to_append["has_drift"] = bool(result_tmp["pValue"] <= p_value)
+        return feature_dict_to_append
 
     def __have_same_size(self) -> bool:
         """
