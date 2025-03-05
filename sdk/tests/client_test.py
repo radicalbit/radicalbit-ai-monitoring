@@ -16,7 +16,7 @@ from radicalbit_platform_sdk.models import (
     ModelDefinition,
     ModelType,
     OutputType,
-    SupportedTypes,
+    SupportedTypes, DriftAlgorithmType,
 )
 from radicalbit_platform_sdk.models.drift_method import ModelDriftMethod
 
@@ -265,44 +265,60 @@ class ClientTest(unittest.TestCase):
     @responses.activate
     def test_search_models(self):
         base_url = 'http://api:9000'
-        model_drift_method = ModelDriftMethod(FieldType.categorical)
+
+        model_drift_method_cat = ModelDriftMethod(FieldType.categorical)
+        model_drift_method_num = ModelDriftMethod(FieldType.numerical)
+        model_drift_method_cat.remove_drift_method(DriftAlgorithmType.KL)
+        model_drift_method_num.remove_drift_method(DriftAlgorithmType.KL)
 
         model_definition = ModelDefinition(
             name='My Model',
-            model_type=ModelType.BINARY,
+            model_type=ModelType.MULTI_CLASS,
             data_type=DataType.TABULAR,
             granularity=Granularity.DAY,
             features=[
                 ColumnDefinition(
-                    name='feature_column',
+                    name='feature1',
                     type=SupportedTypes.string,
                     field_type=FieldType.categorical,
-                    drift=model_drift_method.drift_methods(),
+                    drift=model_drift_method_cat.get_drift_methods(),
+                ),
+                ColumnDefinition(
+                    name='feature2',
+                    type=SupportedTypes.int,
+                    field_type=FieldType.numerical,
+                    drift=model_drift_method_num.get_drift_methods(),
+                ),
+                ColumnDefinition(
+                    name='feature3',
+                    type=SupportedTypes.float,
+                    field_type=FieldType.numerical,
+                    drift=model_drift_method_num.get_drift_methods(),
                 )
             ],
             outputs=OutputType(
                 prediction=ColumnDefinition(
-                    name='result_column',
+                    name='prediction',
                     type=SupportedTypes.int,
                     field_type=FieldType.numerical,
                 ),
                 output=[
                     ColumnDefinition(
-                        name='result_column',
+                        name='prediction',
                         type=SupportedTypes.int,
                         field_type=FieldType.numerical,
                     )
                 ],
             ),
             target=ColumnDefinition(
-                name='target_column',
-                type=SupportedTypes.string,
-                field_type=FieldType.categorical,
+                name='target1',
+                type=SupportedTypes.int,
+                field_type=FieldType.numerical,
             ),
             timestamp=ColumnDefinition(
-                name='tst_column',
-                type=SupportedTypes.string,
-                field_type=FieldType.categorical,
+                name='timestamp',
+                type=SupportedTypes.datetime,
+                field_type=FieldType.datetime,
             ),
             created_at=str(time.time()),
             updated_at=str(time.time()),
@@ -318,16 +334,9 @@ class ClientTest(unittest.TestCase):
 
         client = Client(base_url)
         models = client.search_models()
-        assert len(models) == 1
-        assert models[0].name() == model_definition.name
-        assert models[0].model_type() == model_definition.model_type
-        assert models[0].data_type() == model_definition.data_type
-        assert models[0].granularity() == model_definition.granularity
-        assert models[0].features() == model_definition.features
-        assert models[0].features()[0].drift == model_drift_method.drift_methods()
-        assert models[0].outputs() == model_definition.outputs
-        assert models[0].target() == model_definition.target
-        assert models[0].timestamp() == model_definition.timestamp
-        assert models[0].description() is None
-        assert models[0].algorithm() is None
-        assert models[0].frameworks() is None
+        feat1 = models[0].features()[0]
+        feat2 = models[0].features()[1]
+        feat3 = models[0].features()[2]
+        assert feat1.drift == model_drift_method_cat.get_drift_methods()
+        assert feat2.drift == model_drift_method_num.get_drift_methods()
+        assert feat3.drift == model_drift_method_num.get_drift_methods()

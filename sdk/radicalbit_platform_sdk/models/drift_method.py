@@ -18,8 +18,9 @@ class DriftMethod(BaseModel):
 class ModelDriftMethod:
     def __init__(self, field_type: FieldType) -> None:
         self.__field_type = field_type
+        self.__drift_methods = self._compliant_drift_methods()
 
-    def drift_methods(self) -> List[DriftMethod]:
+    def _compliant_drift_methods(self) -> List[DriftMethod]:
         drift_mapping = {
             FieldType.categorical: [
                 DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05),
@@ -39,3 +40,15 @@ class ModelDriftMethod:
         }
 
         return drift_mapping.get(self.__field_type, [])
+
+    def add_drift_method(self, method: DriftMethod) -> None:
+        if method not in self.__drift_methods:
+            self.__drift_methods.append(method)
+
+    def remove_drift_method(self, method_name: DriftAlgorithmType) -> None:
+        self.__drift_methods = [
+            method for method in self.__drift_methods if method.name != method_name
+        ]
+
+    def get_drift_methods(self) -> List[DriftMethod]:
+        return self.__drift_methods
