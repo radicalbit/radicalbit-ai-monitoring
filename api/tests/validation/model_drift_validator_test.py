@@ -3,6 +3,7 @@ import pytest
 
 from app.models.drift_algorithm_type import DriftAlgorithmType
 from app.models.inferred_schema_dto import FieldType, SupportedTypes
+from app.models.metrics.drift_dto import FeatureMetrics
 from app.models.model_dto import ColumnDefinition, DriftMethod, ModelType
 from tests.commons import db_mock
 
@@ -83,3 +84,16 @@ def test_validate_drift_p_value_requirement():
         )
 
     assert f'{DriftAlgorithmType.CHI2.value} requires a p_value' in str(excinfo.value)
+
+
+def test_validate_old_drift():
+    input_dict = {
+        "drift_calc": {
+            "type": "HELLINGER",
+            "value": 0.7099295739719539,
+            "has_drift": True
+        },
+        "field_type": "categorical",
+        "feature_name": "user_id"
+    }
+    assert FeatureMetrics.model_validate(input_dict)
