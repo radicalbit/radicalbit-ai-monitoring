@@ -20,7 +20,9 @@ class KullbackLeiblerDivergence(DriftDetector):
             feature_dict_to_append["value"] = None
             feature_dict_to_append["has_drift"] = None
         else:
-            feature_dict_to_append["value"] =  float(result_tmp["KullbackLeiblerDivergence"])
+            feature_dict_to_append["value"] = float(
+                result_tmp["KullbackLeiblerDivergence"]
+            )
             feature_dict_to_append["has_drift"] = bool(
                 result_tmp["KullbackLeiblerDivergence"] <= threshold
             )
@@ -218,8 +220,6 @@ class KullbackLeiblerDivergence(DriftDetector):
                 .to_dict()
             )
 
-
-
             if not reference_category_dict.keys() == current_category_dict.keys():
                 reference_category_dict, current_category_dict = align_dicts(
                     reference_category_dict, current_category_dict
@@ -257,14 +257,10 @@ class KullbackLeiblerDivergence(DriftDetector):
                 .to_dict()
             )
 
-
-
             if not reference_bucket_dict.keys() == current_bucket_dict.keys():
                 reference_bucket_dict, current_bucket_dict = align_dicts(
                     reference_bucket_dict, current_bucket_dict
                 )
-            print(reference_bucket_dict)
-            print(current_bucket_dict)
 
             reference_values = np.array(list(reference_bucket_dict.values()))
             current_values = np.array(list(current_bucket_dict.values()))
@@ -294,81 +290,3 @@ class KullbackLeiblerDivergence(DriftDetector):
                 column_name=on_column, data_type=data_type
             )
         }
-
-
-from typing import Tuple, Optional
-import pyspark
-from pyspark.sql import functions as F
-from pyspark.sql import SparkSession
-import pandas as pd
-import numpy as np
-from pyspark.sql import DataFrame
-from scipy.stats import gaussian_kde
-from math import sqrt
-
-
-def main():
-    np.random.seed(1990)
-    # spark session
-    spark = SparkSession.builder.appName("W-Distance").getOrCreate()
-
-    reference_size = 15
-    current_size = 15
-
-    # define reference dataframe
-    reference_pd = pd.DataFrame(
-        {
-            "feature_num": list(
-                np.random.normal(loc=10.0, scale=2.0, size=reference_size)
-            ),
-            "feature_cat": list(
-                np.random.choice(np.arange(2), size=reference_size, p=[0.2, 0.8])
-            ),
-        }
-    )
-
-    # define current dataframe
-    current_pd = pd.DataFrame(
-        {
-            "feature_num": list(
-                np.random.normal(loc=10.0, scale=2.0, size=current_size)
-            ),
-            "feature_cat": list(
-                np.random.choice(np.arange(2), size=current_size, p=[0.2, 0.8])
-            ),
-        }
-    )
-
-    reference_spark = spark.createDataFrame(reference_pd)
-    current_spark = spark.createDataFrame(current_pd)
-
-    w_dist = KullbackLeiblerDivergence(
-        spark_session=spark, reference_data=reference_spark, current_data=current_spark, prefix_id=""
-    )
-
-    res = w_dist.compute_distance(on_column="feature_num", data_type=FieldTypes.numerical)
-
-    feature_dict_to_append = {}
-    if res["KullbackLeiblerDivergence"] is not None:
-        feature_dict_to_append["value"] = float(res["KullbackLeiblerDivergence"])
-        feature_dict_to_append["has_drift"] = bool(
-            res["KullbackLeiblerDivergence"] <= 0.1
-        )
-    else:
-        feature_dict_to_append["value"] = None
-        feature_dict_to_append["has_drift"] = None
-
-    print(feature_dict_to_append)
-
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
-
-
-
-
