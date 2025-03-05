@@ -10,7 +10,7 @@ from radicalbit_platform_sdk.models.field_type import FieldType
 class FeatureDriftCalculation(BaseModel):
     type: DriftAlgorithmType
     value: Optional[float] = None
-    has_drift: bool
+    has_drift: Optional[bool] = None
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
