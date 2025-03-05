@@ -9,10 +9,12 @@ from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
+from app.models.drift_algorithm_type import DriftAlgorithmType
 from app.models.job_status import JobStatus
 from app.models.model_dto import (
     ColumnDefinition,
     DataType,
+    DriftMethod,
     FieldType,
     Granularity,
     ModelFeatures,
@@ -37,7 +39,12 @@ def get_sample_model(
     data_type: str = DataType.TEXT.value,
     granularity: str = Granularity.DAY.value,
     features: Optional[List[Dict]] = [
-        {'name': 'feature1', 'type': 'string', 'fieldType': 'categorical'}
+        {
+            'name': 'feature1',
+            'type': 'string',
+            'fieldType': 'categorical',
+            'drift': [{'name': 'CHI2', 'p_value': 0.4}],
+        }
     ],
     outputs: Optional[Dict] = {
         'prediction': {'name': 'pred1', 'type': 'int', 'fieldType': 'numerical'},
@@ -103,6 +110,7 @@ def get_sample_model_in(
             name='feature1',
             type=SupportedTypes.string,
             field_type=FieldType.categorical,
+            drift=[DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.4)],
         )
     ],
     outputs: Optional[OutputType] = OutputType(
@@ -511,17 +519,17 @@ drift_dict = {
         {
             'featureName': 'gender',
             'fieldType': 'categorical',
-            'driftCalc': {'type': 'CHI2', 'value': 0.87, 'hasDrift': True},
+            'driftCalc': [{'type': 'CHI2', 'value': 0.87, 'hasDrift': True}],
         },
         {
             'featureName': 'city',
             'fieldType': 'categorical',
-            'driftCalc': {'type': 'CHI2', 'value': 0.12, 'hasDrift': False},
+            'driftCalc': [{'type': 'CHI2', 'value': 0.12, 'hasDrift': False}],
         },
         {
             'featureName': 'age',
             'fieldType': 'numerical',
-            'driftCalc': {'type': 'KS', 'value': 0.92, 'hasDrift': True},
+            'driftCalc': [{'type': 'KS', 'value': 0.92, 'hasDrift': True}],
         },
     ]
 }
@@ -566,6 +574,13 @@ model_quality_completion_dict = {
     ],
     'mean_per_file': [
         {'prob_tot_mean': 0.7190271615982056, 'perplex_tot_mean': 1.5469378232955933}
+    ],
+    'mean_per_phrase': [
+        {
+            'id': 'chatcmpl',
+            'prob_per_phrase': 0.7190271615982056,
+            'perplex_per_phrase': 1.5469378232955933,
+        }
     ],
 }
 
