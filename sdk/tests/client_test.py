@@ -11,12 +11,13 @@ from radicalbit_platform_sdk.models import (
     ColumnDefinition,
     CreateModel,
     DataType,
+    DriftAlgorithmType,
     FieldType,
     Granularity,
     ModelDefinition,
     ModelType,
     OutputType,
-    SupportedTypes, DriftAlgorithmType,
+    SupportedTypes,
 )
 from radicalbit_platform_sdk.models.drift_method import ModelDriftMethod
 
