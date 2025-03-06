@@ -16,10 +16,16 @@ class KullbackLeiblerDivergence(DriftDetector):
         threshold = kwargs["threshold"]
         result_tmp = self.compute_distance(feature.name, feature.field_type)
         feature_dict_to_append["type"] = DriftAlgorithmType.KL
-        feature_dict_to_append["value"] = float(result_tmp["KullbackLeiblerDivergence"])
-        feature_dict_to_append["has_drift"] = bool(
-            result_tmp["KullbackLeiblerDivergence"] <= threshold
-        )
+        if not result_tmp["KullbackLeiblerDivergence"]:
+            feature_dict_to_append["value"] = None
+            feature_dict_to_append["has_drift"] = None
+        else:
+            feature_dict_to_append["value"] = float(
+                result_tmp["KullbackLeiblerDivergence"]
+            )
+            feature_dict_to_append["has_drift"] = bool(
+                result_tmp["KullbackLeiblerDivergence"] <= threshold
+            )
         return feature_dict_to_append
 
     @property
