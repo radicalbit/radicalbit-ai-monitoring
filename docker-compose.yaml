@@ -254,12 +254,59 @@ services:
     volumes:
       - ./docker/k3s_data/kubeconfig/kubeconfig.yaml:/root/.kube/config
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123"  # HTTP interface
+      - "9000:9000"  # Native client
+    healthcheck:
+      test: [ "CMD", "clickhouse-client", "--host", "localhost" ]
+      interval: 5s
+      retries: 5
+      start_period: 5s
+      timeout: 5s
+    environment:
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=default
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    restart: always
+    command: [ "--config", "/etc/otel-collector-config.yaml" ]
+    volumes:
+      - ./otel-collector-config/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
+  ch-ui:
+    image: ghcr.io/caioricciuti/ch-ui:latest
+    restart: always
+    ports:
+      - "5521:5521"
+    environment:
+      VITE_CLICKHOUSE_URL: "http://localhost:8123"
+      VITE_CLICKHOUSE_USER: "default"
+      VITE_CLICKHOUSE_PASS: "default"
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+
 volumes:
   k3s-server: {}
   radicalbit-data: {}
   minio_storage: {}
   docker-certs-ca: {}
   docker-certs-client: {}
+  clickhouse_data: {}
+
 networks:
   default:
     ipam:
