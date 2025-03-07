@@ -2,6 +2,9 @@ import datetime
 from typing import Dict, List, Optional
 import uuid
 
+from db.tables.project_table import Project
+from models.traces.project_dto import ProjectIn
+
 from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
 from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
@@ -28,6 +31,7 @@ MODEL_UUID = uuid.uuid4()
 REFERENCE_UUID = uuid.uuid4()
 CURRENT_UUID = uuid.uuid4()
 COMPLETION_UUID = uuid.uuid4()
+PROJECT_UUID = uuid.uuid4()
 
 
 def get_sample_model(
@@ -624,4 +628,24 @@ def get_sample_completion_metrics(
     return CompletionDatasetMetrics(
         completion_uuid=completion_uuid,
         model_quality=model_quality,
+    )
+
+
+def get_sample_project(
+    uuid: uuid.UUID = PROJECT_UUID,
+    name: str = 'project_name',
+) -> Project:
+    return Project(
+        uuid=uuid,
+        name=name,
+        created_at=datetime.datetime.now(tz=datetime.UTC),
+        updated_at=datetime.datetime.now(tz=datetime.UTC),
+    )
+
+
+def get_sample_project_in(
+    name: str = 'project_name',
+):
+    return ProjectIn(
+        name=name,
     )

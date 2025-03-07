@@ -3,8 +3,11 @@ import logging
 from logging.config import dictConfig
 
 import boto3
+from db.dao.project_dao import ProjectDAO
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from routes.project_route import ProjectRoute
+from services.project_service import ProjectService
 from spark_on_k8s.client import SparkOnK8S
 from spark_on_k8s.k8s.sync_client import KubernetesClientManager
 from starlette.middleware.cors import CORSMiddleware
@@ -22,11 +25,13 @@ from app.models.exceptions import (
     MetricsError,
     ModelError,
     SchemaException,
+    ProjectError,
     internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
     request_validation_exception_handler,
     schema_exception_handler,
+    project_exception_handler,
 )
 from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
@@ -62,6 +67,7 @@ current_dataset_dao = CurrentDatasetDAO(database)
 current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
 completion_dataset_dao = CompletionDatasetDAO(database)
 completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
+project_dao = ProjectDAO(database)
 
 model_service = ModelService(
     model_dao=model_dao,
@@ -104,6 +110,7 @@ metrics_service = MetricsService(
     completion_dataset_dao=completion_dataset_dao,
     model_service=model_service,
 )
+project_service = ProjectService(project_dao=project_dao)
 spark_k8s_service = SparkK8SService(spark_k8s_client)
 
 
@@ -135,11 +142,13 @@ app.include_router(ModelRoute.get_router(model_service), prefix='/api/models')
 app.include_router(UploadDatasetRoute.get_router(file_service), prefix='/api/models')
 app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schema')
 app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
+app.include_router(ProjectRoute.get_router(project_service), prefix='/api/projects')
 
 app.include_router(HealthcheckRoute.get_healthcheck_route())
 
 app.add_exception_handler(ModelError, model_exception_handler)
 app.add_exception_handler(MetricsError, metrics_exception_handler)
+app.add_exception_handler(ProjectError, project_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 app.add_exception_handler(Exception, internal_exception_handler)
