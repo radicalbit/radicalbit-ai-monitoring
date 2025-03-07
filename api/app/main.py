@@ -24,14 +24,14 @@ from app.db.database import Database, DatabaseDialect
 from app.models.exceptions import (
     MetricsError,
     ModelError,
-    SchemaException,
     ProjectError,
+    SchemaException,
     internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
+    project_exception_handler,
     request_validation_exception_handler,
     schema_exception_handler,
-    project_exception_handler,
 )
 from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
