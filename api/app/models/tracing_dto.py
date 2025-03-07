@@ -16,10 +16,11 @@ class SpanBasic(BaseModel):
     span_id: str
     duration: int
     tokens: int
+    created_at: str
 
 
 class SpanDTO(SpanBasic):
-    thread_id: UUID
+    thread_id: Optional[UUID] = None
     attributes: dict
     error: Optional[str] = None
 
