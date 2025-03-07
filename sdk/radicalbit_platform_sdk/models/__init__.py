@@ -48,6 +48,7 @@ from .model_definition import (
     OutputType,
 )
 from .model_type import ModelType
+from .project_definition import ProjectDefinition, CreateProject
 from .supported_types import SupportedTypes
 from .drift_algorithm_type import DriftAlgorithmType
 from .drift_method import DriftMethod
@@ -96,4 +97,6 @@ __all__ = [
     'AwsCredentials',
     'SupportedTypes',
     'FieldType',
+    'CreateProject',
+    'ProjectDefinition',
 ]
