@@ -13,3 +13,9 @@ class ProjectDAOTest(DatabaseIntegration):
         project = db_mock.get_sample_project()
         inserted = self.project_dao.insert(project)
         assert inserted.uuid == project.uuid
+
+    def test_get_by_uuid(self):
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        retrieved = self.project_dao.get_by_uuid(project.uuid)
+        assert retrieved.uuid == project.uuid

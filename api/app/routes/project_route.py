@@ -1,4 +1,5 @@
 import logging
+from uuid import UUID
 
 from fastapi import APIRouter
 
@@ -19,5 +20,9 @@ class ProjectRoute:
             project = project_service.create_project(project_in)
             logger.info('Project %s with name %s created.', project.uuid, project.name)
             return project
+
+        @router.get('/{project_uuid}', status_code=200, response_model=ProjectOut)
+        def get_project_by_uuid(project_uuid: UUID):
+            return project_service.get_project_by_uuid(project_uuid)
 
         return router

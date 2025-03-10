@@ -60,3 +60,13 @@ class ProjectRouteTest(unittest.TestCase):
         assert res.status_code == 500
         assert jsonable_encoder(ErrorOut('error')) == res.json()
         self.project_service.create_project.assert_called_once_with(project_in)
+
+    def test_get_project_by_uuid(self):
+        project = db_mock.get_sample_project()
+        project_out = ProjectOut.from_project(project)
+        self.project_service.get_project_by_uuid = MagicMock(return_value=project_out)
+
+        res = self.client.get(f'{self.prefix}/{project.uuid}')
+        assert res.status_code == 200
+        assert jsonable_encoder(project_out) == res.json()
+        self.project_service.get_project_by_uuid.assert_called_once_with(project.uuid)
