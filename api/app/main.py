@@ -3,11 +3,8 @@ import logging
 from logging.config import dictConfig
 
 import boto3
-from db.dao.project_dao import ProjectDAO
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from routes.project_route import ProjectRoute
-from services.project_service import ProjectService
 from spark_on_k8s.client import SparkOnK8S
 from spark_on_k8s.k8s.sync_client import KubernetesClientManager
 from starlette.middleware.cors import CORSMiddleware
@@ -18,6 +15,7 @@ from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDA
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
+from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.db.database import Database, DatabaseDialect
@@ -37,10 +35,12 @@ from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
 from app.routes.metrics_route import MetricsRoute
 from app.routes.model_route import ModelRoute
+from app.routes.project_route import ProjectRoute
 from app.routes.upload_dataset_route import UploadDatasetRoute
 from app.services.file_service import FileService
 from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
+from app.services.project_service import ProjectService
 from app.services.spark_k8s_service import SparkK8SService
 
 dictConfig(get_config().log_config.model_dump())
