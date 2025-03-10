@@ -20,6 +20,8 @@ export const PathsEnum = {
   LAUNCHPAD: 'launchpad',
   MODELS: 'models',
   MODELS_DETAIL: 'models/:uuid',
+  TRACING_PROJECT: 'projects',
+  TRACING_PROJECT_DETAIL: 'projects/:uuid',
 };
 
 export const ExternalPathsEnum = {
@@ -51,6 +53,10 @@ export const NamespaceEnum = {
   COMPLETION_IMPORT: 'COMPLETION_IMPORT',
   ALERTS: 'ALERTS',
   MODELS_WIP: 'MODELS_WIP',
+  PROJECTS: 'PROJECTS',
+  TRACES_LIST: 'TRACES_LIST',
+  SESSIONS_LIST: 'SESSIONS_LIST',
+  SESSION_TRACES: 'SESSION_TRACES',
 };
 
 export const JOB_STATUS = {

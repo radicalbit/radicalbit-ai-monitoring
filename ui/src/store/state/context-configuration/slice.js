@@ -33,6 +33,10 @@ export const initialState = {
   [NamespaceEnum.COMPLETION_IMPORT]: defaultState(pageSize, { date: SortOrderEnum.DESCEND }),
   [NamespaceEnum.ALERTS]: defaultState(),
   [NamespaceEnum.MODELS_WIP]: defaultState(),
+  [NamespaceEnum.PROJECTS]: defaultState(),
+  [NamespaceEnum.SESSIONS_LIST]: defaultState(),
+  [NamespaceEnum.SESSION_TRACES]: defaultState(),
+  [NamespaceEnum.TRACES_LIST]: defaultState(),
 };
 
 export const contextConfigurationSlice = createSlice({

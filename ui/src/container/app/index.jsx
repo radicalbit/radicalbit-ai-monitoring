@@ -2,7 +2,10 @@ import SiderBk from '@Img/sider-bk.png';
 import Logo from '@Src/components/Logo';
 import ModalsProvider from '@Src/components/modals/modals-provider';
 import { useContextConfigurationFromUrlEffect } from '@State/context-configuration/hooks';
-import { actions as layoutActions, selectors as layoutSelectors } from '@State/layout';
+import {
+  actions as layoutActions,
+  selectors as layoutSelectors,
+} from '@State/layout';
 import { useNotification } from '@State/notification/hooks';
 import '@Styles/index.less';
 import '@Styles/tailwind.less';
@@ -10,6 +13,7 @@ import { Layout } from '@radicalbit/radicalbit-design-system';
 import CookieConsent from 'react-cookie-consent';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
 import { createRoutes } from '../layout';
 import BottomMenu from './bottom-menu';
 import MainHeaderContentSwitch from './content-switch/header';
@@ -21,25 +25,47 @@ export default function App() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const isProjectTracingEnabled = getIsProjectTracingEnabled();
+
   useNotification();
   useContextConfigurationFromUrlEffect();
 
-  const hasHeaderContentDark = useSelector(layoutSelectors.selectHasHeaderContentDark);
-  const hasHeaderLeftContentDark = useSelector(layoutSelectors.selectHasHeaderLeftContentDark);
-  const hasHeaderSecondaryContentDark = useSelector(layoutSelectors.selectHasHeaderSecondaryContentDark);
-  const hasLeftContentDark = useSelector(layoutSelectors.selectHasLeftContentDark);
-  const hasMainContentDark = useSelector(layoutSelectors.selectHasMainContentDark);
-  const hasSecondaryContentDark = useSelector(layoutSelectors.selectHasSecondaryContentDark);
+  const hasHeaderContentDark = useSelector(
+    layoutSelectors.selectHasHeaderContentDark,
+  );
+  const hasHeaderLeftContentDark = useSelector(
+    layoutSelectors.selectHasHeaderLeftContentDark,
+  );
+  const hasHeaderSecondaryContentDark = useSelector(
+    layoutSelectors.selectHasHeaderSecondaryContentDark,
+  );
+  const hasLeftContentDark = useSelector(
+    layoutSelectors.selectHasLeftContentDark,
+  );
+  const hasMainContentDark = useSelector(
+    layoutSelectors.selectHasMainContentDark,
+  );
+  const hasSecondaryContentDark = useSelector(
+    layoutSelectors.selectHasSecondaryContentDark,
+  );
 
   const hasHeader = useSelector(layoutSelectors.selectHasHeader);
-  const isSecondaryColumn = useSelector(layoutSelectors.selectHasSecondaryColumn);
-  const isLeftColumnCollapsed = useSelector(layoutSelectors.selectHasLeftColumnCollapsed);
-  const hasSecondaryColumnCollapsed = useSelector(layoutSelectors.selectHasSecondaryColumnCollapsed);
+  const isSecondaryColumn = useSelector(
+    layoutSelectors.selectHasSecondaryColumn,
+  );
+  const isLeftColumnCollapsed = useSelector(
+    layoutSelectors.selectHasLeftColumnCollapsed,
+  );
+  const hasSecondaryColumnCollapsed = useSelector(
+    layoutSelectors.selectHasSecondaryColumnCollapsed,
+  );
 
   const hasSecondaryColumn = isSecondaryColumn;
   const hasLeftColumnCollapsed = isLeftColumnCollapsed;
 
-  const showBottomDrawerOnHover = useSelector(layoutSelectors.selectShowBottomDrawerOnHover);
+  const showBottomDrawerOnHover = useSelector(
+    layoutSelectors.selectShowBottomDrawerOnHover,
+  );
 
   const handleToggleCollapseLeftColumn = () => {
     dispatch(layoutActions.toggleCollapseLeftColumn());
@@ -70,9 +96,14 @@ export default function App() {
           hasHeaderLeftContentDark,
           hasLeftColumnCollapsed,
           hasLeftContentDark,
-          leftColumnHeaderAltContent: <Logo onClick={goToHomePage} title="Radicalbit" />,
+          leftColumnHeaderAltContent: (
+            <Logo onClick={goToHomePage} title="Radicalbit" />
+          ),
           backgroundImage: SiderBk,
-          mainMenu: createRoutes({ currentPath: pathname }),
+          mainMenu: createRoutes({
+            currentPath: pathname,
+            isProjectTracingEnabled,
+          }),
           onLeftColumnCollapse: handleToggleCollapseLeftColumn,
           bottomMenu: <BottomMenu />,
         }}
@@ -113,11 +144,12 @@ export default function App() {
         <h3>We Value Your Privacy</h3>
 
         <p>
-          We collect anonymous usage data to improve our software. This information helps us understand how the software is used and identify areas for improvement.
+          We collect anonymous usage data to improve our software. This
+          information helps us understand how the software is used and identify
+          areas for improvement.
           <br />
           No personally identifiable information is collected.
         </p>
-
       </CookieConsent>
     </>
   );
