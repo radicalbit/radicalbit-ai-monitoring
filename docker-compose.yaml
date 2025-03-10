@@ -259,7 +259,7 @@ services:
     container_name: clickhouse
     ports:
       - "8123:8123"  # HTTP interface
-      - "9000:9000"  # Native client
+      - "9002:9000"  # Native client
     healthcheck:
       test: [ "CMD", "clickhouse-client", "--host", "localhost" ]
       interval: 5s
