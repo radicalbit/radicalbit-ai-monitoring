@@ -7,6 +7,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 base_dir = 'resources'
 
 
+class ClickHouseConfig(BaseSettings):
+    db_host: str = 'localhost'
+    db_port: int = 9002
+    db_user: str = 'default'
+    db_pwd: str = 'default'
+    db_name: str = 'default'
+    db_schema: str = 'default'
+
+
 class DBConfig(BaseSettings):
     model_config = SettingsConfigDict(env_file=f'{base_dir}/db.conf')
 
@@ -139,6 +148,7 @@ class AppConfig(BaseSettings):
     kubernetes_config: KubernetesConfig = KubernetesConfig()
     s3_config: S3Config = S3Config()
     spark_config: SparkConfig = SparkConfig()
+    clickhouse_config: ClickHouseConfig = ClickHouseConfig()
 
 
 @lru_cache

@@ -1,11 +1,13 @@
+from enum import Enum
 import logging
 
+import clickhouse_sqlalchemy as ch_alchemy
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.ext.declarative import DeferredReflection
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 from app.core import get_config
-from app.core.config import DBConfig
+from app.core.config import ClickHouseConfig, DBConfig
 from app.db.custom_query import CustomQuery
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -36,10 +38,19 @@ BaseTable = declarative_base(
     metadata=MetaData(schema=fixed_schema, naming_convention=naming_convention)
 )
 
+ClickHouseBaseTable = ch_alchemy.get_declarative_base(
+    metadata=MetaData(schema='default')
+)
+
+
+class DatabaseDialect(str, Enum):
+    POSTGRES = 'postgresql+psycopg2'
+    CLICKHOUSE = 'clickhouse+native'
+
 
 class Database:
-    def __init__(self, conf: DBConfig):
-        self._db_url = f'postgresql+psycopg2://{conf.db_user}:{conf.db_pwd}@{conf.db_host}:{conf.db_port}/{conf.db_name}'
+    def __init__(self, dialect: DatabaseDialect, conf: DBConfig | ClickHouseConfig):
+        self._db_url = f'{dialect.value}://{conf.db_user}:{conf.db_pwd}@{conf.db_host}:{conf.db_port}/{conf.db_name}'
         self._engine = None
         self._SessionFactory = None
         self._connected = False

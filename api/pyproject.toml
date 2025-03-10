@@ -24,6 +24,7 @@ fastapi-pagination = "^0.12.24"
 spark-on-k8s = "^0.10.0"
 boto3 = "^1.34.144"
 python-multipart = "^0.0.12"
+clickhouse-sqlalchemy = "^0.3.2"
 
 
 [tool.poetry.group.dev.dependencies]
