@@ -3,6 +3,8 @@ import MainModelsHeader from '@Src/container/models/Details/header';
 import MainListModelsHeader from '@Src/container/models/List/header';
 import LaunchpadHeader from '@Src/container/launchpad/header';
 import { Navigate, Route, Routes } from 'react-router';
+import ProjectListHeader from '@Container/tracing/project-list/header';
+import ProjectDetailHeader from '@Container/tracing/project-detail/header';
 
 export default function MainHeaderContentSwitch() {
   return (
@@ -13,6 +15,10 @@ export default function MainHeaderContentSwitch() {
       <Route element={<MainListModelsHeader />} path={`/${PathsEnum.MODELS}`} />
 
       <Route element={<MainModelsHeader />} path={`/${PathsEnum.MODELS_DETAIL}`} />
+
+      <Route element={<ProjectListHeader />} path={`/${PathsEnum.TRACING_PROJECT}`} />
+
+      <Route element={<ProjectDetailHeader />} path={`/${PathsEnum.TRACING_PROJECT_DETAIL}`} />
 
       <Route element={<Navigate replace to={`/${PathsEnum.LAUNCHPAD}`} />} path="*" />
     </Routes>

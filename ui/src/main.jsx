@@ -6,6 +6,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { getCookieConsentValue } from 'react-cookie-consent';
 import { v4 as uuidv4 } from 'uuid';
 import { launchpadRoutes } from '@Container/launchpad/routes';
+import { tracingRoutes } from '@Container/tracing/routes';
 import { notFoundRoute } from './components/ErrorPage';
 import App from './container/app';
 import { modelsRoutes } from './container/models/routes';
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
     children: [
       launchpadRoutes,
       modelsRoutes,
+      tracingRoutes,
       notFoundRoute,
     ],
   },
