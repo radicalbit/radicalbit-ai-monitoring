@@ -1,10 +1,10 @@
 import logging
 
 from fastapi import APIRouter
-from models.traces.project_dto import ProjectIn, ProjectOut
-from services.project_service import ProjectService
 
 from app.core import get_config
+from app.models.traces.project_dto import ProjectIn, ProjectOut
+from app.services.project_service import ProjectService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
 

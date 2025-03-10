@@ -1,6 +1,5 @@
-from db.tables.project_table import Project
-
 from app.db.database import Database
+from app.db.tables.project_table import Project
 
 
 class ProjectDAO:

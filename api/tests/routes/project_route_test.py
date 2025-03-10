@@ -3,8 +3,6 @@ from unittest.mock import MagicMock
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
-from models.traces.project_dto import ProjectOut
-from routes.project_route import ProjectRoute
 from services.project_service import ProjectService
 from starlette.testclient import TestClient
 
@@ -14,6 +12,8 @@ from app.models.exceptions import (
     ProjectInternalError,
     project_exception_handler,
 )
+from app.models.traces.project_dto import ProjectOut
+from app.routes.project_route import ProjectRoute
 from tests.commons import db_mock
 
 

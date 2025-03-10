@@ -1,10 +1,9 @@
 import unittest
 from unittest.mock import MagicMock
 
-from db.dao.project_dao import ProjectDAO
-from models.traces.project_dto import ProjectOut
-from services.project_service import ProjectService
-
+from app.db.dao.project_dao import ProjectDAO
+from app.models.traces.project_dto import ProjectOut
+from app.services.project_service import ProjectService
 from tests.commons import db_mock
 
 

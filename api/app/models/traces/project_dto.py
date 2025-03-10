@@ -1,9 +1,10 @@
 import datetime
 from uuid import UUID
 
-from db.tables.project_table import Project
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
+
+from app.db.tables.project_table import Project
 
 
 class ProjectIn(BaseModel, validate_assignment=True):
