@@ -17,7 +17,7 @@ from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
-from app.db.database import Database
+from app.db.database import Database, DatabaseDialect
 from app.models.exceptions import (
     MetricsError,
     ModelError,
@@ -41,7 +41,10 @@ from app.services.spark_k8s_service import SparkK8SService
 dictConfig(get_config().log_config.model_dump())
 logger = logging.getLogger(get_config().log_config.logger_name)
 
-database = Database(get_config().db_config)
+database = Database(dialect=DatabaseDialect.POSTGRES, conf=get_config().db_config)
+ch_database = Database(
+    dialect=DatabaseDialect.CLICKHOUSE, conf=get_config().clickhouse_config
+)
 
 if get_config().kubernetes_config.kubeconfig_file_path:
     k8s_client_manager = KubernetesClientManager(
@@ -108,6 +111,8 @@ spark_k8s_service = SparkK8SService(spark_k8s_client)
 async def lifespan(fastapi: FastAPI):
     logger.info('Starting service ...')
     database.connect()
+    ch_database.connect()
+    ch_database.init_mappings()
     database.init_mappings()
     yield
     logger.info('Stopping service ...')
