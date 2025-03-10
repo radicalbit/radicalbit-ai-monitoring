@@ -1,5 +1,4 @@
-from db.dao.project_dao import ProjectDAO
-
+from app.db.dao.project_dao import ProjectDAO
 from tests.commons import db_mock
 from tests.commons.db_integration import DatabaseIntegration
 

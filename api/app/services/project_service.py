@@ -1,6 +1,6 @@
-from db.dao.project_dao import ProjectDAO
-from models.exceptions import ProjectInternalError
-from models.traces.project_dto import ProjectIn, ProjectOut
+from app.db.dao.project_dao import ProjectDAO
+from app.models.exceptions import ProjectInternalError
+from app.models.traces.project_dto import ProjectIn, ProjectOut
 
 
 class ProjectService:
