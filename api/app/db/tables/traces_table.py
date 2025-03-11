@@ -16,14 +16,14 @@ class Traces(ClickHouseBaseTable):
             ttl_only_drop_parts=1,
         ),
     )
-    timestamp = Column('Timestamp', DateTime64(9), primary_key=True)
-    trace_id = Column('TraceId', String)
-    span_id = Column('SpanId', String)
+    timestamp = Column('Timestamp', DateTime64(9))
+    trace_id = Column('TraceId', String, primary_key=True)
+    span_id = Column('SpanId', String, primary_key=True)
     parent_span_id = Column('ParentSpanId', String)
     trace_state = Column('TraceState', String)
-    span_name = Column('SpanName', LowCardinality(String), primary_key=True)
+    span_name = Column('SpanName', LowCardinality(String))
     span_kind = Column('SpanKind', LowCardinality(String))
-    service_name = Column('ServiceName', LowCardinality(String), primary_key=True)
+    service_name = Column('ServiceName', LowCardinality(String))
     resource_attributes = Column(
         'ResourceAttributes', Map(LowCardinality(String), String)
     )
