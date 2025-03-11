@@ -4,8 +4,9 @@ from uuid import UUID
 from fastapi_pagination import Page, Params
 
 from app.db.dao.project_dao import ProjectDAO
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectInternalError, ProjectNotFoundError
-from app.models.traces.project_dto import OrderType, ProjectIn, ProjectOut
+from app.models.traces.project_dto import ProjectIn, ProjectOut
 
 
 class ProjectService:

@@ -7,7 +7,8 @@ from fastapi.params import Query
 from fastapi_pagination import Page, Params
 
 from app.core import get_config
-from app.models.traces.project_dto import OrderType, ProjectIn, ProjectOut
+from app.models.commons.order_type import OrderType
+from app.models.traces.project_dto import ProjectIn, ProjectOut
 from app.services.project_service import ProjectService
 
 logger = logging.getLogger(get_config().log_config.logger_name)

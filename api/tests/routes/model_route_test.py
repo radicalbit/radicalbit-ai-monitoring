@@ -8,6 +8,7 @@ from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
 from app.models.alert_dto import AlertDTO, AnomalyType
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import (
     ErrorOut,
     ModelError,
@@ -17,7 +18,6 @@ from app.models.exceptions import (
 )
 from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelOut
-from app.models.model_order import OrderType
 from app.routes.model_route import ModelRoute
 from app.services.model_service import ModelService
 from tests.commons import db_mock

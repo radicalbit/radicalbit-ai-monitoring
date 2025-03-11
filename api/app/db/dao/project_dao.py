@@ -9,7 +9,7 @@ from sqlalchemy.future import select as future_select
 
 from app.db.database import Database
 from app.db.tables.project_table import Project
-from app.models.traces.project_dto import OrderType
+from app.models.commons.order_type import OrderType
 
 
 class ProjectDAO:

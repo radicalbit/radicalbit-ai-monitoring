@@ -8,11 +8,11 @@ from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
+from app.models.commons.order_type import OrderType
 from app.models.dataset_dto import (
     CompletionDatasetDTO,
     CurrentDatasetDTO,
     FileReference,
-    OrderType,
     ReferenceDatasetDTO,
 )
 from app.models.job_status import JobStatus

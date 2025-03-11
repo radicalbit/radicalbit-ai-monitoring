@@ -13,10 +13,10 @@ from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.alert_dto import AlertDTO, AnomalyType
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import ModelError, ModelInternalError, ModelNotFoundError
 from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelFeatures, ModelIn, ModelOut, ModelType
-from app.models.model_order import OrderType
 
 
 class ModelService:

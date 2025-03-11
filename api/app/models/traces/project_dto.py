@@ -1,5 +1,4 @@
 import datetime
-from enum import Enum
 from typing import Optional
 from uuid import UUID
 
@@ -45,8 +44,3 @@ class ProjectOut(BaseModel):
             updated_at=str(project.updated_at),
             traces=traces,
         )
-
-
-class OrderType(str, Enum):
-    ASC = 'asc'
-    DESC = 'desc'
