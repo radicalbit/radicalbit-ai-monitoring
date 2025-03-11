@@ -37,9 +37,11 @@ function DataDriftList() {
 }
 
 function FeatureRow({ item }) {
-  const pinType = (item.driftCalc.hasDrift) ? 'filled-error' : 'filled';
-  const isError = (item.driftCalc.hasDrift) ? 'is-error' : '';
-  const value = (item.driftCalc.value > 0) ? numberFormatter().format(item.driftCalc.value) : '--';
+  const driftAlgoritm = item?.driftCalc[0];
+
+  const pinType = driftAlgoritm.hasDrift ? 'filled-error' : 'filled';
+  const isError = driftAlgoritm.hasDrift ? 'is-error' : '';
+  const value = driftAlgoritm.value > 0 ? numberFormatter().format(driftAlgoritm.value) : '--';
   const buttonIcon = getButtonIcon(item.fieldType);
 
   return (
@@ -51,7 +53,7 @@ function FeatureRow({ item }) {
             one: (
               <div className="flex gap-4 justify-start">
 
-                {DRIFT_TEST_ENUM_LABEL[item.driftCalc.type]}
+                {DRIFT_TEST_ENUM_LABEL[driftAlgoritm.type]}
 
                 <p className={`${isError} m-0`}>
                   <b className="font-[var(--coo-font-weight-bold)]">
@@ -80,7 +82,7 @@ function FeatureRow({ item }) {
               <SectionTitle
                 size="small"
                 title={item.featureName}
-                titleSuffix={<Tag mode="text" type="secondary-light">{DRIFT_FEATURE_TYPE_ENUM[item.driftCalc.type].toUpperCase()}</Tag>}
+                titleSuffix={<Tag mode="text" type="secondary-light">{DRIFT_FEATURE_TYPE_ENUM[driftAlgoritm.type].toUpperCase()}</Tag>}
               />
             </div>
           )}
