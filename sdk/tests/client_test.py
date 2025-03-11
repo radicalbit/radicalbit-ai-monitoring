@@ -392,3 +392,35 @@ class ClientTest(unittest.TestCase):
         project = client.get_project(id=project_id)
 
         assert project.name() == name
+
+    @responses.activate
+    def test_search_projects(self):
+        base_url = 'http://api:9000'
+        project1 = CreateProject(
+            name='my project1',
+        )
+        project_definition1 = ProjectDefinition(
+            name=project1.name,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        project2 = CreateProject(
+            name='my project2',
+        )
+        project_definition2 = ProjectDefinition(
+            name=project2.name,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/projects/all',
+            body=f'[{project_definition1.model_dump_json()}, {project_definition2.model_dump_json()}]',
+            status=200,
+            content_type='application/json',
+        )
+
+        client = Client(base_url)
+        projects = client.search_projects()
+        assert projects[0].name() == project_definition1.name
+        assert projects[1].name() == project_definition2.name
