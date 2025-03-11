@@ -14,7 +14,7 @@ class TreeNode(BaseModel):
 
 class SpanBasic(BaseModel):
     name: str
-    trace_id: Optional[str] = None
+    trace_id: str
     span_id: str
     duration: int
     tokens: int
