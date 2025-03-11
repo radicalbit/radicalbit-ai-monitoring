@@ -13,7 +13,7 @@ from app.db.database import Database
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
-from app.models.model_order import OrderType
+from app.models.commons.order_type import OrderType
 
 
 class ModelDAO:

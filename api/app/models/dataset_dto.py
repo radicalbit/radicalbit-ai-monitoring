@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import Optional
 from uuid import UUID
 
@@ -96,8 +95,3 @@ class FileCompletion(BaseModel):
         populate_by_name=True,
         alias_generator=to_camel,
     )
-
-
-class OrderType(str, Enum):
-    ASC = 'asc'
-    DESC = 'desc'

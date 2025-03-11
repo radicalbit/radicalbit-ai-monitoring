@@ -7,13 +7,14 @@ from fastapi.encoders import jsonable_encoder
 from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import (
     ErrorOut,
     ProjectError,
     ProjectInternalError,
     project_exception_handler,
 )
-from app.models.traces.project_dto import OrderType, ProjectOut
+from app.models.traces.project_dto import ProjectOut
 from app.routes.project_route import ProjectRoute
 from app.services.project_service import ProjectService
 from tests.commons import db_mock

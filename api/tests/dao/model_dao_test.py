@@ -3,7 +3,7 @@ import uuid
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
-from app.models.model_order import OrderType
+from app.models.commons.order_type import OrderType
 from tests.commons import db_mock
 from tests.commons.db_integration import DatabaseIntegration
 

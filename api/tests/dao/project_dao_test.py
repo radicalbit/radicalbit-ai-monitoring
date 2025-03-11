@@ -1,7 +1,7 @@
 import uuid
 
 from app.db.dao.project_dao import ProjectDAO
-from app.models.dataset_dto import OrderType
+from app.models.commons.order_type import OrderType
 from tests.commons import db_mock
 from tests.commons.db_integration import DatabaseIntegration
 

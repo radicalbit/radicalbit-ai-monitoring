@@ -6,8 +6,9 @@ from fastapi_pagination import Page, Params
 import pytest
 
 from app.db.dao.project_dao import ProjectDAO
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectNotFoundError
-from app.models.traces.project_dto import OrderType, ProjectOut
+from app.models.traces.project_dto import ProjectOut
 from app.services.project_service import ProjectService
 from tests.commons import db_mock
 
