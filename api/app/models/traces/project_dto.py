@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -28,16 +29,18 @@ class ProjectOut(BaseModel):
     name: str
     created_at: str
     updated_at: str
+    traces: Optional[int]
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
     )
 
     @staticmethod
-    def from_project(project: Project):
+    def from_project(project: Project, traces: Optional[int] = None):
         return ProjectOut(
             uuid=project.uuid,
             name=project.name,
             created_at=str(project.created_at),
             updated_at=str(project.updated_at),
+            traces=traces,
         )

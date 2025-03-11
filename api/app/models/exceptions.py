@@ -124,6 +124,13 @@ class ProjectInternalError(ProjectError):
         super().__init__(self.message, self.status_code)
 
 
+class ProjectNotFoundError(ProjectError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_404_NOT_FOUND
+        super().__init__(self.message, self.status_code)
+
+
 def project_exception_handler(_, err: ProjectError):
     if err.status_code >= 500:
         logger.error(err.message)

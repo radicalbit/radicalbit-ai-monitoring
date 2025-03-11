@@ -1,3 +1,6 @@
+from typing import Optional
+from uuid import UUID
+
 from app.db.database import Database
 from app.db.tables.project_table import Project
 
@@ -11,3 +14,11 @@ class ProjectDAO:
             session.add(project)
             session.flush()
             return project
+
+    def get_by_uuid(self, uuid: UUID) -> Optional[Project]:
+        with self.db.begin_session() as session:
+            return (
+                session.query(Project)
+                .where(Project.uuid == uuid, Project.deleted.is_(False))
+                .one_or_none()
+            )

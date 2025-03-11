@@ -1,5 +1,7 @@
+from uuid import UUID
+
 from app.db.dao.project_dao import ProjectDAO
-from app.models.exceptions import ProjectInternalError
+from app.models.exceptions import ProjectInternalError, ProjectNotFoundError
 from app.models.traces.project_dto import ProjectIn, ProjectOut
 
 
@@ -19,3 +21,10 @@ class ProjectService:
             raise ProjectInternalError(
                 f'An error occurred while creating the project: {e}'
             ) from e
+
+    def get_project_by_uuid(self, project_uuid: UUID) -> ProjectOut:
+        project = self.project_dao.get_by_uuid(project_uuid)
+        if not project:
+            raise ProjectNotFoundError(f'Project {project_uuid} not found')
+        # TODO: add query to clickhouse to retrieve project trace number
+        return ProjectOut.from_project(project, traces=None)
