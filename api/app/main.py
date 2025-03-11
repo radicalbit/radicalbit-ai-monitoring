@@ -18,6 +18,7 @@ from app.db.dao.model_dao import ModelDAO
 from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
+from app.db.dao.traces_dao import TraceDAO
 from app.db.database import Database, DatabaseDialect
 from app.models.exceptions import (
     MetricsError,
@@ -36,12 +37,14 @@ from app.routes.infer_schema_route import InferSchemaRoute
 from app.routes.metrics_route import MetricsRoute
 from app.routes.model_route import ModelRoute
 from app.routes.project_route import ProjectRoute
+from app.routes.trace_route import TraceRoute
 from app.routes.upload_dataset_route import UploadDatasetRoute
 from app.services.file_service import FileService
 from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
 from app.services.project_service import ProjectService
 from app.services.spark_k8s_service import SparkK8SService
+from app.services.trace_service import TraceService
 
 dictConfig(get_config().log_config.model_dump())
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -68,6 +71,7 @@ current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
 completion_dataset_dao = CompletionDatasetDAO(database)
 completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
 project_dao = ProjectDAO(database)
+trace_dao = TraceDAO(ch_database)
 
 model_service = ModelService(
     model_dao=model_dao,
@@ -111,6 +115,7 @@ metrics_service = MetricsService(
     model_service=model_service,
 )
 project_service = ProjectService(project_dao=project_dao)
+trace_service = TraceService(trace_dao=trace_dao)
 spark_k8s_service = SparkK8SService(spark_k8s_client)
 
 
@@ -143,6 +148,7 @@ app.include_router(UploadDatasetRoute.get_router(file_service), prefix='/api/mod
 app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schema')
 app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
 app.include_router(ProjectRoute.get_router(project_service), prefix='/api/projects')
+app.include_router(TraceRoute.get_router(trace_service), prefix='/api/traces')
 
 app.include_router(HealthcheckRoute.get_healthcheck_route())
 
