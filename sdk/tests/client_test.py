@@ -366,3 +366,29 @@ class ClientTest(unittest.TestCase):
         client = Client(base_url)
         project = client.create_project(project)
         assert project.name() == project_definition.name
+
+    @responses.activate
+    def test_get_project(self):
+        base_url = 'http://api:9000'
+        project_id = uuid.uuid4()
+        name = 'my project'
+        ts = str(time.time())
+
+        json_string = f"""{{
+            "uuid": "{str(project_id)}",
+            "name": "{name}",
+            "createdAt": "{ts}",
+            "updatedAt": "{ts}"
+        }}"""
+
+        responses.add(
+            method=responses.GET,
+            url=f'{base_url}/api/projects/{str(project_id)}',
+            body=json_string,
+            status=200,
+            content_type='application/json',
+        )
+        client = Client(base_url)
+        project = client.get_project(id=project_id)
+
+        assert project.name() == name

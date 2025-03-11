@@ -81,3 +81,18 @@ class Client:
             func=__callback,
             data=project.model_dump_json(),
         )
+
+    def get_project(self, id: UUID) -> Project:
+        def __callback(response: requests.Response) -> Project:
+            try:
+                response_project = ProjectDefinition.model_validate(response.json())
+                return Project(self.__base_url, response_project)
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/projects/{str(id)}',
+            valid_response_code=200,
+            func=__callback,
+        )
