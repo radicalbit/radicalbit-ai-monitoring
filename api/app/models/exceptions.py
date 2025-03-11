@@ -110,6 +110,38 @@ class FileTooLargeException(SchemaException):
         super().__init__(message, status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
 
 
+class ProjectError(Exception):
+    def __init__(self, message, status_code):
+        self.message = message
+        self.status_code = status_code
+        super().__init__(self.message, self.status_code)
+
+
+class ProjectInternalError(ProjectError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        super().__init__(self.message, self.status_code)
+
+
+class ProjectNotFoundError(ProjectError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_404_NOT_FOUND
+        super().__init__(self.message, self.status_code)
+
+
+def project_exception_handler(_, err: ProjectError):
+    if err.status_code >= 500:
+        logger.error(err.message)
+    else:
+        logger.warning(err.message)
+    return JSONResponse(
+        status_code=err.status_code,
+        content=jsonable_encoder(ErrorOut(err.message)),
+    )
+
+
 def schema_exception_handler(_, err: SchemaException):
     if err.status_code >= 500:
         logger.error(err.message)

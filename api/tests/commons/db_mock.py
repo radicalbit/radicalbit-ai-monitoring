@@ -7,6 +7,7 @@ from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
+from app.db.tables.project_table import Project
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.drift_algorithm_type import DriftAlgorithmType
@@ -23,11 +24,13 @@ from app.models.model_dto import (
     OutputType,
     SupportedTypes,
 )
+from app.models.traces.project_dto import ProjectIn
 
 MODEL_UUID = uuid.uuid4()
 REFERENCE_UUID = uuid.uuid4()
 CURRENT_UUID = uuid.uuid4()
 COMPLETION_UUID = uuid.uuid4()
+PROJECT_UUID = uuid.uuid4()
 
 
 def get_sample_model(
@@ -624,4 +627,24 @@ def get_sample_completion_metrics(
     return CompletionDatasetMetrics(
         completion_uuid=completion_uuid,
         model_quality=model_quality,
+    )
+
+
+def get_sample_project(
+    uuid: uuid.UUID = PROJECT_UUID,
+    name: str = 'project_name',
+) -> Project:
+    return Project(
+        uuid=uuid,
+        name=name,
+        created_at=datetime.datetime.now(tz=datetime.UTC),
+        updated_at=datetime.datetime.now(tz=datetime.UTC),
+    )
+
+
+def get_sample_project_in(
+    name: str = 'project_name',
+):
+    return ProjectIn(
+        name=name,
     )

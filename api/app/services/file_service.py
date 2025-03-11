@@ -598,14 +598,14 @@ class FileService:
             not in file_upload_config.accepted_file_types
         ):
             raise InvalidFileException(
-                f'File has not a valid extension. Valid extensions are: {*file_upload_config.accepted_file_types,}'
+                f'File has not a valid extension. Valid extensions are: {(*file_upload_config.accepted_file_types,)}'
             )
 
         df = pd.read_csv(csv_file.file, sep=sep)
         col_errors = [col for col in columns if col not in df.columns]
         if len(col_errors) > 0:
             raise InvalidFileException(
-                f'Columns {*col_errors,} not found in file {_f_name}'
+                f'Columns {(*col_errors,)} not found in file {_f_name}'
             )
 
         csv_file.file.flush()
