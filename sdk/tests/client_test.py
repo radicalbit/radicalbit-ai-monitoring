@@ -10,6 +10,7 @@ from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
     ColumnDefinition,
     CreateModel,
+    CreateProject,
     DataType,
     DriftAlgorithmType,
     FieldType,
@@ -17,6 +18,7 @@ from radicalbit_platform_sdk.models import (
     ModelDefinition,
     ModelType,
     OutputType,
+    ProjectDefinition,
     SupportedTypes,
 )
 from radicalbit_platform_sdk.models.drift_method import ModelDriftMethod
@@ -295,7 +297,7 @@ class ClientTest(unittest.TestCase):
                     type=SupportedTypes.float,
                     field_type=FieldType.numerical,
                     drift=model_drift_method_num.get_drift_methods(),
-                )
+                ),
             ],
             outputs=OutputType(
                 prediction=ColumnDefinition(
@@ -341,3 +343,26 @@ class ClientTest(unittest.TestCase):
         assert feat1.drift == model_drift_method_cat.get_drift_methods()
         assert feat2.drift == model_drift_method_num.get_drift_methods()
         assert feat3.drift == model_drift_method_num.get_drift_methods()
+
+    @responses.activate
+    def test_create_project(self):
+        base_url = 'http://api:9000'
+        project = CreateProject(
+            name='my project',
+        )
+        project_definition = ProjectDefinition(
+            name=project.name,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        responses.add(
+            method=responses.POST,
+            url=f'{base_url}/api/projects',
+            body=project_definition.model_dump_json(),
+            status=201,
+            content_type='application/json',
+        )
+
+        client = Client(base_url)
+        project = client.create_project(project)
+        assert project.name() == project_definition.name
