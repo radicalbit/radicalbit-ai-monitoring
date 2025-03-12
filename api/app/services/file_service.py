@@ -26,13 +26,13 @@ from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
+from app.models.commons.order_type import OrderType
 from app.models.completion_response import CompletionResponses
 from app.models.dataset_dto import (
     CompletionDatasetDTO,
     CurrentDatasetDTO,
     FileCompletion,
     FileReference,
-    OrderType,
     ReferenceDatasetDTO,
 )
 from app.models.exceptions import (

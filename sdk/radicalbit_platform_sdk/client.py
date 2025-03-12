@@ -96,3 +96,22 @@ class Client:
             valid_response_code=200,
             func=__callback,
         )
+
+    def search_projects(self) -> List[Project]:
+        def __callback(response: requests.Response) -> List[Project]:
+            try:
+                adapter = TypeAdapter(List[ProjectDefinition])
+                projects_definitions = adapter.validate_python(response.json())
+                return [
+                    Project(self.__base_url, project)
+                    for project in projects_definitions
+                ]
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/projects/all',
+            valid_response_code=200,
+            func=__callback,
+        )

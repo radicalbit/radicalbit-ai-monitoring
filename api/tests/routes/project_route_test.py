@@ -1,10 +1,13 @@
 import unittest
 from unittest.mock import MagicMock
+import uuid
 
 from fastapi import FastAPI
 from fastapi.encoders import jsonable_encoder
+from fastapi_pagination import Page, Params
 from starlette.testclient import TestClient
 
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import (
     ErrorOut,
     ProjectError,
@@ -70,3 +73,41 @@ class ProjectRouteTest(unittest.TestCase):
         assert res.status_code == 200
         assert jsonable_encoder(project_out) == res.json()
         self.project_service.get_project_by_uuid.assert_called_once_with(project.uuid)
+
+    def test_get_all_projects_paginated(self):
+        project1 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project1')
+        project2 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project2')
+        project3 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project3')
+
+        projects_out = [
+            ProjectOut.from_project(project1),
+            ProjectOut.from_project(project2),
+            ProjectOut.from_project(project3),
+        ]
+        page = Page.create(items=projects_out, total=len(projects_out), params=Params())
+        self.project_service.get_all_projects_paginated = MagicMock(return_value=page)
+
+        res = self.client.get(f'{self.prefix}')
+        assert res.status_code == 200
+        assert jsonable_encoder(page) == res.json()
+        self.project_service.get_all_projects_paginated.assert_called_once_with(
+            params=Params(page=1, size=50), order=OrderType.ASC, sort=None
+        )
+
+    def test_get_all_projects(self):
+        project1 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project1')
+        project2 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project2')
+        project3 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project3')
+
+        projects_out = [
+            ProjectOut.from_project(project1),
+            ProjectOut.from_project(project2),
+            ProjectOut.from_project(project3),
+        ]
+
+        self.project_service.get_all_projects = MagicMock(return_value=projects_out)
+
+        res = self.client.get(f'{self.prefix}/all')
+        assert res.status_code == 200
+        assert jsonable_encoder(projects_out) == res.json()
+        self.project_service.get_all_projects.assert_called_once()

@@ -9,7 +9,7 @@ from sqlalchemy.future import select as future_select
 
 from app.db.database import Database
 from app.db.tables.current_dataset_table import CurrentDataset
-from app.models.dataset_dto import OrderType
+from app.models.commons.order_type import OrderType
 
 
 class CurrentDatasetDAO:

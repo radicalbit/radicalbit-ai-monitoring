@@ -5,12 +5,12 @@ from fastapi import APIRouter, File, Form, UploadFile, status
 from fastapi.params import Query
 from fastapi_pagination import Page, Params
 
+from app.models.commons.order_type import OrderType
 from app.models.dataset_dto import (
     CompletionDatasetDTO,
     CurrentDatasetDTO,
     FileCompletion,
     FileReference,
-    OrderType,
     ReferenceDatasetDTO,
 )
 from app.services.file_service import FileService
