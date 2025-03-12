@@ -3,6 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 from pydantic.alias_generators import to_camel
+from sqlalchemy import Row
 
 
 class TreeNode(BaseModel):
@@ -68,3 +69,17 @@ class SessionDTO(BaseModel):
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, from_attributes=True
     )
+
+    @staticmethod
+    def from_attributes(x: Row):
+        return SessionDTO(
+            session_uuid=getattr(x, 'session_uuid'),
+            traces=getattr(x, 'traces'),
+            durations=getattr(x, 'durations'),
+            completion_tokens=getattr(x, 'completion_tokens'),
+            prompt_tokens=getattr(x, 'prompt_tokens'),
+            total_tokens=getattr(x, 'total_tokens'),
+            number_of_errors=getattr(x, 'number_of_errors'),
+            created_at=getattr(x, 'created_at'),
+            latest_trace_ts=getattr(x, 'latest_trace_ts'),
+        )
