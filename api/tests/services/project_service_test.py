@@ -100,5 +100,15 @@ class ProjectServiceTest(unittest.TestCase):
         assert result[1].name == 'project2'
         assert result[2].name == 'project3'
 
+    def test_delete_project_ok(self):
+        project = db_mock.get_sample_project()
+        self.project_dao.get_by_uuid = MagicMock(return_value=project)
+        self.project_dao.delete = MagicMock(return_value=1)
+        res = self.project_service.delete_project(project_uuid)
+        self.project_dao.get_by_uuid.assert_called_once_with(project.uuid)
+        self.project_dao.delete.assert_called_once_with(project.uuid)
+
+        assert res == ProjectOut.from_project(project)
+
 
 project_uuid = db_mock.PROJECT_UUID

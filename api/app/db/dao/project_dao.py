@@ -1,9 +1,11 @@
+import datetime
 import re
 from typing import List, Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
+import sqlalchemy
 from sqlalchemy import asc, desc
 from sqlalchemy.future import select as future_select
 
@@ -58,3 +60,13 @@ class ProjectDAO:
                 )
 
             return paginate(session, stmt, params)
+
+    def delete(self, uuid: UUID) -> int:
+        with self.db.begin_session() as session:
+            deleted_at = datetime.datetime.now(tz=datetime.UTC)
+            query = (
+                sqlalchemy.update(Project)
+                .where(Project.uuid == uuid, Project.deleted.is_(False))
+                .values(deleted=True, updated_at=deleted_at)
+            )
+            return session.execute(query).rowcount
