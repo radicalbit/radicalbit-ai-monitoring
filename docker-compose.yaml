@@ -30,6 +30,12 @@ services:
       DB_PWD: "postgres"
       DB_NAME: "radicalbit"
       DB_SCHEMA: "public"
+      DB_HOST_CH: "clickhouse"
+      DB_PORT_CH: 9000
+      DB_USER_CH: "default"
+      DB_PWD_CH: "default"
+      DB_NAME_CH: "default"
+      DB_SCHEMA_CH: "default"
       AWS_ACCESS_KEY_ID: "minio"
       AWS_SECRET_ACCESS_KEY: "minio123"
       AWS_REGION: "us-east-1"
@@ -39,6 +45,8 @@ services:
       SPARK_IMAGE: "radicalbit-spark-py:develop"
     depends_on:
       postgres:
+        condition: service_healthy
+      clickhouse:
         condition: service_healthy
       migrations:
         condition: service_completed_successfully
@@ -256,7 +264,7 @@ services:
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
-    container_name: clickhouse
+    container_name: "clickhouse"
     ports:
       - "8123:8123"  # HTTP interface
       - "9002:9000"  # Native client
