@@ -5,7 +5,7 @@ from sqlalchemy import BigInteger, Column, String, func
 from app.db.database import ClickHouseBaseTable
 
 
-class Traces(ClickHouseBaseTable):
+class Trace(ClickHouseBaseTable):
     __tablename__ = 'otel_traces'
 
     __table_args__ = (
