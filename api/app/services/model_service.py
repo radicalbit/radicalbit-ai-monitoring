@@ -43,7 +43,7 @@ class ModelService:
             ) from e
 
     def get_model_by_uuid(self, model_uuid: UUID) -> Optional[ModelOut]:
-        model = self.check_and_get_model(model_uuid)
+        model = self._check_and_get_model(model_uuid)
         latest_reference_dataset, latest_current_dataset, latest_completion_dataset = (
             self._get_latest_datasets(model_uuid, model.model_type)
         )
@@ -74,7 +74,7 @@ class ModelService:
         )
 
     def delete_model(self, model_uuid: UUID) -> Optional[ModelOut]:
-        model = self.check_and_get_model(model_uuid)
+        model = self._check_and_get_model(model_uuid)
         self.model_dao.delete(model_uuid)
         return ModelOut.from_model(model)
 
@@ -229,7 +229,7 @@ class ModelService:
 
         return Page.create(items=_items, params=params, total=models.total)
 
-    def check_and_get_model(self, model_uuid: UUID) -> Model:
+    def _check_and_get_model(self, model_uuid: UUID) -> Model:
         model = self.model_dao.get_by_uuid(model_uuid)
         if not model:
             raise ModelNotFoundError(f'Model {model_uuid} not found')
