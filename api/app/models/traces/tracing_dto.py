@@ -54,7 +54,9 @@ class SessionDTO(BaseModel):
     session_uuid: UUID
     traces: int
     durations: int
-    tokens: int = 0
+    completion_tokens: int = 0
+    prompt_tokens: int = 0
+    total_tokens: int = 0
     number_of_errors: int
     created_at: str
     latest_trace_ts: str
