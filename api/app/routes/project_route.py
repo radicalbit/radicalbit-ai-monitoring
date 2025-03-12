@@ -46,7 +46,7 @@ class ProjectRoute:
             )
 
         @router.delete('/{project_uuid}', status_code=200, response_model=ProjectOut)
-        def delete_model(project_uuid: UUID):
+        def delete_project(project_uuid: UUID):
             project = project_service.delete_project(project_uuid)
             logger.info('Project %s with name %s deleted.', project.uuid, project.name)
             return project

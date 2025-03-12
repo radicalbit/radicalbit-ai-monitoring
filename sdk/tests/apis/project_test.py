@@ -10,7 +10,7 @@ from radicalbit_platform_sdk.models import ProjectDefinition
 
 class ProjectTest(unittest.TestCase):
     @responses.activate
-    def test_delete_model(self):
+    def test_delete_project(self):
         base_url = 'http://api:9000'
         project_id = uuid.uuid4()
         project = Project(
