@@ -111,3 +111,13 @@ class ProjectRouteTest(unittest.TestCase):
         assert res.status_code == 200
         assert jsonable_encoder(projects_out) == res.json()
         self.project_service.get_all_projects.assert_called_once()
+
+    def test_delete_project(self):
+        project = db_mock.get_sample_project()
+        project_out = ProjectOut.from_project(project)
+        self.project_service.delete_project = MagicMock(return_value=project_out)
+
+        res = self.client.delete(f'{self.prefix}/{project.uuid}')
+        assert res.status_code == 200
+        assert jsonable_encoder(project_out) == res.json()
+        self.project_service.delete_project.assert_called_once_with(project.uuid)

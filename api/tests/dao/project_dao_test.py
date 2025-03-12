@@ -46,3 +46,11 @@ class ProjectDAOTest(DatabaseIntegration):
         projects = self.project_dao.get_all_paginated(order=OrderType.DESC, sort='name')
         assert projects.items[0].name == project3.name
         assert len(projects.items) == 3
+
+    def test_delete(self):
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        rows = self.project_dao.delete(project.uuid)
+        retrieved = self.project_dao.get_by_uuid(project.uuid)
+        assert rows == 1
+        assert retrieved is None
