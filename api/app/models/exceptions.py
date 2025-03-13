@@ -110,6 +110,31 @@ class FileTooLargeException(SchemaException):
         super().__init__(message, status.HTTP_413_REQUEST_ENTITY_TOO_LARGE)
 
 
+class TraceError(Exception):
+    def __init__(self, message, status_code):
+        self.message = message
+        self.status_code = status_code
+        super().__init__(self.message, self.status_code)
+
+
+class TraceSortColumnError(TraceError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        super().__init__(self.message, self.status_code)
+
+
+def trace_exception_handler(_, err: TraceError):
+    if err.status_code >= 500:
+        logger.error(err.message)
+    else:
+        logger.warning(err.message)
+    return JSONResponse(
+        status_code=err.status_code,
+        content=jsonable_encoder(ErrorOut(err.message)),
+    )
+
+
 class ProjectError(Exception):
     def __init__(self, message, status_code):
         self.message = message
