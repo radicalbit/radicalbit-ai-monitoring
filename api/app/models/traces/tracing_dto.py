@@ -51,6 +51,7 @@ class TraceDTO(SpanBasic):
 
 
 class SessionDTO(BaseModel):
+    project_uuid: UUID
     session_uuid: UUID
     traces: int
     durations: int = Field(exclude=True)

@@ -55,7 +55,7 @@ class TraceDAO:
                     Trace.timestamp,
                     Trace.trace_id,
                     Trace.duration,
-                    Trace.service_name,
+                    Trace.service_name.label('project_uuid'),
                     Trace.parent_span_id,
                     Trace.span_attributes,
                     Trace.events_attributes,
@@ -122,6 +122,7 @@ class TraceDAO:
 
             stmt = (
                 select(
+                    parent_span_filter_stmt.c.project_uuid,
                     parent_span_filter_stmt.c.session_uuid,
                     func.min(parent_span_filter_stmt.c.timestamp)
                     .cast(String)
@@ -132,7 +133,10 @@ class TraceDAO:
                     func.count(parent_span_filter_stmt.c.trace_id).label('traces'),
                     func.sum(parent_span_filter_stmt.c.duration).label('durations'),
                 )
-                .group_by(parent_span_filter_stmt.c.session_uuid)
+                .group_by(
+                    parent_span_filter_stmt.c.project_uuid,
+                    parent_span_filter_stmt.c.session_uuid,
+                )
                 .subquery()
             )
 
