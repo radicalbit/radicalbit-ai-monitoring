@@ -1,5 +1,6 @@
 import re
 from typing import Optional
+from uuid import UUID
 
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
@@ -27,6 +28,7 @@ class TraceDAO:
 
     def get_all_sessions(
         self,
+        project_uuid: UUID,
         params: Optional[Params] = None,
         order: OrderType = OrderType.ASC,
         sort: Optional[str] = None,
@@ -53,6 +55,7 @@ class TraceDAO:
                     Trace.timestamp,
                     Trace.trace_id,
                     Trace.duration,
+                    Trace.service_name,
                     Trace.parent_span_id,
                     Trace.span_attributes,
                     Trace.events_attributes,
@@ -72,7 +75,8 @@ class TraceDAO:
                 .filter(
                     text(
                         "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
-                    )
+                    ),
+                    Trace.service_name == str(project_uuid),
                 )
                 .subquery()
             )
