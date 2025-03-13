@@ -54,12 +54,12 @@ class Database:
         self._engine = None
         self._SessionFactory = None
         self._connected = False
-        self.dialect = dialect
+        self._dialect = dialect
 
     def connect(self):
-        logger.info('Trying to connect to the DB: %s', self.dialect.value)
+        logger.info('Trying to connect to the DB: %s', self._dialect.value)
         if not self._connected:
-            logger.info('Connecting to the DB: %s', self.dialect.value)
+            logger.info('Connecting to the DB: %s', self._dialect.value)
             self._engine = create_engine(self._db_url, pool_pre_ping=True)
             self._SessionFactory = sessionmaker(
                 bind=self._engine,
@@ -79,7 +79,7 @@ class Database:
 
     def init_mappings(self):
         logger.info('Initiating DB orm mappings')
-        if self.dialect == DatabaseDialect.POSTGRES:
+        if self._dialect == DatabaseDialect.POSTGRES:
             Reflected.prepare(self._engine, reflect_views=True)
         else:
             Reflected.prepare(self._engine)

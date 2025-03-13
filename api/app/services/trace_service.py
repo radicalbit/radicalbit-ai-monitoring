@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from fastapi_pagination import Page, Params
 
@@ -16,12 +17,13 @@ class TraceService:
 
     def get_all_sessions(
         self,
+        project_uuid: UUID,
         params: Params = Params(),
         order: OrderType = OrderType.ASC,
         sort: Optional[str] = None,
     ) -> Page[SessionDTO]:
         sessions = self.trace_dao.get_all_sessions(
-            params=params, order=order, sort=sort
+            project_uuid=project_uuid, params=params, order=order, sort=sort
         )
         sessions_dto = [SessionDTO.model_validate(s) for s in sessions.items]
         return Page.create(

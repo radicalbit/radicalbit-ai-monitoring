@@ -264,7 +264,7 @@ services:
 
   clickhouse:
     image: clickhouse/clickhouse-server:latest
-    container_name: "clickhouse"
+    container_name: clickhouse
     ports:
       - "8123:8123"  # HTTP interface
       - "9002:9000"  # Native client
