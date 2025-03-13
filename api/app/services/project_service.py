@@ -1,6 +1,11 @@
+from typing import List, Optional
 from uuid import UUID
 
+from fastapi_pagination import Page, Params
+
 from app.db.dao.project_dao import ProjectDAO
+from app.db.tables.project_table import Project
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectInternalError, ProjectNotFoundError
 from app.models.traces.project_dto import ProjectIn, ProjectOut
 
@@ -23,8 +28,43 @@ class ProjectService:
             ) from e
 
     def get_project_by_uuid(self, project_uuid: UUID) -> ProjectOut:
+        project = self._check_and_get_project(project_uuid)
+        # TODO: add query to clickhouse to retrieve project trace number
+        return ProjectOut.from_project(project, traces=None)
+
+    def get_all_projects(self) -> List[ProjectOut]:
+        projects = self.project_dao.get_all()
+        # TODO: add query to clickhouse to retrieve project trace number
+        return [ProjectOut.from_project(project, traces=None) for project in projects]
+
+    def get_all_projects_paginated(
+        self,
+        params: Params = Params(),
+        order: OrderType = OrderType.ASC,
+        sort: Optional[str] = None,
+    ) -> Page[ProjectOut]:
+        projects = self.project_dao.get_all_paginated(
+            params=params,
+            order=order,
+            sort=sort,
+        )
+        # TODO: add query to clickhouse to retrieve project trace number
+        projects_out = [
+            ProjectOut.from_project(project, traces=None) for project in projects.items
+        ]
+        return Page.create(
+            items=projects_out,
+            params=params,
+            total=projects.total,
+        )
+
+    def delete_project(self, project_uuid: UUID) -> Optional[ProjectOut]:
+        project = self._check_and_get_project(project_uuid)
+        self.project_dao.delete(project_uuid)
+        return ProjectOut.from_project(project)
+
+    def _check_and_get_project(self, project_uuid: UUID) -> Project:
         project = self.project_dao.get_by_uuid(project_uuid)
         if not project:
             raise ProjectNotFoundError(f'Project {project_uuid} not found')
-        # TODO: add query to clickhouse to retrieve project trace number
-        return ProjectOut.from_project(project, traces=None)
+        return project

@@ -8,9 +8,9 @@ from fastapi_pagination import Page, Params
 
 from app.core import get_config
 from app.models.alert_dto import AlertDTO
+from app.models.commons.order_type import OrderType
 from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
 from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
-from app.models.model_order import OrderType
 from app.services.model_service import ModelService
 
 logger = logging.getLogger(get_config().log_config.logger_name)

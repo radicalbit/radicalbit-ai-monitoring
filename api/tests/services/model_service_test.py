@@ -11,9 +11,9 @@ from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.models.alert_dto import AnomalyType
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import ModelError, ModelNotFoundError
 from app.models.model_dto import ModelOut, ModelType
-from app.models.model_order import OrderType
 from app.services.model_service import ModelService
 from tests.commons import db_mock
 
