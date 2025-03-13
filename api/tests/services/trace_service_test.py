@@ -3,7 +3,6 @@ from unittest.mock import MagicMock
 
 from app.db.dao.traces_dao import TraceDAO
 from app.services.trace_service import TraceService
-from tests.commons import db_mock
 
 
 class TraceServiceTest(unittest.TestCase):

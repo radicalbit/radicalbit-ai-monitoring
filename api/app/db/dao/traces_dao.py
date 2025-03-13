@@ -1,14 +1,52 @@
-from sqlalchemy import Integer, String, func, literal_column, select, text
+import re
+from typing import Optional
+
+from fastapi_pagination import Page, Params
+from fastapi_pagination.ext.sqlalchemy import paginate
+from sqlalchemy import (
+    Integer,
+    Row,
+    String,
+    asc,
+    desc,
+    func,
+    literal_column,
+    select,
+    text,
+)
 
 from app.db.database import Database
 from app.db.tables.traces_table import Trace
+from app.models.commons.order_type import OrderType
+from app.models.exceptions import TraceSortColumnError
 
 
 class TraceDAO:
     def __init__(self, database: Database):
         self.db = database
 
-    def get_all_sessions(self):
+    def get_all_sessions(
+        self,
+        params: Optional[Params] = None,
+        order: OrderType = OrderType.ASC,
+        sort: Optional[str] = None,
+    ) -> Page[Row]:
+        def order_by_column_name(column_name: str) -> str:
+            formatted_column_name = re.sub('(?=[A-Z])', '_', column_name).lower()
+            if formatted_column_name not in [
+                'traces',
+                'durations',
+                'created_at',
+                'latest_trace_ts',
+            ]:
+                raise TraceSortColumnError(
+                    message='Column passed does not allow sorting'
+                )
+            return formatted_column_name
+
+        if params is None:
+            params = Params()
+
         with self.db.begin_session() as session:
             span_attrs_stmt = (
                 select(
@@ -95,18 +133,23 @@ class TraceDAO:
             )
 
             join_stmt = (
-                select(stmt, tokens_count_stmt).join(
+                select(stmt, tokens_count_stmt)
+                .join(
                     tokens_count_stmt,
                     stmt.c.session_uuid == tokens_count_stmt.c.session_uuid,
-                )
-            ).subquery()
-
-            final_join = (
-                select(join_stmt, errors_stmt)
-                .join(
-                    errors_stmt, join_stmt.c.session_uuid == errors_stmt.c.session_uuid
                 )
                 .subquery()
             )
 
-            return session.query(final_join).all()
+            final_join = select(join_stmt, errors_stmt).join(
+                errors_stmt, join_stmt.c.session_uuid == errors_stmt.c.session_uuid
+            )
+
+            if sort:
+                final_join = (
+                    final_join.order_by(asc(text(order_by_column_name(sort))))
+                    if order == OrderType.ASC
+                    else final_join.order_by(desc(text(order_by_column_name(sort))))
+                )
+
+            return paginate(session, final_join, params)

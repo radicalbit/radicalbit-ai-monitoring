@@ -25,12 +25,14 @@ from app.models.exceptions import (
     ModelError,
     ProjectError,
     SchemaException,
+    TraceError,
     internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
     project_exception_handler,
     request_validation_exception_handler,
     schema_exception_handler,
+    trace_exception_handler,
 )
 from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
@@ -124,6 +126,7 @@ async def lifespan(fastapi: FastAPI):
     logger.info('Starting service ...')
     database.connect()
     ch_database.connect()
+    ch_database.init_mappings()
     database.init_mappings()
     yield
     logger.info('Stopping service ...')
@@ -154,6 +157,7 @@ app.include_router(HealthcheckRoute.get_healthcheck_route())
 app.add_exception_handler(ModelError, model_exception_handler)
 app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(ProjectError, project_exception_handler)
+app.add_exception_handler(TraceError, trace_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 app.add_exception_handler(Exception, internal_exception_handler)
