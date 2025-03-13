@@ -3,7 +3,7 @@ from typing import Optional
 from fastapi_pagination import Page, Params
 
 from app.db.dao.traces_dao import TraceDAO
-from app.models.model_order import OrderType
+from app.models.commons.order_type import OrderType
 from app.models.traces.tracing_dto import SessionDTO
 
 
