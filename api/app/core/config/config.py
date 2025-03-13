@@ -2,9 +2,19 @@ from functools import lru_cache
 import logging
 from typing import Dict, List, Optional
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 base_dir = 'resources'
+
+
+class ClickHouseConfig(BaseSettings):
+    db_host: str = Field(alias='db_host_ch', default='localhost')
+    db_port: int = Field(alias='db_port_ch', default=9002)
+    db_user: str = Field(alias='db_user_ch', default='default')
+    db_pwd: str = Field(alias='db_pwd_ch', default='default')
+    db_name: str = Field(alias='db_name_ch', default='default')
+    db_schema: str = Field(alias='db_schema_ch', default='default')
 
 
 class DBConfig(BaseSettings):
@@ -139,6 +149,7 @@ class AppConfig(BaseSettings):
     kubernetes_config: KubernetesConfig = KubernetesConfig()
     s3_config: S3Config = S3Config()
     spark_config: SparkConfig = SparkConfig()
+    clickhouse_config: ClickHouseConfig = ClickHouseConfig()
 
 
 @lru_cache

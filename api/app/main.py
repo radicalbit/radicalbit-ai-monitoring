@@ -18,35 +18,43 @@ from app.db.dao.model_dao import ModelDAO
 from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
-from app.db.database import Database
+from app.db.dao.traces_dao import TraceDAO
+from app.db.database import Database, DatabaseDialect
 from app.models.exceptions import (
     MetricsError,
     ModelError,
     ProjectError,
     SchemaException,
+    TraceError,
     internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
     project_exception_handler,
     request_validation_exception_handler,
     schema_exception_handler,
+    trace_exception_handler,
 )
 from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
 from app.routes.metrics_route import MetricsRoute
 from app.routes.model_route import ModelRoute
 from app.routes.project_route import ProjectRoute
+from app.routes.trace_route import TraceRoute
 from app.routes.upload_dataset_route import UploadDatasetRoute
 from app.services.file_service import FileService
 from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
 from app.services.project_service import ProjectService
 from app.services.spark_k8s_service import SparkK8SService
+from app.services.trace_service import TraceService
 
 dictConfig(get_config().log_config.model_dump())
 logger = logging.getLogger(get_config().log_config.logger_name)
 
-database = Database(get_config().db_config)
+database = Database(dialect=DatabaseDialect.POSTGRES, conf=get_config().db_config)
+ch_database = Database(
+    dialect=DatabaseDialect.CLICKHOUSE, conf=get_config().clickhouse_config
+)
 
 if get_config().kubernetes_config.kubeconfig_file_path:
     k8s_client_manager = KubernetesClientManager(
@@ -65,6 +73,7 @@ current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
 completion_dataset_dao = CompletionDatasetDAO(database)
 completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
 project_dao = ProjectDAO(database)
+trace_dao = TraceDAO(ch_database)
 
 model_service = ModelService(
     model_dao=model_dao,
@@ -108,6 +117,7 @@ metrics_service = MetricsService(
     model_service=model_service,
 )
 project_service = ProjectService(project_dao=project_dao)
+trace_service = TraceService(trace_dao=trace_dao)
 spark_k8s_service = SparkK8SService(spark_k8s_client)
 
 
@@ -115,6 +125,7 @@ spark_k8s_service = SparkK8SService(spark_k8s_client)
 async def lifespan(fastapi: FastAPI):
     logger.info('Starting service ...')
     database.connect()
+    ch_database.connect()
     database.init_mappings()
     yield
     logger.info('Stopping service ...')
@@ -138,12 +149,14 @@ app.include_router(UploadDatasetRoute.get_router(file_service), prefix='/api/mod
 app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schema')
 app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
 app.include_router(ProjectRoute.get_router(project_service), prefix='/api/projects')
+app.include_router(TraceRoute.get_router(trace_service), prefix='/api/traces')
 
 app.include_router(HealthcheckRoute.get_healthcheck_route())
 
 app.add_exception_handler(ModelError, model_exception_handler)
 app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(ProjectError, project_exception_handler)
+app.add_exception_handler(TraceError, trace_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 app.add_exception_handler(Exception, internal_exception_handler)

@@ -1,7 +1,7 @@
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, computed_field
 from pydantic.alias_generators import to_camel
 
 
@@ -51,14 +51,21 @@ class TraceDTO(SpanBasic):
 
 
 class SessionDTO(BaseModel):
+    project_uuid: UUID
     session_uuid: UUID
     traces: int
-    durations: int
-    tokens: int
+    durations: int = Field(exclude=True)
+    completion_tokens: int = 0
+    prompt_tokens: int = 0
+    total_tokens: int = 0
     number_of_errors: int
     created_at: str
+    latest_trace_ts: str
+
+    @computed_field
+    def durations_ms(self) -> float:
+        return self.durations / 1_000_000
 
     model_config = ConfigDict(
-        populate_by_name=True,
-        alias_generator=to_camel,
+        populate_by_name=True, alias_generator=to_camel, from_attributes=True
     )

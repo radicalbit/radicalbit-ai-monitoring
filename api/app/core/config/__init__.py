@@ -1,3 +1,3 @@
-from app.core.config.config import DBConfig
+from app.core.config.config import ClickHouseConfig, DBConfig
 
-__all__ = ['DBConfig']
+__all__ = ['DBConfig', 'ClickHouseConfig']
