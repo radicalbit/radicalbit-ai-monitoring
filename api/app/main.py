@@ -126,7 +126,6 @@ async def lifespan(fastapi: FastAPI):
     logger.info('Starting service ...')
     database.connect()
     ch_database.connect()
-    ch_database.init_mappings()
     database.init_mappings()
     yield
     logger.info('Stopping service ...')
