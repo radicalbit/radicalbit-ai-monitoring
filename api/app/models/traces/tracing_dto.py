@@ -41,8 +41,9 @@ class TraceDTO(BaseModel):
     project_uuid: UUID
     trace_id: str
     span_id: str
+    session_uuid: UUID
     spans: int
-    duration: int
+    duration: int = Field(exclude=True)
     completion_tokens: int = 0
     prompt_tokens: int = 0
     total_tokens: int = 0

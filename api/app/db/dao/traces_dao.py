@@ -293,13 +293,14 @@ class TraceDAO:
                 select(
                     base_spans.c.service_name,
                     base_spans.c.trace_id,
+                    base_spans.c.session_uuid,
                     func.min(base_spans.c.timestamp).cast(String).label('created_at'),
                     func.max(base_spans.c.timestamp)
                     .cast(String)
                     .label('latest_span_ts'),
                     func.count(base_spans.c.span_id).label('spans'),
                 )
-                .group_by(base_spans.c.service_name, base_spans.c.trace_id)
+                .group_by(base_spans.c.service_name, base_spans.c.trace_id, base_spans.c.session_uuid)
                 .subquery()
                 .alias('trace_metrics')
             )
@@ -326,6 +327,7 @@ class TraceDAO:
                 select(
                     trace_metrics.c.service_name,
                     trace_metrics.c.trace_id,
+                    trace_metrics.c.session_uuid,
                     trace_metrics.c.created_at,
                     trace_metrics.c.latest_span_ts,
                     trace_metrics.c.spans,
@@ -350,6 +352,7 @@ class TraceDAO:
                 select(
                     metrics_with_tokens.c.service_name,
                     metrics_with_tokens.c.trace_id,
+                    metrics_with_tokens.c.session_uuid,
                     metrics_with_tokens.c.created_at,
                     metrics_with_tokens.c.latest_span_ts,
                     metrics_with_tokens.c.spans,
@@ -375,6 +378,7 @@ class TraceDAO:
             final_query = select(
                 metrics_with_tokens_and_duration.c.service_name.label('project_uuid'),
                 metrics_with_tokens_and_duration.c.trace_id,
+                metrics_with_tokens_and_duration.c.session_uuid,
                 metrics_with_tokens_and_duration.c.span_id,
                 metrics_with_tokens_and_duration.c.spans,
                 metrics_with_tokens_and_duration.c.duration,
