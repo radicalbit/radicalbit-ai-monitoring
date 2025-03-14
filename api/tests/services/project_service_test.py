@@ -6,6 +6,7 @@ from fastapi_pagination import Page, Params
 import pytest
 
 from app.db.dao.project_dao import ProjectDAO
+from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectNotFoundError
 from app.models.traces.project_dto import ProjectOut
@@ -17,11 +18,13 @@ class ProjectServiceTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.project_dao: ProjectDAO = MagicMock(spec_set=ProjectDAO)
+        cls.trace_dao: TraceDAO = MagicMock(spec_set=TraceDAO)
         cls.project_service = ProjectService(
-            project_dao=cls.project_dao,
+            project_dao=cls.project_dao, trace_dao=cls.trace_dao
         )
         cls.mocks = [
             cls.project_dao,
+            cls.trace_dao,
         ]
 
     def test_create_project_ok(self):
@@ -35,11 +38,16 @@ class ProjectServiceTest(unittest.TestCase):
 
     def test_get_project_by_uuid_ok(self):
         project = db_mock.get_sample_project()
+        traces = 5
         self.project_dao.get_by_uuid = MagicMock(return_value=project)
+        self.trace_dao.count_distinct_traces_by_project_uuid = MagicMock(
+            return_value=traces
+        )
         res = self.project_service.get_project_by_uuid(project.uuid)
         self.project_dao.get_by_uuid.assert_called_once()
+        self.trace_dao.count_distinct_traces_by_project_uuid.assert_called_once()
 
-        assert res == ProjectOut.from_project(project, traces=None)
+        assert res == ProjectOut.from_project(project, traces)
 
     def test_get_project_by_uuid_not_found(self):
         self.project_dao.get_by_uuid = MagicMock(return_value=None)
@@ -53,10 +61,12 @@ class ProjectServiceTest(unittest.TestCase):
         project2 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project2')
         project3 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project3')
 
+        traces = 5
+
         projects_out = [
-            ProjectOut.from_project(project1),
-            ProjectOut.from_project(project2),
-            ProjectOut.from_project(project3),
+            ProjectOut.from_project(project1, traces),
+            ProjectOut.from_project(project2, traces),
+            ProjectOut.from_project(project3, traces),
         ]
         page = Page.create(
             items=projects_out,
@@ -67,6 +77,9 @@ class ProjectServiceTest(unittest.TestCase):
         )
 
         self.project_dao.get_all_paginated = MagicMock(return_value=page)
+        self.trace_dao.count_distinct_traces_by_project_uuid = MagicMock(
+            return_value=traces
+        )
 
         result = self.project_service.get_all_projects_paginated(
             params=Params(page=1, size=10), order=OrderType.ASC, sort=None
@@ -75,12 +88,16 @@ class ProjectServiceTest(unittest.TestCase):
         self.project_dao.get_all_paginated.assert_called_once_with(
             params=Params(page=1, size=10), order=OrderType.ASC, sort=None
         )
+        self.trace_dao.count_distinct_traces_by_project_uuid.assert_called()
 
         assert result.total == 3
         assert len(result.items) == 3
         assert result.items[0].name == 'project1'
+        assert result.items[0].traces == traces
         assert result.items[1].name == 'project2'
+        assert result.items[1].traces == traces
         assert result.items[2].name == 'project3'
+        assert result.items[2].traces == traces
 
     def test_get_all_projects_ok(self):
         project1 = db_mock.get_sample_project(uuid=uuid.uuid4(), name='project1')
@@ -89,26 +106,42 @@ class ProjectServiceTest(unittest.TestCase):
 
         projects = [project1, project2, project3]
 
+        traces = 5
+
         self.project_dao.get_all = MagicMock(return_value=projects)
+        self.trace_dao.count_distinct_traces_by_project_uuid = MagicMock(
+            return_value=traces
+        )
 
         result = self.project_service.get_all_projects()
 
         self.project_dao.get_all.assert_called_once()
+        self.trace_dao.count_distinct_traces_by_project_uuid.assert_called()
 
         assert len(result) == 3
         assert result[0].name == 'project1'
+        assert result[0].traces == traces
         assert result[1].name == 'project2'
+        assert result[1].traces == traces
         assert result[2].name == 'project3'
+        assert result[2].traces == traces
 
     def test_delete_project_ok(self):
         project = db_mock.get_sample_project()
+        traces = 5
         self.project_dao.get_by_uuid = MagicMock(return_value=project)
+        self.trace_dao.count_distinct_traces_by_project_uuid = MagicMock(
+            return_value=traces
+        )
         self.project_dao.delete = MagicMock(return_value=1)
         res = self.project_service.delete_project(project_uuid)
         self.project_dao.get_by_uuid.assert_called_once_with(project.uuid)
+        self.trace_dao.count_distinct_traces_by_project_uuid.assert_called_once_with(
+            project.uuid
+        )
         self.project_dao.delete.assert_called_once_with(project.uuid)
 
-        assert res == ProjectOut.from_project(project)
+        assert res == ProjectOut.from_project(project, traces)
 
 
 project_uuid = db_mock.PROJECT_UUID
