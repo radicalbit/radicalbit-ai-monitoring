@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi_pagination import Page, Params
 
 from app.db.dao.project_dao import ProjectDAO
+from app.db.dao.traces_dao import TraceDAO
 from app.db.tables.project_table import Project
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectInternalError, ProjectNotFoundError
@@ -14,8 +15,10 @@ class ProjectService:
     def __init__(
         self,
         project_dao: ProjectDAO,
+        trace_dao: TraceDAO,
     ):
         self.project_dao = project_dao
+        self.trace_dao = trace_dao
 
     def create_project(self, project_in: ProjectIn) -> ProjectOut:
         try:
@@ -29,13 +32,18 @@ class ProjectService:
 
     def get_project_by_uuid(self, project_uuid: UUID) -> ProjectOut:
         project = self._check_and_get_project(project_uuid)
-        # TODO: add query to clickhouse to retrieve project trace number
-        return ProjectOut.from_project(project, traces=None)
+        traces = self.trace_dao.count_distinct_traces_by_project_uuid(project_uuid)
+        return ProjectOut.from_project(project, traces)
 
     def get_all_projects(self) -> List[ProjectOut]:
         projects = self.project_dao.get_all()
-        # TODO: add query to clickhouse to retrieve project trace number
-        return [ProjectOut.from_project(project, traces=None) for project in projects]
+
+        projects_out = []
+        for project in projects:
+            traces = self.trace_dao.count_distinct_traces_by_project_uuid(project.uuid)
+            projects_out.append(ProjectOut.from_project(project, traces))
+
+        return projects_out
 
     def get_all_projects_paginated(
         self,
@@ -48,10 +56,12 @@ class ProjectService:
             order=order,
             sort=sort,
         )
-        # TODO: add query to clickhouse to retrieve project trace number
-        projects_out = [
-            ProjectOut.from_project(project, traces=None) for project in projects.items
-        ]
+
+        projects_out = []
+        for project in projects.items:
+            traces = self.trace_dao.count_distinct_traces_by_project_uuid(project.uuid)
+            projects_out.append(ProjectOut.from_project(project, traces))
+
         return Page.create(
             items=projects_out,
             params=params,
@@ -60,8 +70,9 @@ class ProjectService:
 
     def delete_project(self, project_uuid: UUID) -> Optional[ProjectOut]:
         project = self._check_and_get_project(project_uuid)
+        traces = self.trace_dao.count_distinct_traces_by_project_uuid(project_uuid)
         self.project_dao.delete(project_uuid)
-        return ProjectOut.from_project(project)
+        return ProjectOut.from_project(project, traces)
 
     def _check_and_get_project(self, project_uuid: UUID) -> Project:
         project = self.project_dao.get_by_uuid(project_uuid)

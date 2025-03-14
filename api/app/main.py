@@ -116,8 +116,8 @@ metrics_service = MetricsService(
     completion_dataset_dao=completion_dataset_dao,
     model_service=model_service,
 )
-project_service = ProjectService(project_dao=project_dao)
-trace_service = TraceService(trace_dao=trace_dao)
+project_service = ProjectService(project_dao=project_dao, trace_dao=trace_dao)
+trace_service = TraceService(trace_dao=trace_dao, project_dao=project_dao)
 spark_k8s_service = SparkK8SService(spark_k8s_client)
 
 

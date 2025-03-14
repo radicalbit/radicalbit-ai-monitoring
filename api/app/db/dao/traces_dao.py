@@ -402,3 +402,11 @@ class TraceDAO:
                 )
 
             return paginate(session, final_query, params)
+
+    def count_distinct_traces_by_project_uuid(self, project_uuid: UUID) -> int:
+        with self.db.begin_session() as session:
+            stmt = select(func.count(func.distinct(Trace.trace_id))).where(
+                Trace.service_name == str(project_uuid)
+            )
+
+            return session.execute(stmt).scalar()
