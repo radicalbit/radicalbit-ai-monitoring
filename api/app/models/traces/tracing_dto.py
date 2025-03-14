@@ -37,13 +37,26 @@ class SpanDTO(SpanBasic):
     )
 
 
-class TraceDTO(SpanBasic):
-    spans: int
+class TraceDTO(BaseModel):
     project_uuid: UUID
+    trace_id: str
+    span_id: str
+    spans: int
+    duration: int
+    completion_tokens: int = 0
+    prompt_tokens: int = 0
+    total_tokens: int = 0
     number_of_errors: int
+    created_at: str
+    latest_span_ts: str
     tree: Optional[TreeNode] = None
 
+    @computed_field
+    def duration_ms(self) -> float:
+        return self.duration / 1_000_000
+
     model_config = ConfigDict(
+        from_attributes=True,
         arbitrary_types_allowed=True,
         populate_by_name=True,
         alias_generator=to_camel,

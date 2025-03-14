@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 from typing import Optional
 from uuid import UUID
@@ -8,6 +9,7 @@ from sqlalchemy import (
     Integer,
     Row,
     String,
+    and_,
     asc,
     desc,
     func,
@@ -42,7 +44,7 @@ class TraceDAO:
                 'latest_trace_ts',
             ]:
                 raise TraceSortColumnError(
-                    message='Column passed does not allow sorting'
+                    message=f'Column {column_name} does not allow sorting'
                 )
             return formatted_column_name
 
@@ -161,3 +163,242 @@ class TraceDAO:
                 )
 
             return paginate(session, final_join, params)
+
+    def get_all_root_traces_by_project_uuid(
+        self,
+        project_uuid: UUID,
+        trace_id: Optional[str] = None,
+        session_uuid: Optional[str] = None,
+        from_timestamp: Optional[datetime] = None,
+        to_timestamp: Optional[datetime] = None,
+        params: Params = Params(),
+        order: OrderType = OrderType.ASC,
+        sort: Optional[str] = None,
+    ):
+        def order_by_column_name(column_name: str) -> str:
+            formatted_column_name = re.sub('(?=[A-Z])', '_', column_name).lower()
+            if formatted_column_name not in [
+                'spans',
+                'duration',
+                'completion_tokens',
+                'prompt_tokens',
+                'total_tokens',
+                'number_of_errors',
+                'created_at',
+                'latest_span_ts',
+            ]:
+                raise TraceSortColumnError(
+                    message=f'Column {column_name} does not allow sorting'
+                )
+            return formatted_column_name
+
+        with self.db.begin_session() as session:
+            # Base subquery to extract span attributes from traces with project_uuid filter
+            base_spans = (
+                select(
+                    Trace.timestamp,
+                    Trace.trace_id,
+                    Trace.span_id,
+                    Trace.service_name,
+                    Trace.duration,
+                    Trace.parent_span_id,
+                    Trace.span_attributes,
+                    Trace.events_attributes,
+                    literal_column(
+                        "SpanAttributes['traceloop.association.properties.session_uuid']"
+                    ).label('session_uuid'),
+                    literal_column(
+                        "SpanAttributes['gen_ai.usage.completion_tokens']"
+                    ).label('completion_tokens'),
+                    literal_column(
+                        "SpanAttributes['gen_ai.usage.prompt_tokens']"
+                    ).label('prompt_tokens'),
+                    literal_column("SpanAttributes['llm.usage.total_tokens']").label(
+                        'total_tokens'
+                    ),
+                )
+                .filter(Trace.service_name == str(project_uuid))
+                .filter(
+                    text(
+                        "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                    )
+                )
+            )
+
+            # Add optional trace_id filter with "like" as search
+            if trace_id:
+                base_spans = base_spans.filter(Trace.trace_id.like(f'%{trace_id}%'))
+
+            # Add optional timestamp filters
+            if from_timestamp:
+                base_spans = base_spans.filter(Trace.timestamp >= from_timestamp)
+
+            if to_timestamp:
+                base_spans = base_spans.filter(Trace.timestamp <= to_timestamp)
+
+            base_spans = base_spans.subquery().alias('base_spans')
+
+            # Filter for root spans (those without parents)
+            root_spans = select(base_spans).filter(base_spans.c.parent_span_id == '')
+
+            # Add optional session_uuid filter with "like" as search
+            if session_uuid:
+                root_spans = root_spans.filter(
+                    base_spans.c.session_uuid.like(f'%{session_uuid}%')
+                )
+
+            root_spans = root_spans.subquery().alias('root_spans')
+
+            # Aggregate token usage by trace
+            token_usage = (
+                select(
+                    base_spans.c.service_name,
+                    base_spans.c.trace_id,
+                    func.sum(base_spans.c.completion_tokens.cast(Integer)).label(
+                        'completion_tokens'
+                    ),
+                    func.sum(base_spans.c.prompt_tokens.cast(Integer)).label(
+                        'prompt_tokens'
+                    ),
+                    func.sum(base_spans.c.total_tokens.cast(Integer)).label(
+                        'total_tokens'
+                    ),
+                )
+                .filter(
+                    base_spans.c.completion_tokens != '',
+                    base_spans.c.prompt_tokens != '',
+                    base_spans.c.total_tokens != '',
+                )
+                .group_by(base_spans.c.service_name, base_spans.c.trace_id)
+                .subquery()
+                .alias('token_usage')
+            )
+
+            # Count errors by trace
+            error_counts = (
+                select(
+                    base_spans.c.service_name,
+                    base_spans.c.trace_id,
+                    func.sum(func.length(base_spans.c.events_attributes) > 0).label(
+                        'number_of_errors'
+                    ),
+                )
+                .group_by(base_spans.c.service_name, base_spans.c.trace_id)
+                .subquery()
+                .alias('error_count')
+            )
+
+            # Aggregate general trace metrics by trace
+            trace_metrics = (
+                select(
+                    base_spans.c.service_name,
+                    base_spans.c.trace_id,
+                    func.min(base_spans.c.timestamp).cast(String).label('created_at'),
+                    func.max(base_spans.c.timestamp)
+                    .cast(String)
+                    .label('latest_span_ts'),
+                    func.count(base_spans.c.span_id).label('spans'),
+                )
+                .group_by(base_spans.c.service_name, base_spans.c.trace_id)
+                .subquery()
+                .alias('trace_metrics')
+            )
+
+            # Aggregate duration trace metrics by trace
+            duration_metrics = (
+                select(
+                    root_spans.c.service_name,
+                    root_spans.c.trace_id,
+                    root_spans.c.span_id,
+                    func.sum(root_spans.c.duration).label('duration'),
+                )
+                .group_by(
+                    root_spans.c.service_name,
+                    root_spans.c.trace_id,
+                    root_spans.c.span_id,
+                )
+                .subquery()
+                .alias('duration_metrics')
+            )
+
+            # Combine trace metrics with token usage
+            metrics_with_tokens = (
+                select(
+                    trace_metrics.c.service_name,
+                    trace_metrics.c.trace_id,
+                    trace_metrics.c.created_at,
+                    trace_metrics.c.latest_span_ts,
+                    trace_metrics.c.spans,
+                    token_usage.c.completion_tokens,
+                    token_usage.c.prompt_tokens,
+                    token_usage.c.total_tokens,
+                )
+                .join(
+                    token_usage,
+                    and_(
+                        trace_metrics.c.service_name == token_usage.c.service_name,
+                        trace_metrics.c.trace_id == token_usage.c.trace_id,
+                    ),
+                )
+                .subquery()
+                .alias('metrics_with_tokens')
+            )
+
+            # Combine metrics_with_tokens with duration
+
+            metrics_with_tokens_and_duration = (
+                select(
+                    metrics_with_tokens.c.service_name,
+                    metrics_with_tokens.c.trace_id,
+                    metrics_with_tokens.c.created_at,
+                    metrics_with_tokens.c.latest_span_ts,
+                    metrics_with_tokens.c.spans,
+                    metrics_with_tokens.c.completion_tokens,
+                    metrics_with_tokens.c.prompt_tokens,
+                    metrics_with_tokens.c.total_tokens,
+                    duration_metrics.c.duration,
+                    duration_metrics.c.span_id,
+                )
+                .join(
+                    metrics_with_tokens,
+                    and_(
+                        duration_metrics.c.service_name
+                        == metrics_with_tokens.c.service_name,
+                        duration_metrics.c.trace_id == metrics_with_tokens.c.trace_id,
+                    ),
+                )
+                .subquery()
+                .alias('metrics_with_tokens_and_duration')
+            )
+
+            # Final query combining all metrics with error counts
+            final_query = select(
+                metrics_with_tokens_and_duration.c.service_name.label('project_uuid'),
+                metrics_with_tokens_and_duration.c.trace_id,
+                metrics_with_tokens_and_duration.c.span_id,
+                metrics_with_tokens_and_duration.c.spans,
+                metrics_with_tokens_and_duration.c.duration,
+                metrics_with_tokens_and_duration.c.completion_tokens,
+                metrics_with_tokens_and_duration.c.prompt_tokens,
+                metrics_with_tokens_and_duration.c.total_tokens,
+                error_counts.c.number_of_errors,
+                metrics_with_tokens_and_duration.c.created_at,
+                metrics_with_tokens_and_duration.c.latest_span_ts,
+            ).join(
+                error_counts,
+                and_(
+                    metrics_with_tokens_and_duration.c.service_name
+                    == error_counts.c.service_name,
+                    metrics_with_tokens_and_duration.c.trace_id
+                    == error_counts.c.trace_id,
+                ),
+            )
+
+            if sort:
+                final_query = (
+                    final_query.order_by(asc(order_by_column_name(sort)))
+                    if order == OrderType.ASC
+                    else final_query.order_by(desc(order_by_column_name(sort)))
+                )
+
+            return paginate(session, final_query, params)
