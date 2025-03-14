@@ -1,3 +1,4 @@
+import datetime
 import logging
 from typing import Annotated, Optional
 from uuid import UUID
@@ -8,7 +9,7 @@ from fastapi_pagination import Page, Params
 
 from app.core import get_config
 from app.models.commons.order_type import OrderType
-from app.models.traces.tracing_dto import SessionDTO
+from app.models.traces.tracing_dto import SessionDTO, TraceDTO
 from app.services.trace_service import TraceService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -34,6 +35,36 @@ class TraceRoute:
             params = Params(page=_page, size=_limit)
             return trace_service.get_all_sessions(
                 project_uuid=project_uuid, params=params, order=_order, sort=_sort
+            )
+
+        @router.get(
+            '/project/{project_uuid}', status_code=200, response_model=Page[TraceDTO]
+        )
+        def get_root_traces_by_project_uuid(
+            project_uuid: UUID,
+            trace_id: Annotated[Optional[str], Query()] = None,
+            session_uuid: Annotated[Optional[UUID], Query()] = None,
+            from_timestamp: Annotated[Optional[int], Query()] = None,
+            to_timestamp: Annotated[Optional[int], Query()] = None,
+            _page: Annotated[int, Query()] = 1,
+            _limit: Annotated[int, Query()] = 50,
+            _order: Annotated[OrderType, Query()] = OrderType.ASC,
+            _sort: Annotated[Optional[str], Query()] = None,
+        ):
+            params = Params(page=_page, size=_limit)
+            return trace_service.get_all_root_traces_by_project_uuid(
+                project_uuid=project_uuid,
+                trace_id=trace_id,
+                session_uuid=session_uuid,
+                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp)
+                if from_timestamp
+                else None,
+                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp)
+                if to_timestamp
+                else None,
+                params=params,
+                order=_order,
+                sort=_sort,
             )
 
         return router
