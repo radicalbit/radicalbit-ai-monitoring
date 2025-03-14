@@ -6,13 +6,13 @@ import { useSearchParams } from "react-router-dom"
 import { getColumns } from "./columns"
 import TraceDetailDrawer from "./drawer"
 
-const { useGetTracingProjectByUUIDQuery } = tracingApiSlice
+const { useGetProjectByUUIDQuery } = tracingApiSlice
 
 const SessionsTracesList = () => {
   const { uuid } = useParams()
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data } = useGetTracingProjectByUUIDQuery({ uuid })
+  const { data } = useGetProjectByUUIDQuery({ uuid })
 
   const items = data?.traceList ?? []
   const count = data?.count

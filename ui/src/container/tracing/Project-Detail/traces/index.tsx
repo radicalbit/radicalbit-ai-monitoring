@@ -5,17 +5,21 @@ import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { getColumns } from "./columns";
 import TraceDetailDrawer from "./drawer";
+import { Button, Spinner, Void } from "@radicalbit/radicalbit-design-system";
+import LogoSquared from "@Img/logo-collapsed.svg";
 
-const { useGetTracingProjectByUUIDQuery } = tracingApiSlice;
+const { useGetProjectByUUIDQuery } = tracingApiSlice;
 
 const TracesList = () => {
   const { uuid } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data } = useGetTracingProjectByUUIDQuery({ uuid });
+  const { data, isLoading, isError } = useGetProjectByUUIDQuery({ uuid });
 
-  const items = data?.traceList ?? [];
+  const items = data?.traces ?? [];
   const count = data?.count;
+
+  const modifier = items?.length ? "" : "c-spinner--centered";
 
   const handleOnClick = () => {
     searchParams.set("trace-detail", "true");
@@ -23,23 +27,34 @@ const TracesList = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 pl-4">
-      <span>ProjectSTraces</span>
+    <Spinner fullHeight hideChildren modifier={modifier} spinning={isLoading}>
+      {!items.length && (
+        <Void
+          image={<LogoSquared />}
+          title="No traces available"
+          description="copy description needed"
+          actions={<Button  type="primary" >Copy for CTA</Button>}
+        />
+      )}
 
-      <SmartTable
-        clickable
-        columns={getColumns}
-        dataSource={items}
-        namespace={NamespaceEnum.TRACES_LIST}
-        onRow={({ uuid }) => ({
-          onClick: () => handleOnClick(),
-        })}
-        recordCount={count}
-        rowHoverable={false}
-        rowKey={({ uuid }) => uuid}
-      />
-      <TraceDetailDrawer></TraceDetailDrawer>
-    </div>
+      {!!items.length && (
+        <>
+          <SmartTable
+            clickable
+            columns={getColumns}
+            dataSource={items}
+            namespace={NamespaceEnum.TRACES_LIST}
+            onRow={({ uuid }) => ({
+              onClick: () => handleOnClick(),
+            })}
+            recordCount={count}
+            rowHoverable={false}
+            rowKey={({ uuid }) => uuid}
+          />
+          <TraceDetailDrawer />
+        </>
+      )}
+    </Spinner>
   );
 };
 

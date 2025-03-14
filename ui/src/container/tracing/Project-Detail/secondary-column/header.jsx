@@ -5,7 +5,7 @@ import { SectionTitle, Skeleton } from '@radicalbit/radicalbit-design-system';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
-const { useGetTracingProjectsQuery } = tracingApiSlice;
+const { useGetAllProjectQuery } = tracingApiSlice;
 
 const { selectQueryParamsSelector } = contextConfigurationSelectors;
 
@@ -28,7 +28,7 @@ function ProjectDetailSecondaryColumnHeader() {
 function Subtitle() {
   const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.PROJECTS));
 
-  const { data, isLoading, isError } = useGetTracingProjectsQuery({ queryParams });
+  const { data, isLoading, isError } = useGetAllProjectQuery({ queryParams });
 
   const count = data?.total;
 

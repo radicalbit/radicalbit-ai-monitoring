@@ -4,7 +4,8 @@ import {
   MAIN_LAYOUT_LIGHT_MODE_CONFIGURATION,
 } from '@Container/layout/layout-provider/layout-provider-configuration';
 import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
-import { NamespaceEnum } from '@Src/constants';
+import useModals from '@Hooks/use-modals';
+import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { modelsApiSlice } from '@State/models/api';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -73,11 +74,10 @@ function Subtitle() {
 }
 
 function AddNewProject() {
-  // const { showModal } = useModals();
+  const { showModal } = useModals();
 
   const onClick = () => {
-    alert('TODO');
-    // showModal(ModalsEnum.ADD_NEW_MODEL);
+    showModal(ModalsEnum.ADD_NEW_PROJECT);
   };
 
   return (
