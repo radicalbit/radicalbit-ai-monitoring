@@ -12,7 +12,7 @@ import {
 
 const { selectHasSecondaryColumnCollapsed } = layoutSelectors;
 
-const { useGetTracingProjectsQuery } = tracingApiSlice;
+const { useGetAllProjectQuery } = tracingApiSlice;
 
 const commonChildrenMenu = () => {
   const commonMenu = [
@@ -35,8 +35,8 @@ export default function ProjectDetailSecondaryColumnContent() {
 
   const isSecondaryColumnCollapsed = useSelector(selectHasSecondaryColumnCollapsed);
 
-  const { data } = useGetTracingProjectsQuery();
-  const items = data?.list ?? [];
+  const { data } = useGetAllProjectQuery();
+  const items = data ?? [];
 
   const menuItemList = items.map(({ uuid: tracingProjectUUID, name }) => ({
     label: (<Truncate>{name}</Truncate>),

@@ -14,7 +14,7 @@ import { tracingApiSlice } from '@Src/store/state/tracing/api';
 import { useLocation, useNavigate } from 'react-router';
 import { getColumns } from './columns';
 
-const { useGetTracingProjectsQuery } = tracingApiSlice;
+const { useGetAllProjectQuery } = tracingApiSlice;
 
 function ProjectList() {
   const isProjectTracingEnabled = getIsProjectTracingEnabled();
@@ -35,9 +35,9 @@ function ProjectListInner() {
   const navigate = useNavigate();
   const { search } = useLocation();
 
-  const { data, isLoading, isError } = useGetTracingProjectsQuery();
+  const { data, isLoading, isError } = useGetAllProjectQuery();
 
-  const projectList = data?.list ?? [];
+  const projectList = data ?? [];
   const count = data?.total || 0;
 
   const modifier = projectList?.length ? '' : 'c-spinner--centered';

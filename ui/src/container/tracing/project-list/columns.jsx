@@ -1,24 +1,10 @@
+import { RelativeDateTime } from '@radicalbit/radicalbit-design-system';
 import { columnFactory } from '@Src/components/smart-table/utils';
 
 export const getColumns = (
   activeFilters,
   activeSorter,
 ) => [
-
-  columnFactory({
-    title: 'UUID',
-    key: 'uuid',
-    activeFilters,
-    activeSorter,
-    width: 250,
-    render: ({ uuid }) => (
-      <div className="font-[var(--coo-font-weight-bold)]">
-        <a className="pointer-events-none" href={`/projects/${uuid}`}>
-          {uuid}
-        </a>
-      </div>
-    ),
-  }),
 
   columnFactory({
     title: 'Name',
@@ -31,6 +17,30 @@ export const getColumns = (
         {name}
       </div>
     ),
+  }),
+
+  columnFactory({
+    title: 'Created',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
+    activeFilters,
+    activeSorter,
+    sorter: false,
+    align: 'right',
+    width: '13%',
+    render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,
+  }),
+
+  columnFactory({
+    title: 'Updated',
+    dataIndex: 'updatedAt',
+    key: 'updatedAt',
+    activeFilters,
+    activeSorter,
+    sorter: false,
+    align: 'right',
+    width: '13%',
+    render: (date) => date && <RelativeDateTime timestamp={date} withTooltip />,
   }),
 
 ];

@@ -12,7 +12,7 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router-dom';
 
-const { useGetTracingProjectByUUIDQuery } = tracingApiSlice;
+const { useGetProjectByUUIDQuery } = tracingApiSlice;
 
 function ProjectDetailHeader() {
   const isProjectTracingEnabled = getIsProjectTracingEnabled();
@@ -42,7 +42,7 @@ function ProjectDetailHeaderInner() {
 
 function Title() {
   const { uuid } = useParams();
-  const { data } = useGetTracingProjectByUUIDQuery({ uuid });
+  const { data } = useGetProjectByUUIDQuery({ uuid });
 
   const name = data?.name;
 
@@ -51,7 +51,7 @@ function Title() {
 
 function Subtitle() {
   const { uuid } = useParams();
-  const { data } = useGetTracingProjectByUUIDQuery({ uuid });
+  const { data } = useGetProjectByUUIDQuery({ uuid });
 
   const createdAt = data?.createdAt ?? 0;
   const updatedAt = data?.updatedAt ?? 0;

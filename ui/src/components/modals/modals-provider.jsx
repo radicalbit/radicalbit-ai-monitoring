@@ -3,6 +3,7 @@ import useModals from '@Src/hooks/use-modals';
 import AddNewModel from './add-new-model';
 import CurrentImportsDetailModal from './current-import-detail-modal';
 import CompletionImportDetailModal from './completion-import-detail-modal';
+import AddNewProjectModal from './add-new-project';
 
 export default function ModalsProvider() {
   const { modalPayload: { modalName } } = useModals();
@@ -16,6 +17,9 @@ export default function ModalsProvider() {
 
     case ModalsEnum.COMPLETION_IMPORT_DETAIL:
       return <CompletionImportDetailModal />;
+
+    case ModalsEnum.ADD_NEW_PROJECT:
+      return <AddNewProjectModal />;
 
     default:
       return false;

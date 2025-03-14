@@ -3,17 +3,16 @@ import projectListMock from './mock/project-list.json';
 
 export const tracingApiSlice = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    getTracingProjectByUUID: builder.query({
+    getProjectByUUID: builder.query({
       providesTags: (_, __, { uuid }) => [{ type: API_TAGS.TRACING_PROJECT, id: uuid }],
-      /* query: ({ uuid }) => ({
+      query: ({ uuid }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}`,
+        url: `/projects/${uuid}`,
         method: 'get',
-      }), */
-      queryFn: (queryParams) => ({ data: projectListMock.list.find((t) => t.uuid === queryParams.uuid) }),
+      }),
     }),
 
-    addNewTracingProject: builder.mutation({
+    addNewProject: builder.mutation({
       invalidatesTags: (result) => {
         if (result) {
           return [API_TAGS.PROJECTS];
@@ -23,7 +22,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
       },
       query: (data) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: '/models',
+        url: '/projects',
         method: 'post',
         data,
       }),
@@ -49,14 +48,13 @@ export const tracingApiSlice = apiService.injectEndpoints({
       }),
     }),
 
-    getTracingProjects: builder.query({
+    getAllProject: builder.query({
       providesTags: [API_TAGS.PROJECTS],
-      /*   query: ({ queryParams }) => ({
+      query: () => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/project${queryParams ? `?${queryParams}` : ''}`,
+        url: '/projects/all',
         method: 'get',
-      }), */
-      queryFn: () => ({ data: projectListMock }),
+      }),
     }),
 
   }),
