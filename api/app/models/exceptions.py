@@ -124,6 +124,13 @@ class TraceSortColumnError(TraceError):
         super().__init__(self.message, self.status_code)
 
 
+class TraceNotFountError(TraceError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_404_NOT_FOUND
+        super().__init__(self.message, self.status_code)
+
+
 def trace_exception_handler(_, err: TraceError):
     if err.status_code >= 500:
         logger.error(err.message)
