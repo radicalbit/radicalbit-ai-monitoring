@@ -1,16 +1,7 @@
 import { API_TAGS, apiService } from '@Src/store/apis';
-import projectListMock from './mock/project-list.json';
 
 export const tracingApiSlice = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    getProjectByUUID: builder.query({
-      providesTags: (_, __, { uuid }) => [{ type: API_TAGS.TRACING_PROJECT, id: uuid }],
-      query: ({ uuid }) => ({
-        baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/projects/${uuid}`,
-        method: 'get',
-      }),
-    }),
 
     addNewProject: builder.mutation({
       invalidatesTags: (result) => {
@@ -29,22 +20,34 @@ export const tracingApiSlice = apiService.injectEndpoints({
     }),
 
     editTracingProject: builder.mutation({
-      invalidatesTags: (_, __, { data: { uuid } }) => [{ type: API_TAGS.TRACING_PROJECT, id: uuid }],
+      invalidatesTags: (_, __, { data: { uuid } }) => [
+        { type: API_TAGS.TRACING_PROJECT, id: uuid },
+      ],
       query: ({ data }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/models/${data.uuid}`,
         method: 'post',
         data,
       }),
-
     }),
 
-    deleteTracingProject: builder.mutation({
+    deleteProject: builder.mutation({
       invalidatesTags: [API_TAGS.PROJECTS],
       query: ({ uuid }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${uuid}`,
+        url: `/projects/${uuid}`,
         method: 'delete',
+      }),
+    }),
+
+    getProjectByUUID: builder.query({
+      providesTags: (_, __, { uuid }) => [
+        { type: API_TAGS.TRACING_PROJECT, id: uuid },
+      ],
+      query: ({ uuid }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/projects/${uuid}`,
+        method: 'get',
       }),
     }),
 
@@ -57,6 +60,27 @@ export const tracingApiSlice = apiService.injectEndpoints({
       }),
     }),
 
-  }),
+    getSessionsByProjectUUID: builder.query({
+      providesTags: (_, __, { uuid }) => [
+        { type: API_TAGS.SESSIONS, id: uuid },
+      ],
+      query: ({ uuid }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/traces/session/all/${uuid}`,
+        method: 'get',
+      }),
+    }),
 
+    getTracesByProjectUUID: builder.query({
+      providesTags: (_, __, { uuid }) => [
+        { type: API_TAGS.TRACE_LIST, id: uuid },
+      ],
+      query: ({ uuid, queryParams }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/traces/project/${uuid}${queryParams ? `?${queryParams}` : ''}`,
+        method: 'get',
+      }),
+    }),
+
+  }),
 });

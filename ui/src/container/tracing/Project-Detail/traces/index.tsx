@@ -1,23 +1,29 @@
 import SmartTable from "@Components/smart-table";
+import LogoSquared from "@Img/logo-collapsed.svg";
+import { Button, Spinner, Void } from "@radicalbit/radicalbit-design-system";
 import { NamespaceEnum } from "@Src/constants";
-import { tracingApiSlice } from "@Src/store/state/tracing/api";
+import { tracingApiSlice } from "@State/tracing/api";
 import { useParams } from "react-router";
 import { useSearchParams } from "react-router-dom";
 import { getColumns } from "./columns";
 import TraceDetailDrawer from "./drawer";
-import { Button, Spinner, Void } from "@radicalbit/radicalbit-design-system";
-import LogoSquared from "@Img/logo-collapsed.svg";
+import Filters from "./filters";
+import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
+import { useSelector } from "react-redux";
+import externalFiltersToQueryParams from "./filters/externalFiltersToQueryParams";
 
-const { useGetProjectByUUIDQuery } = tracingApiSlice;
+const { useGetTracesByProjectUUIDQuery } = tracingApiSlice;
 
 const TracesList = () => {
   const { uuid } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data, isLoading, isError } = useGetProjectByUUIDQuery({ uuid });
+  const queryParams = useSelector((state) => contextConfigurationSelectors.selectQueryParamsSelector(state, NamespaceEnum.TRACES_LIST,externalFiltersToQueryParams));
 
-  const items = data?.traces ?? [];
-  const count = data?.count;
+  const { data, isLoading, isError } = useGetTracesByProjectUUIDQuery({ uuid,queryParams });
+
+  const items = data?.items ?? [];
+  const count = data?.total;
 
   const modifier = items?.length ? "" : "c-spinner--centered";
 
@@ -28,17 +34,10 @@ const TracesList = () => {
 
   return (
     <Spinner fullHeight hideChildren modifier={modifier} spinning={isLoading}>
-      {!items.length && (
-        <Void
-          image={<LogoSquared />}
-          title="No traces available"
-          description="copy description needed"
-          actions={<Button  type="primary" >Copy for CTA</Button>}
-        />
-      )}
 
-      {!!items.length && (
-        <>
+        <div className="flex flex-col gap-2">
+          <Filters />
+
           <SmartTable
             clickable
             columns={getColumns}
@@ -51,9 +50,10 @@ const TracesList = () => {
             rowHoverable={false}
             rowKey={({ uuid }) => uuid}
           />
+          
           <TraceDetailDrawer />
-        </>
-      )}
+        </div>
+      
     </Spinner>
   );
 };

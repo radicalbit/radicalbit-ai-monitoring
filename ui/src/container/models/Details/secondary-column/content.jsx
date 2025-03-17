@@ -1,7 +1,7 @@
 import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { MODEL_TABS_ENUM } from '@Container/models/Details/constants';
 import getJobStatus from '@Helpers/get-spinner-job-status';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { ModelTypeEnum } from '@State/models/constants';
 import { selectors as layoutSelectors } from '@State/layout';
 import { useGetModelsQueryWithPolling } from '@State/models/polling-hook';
 import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';

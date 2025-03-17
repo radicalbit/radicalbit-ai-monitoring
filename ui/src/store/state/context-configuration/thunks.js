@@ -24,7 +24,7 @@ const changeContextConfiguration = createAsyncThunk(
   }) => {
     try {
       const {
-        pagination, sorter, filters,
+        pagination, sorter, filters, externalFilters,
       } = configuration;
 
       const old = selectContextConfiguration(getState(), namespace);
@@ -35,6 +35,7 @@ const changeContextConfiguration = createAsyncThunk(
         pagination: filtersChanged ? { ...pagination, current: 1 } : pagination,
         sorter,
         filters,
+        externalFilters,
       };
       const newConfiguration = { [namespace]: newConfigurationForNamespace };
 
@@ -52,4 +53,19 @@ const changeContextConfiguration = createAsyncThunk(
   },
 );
 
-export default { changeContextConfiguration };
+const changeExternalFilters = createAsyncThunk(
+  'contextConfiguration/changeExternalFilters',
+  async ({ namespace, externalFilters }, {
+    getState, dispatch, fulfillWithValue,
+  }) => {
+    const old = selectContextConfiguration(getState(), namespace);
+
+    const configuration = { ...old, externalFilters };
+
+    dispatch(changeContextConfiguration({ namespace, configuration }));
+
+    return fulfillWithValue(old);
+  },
+);
+
+export default { changeContextConfiguration, changeExternalFilters };

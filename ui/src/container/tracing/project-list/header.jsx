@@ -6,8 +6,8 @@ import {
 import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
 import useModals from '@Hooks/use-modals';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
+import { tracingApiSlice } from '@State/tracing/api';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
-import { modelsApiSlice } from '@State/models/api';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
   Button,
@@ -17,7 +17,7 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 import { useSelector } from 'react-redux';
 
-const { useGetModelsQuery } = modelsApiSlice;
+const { useGetAllProjectQuery } = tracingApiSlice;
 
 const { selectQueryParamsSelector } = contextConfigurationSelectors;
 
@@ -56,9 +56,9 @@ function ProjectListHeaderInner() {
 
 function Subtitle() {
   const queryParams = useSelector((state) => selectQueryParamsSelector(state, NamespaceEnum.PROJECTS));
-  const { data, isLoading, isError } = useGetModelsQuery({ queryParams });
+  const { data, isLoading, isError } = useGetAllProjectQuery({ queryParams });
 
-  const count = data?.total;
+  const count = data?.length;
 
   const label = count <= 1 ? 'project' : 'projects';
 

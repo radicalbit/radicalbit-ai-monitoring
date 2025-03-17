@@ -10,7 +10,7 @@ import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-traci
 import LogoSquared from '@Img/logo-collapsed.svg';
 import { Spinner, Void } from '@radicalbit/radicalbit-design-system';
 import { NamespaceEnum } from '@Src/constants';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useLocation, useNavigate } from 'react-router';
 import { getColumns } from './columns';
 

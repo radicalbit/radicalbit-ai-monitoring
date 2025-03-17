@@ -1,6 +1,6 @@
 import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import { numberFormatter } from '@Src/constants';
-import { useGetCompletionModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCompletionModelQualityQueryWithPolling } from '@State/models/polling-hook';
 
 function BoardRow() {
   return (

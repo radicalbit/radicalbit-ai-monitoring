@@ -2,7 +2,7 @@ import JobStatusPin from '@Components/JobStatus/job-status-pin';
 import { RelativeDateTime, Truncate } from '@radicalbit/radicalbit-design-system';
 import { columnFactory } from '@Src/components/smart-table/utils';
 import { JOB_STATUS } from '@Src/constants';
-import { ModelTypeEnumLabel } from '@Src/store/state/models/constants';
+import { ModelTypeEnumLabel } from '@State/models/constants';
 
 const columns = (
   activeFilters,

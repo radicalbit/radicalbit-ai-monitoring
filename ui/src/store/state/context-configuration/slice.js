@@ -14,6 +14,7 @@ const defaultState = (
   customPageSize = pageSize,
   sorter = { updatedAt: SortOrderEnum.DESCEND },
   filters = {},
+  externalFilters = {},
 ) => ({
   pagination: {
     current: startPage,
@@ -23,6 +24,7 @@ const defaultState = (
   },
   sorter,
   filters,
+  externalFilters,
 });
 
 export const initialState = {
@@ -36,7 +38,11 @@ export const initialState = {
   [NamespaceEnum.PROJECTS]: defaultState(),
   [NamespaceEnum.SESSIONS_LIST]: defaultState(),
   [NamespaceEnum.SESSION_TRACES]: defaultState(),
-  [NamespaceEnum.TRACES_LIST]: defaultState(),
+  [NamespaceEnum.TRACES_LIST]: defaultState(pageSize, { createdAt: SortOrderEnum.DESCEND }, undefined, {
+    sessionUuid: null,
+    fromTimestamp: null,
+    toTimestamp: null,
+  }),
 };
 
 export const contextConfigurationSlice = createSlice({

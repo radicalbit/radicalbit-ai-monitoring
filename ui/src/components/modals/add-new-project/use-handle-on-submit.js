@@ -1,4 +1,4 @@
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useFormbitContext } from '@radicalbit/formbit';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';

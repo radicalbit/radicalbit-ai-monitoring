@@ -1,5 +1,5 @@
 import { NamespaceEnum } from '@Src/constants';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { SectionTitle, Skeleton } from '@radicalbit/radicalbit-design-system';
 import { useSelector } from 'react-redux';
@@ -30,7 +30,7 @@ function Subtitle() {
 
   const { data, isLoading, isError } = useGetAllProjectQuery({ queryParams });
 
-  const count = data?.total;
+  const count = data?.length;
 
   const label = count <= 1 ? 'Project' : 'Projects';
 

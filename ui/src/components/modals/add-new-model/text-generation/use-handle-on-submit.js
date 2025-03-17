@@ -3,7 +3,7 @@ import { modelsApiSlice } from '@State/models/api';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import { DataTypeEnum } from '@Src/store/state/models/constants';
+import { DataTypeEnum } from '@State/models/constants';
 import { useModalContext } from '../modal-context-provider';
 
 const { useAddNewModelMutation } = modelsApiSlice;

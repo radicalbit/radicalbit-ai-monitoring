@@ -4,7 +4,7 @@ import MainListModelsHeader from '@Src/container/models/List/header';
 import LaunchpadHeader from '@Src/container/launchpad/header';
 import { Navigate, Route, Routes } from 'react-router';
 import ProjectListHeader from '@Container/tracing/project-list/header';
-import ProjectDetailHeader from '@Container/tracing/project-detail/header';
+import ProjectDetailHeader from '@Container/tracing/project-detail/header/header';
 
 export default function MainHeaderContentSwitch() {
   return (

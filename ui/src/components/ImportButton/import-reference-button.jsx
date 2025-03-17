@@ -1,5 +1,5 @@
 import { Button, Upload } from '@radicalbit/radicalbit-design-system';
-import { selectIsShowConfettiForModelCreation } from '@Src/store/state/global-configuration/selectors';
+import { selectIsShowConfettiForModelCreation } from '@State/global-configuration/selectors';
 import { globalConfigSliceActions } from '@State/global-configuration/slice';
 import { modelsApiSlice } from '@State/models/api';
 import ConfettiExplosion from 'react-confetti-explosion';

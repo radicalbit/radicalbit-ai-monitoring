@@ -1,6 +1,8 @@
+import InstructionsComponent from "../void-instructions"
+
 const ProjectDashboard = () => {
     return (
-        <span>ProjectDashboard</span>
+        <InstructionsComponent/>
     )
 }
 

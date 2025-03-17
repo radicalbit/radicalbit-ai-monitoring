@@ -2,7 +2,7 @@ import {
   RbitModal, SectionTitle, Steps,
 } from '@radicalbit/radicalbit-design-system';
 import useModals from '@Src/hooks/use-modals';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { ModelTypeEnum } from '@State/models/constants';
 import ModalContextProvider, { useModalContext } from './modal-context-provider';
 import ActionsStepFourth from './step-four/actions';
 import BodyStepFour from './step-four/new-body';

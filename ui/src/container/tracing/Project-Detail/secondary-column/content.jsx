@@ -1,6 +1,6 @@
 import { useIsDarkMode } from '@Components/dark-mode/hooks';
 import { TRACING_TABS_ENUM } from '@Container/tracing/constants';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { selectors as layoutSelectors } from '@State/layout';
 import { Menu, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useState } from 'react';
@@ -19,7 +19,6 @@ const commonChildrenMenu = () => {
     { label: 'Dashboard', key: TRACING_TABS_ENUM.DASHBOARD },
     { label: 'Traces', key: TRACING_TABS_ENUM.TRACES },
     { label: 'Sessions', key: TRACING_TABS_ENUM.SESSIONS },
-    { label: 'Settings', key: TRACING_TABS_ENUM.SETTINGS },
   ];
 
   return commonMenu;
