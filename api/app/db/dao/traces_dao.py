@@ -229,7 +229,7 @@ class TraceDAO:
 
             # Add optional trace_id filter with "like" as search
             if trace_id:
-                base_spans = base_spans.filter(Trace.trace_id.like(f'%{trace_id}%'))
+                base_spans = base_spans.filter(Trace.trace_id.like(f'{trace_id}%'))
 
             # Add optional timestamp filters
             if from_timestamp:
@@ -246,7 +246,7 @@ class TraceDAO:
             # Add optional session_uuid filter with "like" as search
             if session_uuid:
                 root_spans = root_spans.filter(
-                    base_spans.c.session_uuid.like(f'%{session_uuid}%')
+                    base_spans.c.session_uuid.like(f'{session_uuid}%')
                 )
 
             root_spans = root_spans.subquery().alias('root_spans')
@@ -462,3 +462,46 @@ class TraceDAO:
             )
 
             return session.execute(traces)
+
+    def get_span_by_id(self, project_uuid: UUID, trace_id: str, span_id: str):
+        with self.db.begin_session() as session:
+            stmt = (
+                select(
+                    Trace.span_id,
+                    Trace.span_name,
+                    Trace.parent_span_id,
+                    Trace.trace_id,
+                    Trace.service_name,
+                    Trace.duration,
+                    literal_column(
+                        "SpanAttributes['traceloop.association.properties.session_uuid']"
+                    ).label('session_uuid'),
+                    literal_column(
+                        "SpanAttributes['gen_ai.usage.completion_tokens']"
+                    ).label('completion_tokens'),
+                    literal_column(
+                        "SpanAttributes['gen_ai.usage.prompt_tokens']"
+                    ).label('prompt_tokens'),
+                    literal_column("SpanAttributes['llm.usage.total_tokens']").label(
+                        'total_tokens'
+                    ),
+                    Trace.span_attributes.label('attributes'),
+                    Trace.status_message,
+                    Trace.timestamp,
+                    Trace.events_name,
+                    Trace.events_attributes,
+                    Trace.events_timestamp,
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    Trace.trace_id == trace_id,
+                    Trace.span_id == span_id,
+                )
+                .filter(
+                    text(
+                        "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                    )
+                )
+            )
+
+            return session.execute(stmt).one_or_none()

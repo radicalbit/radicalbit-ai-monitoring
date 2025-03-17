@@ -27,29 +27,64 @@ class TreeNode(BaseModel):
     )
 
 
-class SpanBasic(BaseModel):
+class ErrorEvents(BaseModel):
+    status_message: Optional[str] = None
+    timestamp: Optional[str] = None
+    name: Optional[str] = None
+    attributes: Optional[str] = None
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, from_attributes=True
+    )
+
+
+class SpanDTO(BaseModel):
+    id: str
     name: str
+    parent_id: Optional[str] = None
     trace_id: str
-    span_id: str
+    project_uuid: UUID
     duration: int
-    tokens: int
-    created_at: str
-
-    model_config = ConfigDict(
-        populate_by_name=True,
-        alias_generator=to_camel,
-    )
-
-
-class SpanDTO(SpanBasic):
-    session_uuid: Optional[UUID] = None
+    session_uuid: UUID
+    completion_tokens: int = 0
+    prompt_tokens: int = 0
+    total_tokens: int = 0
     attributes: dict
-    error: Optional[str] = None
+    created_at: str
+    error_events: ErrorEvents
 
     model_config = ConfigDict(
+        from_attributes=True,
         populate_by_name=True,
         alias_generator=to_camel,
     )
+
+    @staticmethod
+    def from_row_span(row):
+        return SpanDTO(
+            id=row.span_id,
+            name=row.span_name,
+            parent_id=row.parent_span_id if row.parent_span_id else None,
+            trace_id=row.trace_id,
+            project_uuid=row.service_name,
+            duration=row.duration,
+            session_uuid=row.session_uuid,
+            completion_tokens=int(row.completion_tokens)
+            if row.completion_tokens
+            else 0,
+            prompt_tokens=int(row.prompt_tokens) if row.prompt_tokens else 0,
+            total_tokens=int(row.total_tokens) if row.total_tokens else 0,
+            attributes=row.attributes or {},
+            created_at=row.timestamp.isoformat(),
+            error_events=ErrorEvents(
+                status_message=row.status_message if row.status_message else None,
+                timestamp=row.events_timestamp[0].isoformat()
+                if row.events_timestamp
+                else None,
+                name=row.events_name[0] if row.events_name else None,
+                attributes=row.events_attributes[0] if row.events_attributes else None,
+            ),
+        )
 
 
 class TraceDTO(BaseModel):

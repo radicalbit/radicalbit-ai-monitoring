@@ -33,7 +33,7 @@ class Trace(ClickHouseBaseTable):
     duration = Column('Duration', BigInteger)
     status_code = Column('StatusCode', LowCardinality(String))
     status_message = Column('StatusMessage', String)
-    event_timestamp = Column('Events.Timestamp', Array(DateTime64(9)))
+    events_timestamp = Column('Events.Timestamp', Array(DateTime64(9)))
     events_name = Column('Events.Name', Array(LowCardinality(String)))
     events_attributes = Column(
         'Events.Attributes', Array(Map(LowCardinality(String), String))
