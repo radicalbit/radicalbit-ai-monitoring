@@ -9,7 +9,7 @@ from fastapi_pagination import Page, Params
 
 from app.core import get_config
 from app.models.commons.order_type import OrderType
-from app.models.traces.tracing_dto import SessionDTO, TraceDTO
+from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
 from app.services.trace_service import TraceService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -82,5 +82,13 @@ class TraceRoute:
                 project_uuid=project_uuid,
                 trace_id=trace_id,
             )
+
+        @router.get(
+            '/project/{project_uuid}/trace/{trace_id}/span/{span_id}',
+            status_code=200,
+            response_model=SpanDTO,
+        )
+        def get_span_by_id(project_uuid: UUID, trace_id: str, span_id: str):
+            return trace_service.get_span_by_id(project_uuid, trace_id, span_id)
 
         return router

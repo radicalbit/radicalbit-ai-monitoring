@@ -1,8 +1,9 @@
 from datetime import datetime
 import unittest
+from unittest import mock
 import uuid
 
-from app.models.traces.tracing_dto import TraceDTO
+from app.models.traces.tracing_dto import SpanDTO, TraceDTO
 
 
 class TracingDTOTest(unittest.TestCase):
@@ -210,3 +211,51 @@ class TracingDTOTest(unittest.TestCase):
         )
         assert channel_write_node is not None
         assert len(channel_write_node.children) == 0  # Should be a leaf node
+
+    def test_from_row_span(self):
+        mock_row = mock.Mock()
+        mock_row.span_id = 'b4c1808b30ccdb38'
+        mock_row.span_name = 'openai.chat'
+        mock_row.parent_span_id = None
+        mock_row.trace_id = 'b3ba677b5dc3225868ad59f41bd8b3c9'
+        mock_row.service_name = uuid.UUID('221fb964-f3c0-49aa-b8ee-8822c11cd3d4')
+        mock_row.duration = 1156496000
+        mock_row.session_uuid = uuid.UUID('71e18b84-a72d-433f-9623-1a52bd04d72a')
+        mock_row.completion_tokens = '15'
+        mock_row.prompt_tokens = '12'
+        mock_row.total_tokens = '27'
+        mock_row.attributes = {
+            'gen_ai.completion.0.content': "Why don't skeletons fight each other? They don't have the guts!",
+            'gen_ai.completion.0.finish_reason': 'stop',
+            'gen_ai.completion.0.role': 'assistant',
+        }
+        mock_row.timestamp = datetime(2025, 3, 17, 10, 36, 5, 895250)
+        mock_row.events_timestamp = []
+        mock_row.events_name = []
+        mock_row.events_attributes = []
+        mock_row.status_message = None
+
+        span_dto = SpanDTO.from_row_span(mock_row)
+
+        assert span_dto.id == 'b4c1808b30ccdb38'
+        assert span_dto.name == 'openai.chat'
+        assert span_dto.parent_id is None
+        assert span_dto.trace_id == 'b3ba677b5dc3225868ad59f41bd8b3c9'
+        assert span_dto.project_uuid == uuid.UUID(
+            '221fb964-f3c0-49aa-b8ee-8822c11cd3d4'
+        )
+        assert span_dto.duration == 1156496000
+        assert span_dto.session_uuid == uuid.UUID(
+            '71e18b84-a72d-433f-9623-1a52bd04d72a'
+        )
+        assert span_dto.completion_tokens == 15
+        assert span_dto.prompt_tokens == 12
+        assert span_dto.total_tokens == 27
+        assert (
+            span_dto.attributes['gen_ai.completion.0.content']
+            == "Why don't skeletons fight each other? They don't have the guts!"
+        )
+        assert span_dto.created_at == '2025-03-17T10:36:05.895250'
+        assert span_dto.error_events.timestamp is None
+        assert span_dto.error_events.name is None
+        assert span_dto.error_events.attributes is None
