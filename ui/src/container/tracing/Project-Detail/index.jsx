@@ -10,7 +10,6 @@ import { TRACING_TABS_ENUM } from '../constants';
 import ProjectDashboard from './dashboard';
 import SessionsList from './sessions';
 import SessionsTracesList from './sessions/traces';
-import ProjectSettings from './settings';
 import TracesList from './traces';
 
 function ProjectDetail() {
@@ -35,12 +34,13 @@ function ProjectDetailInner() {
   switch (activeTab) {
     case TRACING_TABS_ENUM.DASHBOARD:
       return <ProjectDashboard />;
+
     case TRACING_TABS_ENUM.TRACES:
       return <TracesList />;
-    case TRACING_TABS_ENUM.SETTINGS:
-      return <ProjectSettings />;
+
     case TRACING_TABS_ENUM.SESSIONS:
       return <SessionsLayout />;
+
     default:
       return false;
   }

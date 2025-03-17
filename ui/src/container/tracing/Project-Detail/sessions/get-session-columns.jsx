@@ -1,27 +1,27 @@
 import { RelativeDateTime } from '@radicalbit/radicalbit-design-system';
 import { columnFactory } from '@Src/components/smart-table/utils';
 
-export const getColumns = (
+const getSessionColumns = (
   activeFilters,
   activeSorter,
 ) => [
 
   columnFactory({
     title: 'UUID',
-    key: 'traceId',
+    key: 'uuid',
     activeFilters,
     activeSorter,
-    render: ({ traceId }) => (
+    render: ({ sessionUuid }) => (
       <div className="font-[var(--coo-font-weight-bold)]">
-        {traceId}
+        {sessionUuid}
       </div>
     ),
   }),
 
   columnFactory({
-    title: 'Spans',
-    key: 'spans',
-    dataIndex: 'spans',
+    title: 'Traces',
+    key: 'traces',
+    dataIndex: 'traces',
     activeFilters,
     activeSorter,
   }),
@@ -60,8 +60,8 @@ export const getColumns = (
 
   columnFactory({
     title: 'Durations',
-    dataIndex: 'durationMs',
-    key: 'durationMs',
+    dataIndex: 'durationsMs',
+    key: 'durationsMs',
     activeFilters,
     activeSorter,
     sorter: false,
@@ -83,9 +83,9 @@ export const getColumns = (
   }),
 
   columnFactory({
-    title: 'Latest span',
-    dataIndex: 'latestSpanTs',
-    key: 'latestSpanTs',
+    title: 'Latest Trace at',
+    dataIndex: 'latestTraceTs',
+    key: 'latestTraceTs',
     activeFilters,
     activeSorter,
     sorter: false,
@@ -95,3 +95,5 @@ export const getColumns = (
   }),
 
 ];
+
+export default getSessionColumns;

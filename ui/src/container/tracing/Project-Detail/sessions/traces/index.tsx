@@ -1,6 +1,6 @@
 import SmartTable from "@Components/smart-table"
 import { NamespaceEnum } from "@Src/constants"
-import { tracingApiSlice } from "@Src/store/state/tracing/api"
+import { tracingApiSlice } from "@State/tracing/api"
 import { useNavigate, useParams } from "react-router"
 import { useSearchParams } from "react-router-dom"
 import { getColumns } from "./columns"

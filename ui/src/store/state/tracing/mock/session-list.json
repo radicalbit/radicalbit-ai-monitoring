@@ -1,0 +1,20 @@
+{
+    "items": [
+      {
+        "projectUuid": "cbdb8b6c-0080-4a25-b259-625e1cd463ee",
+        "sessionUuid": "58d56a0f-1186-4113-a809-12c7a1e853a6",
+        "traces": 2,
+        "completionTokens": 118,
+        "promptTokens": 2775,
+        "totalTokens": 2893,
+        "numberOfErrors": 0,
+        "createdAt": "2025-03-13 14:31:40.371454000",
+        "latestTraceTs": "2025-03-13 14:31:43.682462000",
+        "durationsMs": 4714.081
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "size": 50,
+    "pages": 1
+  }

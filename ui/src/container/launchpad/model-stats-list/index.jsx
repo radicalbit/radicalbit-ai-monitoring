@@ -12,12 +12,12 @@ import {
   Void,
 } from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
-import { modelsApiSlice } from '@Src/store/state/models/api';
-import { useGetOverallModelListQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { modelsApiSlice } from '@State/models/api';
+import { useGetOverallModelListQueryWithPolling } from '@State/models/polling-hook';
 import { memo } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import { alertsApiSlice } from '@Src/store/state/alerts/api';
+import { alertsApiSlice } from '@State/alerts/api';
 import { getColumns } from './columns';
 import { getSkeletonColumns } from './skeleton-columns';
 

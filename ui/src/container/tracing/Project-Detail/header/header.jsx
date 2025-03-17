@@ -4,13 +4,14 @@ import {
   DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION,
 } from '@Container/layout/layout-provider/layout-provider-configuration';
 import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import {
   NewHeader,
   RelativeDateTime,
   SectionTitle,
 } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router-dom';
+import DropdownMenu from './dropdown-menu';
 
 const { useGetProjectByUUIDQuery } = tracingApiSlice;
 
@@ -34,6 +35,7 @@ function ProjectDetailHeaderInner() {
             lightActions={DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION}
           />
         ),
+        two: (<DropdownMenu />),
       }}
       title={<SectionTitle subtitle={<Subtitle />} title={<Title />} />}
     />

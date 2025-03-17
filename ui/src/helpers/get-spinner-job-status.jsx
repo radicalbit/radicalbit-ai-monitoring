@@ -1,5 +1,5 @@
 import { JOB_STATUS } from '@Src/constants';
-import { ModelTypeEnum } from '@Src/store/state/models/constants';
+import { ModelTypeEnum } from '@State/models/constants';
 
 const getJobStatus = ({
   modelType, latestCurrentJobStatus, latestReferenceJobStatus, latestCompletionJobStatus,

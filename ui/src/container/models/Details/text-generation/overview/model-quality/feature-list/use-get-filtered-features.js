@@ -1,5 +1,5 @@
 import { useFormbitContext } from '@radicalbit/formbit';
-import { useGetCompletionModelQualityQueryWithPolling } from '@Src/store/state/models/polling-hook';
+import { useGetCompletionModelQualityQueryWithPolling } from '@State/models/polling-hook';
 
 export default () => {
   const { data } = useGetCompletionModelQualityQueryWithPolling();
