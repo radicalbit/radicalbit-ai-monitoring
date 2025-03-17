@@ -60,6 +60,7 @@ class TraceDAO:
                     Trace.service_name.label('project_uuid'),
                     Trace.parent_span_id,
                     Trace.span_attributes,
+                    Trace.status_code,
                     Trace.events_attributes,
                     literal_column(
                         "SpanAttributes['traceloop.association.properties.session_uuid']"
@@ -114,9 +115,9 @@ class TraceDAO:
             errors_stmt = (
                 select(
                     span_attrs_stmt.c.session_uuid,
-                    func.sum(
-                        func.length(span_attrs_stmt.c.events_attributes) > 0
-                    ).label('number_of_errors'),
+                    func.sum(span_attrs_stmt.c.status_code == 'Error').label(
+                        'number_of_errors'
+                    ),
                 )
                 .group_by(span_attrs_stmt.c.session_uuid)
                 .subquery()
@@ -203,6 +204,7 @@ class TraceDAO:
                     Trace.duration,
                     Trace.parent_span_id,
                     Trace.span_attributes,
+                    Trace.status_code,
                     Trace.events_attributes,
                     literal_column(
                         "SpanAttributes['traceloop.association.properties.session_uuid']"
@@ -279,7 +281,7 @@ class TraceDAO:
                 select(
                     base_spans.c.service_name,
                     base_spans.c.trace_id,
-                    func.sum(func.length(base_spans.c.events_attributes) > 0).label(
+                    func.sum(base_spans.c.status_code == 'Error').label(
                         'number_of_errors'
                     ),
                 )
@@ -300,7 +302,11 @@ class TraceDAO:
                     .label('latest_span_ts'),
                     func.count(base_spans.c.span_id).label('spans'),
                 )
-                .group_by(base_spans.c.service_name, base_spans.c.trace_id, base_spans.c.session_uuid)
+                .group_by(
+                    base_spans.c.service_name,
+                    base_spans.c.trace_id,
+                    base_spans.c.session_uuid,
+                )
                 .subquery()
                 .alias('trace_metrics')
             )
@@ -414,3 +420,45 @@ class TraceDAO:
             )
 
             return session.execute(stmt).scalar()
+
+    def get_trace_by_project_uuid_trace_id(
+        self,
+        project_uuid: UUID,
+        trace_id: str,
+    ):
+        with self.db.begin_session() as session:
+            traces = (
+                select(
+                    Trace.timestamp.label('created_at'),
+                    Trace.trace_id,
+                    Trace.span_id,
+                    Trace.service_name.label('project_uuid'),
+                    Trace.duration,
+                    Trace.parent_span_id,
+                    Trace.span_name,
+                    Trace.status_code,
+                    Trace.events_attributes,
+                    literal_column(
+                        "SpanAttributes['traceloop.association.properties.session_uuid']"
+                    ).label('session_uuid'),
+                    literal_column(
+                        "SpanAttributes['gen_ai.usage.completion_tokens']"
+                    ).label('completion_tokens'),
+                    literal_column(
+                        "SpanAttributes['gen_ai.usage.prompt_tokens']"
+                    ).label('prompt_tokens'),
+                    literal_column("SpanAttributes['llm.usage.total_tokens']").label(
+                        'total_tokens'
+                    ),
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid), Trace.trace_id == trace_id
+                )
+                .filter(
+                    text(
+                        "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                    )
+                )
+            )
+
+            return session.execute(traces)

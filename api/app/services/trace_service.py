@@ -7,7 +7,7 @@ from fastapi_pagination import Page, Params
 from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
-from app.models.exceptions import ProjectNotFoundError
+from app.models.exceptions import ProjectNotFoundError, TraceNotFountError
 from app.models.traces.tracing_dto import SessionDTO, TraceDTO
 
 
@@ -63,6 +63,23 @@ class TraceService:
         list_of_traces = [TraceDTO.model_validate(trace) for trace in results.items]
 
         return Page.create(items=list_of_traces, params=params, total=results.total)
+
+    def get_trace_by_project_uuid_trace_id(
+        self,
+        project_uuid: UUID,
+        trace_id: str,
+    ) -> Optional[TraceDTO]:
+        self._check_project(project_uuid)
+        traces = self.trace_dao.get_trace_by_project_uuid_trace_id(
+            project_uuid, trace_id
+        )
+        list_of_traces = [dict(trace) for trace in traces.mappings()]
+        if not list_of_traces:
+            raise TraceNotFountError(
+                f'Trace with id {trace_id} not found in project {project_uuid}'
+            )
+
+        return TraceDTO.convert_traces_to_dto(list_of_traces, project_uuid)
 
     def _check_project(self, project_uuid: UUID):
         project = self.project_dao.get_by_uuid(project_uuid)

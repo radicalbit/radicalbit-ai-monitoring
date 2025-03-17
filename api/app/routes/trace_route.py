@@ -42,10 +42,12 @@ class TraceRoute:
         )
         def get_root_traces_by_project_uuid(
             project_uuid: UUID,
-            trace_id: Annotated[Optional[str], Query()] = None,
-            session_uuid: Annotated[Optional[UUID], Query()] = None,
-            from_timestamp: Annotated[Optional[int], Query()] = None,
-            to_timestamp: Annotated[Optional[int], Query()] = None,
+            trace_id: Annotated[Optional[str], Query(alias='traceId')] = None,
+            session_uuid: Annotated[Optional[str], Query(alias='sessionUuid')] = None,
+            from_timestamp: Annotated[
+                Optional[int], Query(alias='fromTimestamp')
+            ] = None,
+            to_timestamp: Annotated[Optional[int], Query(alias='toTimestamp')] = None,
             _page: Annotated[int, Query()] = 1,
             _limit: Annotated[int, Query()] = 50,
             _order: Annotated[OrderType, Query()] = OrderType.ASC,
@@ -65,6 +67,20 @@ class TraceRoute:
                 params=params,
                 order=_order,
                 sort=_sort,
+            )
+
+        @router.get(
+            '/project/{project_uuid}/trace/{trace_id}',
+            status_code=200,
+            response_model=Optional[TraceDTO],
+        )
+        def get_trace_by_project_uuid_trace_id(
+            project_uuid: UUID,
+            trace_id: str,
+        ):
+            return trace_service.get_trace_by_project_uuid_trace_id(
+                project_uuid=project_uuid,
+                trace_id=trace_id,
             )
 
         return router
