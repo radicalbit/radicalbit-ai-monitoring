@@ -242,6 +242,7 @@ class TracingDTOTest(unittest.TestCase):
             '221fb964-f3c0-49aa-b8ee-8822c11cd3d4'
         )
         assert span_dto.duration == 1156496000
+        assert span_dto.durations_ms == 1156.496
         assert span_dto.session_uuid == uuid.UUID(
             '71e18b84-a72d-433f-9623-1a52bd04d72a'
         )

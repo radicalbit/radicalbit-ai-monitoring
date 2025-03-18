@@ -8,6 +8,7 @@ from pydantic.alias_generators import to_camel
 
 class TreeNode(BaseModel):
     span_name: str
+    span_id: str
     completion_tokens: int = 0
     prompt_tokens: int = 0
     total_tokens: int = 0
@@ -48,7 +49,7 @@ class SpanDTO(BaseModel):
     parent_id: Optional[str] = None
     trace_id: str
     project_uuid: UUID
-    duration: int
+    duration: int = Field(exclude=True)
     session_uuid: UUID
     completion_tokens: int = 0
     prompt_tokens: int = 0
@@ -57,6 +58,10 @@ class SpanDTO(BaseModel):
     created_at: str
     status_message: Optional[str] = None
     error_events: list[ErrorEvents]
+
+    @computed_field
+    def durations_ms(self) -> float:
+        return self.duration / 1_000_000
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -175,6 +180,7 @@ class TraceDTO(BaseModel):
             # Create node
             node = TreeNode(
                 span_name=trace['span_name'],
+                span_id=trace['span_id'],
                 completion_tokens=completion_tokens,
                 prompt_tokens=prompt_tokens,
                 total_tokens=total_tokens_span,
