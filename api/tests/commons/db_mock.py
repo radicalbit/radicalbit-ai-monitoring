@@ -1,3 +1,4 @@
+from collections import namedtuple
 import datetime
 from typing import Dict, List, Optional
 import uuid
@@ -10,6 +11,7 @@ from app.db.tables.model_table import Model
 from app.db.tables.project_table import Project
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
+from app.db.tables.traces_table import Trace
 from app.models.drift_algorithm_type import DriftAlgorithmType
 from app.models.job_status import JobStatus
 from app.models.model_dto import (
@@ -31,6 +33,10 @@ REFERENCE_UUID = uuid.uuid4()
 CURRENT_UUID = uuid.uuid4()
 COMPLETION_UUID = uuid.uuid4()
 PROJECT_UUID = uuid.uuid4()
+
+SERVICE_NAME = uuid.UUID(int=0)
+SESSION_UUID = uuid.UUID('a8dd1f4d-d076-4035-99e2-443c550c71a4')
+SESSION_UUID_TWO = uuid.UUID('286751f8-398c-4a8c-898f-78caf9453fde')
 
 
 def get_sample_model(
@@ -648,3 +654,239 @@ def get_sample_project_in(
     return ProjectIn(
         name=name,
     )
+
+
+def get_sample_session() -> list:
+    return [
+        Trace(
+            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            trace_id='c5359ae1a36f536fcfba1795c541787b',
+            span_id='21b3dd065aa8c0f2',
+            parent_span_id='',
+            trace_state='',
+            span_name='ChatOpenAI.chat',
+            span_kind='Client',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={
+                'env': 'dev',
+                'service.name': 'test',
+                'test': 'lalalal',
+                'version': '1.0.0',
+            },
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'gen_ai.completion.0.content': 'Action: list_tables_sql_db\nAction Input: ',
+                'gen_ai.completion.0.role': 'assistant',
+                'gen_ai.prompt.0.content': 'You are an agent designed to interact with Spark SQL.\nGiven an input question, create a syntactically correct Spark SQL query to run, then look at the results of the query and return the answer.\nUnless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 10 results.\nYou can order the results by a relevant column to return the most interesting examples in the database.\nNever query for all the columns from a specific table, only ask for the relevant columns given the question.\nYou have access to tools for interacting with the database.\nOnly use the below tools. Only use the information returned by the below tools to construct your final answer.\nYou MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.\n\nDO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.\n\nIf the question does not seem related to the database, just return "I don\'t know" as the answer.\n\n\nquery_sql_db - \n    Input to this tool is a detailed and correct SQL query, output is a result from the Spark SQL.\n    If the query is not correct, an error message will be returned.\n    If an error is returned, rewrite the query, check the query, and try again.\n    \nschema_sql_db - \n    Input to this tool is a comma-separated list of tables, output is the schema and sample rows for those tables.\n    Be sure that the tables actually exist by calling list_tables_sql_db first!\n\n    Example Input: "table1, table2, table3"\n    \nlist_tables_sql_db - Input is an empty string, output is a comma separated list of tables in the Spark SQL.\nquery_checker_sql_db - \n    Use this tool to double check if your query is correct before executing it.\n    Always use this tool before executing a query with query_sql_db!\n    \n\nUse the following format:\n\nQuestion: the input question you must answer\nThought: you should always think about what to do\nAction: the action to take, should be one of [query_sql_db, schema_sql_db, list_tables_sql_db, query_checker_sql_db]\nAction Input: the input to the action\nObservation: the result of the action\n... (this Thought/Action/Action Input/Observation can repeat N times)\nThought: I now know the final answer\nFinal Answer: the final answer to the original input question\n\nBegin!\n\nQuestion: mean of ages\nThought: I should look at the tables in the database to see what I can query.\n',
+                'gen_ai.prompt.0.role': 'user',
+                'gen_ai.request.model': 'gpt-3.5-turbo',
+                'gen_ai.request.temperature': '0',
+                'gen_ai.response.model': 'gpt-3.5-turbo-0125',
+                'gen_ai.system': 'Langchain',
+                'gen_ai.usage.completion_tokens': '11',
+                'gen_ai.usage.prompt_tokens': '536',
+                'llm.request.type': 'chat',
+                'llm.usage.total_tokens': '547',
+                'traceloop.association.properties.ls_model_name': 'gpt-3.5-turbo',
+                'traceloop.association.properties.ls_model_type': 'chat',
+                'traceloop.association.properties.ls_provider': 'openai',
+                'traceloop.association.properties.ls_stop': '["\\nObservation:","\\n\\tObservation:"]',
+                'traceloop.association.properties.ls_temperature': '0',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID),
+                'traceloop.entity.path': 'LLMChain',
+                'traceloop.workflow.name': 'AgentExecutor',
+            },
+            duration=1194567000,
+            status_code='Unset',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+        Trace(
+            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            trace_id='c5359ae1a36f536fcfba1795c541787b',
+            span_id='c5f51e2ada38cbb8',
+            parent_span_id='',
+            trace_state='',
+            span_name='ChatOpenAI.chat',
+            span_kind='Client',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={
+                'env': 'dev',
+                'service.name': 'test',
+                'test': 'lalalal',
+                'version': '1.0.0',
+            },
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'gen_ai.completion.0.content': 'I should query the titanic table to calculate the mean of ages.\nAction: schema_sql_db\nAction Input: titanic',
+                'gen_ai.completion.0.role': 'assistant',
+                'gen_ai.prompt.0.content': 'You are an agent designed to interact with Spark SQL.\nGiven an input question, create a syntactically correct Spark SQL query to run, then look at the results of the query and return the answer.\nUnless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 10 results.\nYou can order the results by a relevant column to return the most interesting examples in the database.\nNever query for all the columns from a specific table, only ask for the relevant columns given the question.\nYou have access to tools for interacting with the database.\nOnly use the below tools. Only use the information returned by the below tools to construct your final answer.\nYou MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.\n\nDO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.\n\nIf the question does not seem related to the database, just return "I don\'t know" as the answer.\n\n\nquery_sql_db - \n    Input to this tool is a detailed and correct SQL query, output is a result from the Spark SQL.\n    If the query is not correct, an error message will be returned.\n    If an error is returned, rewrite the query, check the query, and try again.\n    \nschema_sql_db - \n    Input to this tool is a comma-separated list of tables, output is the schema and sample rows for those tables.\n    Be sure that the tables actually exist by calling list_tables_sql_db first!\n\n    Example Input: "table1, table2, table3"\n    \nlist_tables_sql_db - Input is an empty string, output is a comma separated list of tables in the Spark SQL.\nquery_checker_sql_db - \n    Use this tool to double check if your query is correct before executing it.\n    Always use this tool before executing a query with query_sql_db!\n    \n\nUse the following format:\n\nQuestion: the input question you must answer\nThought: you should always think about what to do\nAction: the action to take, should be one of [query_sql_db, schema_sql_db, list_tables_sql_db, query_checker_sql_db]\nAction Input: the input to the action\nObservation: the result of the action\n... (this Thought/Action/Action Input/Observation can repeat N times)\nThought: I now know the final answer\nFinal Answer: the final answer to the original input question\n\nBegin!\n\nQuestion: mean of ages\nThought: I should look at the tables in the database to see what I can query.\nAction: list_tables_sql_db\nAction Input: \nObservation: titanic\nThought:',
+                'gen_ai.prompt.0.role': 'user',
+                'gen_ai.request.model': 'gpt-3.5-turbo',
+                'gen_ai.request.temperature': '0',
+                'gen_ai.response.model': 'gpt-3.5-turbo-0125',
+                'gen_ai.system': 'Langchain',
+                'gen_ai.usage.completion_tokens': '25',
+                'gen_ai.usage.prompt_tokens': '555',
+                'llm.request.type': 'chat',
+                'llm.usage.total_tokens': '580',
+                'traceloop.association.properties.ls_model_name': 'gpt-3.5-turbo',
+                'traceloop.association.properties.ls_model_type': 'chat',
+                'traceloop.association.properties.ls_provider': 'openai',
+                'traceloop.association.properties.ls_stop': '["\\nObservation:","\\n\\tObservation:"]',
+                'traceloop.association.properties.ls_temperature': '0',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID),
+                'traceloop.entity.path': 'LLMChain',
+                'traceloop.workflow.name': 'AgentExecutor',
+            },
+            duration=586108000,
+            status_code='Unset',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+        Trace(
+            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            trace_id='c5359ae1a36f536fcfba1795c541787b',
+            span_id='4aacf5e0c1de652c',
+            parent_span_id='',
+            trace_state='',
+            span_name='ChatOpenAI.chat',
+            span_kind='Client',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={
+                'env': 'dev',
+                'service.name': 'test',
+                'test': 'lalalal',
+                'version': '1.0.0',
+            },
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'gen_ai.completion.0.content': 'I can calculate the mean of the "Age" column in the titanic table.\nAction: query_sql_db\nAction Input: SELECT AVG(Age) FROM titanic',
+                'gen_ai.completion.0.role': 'assistant',
+                'gen_ai.prompt.0.content': 'You are an agent designed to interact with Spark SQL.\nGiven an input question, create a syntactically correct Spark SQL query to run, then look at the results of the query and return the answer.\nUnless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 10 results.\nYou can order the results by a relevant column to return the most interesting examples in the database.\nNever query for all the columns from a specific table, only ask for the relevant columns given the question.\nYou have access to tools for interacting with the database.\nOnly use the below tools. Only use the information returned by the below tools to construct your final answer.\nYou MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.\n\nDO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.\n\nIf the question does not seem related to the database, just return "I don\'t know" as the answer.\n\n\nquery_sql_db - \n    Input to this tool is a detailed and correct SQL query, output is a result from the Spark SQL.\n    If the query is not correct, an error message will be returned.\n    If an error is returned, rewrite the query, check the query, and try again.\n    \nschema_sql_db - \n    Input to this tool is a comma-separated list of tables, output is the schema and sample rows for those tables.\n    Be sure that the tables actually exist by calling list_tables_sql_db first!\n\n    Example Input: "table1, table2, table3"\n    \nlist_tables_sql_db - Input is an empty string, output is a comma separated list of tables in the Spark SQL.\nquery_checker_sql_db - \n    Use this tool to double check if your query is correct before executing it.\n    Always use this tool before executing a query with query_sql_db!\n    \n\nUse the following format:\n\nQuestion: the input question you must answer\nThought: you should always think about what to do\nAction: the action to take, should be one of [query_sql_db, schema_sql_db, list_tables_sql_db, query_checker_sql_db]\nAction Input: the input to the action\nObservation: the result of the action\n... (this Thought/Action/Action Input/Observation can repeat N times)\nThought: I now know the final answer\nFinal Answer: the final answer to the original input question\n\nBegin!\n\nQuestion: mean of ages\nThought: I should look at the tables in the database to see what I can query.\nAction: list_tables_sql_db\nAction Input: \nObservation: titanic\nThought:I should query the titanic table to calculate the mean of ages.\nAction: schema_sql_db\nAction Input: titanic\nObservation: CREATE TABLE spark_catalog.langchain_example.titanic (\n  PassengerId INT,\n  Survived INT,\n  Pclass INT,\n  Name STRING,\n  Sex STRING,\n  Age DOUBLE,\n  SibSp INT,\n  Parch INT,\n  Ticket STRING,\n  Fare DOUBLE,\n  Cabin STRING,\n  Embarked STRING)\n;\n\n/*\n3 rows from titanic table:\nPassengerId\tSurvived\tPclass\tName\tSex\tAge\tSibSp\tParch\tTicket\tFare\tCabin\tEmbarked\n1\t0\t3\tBraund, Mr. Owen Harris\tmale\t22.0\t1\t0\tA/5 21171\t7.25\tNone\tS\n2\t1\t1\tCumings, Mrs. John Bradley (Florence Briggs Thayer)\tfemale\t38.0\t1\t0\tPC 17599\t71.2833\tC85\tC\n3\t1\t3\tHeikkinen, Miss. Laina\tfemale\t26.0\t0\t0\tSTON/O2. 3101282\t7.925\tNone\tS\n*/\nThought:',
+                'gen_ai.prompt.0.role': 'user',
+                'gen_ai.request.model': 'gpt-3.5-turbo',
+                'gen_ai.request.temperature': '0',
+                'gen_ai.response.model': 'gpt-3.5-turbo-0125',
+                'gen_ai.system': 'Langchain',
+                'gen_ai.usage.completion_tokens': '34',
+                'gen_ai.usage.prompt_tokens': '810',
+                'llm.request.type': 'chat',
+                'llm.usage.total_tokens': '844',
+                'traceloop.association.properties.ls_model_name': 'gpt-3.5-turbo',
+                'traceloop.association.properties.ls_model_type': 'chat',
+                'traceloop.association.properties.ls_provider': 'openai',
+                'traceloop.association.properties.ls_stop': '["\\nObservation:","\\n\\tObservation:"]',
+                'traceloop.association.properties.ls_temperature': '0',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID_TWO),
+                'traceloop.entity.path': 'LLMChain',
+                'traceloop.workflow.name': 'AgentExecutor',
+            },
+            duration=723863000,
+            status_code='Unset',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+        Trace(
+            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            trace_id='c5359ae1a36f536fcfba1795c541787b',
+            span_id='9bf725dcae06912e',
+            parent_span_id='',
+            trace_state='',
+            span_name='ChatOpenAI.chat',
+            span_kind='Client',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={
+                'env': 'dev',
+                'service.name': 'test',
+                'test': 'lalalal',
+                'version': '1.0.0',
+            },
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'gen_ai.completion.0.content': 'I now know the final answer\nFinal Answer: The mean age of passengers in the Titanic dataset is approximately 29.7 years.',
+                'gen_ai.completion.0.role': 'assistant',
+                'gen_ai.prompt.0.content': 'You are an agent designed to interact with Spark SQL.\nGiven an input question, create a syntactically correct Spark SQL query to run, then look at the results of the query and return the answer.\nUnless the user specifies a specific number of examples they wish to obtain, always limit your query to at most 10 results.\nYou can order the results by a relevant column to return the most interesting examples in the database.\nNever query for all the columns from a specific table, only ask for the relevant columns given the question.\nYou have access to tools for interacting with the database.\nOnly use the below tools. Only use the information returned by the below tools to construct your final answer.\nYou MUST double check your query before executing it. If you get an error while executing a query, rewrite the query and try again.\n\nDO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.\n\nIf the question does not seem related to the database, just return "I don\'t know" as the answer.\n\n\nquery_sql_db - \n    Input to this tool is a detailed and correct SQL query, output is a result from the Spark SQL.\n    If the query is not correct, an error message will be returned.\n    If an error is returned, rewrite the query, check the query, and try again.\n    \nschema_sql_db - \n    Input to this tool is a comma-separated list of tables, output is the schema and sample rows for those tables.\n    Be sure that the tables actually exist by calling list_tables_sql_db first!\n\n    Example Input: "table1, table2, table3"\n    \nlist_tables_sql_db - Input is an empty string, output is a comma separated list of tables in the Spark SQL.\nquery_checker_sql_db - \n    Use this tool to double check if your query is correct before executing it.\n    Always use this tool before executing a query with query_sql_db!\n    \n\nUse the following format:\n\nQuestion: the input question you must answer\nThought: you should always think about what to do\nAction: the action to take, should be one of [query_sql_db, schema_sql_db, list_tables_sql_db, query_checker_sql_db]\nAction Input: the input to the action\nObservation: the result of the action\n... (this Thought/Action/Action Input/Observation can repeat N times)\nThought: I now know the final answer\nFinal Answer: the final answer to the original input question\n\nBegin!\n\nQuestion: mean of ages\nThought: I should look at the tables in the database to see what I can query.\nAction: list_tables_sql_db\nAction Input: \nObservation: titanic\nThought:I should query the titanic table to calculate the mean of ages.\nAction: schema_sql_db\nAction Input: titanic\nObservation: CREATE TABLE spark_catalog.langchain_example.titanic (\n  PassengerId INT,\n  Survived INT,\n  Pclass INT,\n  Name STRING,\n  Sex STRING,\n  Age DOUBLE,\n  SibSp INT,\n  Parch INT,\n  Ticket STRING,\n  Fare DOUBLE,\n  Cabin STRING,\n  Embarked STRING)\n;\n\n/*\n3 rows from titanic table:\nPassengerId\tSurvived\tPclass\tName\tSex\tAge\tSibSp\tParch\tTicket\tFare\tCabin\tEmbarked\n1\t0\t3\tBraund, Mr. Owen Harris\tmale\t22.0\t1\t0\tA/5 21171\t7.25\tNone\tS\n2\t1\t1\tCumings, Mrs. John Bradley (Florence Briggs Thayer)\tfemale\t38.0\t1\t0\tPC 17599\t71.2833\tC85\tC\n3\t1\t3\tHeikkinen, Miss. Laina\tfemale\t26.0\t0\t0\tSTON/O2. 3101282\t7.925\tNone\tS\n*/\nThought:I can calculate the mean of the "Age" column in the titanic table.\nAction: query_sql_db\nAction Input: SELECT AVG(Age) FROM titanic\nObservation: [(\'29.69911764705882\',)]\nThought:',
+                'gen_ai.prompt.0.role': 'user',
+                'gen_ai.request.model': 'gpt-3.5-turbo',
+                'gen_ai.request.temperature': '0',
+                'gen_ai.response.model': 'gpt-3.5-turbo-0125',
+                'gen_ai.system': 'Langchain',
+                'gen_ai.usage.completion_tokens': '28',
+                'gen_ai.usage.prompt_tokens': '859',
+                'llm.request.type': 'chat',
+                'llm.usage.total_tokens': '887',
+                'traceloop.association.properties.ls_model_name': 'gpt-3.5-turbo',
+                'traceloop.association.properties.ls_model_type': 'chat',
+                'traceloop.association.properties.ls_provider': 'openai',
+                'traceloop.association.properties.ls_stop': '["\\nObservation:","\\n\\tObservation:"]',
+                'traceloop.association.properties.ls_temperature': '0',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID_TWO),
+                'traceloop.entity.path': 'LLMChain',
+                'traceloop.workflow.name': 'AgentExecutor',
+            },
+            duration=631674000,
+            status_code='Unset',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+    ]
+
+
+def get_sample_session_tuple():
+    Row = namedtuple(
+        'Row',
+        [
+            'project_uuid',
+            'session_uuid',
+            'created_at',
+            'latest_trace_ts',
+            'traces',
+            'durations',
+            'no_label',
+            'completion_tokens',
+            'prompt_tokens',
+            'total_tokens',
+            'session_uuid_1',
+            'number_of_errors',
+        ],
+    )
+    d = [
+        (
+            '00000000-0000-0000-0000-000000000000',
+            '286751f8-398c-4a8c-898f-78caf9453fde',
+            '2025-03-17 13:14:56.706105000',
+            '2025-03-17 13:14:56.706209000',
+            2,
+            1355537000,
+            '286751f8-398c-4a8c-898f-78caf9453fde',
+            62,
+            1669,
+            1731,
+            '286751f8-398c-4a8c-898f-78caf9453fde',
+            0,
+        ),
+        (
+            '00000000-0000-0000-0000-000000000000',
+            'a8dd1f4d-d076-4035-99e2-443c550c71a4',
+            '2025-03-17 13:14:56.701422000',
+            '2025-03-17 13:14:56.705982000',
+            2,
+            1780675000,
+            'a8dd1f4d-d076-4035-99e2-443c550c71a4',
+            36,
+            1091,
+            1127,
+            'a8dd1f4d-d076-4035-99e2-443c550c71a4',
+            0,
+        ),
+    ]
+    return [Row(*item) for item in d]

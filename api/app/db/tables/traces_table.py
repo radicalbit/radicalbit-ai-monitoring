@@ -1,5 +1,5 @@
 from clickhouse_sqlalchemy.engines import MergeTree
-from clickhouse_sqlalchemy.types import Array, DateTime64, LowCardinality, Map
+from clickhouse_sqlalchemy.types import Array, DateTime64, LowCardinality, Map, Nested
 from sqlalchemy import BigInteger, Column, String, func
 
 from app.db.database import ClickHouseBaseTable
@@ -8,14 +8,6 @@ from app.db.database import ClickHouseBaseTable
 class Trace(ClickHouseBaseTable):
     __tablename__ = 'otel_traces'
 
-    __table_args__ = (
-        MergeTree(
-            partition_by=func.toDate('Timestamp'),
-            order_by=('ServiceName', 'SpanName', 'Timestamp'),
-            index_granularity=8192,
-            ttl_only_drop_parts=1,
-        ),
-    )
     timestamp = Column('Timestamp', DateTime64(9))
     trace_id = Column('TraceId', String, primary_key=True)
     span_id = Column('SpanId', String, primary_key=True)
@@ -33,14 +25,39 @@ class Trace(ClickHouseBaseTable):
     duration = Column('Duration', BigInteger)
     status_code = Column('StatusCode', LowCardinality(String))
     status_message = Column('StatusMessage', String)
-    events_timestamp = Column('Events.Timestamp', Array(DateTime64(9)))
-    events_name = Column('Events.Name', Array(LowCardinality(String)))
-    events_attributes = Column(
-        'Events.Attributes', Array(Map(LowCardinality(String), String))
+    events = Column(
+        'Events',
+        Array(
+            Nested(
+                Column('Timestamp', DateTime64(9), key='timestamp'),
+                Column('Name', LowCardinality(String), key='name'),
+                Column(
+                    'Attributes', Map(LowCardinality(String), String), key='attributes'
+                ),
+            )
+        ),
+        nullable=True,
     )
-    links_trace_id = Column('Links.TraceId', Array(String))
-    links_span_id = Column('Links.SpanId', Array(String))
-    links_trace_state = Column('Links.TraceState', Array(String))
-    links_attributes = Column(
-        'Links.Attributes', Array(Map(LowCardinality(String), String))
+    links = Column(
+        'Links',
+        Array(
+            Nested(
+                Column('TraceId', String, key='trace_id'),
+                Column('SpanId', String, key='span_id'),
+                Column('TraceState', String, key='trace_state'),
+                Column(
+                    'Attributes', Map(LowCardinality(String), String), key='attributes'
+                ),
+            )
+        ),
+        nullable=True,
+    )
+
+    __table_args__ = (
+        MergeTree(
+            partition_by=func.toDate(timestamp),
+            order_by=(service_name, span_name, func.toDateTime(timestamp)),
+            index_granularity=8192,
+            ttl_only_drop_parts=1,
+        ),
     )

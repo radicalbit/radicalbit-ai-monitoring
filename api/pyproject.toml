@@ -39,6 +39,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = "api"
+log_cli=true
+log_level="INFO"
 
 [tool.ruff]
 exclude = [".venv", "alembic"]

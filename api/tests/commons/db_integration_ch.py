@@ -1,33 +1,62 @@
+import logging
 from typing import TypeVar
 import unittest
 
-from app.core.config import ClickHouseConfig, DBConfig
-from app.db import database
-from app.db.database import Database, DatabaseDialect
+from sqlalchemy import text
+from testcontainers.clickhouse import ClickHouseContainer
+
+from app.core import get_config
+from app.core.config import ClickHouseConfig
+from app.db.database import ClickHouseBaseTable, Database, DatabaseDialect
+from app.db.tables.traces_table import Trace
 
 T = TypeVar('T')
 
+logger = logging.getLogger(get_config().log_config.logger_name)
 
-class DatabaseIntegrationCh(unittest.TestCase):
+
+class DatabaseIntegrationClickhouse(unittest.TestCase):
+    container = None
+    engine = None
+
     @classmethod
-    def setUpClass(cls) -> None:
-        cls.db_conf = DBConfig()
-        cls.ch_db_conf = ClickHouseConfig()
-        cls.ch_db = Database(dialect=DatabaseDialect.CLICKHOUSE, conf=cls.ch_db_conf)
+    def setUpClass(cls):
+        cls.container = ClickHouseContainer(
+            'clickhouse/clickhouse-server:latest',
+            port=9000,
+            username='default',
+            password='default',
+            dbname='default',
+        )
+        cls.container.start()
+        cls.db_conf = ClickHouseConfig(
+            db_host_ch='localhost',
+            db_port_ch=cls.container.get_exposed_port(9000),
+            db_user_ch='default',
+            db_pwd_ch='default',
+            db_name_ch='default',
+        )
+        cls.db = Database(dialect=DatabaseDialect.CLICKHOUSE, conf=cls.db_conf)
 
     def setUp(self):
-        self.ch_db.connect()
-        with self.ch_db._engine.connect() as conn:
+        self.db.connect()
+        with self.db._engine.connect() as conn:
             conn.commit()
-        database.BaseTable.metadata.create_all(self.ch_db._engine)
-        self.ch_db.init_mappings()
+        ClickHouseBaseTable.metadata.create_all(self.db._engine)
 
-    def tearDownCh(self):
-        database.BaseTable.metadata.drop_all(self.ch_db._engine)
-        self.ch_db.reset_connection()
+    def tearDown(self):
+        self.container.stop()
+        self.container = None
+        self.engine = None
+        self.session = None
 
-    def insert(self, table: T) -> T:
-        with self.ch_db.begin_session() as session:
-            session.add(table)
+    def insert(self, table: list[T]) -> list[T]:
+        with self.db.begin_session() as session:
+            session.add_all(table)
             session.flush()
-            return table
+        return table
+
+    def clean(self):
+        with self.db.begin_session() as session:
+            session.execute(text(f'TRUNCATE TABLE {Trace.__tablename__}'))
+            session.commit()
