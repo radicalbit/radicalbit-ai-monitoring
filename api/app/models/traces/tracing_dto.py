@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Any, Dict, List, Optional, Tuple
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
@@ -28,10 +29,13 @@ class TreeNode(BaseModel):
 
 
 class ErrorEvents(BaseModel):
-    status_message: Optional[str] = None
-    timestamp: Optional[str] = None
+    timestamp: Optional[datetime] = None
     name: Optional[str] = None
-    attributes: Optional[str] = None
+    attributes: Optional[dict] = None
+
+    @classmethod
+    def from_tuple(cls, data: Tuple[datetime, str, dict]):
+        return cls(timestamp=data[0], name=data[1], attributes=data[2])
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, from_attributes=True
@@ -51,7 +55,8 @@ class SpanDTO(BaseModel):
     total_tokens: int = 0
     attributes: dict
     created_at: str
-    error_events: ErrorEvents
+    status_message: Optional[str] = None
+    error_events: list[ErrorEvents]
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -76,14 +81,8 @@ class SpanDTO(BaseModel):
             total_tokens=int(row.total_tokens) if row.total_tokens else 0,
             attributes=row.attributes or {},
             created_at=row.timestamp.isoformat(),
-            error_events=ErrorEvents(
-                status_message=row.status_message if row.status_message else None,
-                timestamp=row.events_timestamp[0].isoformat()
-                if row.events_timestamp
-                else None,
-                name=row.events_name[0] if row.events_name else None,
-                attributes=row.events_attributes[0] if row.events_attributes else None,
-            ),
+            status_message=row.status_message if row.status_message else None,
+            error_events=[ErrorEvents.from_tuple(i) for i in row.events],
         )
 
 

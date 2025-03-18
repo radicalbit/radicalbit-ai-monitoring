@@ -61,7 +61,6 @@ class TraceDAO:
                     Trace.parent_span_id,
                     Trace.span_attributes,
                     Trace.status_code,
-                    Trace.events_attributes,
                     literal_column(
                         "SpanAttributes['traceloop.association.properties.session_uuid']"
                     ).label('session_uuid'),
@@ -205,7 +204,6 @@ class TraceDAO:
                     Trace.parent_span_id,
                     Trace.span_attributes,
                     Trace.status_code,
-                    Trace.events_attributes,
                     literal_column(
                         "SpanAttributes['traceloop.association.properties.session_uuid']"
                     ).label('session_uuid'),
@@ -437,7 +435,6 @@ class TraceDAO:
                     Trace.parent_span_id,
                     Trace.span_name,
                     Trace.status_code,
-                    Trace.events_attributes,
                     literal_column(
                         "SpanAttributes['traceloop.association.properties.session_uuid']"
                     ).label('session_uuid'),
@@ -488,9 +485,7 @@ class TraceDAO:
                     Trace.span_attributes.label('attributes'),
                     Trace.status_message,
                     Trace.timestamp,
-                    Trace.events_name,
-                    Trace.events_attributes,
-                    Trace.events_timestamp,
+                    Trace.events,
                 )
                 .filter(
                     Trace.service_name == str(project_uuid),
@@ -503,5 +498,4 @@ class TraceDAO:
                     )
                 )
             )
-
             return session.execute(stmt).one_or_none()

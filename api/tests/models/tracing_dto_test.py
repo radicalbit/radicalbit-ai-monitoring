@@ -230,13 +230,10 @@ class TracingDTOTest(unittest.TestCase):
             'gen_ai.completion.0.role': 'assistant',
         }
         mock_row.timestamp = datetime(2025, 3, 17, 10, 36, 5, 895250)
-        mock_row.events_timestamp = []
-        mock_row.events_name = []
-        mock_row.events_attributes = []
         mock_row.status_message = None
+        mock_row.events = [(None, '', None)]
 
         span_dto = SpanDTO.from_row_span(mock_row)
-
         assert span_dto.id == 'b4c1808b30ccdb38'
         assert span_dto.name == 'openai.chat'
         assert span_dto.parent_id is None
@@ -256,6 +253,6 @@ class TracingDTOTest(unittest.TestCase):
             == "Why don't skeletons fight each other? They don't have the guts!"
         )
         assert span_dto.created_at == '2025-03-17T10:36:05.895250'
-        assert span_dto.error_events.timestamp is None
-        assert span_dto.error_events.name is None
-        assert span_dto.error_events.attributes is None
+        assert span_dto.error_events[0].timestamp is None
+        assert span_dto.error_events[0].name == ''
+        assert span_dto.error_events[0].attributes is None
