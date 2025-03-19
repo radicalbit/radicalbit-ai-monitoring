@@ -76,7 +76,11 @@ export const NUMBER_FORMATTER_STYLE_ENUM = {
 
 const defaultNumberFormatter = { maximumSignificantDigits: MAX_DECIMAL_ROUND, style: NUMBER_FORMATTER_STYLE_ENUM.DECIMAL };
 
-export const numberFormatter = (options = defaultNumberFormatter) => new Intl.NumberFormat('en', options);
+const userLocale = navigator.languages && navigator.languages.length
+  ? navigator.languages[0]
+  : navigator.language || 'en-US';
+
+export const numberFormatter = (options = defaultNumberFormatter) => new Intl.NumberFormat(userLocale, options);
 
 export const DRIFT_TEST_ENUM = {
   KS: 'KS',

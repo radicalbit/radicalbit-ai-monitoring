@@ -11,6 +11,7 @@ import ProjectDashboard from './dashboard';
 import SessionsList from './sessions';
 import SessionsTracesList from './sessions/traces';
 import TracesList from './traces';
+import Settings from './settings';
 
 function ProjectDetail() {
   const isProjectTracingEnabled = getIsProjectTracingEnabled();
@@ -40,6 +41,9 @@ function ProjectDetailInner() {
 
     case TRACING_TABS_ENUM.SESSIONS:
       return <SessionsLayout />;
+
+    case TRACING_TABS_ENUM.SETTINGS:
+      return <Settings />;
 
     default:
       return false;
