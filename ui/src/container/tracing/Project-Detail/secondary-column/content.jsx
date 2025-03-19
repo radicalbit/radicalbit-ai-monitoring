@@ -19,6 +19,7 @@ const commonChildrenMenu = () => {
     { label: 'Dashboard', key: TRACING_TABS_ENUM.DASHBOARD },
     { label: 'Traces', key: TRACING_TABS_ENUM.TRACES },
     { label: 'Sessions', key: TRACING_TABS_ENUM.SESSIONS },
+    { label: 'Settings', key: TRACING_TABS_ENUM.SETTINGS },
   ];
 
   return commonMenu;
