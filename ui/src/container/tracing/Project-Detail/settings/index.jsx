@@ -1,4 +1,4 @@
-import InstructionsComponent from '@Container/tracing/Project-Detail/void-instructions';
+import InstructionsComponent from '@Container/tracing/project-detail/void-instructions';
 
 function Settings() {
   return <InstructionsComponent />;
