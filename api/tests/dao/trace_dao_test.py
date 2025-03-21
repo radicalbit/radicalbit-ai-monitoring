@@ -4,13 +4,8 @@ import uuid
 
 from app.core import get_config
 from app.db.dao.traces_dao import TraceDAO
+from tests.commons import db_mock
 from tests.commons.db_integration_ch import DatabaseIntegrationClickhouse
-from tests.commons.db_mock import (
-    SESSION_UUID,
-    SESSION_UUID_TWO,
-    get_sample_session,
-    get_sample_session_tree,
-)
 
 logger = logging.getLogger(get_config().log_config.logger_name)
 
@@ -22,12 +17,34 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         cls.trace_dao = TraceDAO(cls.db)
 
     def test_get_all_sessions(self):
-        self.insert(get_sample_session())
-        res = self.trace_dao.get_all_sessions(uuid.UUID(int=0))
+        session_one_uuid = uuid.uuid4()
+        session_two_uuid = uuid.uuid4()
+        trace_1 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid,
+            completion_tokens=11,
+            prompt_tokens=536,
+        )
+        trace_2 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid,
+            completion_tokens=25,
+            prompt_tokens=555,
+        )
+        trace_3 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            completion_tokens=34,
+            prompt_tokens=810,
+        )
+        trace_4 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            completion_tokens=28,
+            prompt_tokens=859,
+        )
+        self.insert([trace_1, trace_2, trace_3, trace_4])
+        res = self.trace_dao.get_all_sessions(project_uuid=db_mock.PROJECT_UUID)
         assert res.items is not None
         res = [x._mapping for x in res.items]
-        session_one = [x for x in res if x['session_uuid'] == str(SESSION_UUID)]
-        session_two = [x for x in res if x['session_uuid'] == str(SESSION_UUID_TWO)]
+        session_one = [x for x in res if x['session_uuid'] == str(session_one_uuid)]
+        session_two = [x for x in res if x['session_uuid'] == str(session_two_uuid)]
         assert session_one[0]['completion_tokens'] == 36
         assert session_two[0]['completion_tokens'] == 62
         assert session_one[0]['prompt_tokens'] == 1091
@@ -35,36 +52,115 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         assert session_one[0]['total_tokens'] == 1127
         assert session_two[0]['total_tokens'] == 1731
 
+    def test_get_span_by_id(self):
+        trace = db_mock.get_sample_trace()
+        self.insert([trace])
+        res = self.trace_dao.get_span_by_id(
+            project_uuid=db_mock.PROJECT_UUID,
+            trace_id=trace.trace_id,
+            span_id=trace.span_id,
+        )
+        assert res.span_id == trace.span_id
+
+    def test_delete_traces_by_project_uuid_trace_id(self):
+        trace_one_id = str(uuid.uuid4())
+        trace_two_id = str(uuid.uuid4())
+        trace_1 = db_mock.get_sample_trace(trace_id=trace_one_id)
+        trace_2 = db_mock.get_sample_trace(trace_id=trace_one_id)
+        trace_3 = db_mock.get_sample_trace(trace_id=trace_two_id)
+        trace_4 = db_mock.get_sample_trace(trace_id=trace_one_id)
+        self.insert([trace_1, trace_2, trace_3, trace_4])
+
+        res = self.trace_dao.delete_traces_by_project_uuid_trace_id(
+            project_uuid=db_mock.PROJECT_UUID, trace_id=trace_one_id
+        )
+
+        assert res == 3
+
+    def test_delete_traces_by_project_uuid_session_uuid(self):
+        session_one_uuid = uuid.uuid4()
+        session_two_uuid = uuid.uuid4()
+        trace_1 = db_mock.get_sample_trace(session_uuid=session_one_uuid)
+        trace_2 = db_mock.get_sample_trace(session_uuid=session_two_uuid)
+        trace_3 = db_mock.get_sample_trace(session_uuid=session_one_uuid)
+        trace_4 = db_mock.get_sample_trace(session_uuid=session_one_uuid)
+        self.insert([trace_1, trace_2, trace_3, trace_4])
+
+        res = self.trace_dao.delete_traces_by_project_uuid_session_uuid(
+            project_uuid=db_mock.PROJECT_UUID, session_uuid=session_one_uuid
+        )
+
+        assert res == 3
+
     def test_get_all_root_traces_by_project_uuid(self):
-        self.insert(get_sample_session_tree())
-        res = self.trace_dao.get_all_root_traces_by_project_uuid(uuid.UUID(int=0))
+        trace_1 = db_mock.get_sample_trace_tree()
+        trace_2 = db_mock.get_sample_trace_tree(
+            span_id=str(uuid.uuid4()), parent_span_id=db_mock.SPAN_ID
+        )
+        trace_3 = db_mock.get_sample_trace_tree(
+            span_id=str(uuid.uuid4()), parent_span_id=db_mock.SPAN_ID
+        )
+        self.insert([trace_1, trace_2, trace_3])
+        res = self.trace_dao.get_all_root_traces_by_project_uuid(db_mock.PROJECT_UUID)
         assert res.items is not None
         traces = [x._mapping for x in res.items]
         assert len(traces) == 1
-        assert traces[0]['trace_id'] == '61631e0e43fd5cdf9b4b855462d83452'
-        assert traces[0]['span_id'] == 'dd250200569ce295'
-        assert traces[0]['completion_tokens'] == 30
-        assert traces[0]['prompt_tokens'] == 1000
-        assert traces[0]['total_tokens'] == 1030
-        assert traces[0]['number_of_errors'] == 1
+        assert traces[0]['trace_id'] == db_mock.TRACE_ID
+        assert traces[0]['span_id'] == db_mock.SPAN_ID
 
     def test_get_trace_by_project_uuid_trace_id(self):
-        self.insert(get_sample_session_tree())
+        trace_id = db_mock.TRACE_ID
+        span_one_id = db_mock.SPAN_ID
+        span_two_id = str(uuid.uuid4())
+        span_three_id = str(uuid.uuid4())
+        trace_1 = db_mock.get_sample_trace_tree(span_id=span_one_id)
+        trace_2 = db_mock.get_sample_trace_tree(
+            span_id=span_two_id, parent_span_id=span_one_id
+        )
+        trace_3 = db_mock.get_sample_trace_tree(
+            span_id=span_three_id, parent_span_id=span_one_id
+        )
+        self.insert([trace_1, trace_2, trace_3])
         res = self.trace_dao.get_trace_by_project_uuid_trace_id(
-            uuid.UUID(int=0), trace_id='61631e0e43fd5cdf9b4b855462d83452'
+            db_mock.PROJECT_UUID, trace_id=trace_id
         )
         assert res.mappings() is not None
         traces = [dict(trace) for trace in res.mappings()]
         assert len(traces) == 3
-        assert traces[0]['trace_id'] == '61631e0e43fd5cdf9b4b855462d83452'
-        assert traces[0]['span_id'] == 'dd250200569ce295'
-        assert traces[1]['trace_id'] == '61631e0e43fd5cdf9b4b855462d83452'
-        assert traces[1]['span_id'] == '6fd4061cad7dd30d'
-        assert traces[2]['trace_id'] == '61631e0e43fd5cdf9b4b855462d83452'
-        assert traces[2]['span_id'] == '731fa4f1f5068187'
+        assert traces[0]['trace_id'] == trace_id
+        assert traces[0]['span_id'] == span_one_id
+        assert traces[1]['trace_id'] == trace_id
+        assert traces[1]['span_id'] == span_two_id
+        assert traces[2]['trace_id'] == trace_id
+        assert traces[2]['span_id'] == span_three_id
 
     def test_get_latencies_quantiles_for_root_traces_dashboard(self):
-        self.insert(get_sample_session())
+        session_one_uuid = uuid.uuid4()
+        session_two_uuid = uuid.uuid4()
+        trace_1 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid,
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+        )
+        trace_2 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid, duration=586108000
+        )
+        trace_3 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 1, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+            duration=723863000,
+        )
+        trace_4 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 2, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+            duration=631674000,
+        )
+        self.insert([trace_1, trace_2, trace_3, trace_4])
         from_timestamp = datetime.datetime(
             2025, 3, 12, 14, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
@@ -72,12 +168,12 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
             2025, 3, 12, 16, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
         res = self.trace_dao.get_latencies_quantiles_for_root_traces_dashboard(
-            project_uuid=uuid.UUID(int=0),
+            project_uuid=db_mock.PROJECT_UUID,
             from_timestamp=from_timestamp,
             to_timestamp=to_timestamp,
         )
         assert res == (
-            '00000000-0000-0000-0000-000000000000',
+            str(db_mock.PROJECT_UUID),
             723863000.0,
             1100426200.0,
             1147496600.0,
@@ -85,7 +181,32 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         )
 
     def test_get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(self):
-        self.insert(get_sample_session())
+        session_one_uuid = uuid.uuid4()
+        session_two_uuid = uuid.uuid4()
+        trace_1 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid,
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+        )
+        trace_2 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid, duration=586108000
+        )
+        trace_3 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 1, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+            duration=723863000,
+        )
+        trace_4 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 2, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+            duration=631674000,
+        )
+        self.insert([trace_1, trace_2, trace_3, trace_4])
         from_timestamp = datetime.datetime(
             2025, 3, 12, 14, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
@@ -93,23 +214,23 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
             2025, 3, 12, 16, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
         res = self.trace_dao.get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
-            project_uuid=uuid.UUID(int=0),
+            project_uuid=db_mock.PROJECT_UUID,
             from_timestamp=from_timestamp,
             to_timestamp=to_timestamp,
         )
         quantiles = list(res)
         assert len(quantiles) == 2
         assert quantiles[0] == (
-            '00000000-0000-0000-0000-000000000000',
-            '286751f8-398c-4a8c-898f-78caf9453fde',
+            str(db_mock.PROJECT_UUID),
+            str(session_two_uuid),
             677768500.0,
             714644100.0,
             719253550.0,
             722941110.0,
         )
         assert quantiles[1] == (
-            '00000000-0000-0000-0000-000000000000',
-            'a8dd1f4d-d076-4035-99e2-443c550c71a4',
+            str(db_mock.PROJECT_UUID),
+            str(session_one_uuid),
             1194567000.0,
             1194567000.0,
             1194567000.0,
@@ -117,7 +238,30 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         )
 
     def test_get_latencies_quantiles_for_span_leaf_dashboard(self):
-        self.insert(get_sample_session_tree())
+        trace_1 = db_mock.get_sample_trace_tree(
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+        )
+        trace_2 = db_mock.get_sample_trace_tree(
+            span_id=str(uuid.uuid4()),
+            parent_span_id=db_mock.SPAN_ID,
+            span_name='ChannelWrite<...,agent>.task',
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 8, 0, tzinfo=datetime.timezone.utc
+            ),
+            duration=732713,
+        )
+        trace_3 = db_mock.get_sample_trace_tree(
+            span_id=str(uuid.uuid4()),
+            parent_span_id=db_mock.SPAN_ID,
+            span_name='ChannelWrite<...,agent>.task',
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 16, 0, tzinfo=datetime.timezone.utc
+            ),
+            duration=762634,
+        )
+        self.insert([trace_1, trace_2, trace_3])
         from_timestamp = datetime.datetime(
             2025, 3, 12, 14, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
@@ -125,14 +269,14 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
             2025, 3, 12, 16, 0, 0, 0, tzinfo=datetime.timezone.utc
         )
         res = self.trace_dao.get_latencies_quantiles_for_span_leaf_dashboard(
-            project_uuid=uuid.UUID(int=0),
+            project_uuid=db_mock.PROJECT_UUID,
             from_timestamp=from_timestamp,
             to_timestamp=to_timestamp,
         )
         quantiles = list(res)
         assert len(quantiles) == 1
         assert quantiles[0] == (
-            '00000000-0000-0000-0000-000000000000',
+            str(db_mock.PROJECT_UUID),
             'ChannelWrite<...,agent>.task',
             747673.5,
             759641.8999999999,
