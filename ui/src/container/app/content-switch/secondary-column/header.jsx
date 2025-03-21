@@ -1,4 +1,4 @@
-import ProjectDetailSecondaryColumnHeader from '@Container/tracing/project-detail/secondary-column/header';
+import ProjectDetailSecondaryColumnHeader from '@Src/container/tracing/project-detail/secondary-column/header';
 import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
 import { PathsEnum } from '@Src/constants';
 import SecondaryColumnModelsHeader from '@Src/container/models/Details/secondary-column/header';
