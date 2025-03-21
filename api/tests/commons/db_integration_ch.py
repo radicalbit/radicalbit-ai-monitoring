@@ -37,18 +37,19 @@ class DatabaseIntegrationClickhouse(unittest.TestCase):
             db_name_ch='default',
         )
         cls.db = Database(dialect=DatabaseDialect.CLICKHOUSE, conf=cls.db_conf)
+        cls.db.connect()
+        ClickHouseBaseTable.metadata.create_all(cls.db._engine)
 
     def setUp(self):
-        self.db.connect()
-        with self.db._engine.connect() as conn:
-            conn.commit()
-        ClickHouseBaseTable.metadata.create_all(self.db._engine)
+        self.clean()
 
-    def tearDown(self):
-        self.container.stop()
-        self.container = None
-        self.engine = None
-        self.session = None
+    @classmethod
+    def tearDownClass(cls):
+        # Stop container after all tests are complete
+        if cls.container:
+            cls.container.stop()
+            cls.container = None
+            cls.db = None
 
     def insert(self, table: list[T]) -> list[T]:
         with self.db.begin_session() as session:

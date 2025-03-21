@@ -1,6 +1,6 @@
 import datetime
 import logging
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter
@@ -10,6 +10,7 @@ from fastapi_pagination import Page, Params
 from app.core import get_config
 from app.models.commons.order_type import OrderType
 from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
+from app.models.traces.widget_dto import LatenciesWidgetDTO
 from app.services.trace_service import TraceService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -90,5 +91,53 @@ class TraceRoute:
         )
         def get_span_by_id(project_uuid: UUID, trace_id: str, span_id: str):
             return trace_service.get_span_by_id(project_uuid, trace_id, span_id)
+
+        @router.get(
+            '/dashboard/project/{project_uuid}/root_latencies',
+            status_code=200,
+            response_model=LatenciesWidgetDTO,
+        )
+        def get_latencies_quantiles_for_root_traces_dashboard(
+            project_uuid: UUID,
+            from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
+            to_timestamp: Annotated[int, Query(alias='toTimestamp')],
+        ):
+            return trace_service.get_latencies_quantiles_for_root_traces_dashboard(
+                project_uuid=project_uuid,
+                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
+                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+            )
+
+        @router.get(
+            '/dashboard/project/{project_uuid}/root_latencies_session',
+            status_code=200,
+            response_model=List[LatenciesWidgetDTO],
+        )
+        def get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
+            project_uuid: UUID,
+            from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
+            to_timestamp: Annotated[int, Query(alias='toTimestamp')],
+        ):
+            return trace_service.get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
+                project_uuid=project_uuid,
+                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
+                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+            )
+
+        @router.get(
+            '/dashboard/project/{project_uuid}/leaf_latencies',
+            status_code=200,
+            response_model=List[LatenciesWidgetDTO],
+        )
+        def get_latencies_quantiles_for_span_leaf_dashboard(
+            project_uuid: UUID,
+            from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
+            to_timestamp: Annotated[int, Query(alias='toTimestamp')],
+        ):
+            return trace_service.get_latencies_quantiles_for_span_leaf_dashboard(
+                project_uuid=project_uuid,
+                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
+                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+            )
 
         return router

@@ -17,3 +17,7 @@ def is_optional_float(value: Optional[SupportedTypes] = None) -> bool:
 
 def is_none(value: Any) -> bool:
     return value is None
+
+
+def nano_to_millis(nano_seconds: float):
+    return nano_seconds / 1_000_000

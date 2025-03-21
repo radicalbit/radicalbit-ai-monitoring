@@ -31,6 +31,6 @@ class TestValidationModelRoute(unittest.TestCase):
         )
 
         assert response.status_code == 422
-        assert response.json()['message'] == 'timestamp must be a datetime'
+        assert response.json()['message'] == 'Value error, timestamp must be a datetime'
 
         self.model_service.create_model.assert_not_called()

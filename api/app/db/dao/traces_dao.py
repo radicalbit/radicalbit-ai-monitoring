@@ -12,8 +12,10 @@ from sqlalchemy import (
     and_,
     asc,
     desc,
+    distinct,
     func,
     literal_column,
+    not_,
     select,
     text,
 )
@@ -459,6 +461,123 @@ class TraceDAO:
             )
 
             return session.execute(traces)
+
+    def get_latencies_quantiles_for_root_traces_dashboard(
+        self,
+        project_uuid: UUID,
+        from_timestamp: datetime,
+        to_timestamp: datetime,
+    ):
+        """Return quantiles of root traces latencies grouped by project_uuid"""
+        with self.db.begin_session() as session:
+            traces_quantiles = (
+                select(
+                    Trace.service_name.label('project_uuid'),
+                    func.quantile(0.50, Trace.duration).label('p50'),
+                    func.quantile(0.90, Trace.duration).label('p90'),
+                    func.quantile(0.95, Trace.duration).label('p95'),
+                    func.quantile(0.99, Trace.duration).label('p99'),
+                )
+                .group_by(
+                    Trace.service_name,
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    Trace.parent_span_id == '',
+                    text(
+                        "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                    ),
+                    Trace.timestamp >= from_timestamp,
+                    Trace.timestamp <= to_timestamp,
+                )
+            )
+
+            return session.execute(traces_quantiles).one_or_none()
+
+    def get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
+        self,
+        project_uuid: UUID,
+        from_timestamp: datetime,
+        to_timestamp: datetime,
+    ):
+        """Return quantiles of root traces latencies grouped by project_uuid and session_uuid, so the quantiles of traces duration for each session"""
+        with self.db.begin_session() as session:
+            root_traces_with_duration = (
+                select(
+                    Trace.service_name.label('project_uuid'),
+                    literal_column(
+                        "SpanAttributes['traceloop.association.properties.session_uuid']"
+                    ).label('session_uuid'),
+                    Trace.duration,
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    Trace.parent_span_id == '',
+                    text(
+                        "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                    ),
+                    Trace.timestamp >= from_timestamp,
+                    Trace.timestamp <= to_timestamp,
+                )
+                .subquery()
+            )
+
+            traces_quantiles = select(
+                root_traces_with_duration.c.project_uuid,
+                root_traces_with_duration.c.session_uuid,
+                func.quantile(0.50, root_traces_with_duration.c.duration).label('p50'),
+                func.quantile(0.90, root_traces_with_duration.c.duration).label('p90'),
+                func.quantile(0.95, root_traces_with_duration.c.duration).label('p95'),
+                func.quantile(0.99, root_traces_with_duration.c.duration).label('p99'),
+            ).group_by(
+                root_traces_with_duration.c.project_uuid,
+                root_traces_with_duration.c.session_uuid,
+            )
+
+            return session.execute(traces_quantiles)
+
+    def get_latencies_quantiles_for_span_leaf_dashboard(
+        self,
+        project_uuid: UUID,
+        from_timestamp: datetime,
+        to_timestamp: datetime,
+    ):
+        """Return quantiles of span leaf (so they are not parent of any span) latencies grouped by project_uuid and span name"""
+        with self.db.begin_session() as session:
+            span_that_are_parents = select(
+                distinct(Trace.parent_span_id),
+            ).filter(
+                Trace.service_name == str(project_uuid),
+                text(
+                    "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                ),
+            )
+
+            traces_quantiles = (
+                select(
+                    Trace.service_name.label('project_uuid'),
+                    Trace.span_name,
+                    func.quantile(0.50, Trace.duration).label('p50'),
+                    func.quantile(0.90, Trace.duration).label('p90'),
+                    func.quantile(0.95, Trace.duration).label('p95'),
+                    func.quantile(0.99, Trace.duration).label('p99'),
+                )
+                .group_by(
+                    Trace.service_name,
+                    Trace.span_name,
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    text(
+                        "mapContains(SpanAttributes, 'traceloop.association.properties.session_uuid')"
+                    ),
+                    not_(Trace.span_id.in_(span_that_are_parents)),
+                    Trace.timestamp >= from_timestamp,
+                    Trace.timestamp <= to_timestamp,
+                )
+            )
+
+            return session.execute(traces_quantiles)
 
     def get_span_by_id(self, project_uuid: UUID, trace_id: str, span_id: str):
         with self.db.begin_session() as session:

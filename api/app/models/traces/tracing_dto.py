@@ -5,6 +5,8 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 from pydantic.alias_generators import to_camel
 
+from app.models.utils import nano_to_millis
+
 
 class TreeNode(BaseModel):
     span_name: str
@@ -19,7 +21,7 @@ class TreeNode(BaseModel):
 
     @computed_field
     def durations_ms(self) -> float:
-        return self.duration / 1_000_000
+        return nano_to_millis(self.duration)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -108,7 +110,7 @@ class TraceDTO(BaseModel):
 
     @computed_field
     def duration_ms(self) -> float:
-        return self.duration / 1_000_000
+        return nano_to_millis(self.duration)
 
     model_config = ConfigDict(
         from_attributes=True,
@@ -224,7 +226,7 @@ class SessionDTO(BaseModel):
     project_uuid: UUID
     session_uuid: UUID
     traces: int
-    durations: int = Field(exclude=True)
+    duration: int = Field(exclude=True)
     completion_tokens: int = 0
     prompt_tokens: int = 0
     total_tokens: int = 0
@@ -233,8 +235,8 @@ class SessionDTO(BaseModel):
     latest_trace_ts: str
 
     @computed_field
-    def durations_ms(self) -> float:
-        return self.durations / 1_000_000
+    def duration_ms(self) -> float:
+        return nano_to_millis(self.duration)
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, from_attributes=True
