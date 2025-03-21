@@ -9,6 +9,7 @@ from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectNotFoundError, TraceNotFoundError
 from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
+from app.models.traces.widget_dto import LatenciesWidgetDTO
 
 
 class TraceService:
@@ -91,6 +92,66 @@ class TraceService:
                 f'Span {span_id} with project {project_uuid} and trace {trace_id} not found'
             )
         return SpanDTO.from_row_span(row)
+
+    def get_latencies_quantiles_for_root_traces_dashboard(
+        self,
+        project_uuid: UUID,
+        from_timestamp: datetime,
+        to_timestamp: datetime,
+    ):
+        self._check_project(project_uuid)
+        latencies_quantiles = (
+            self.trace_dao.get_latencies_quantiles_for_root_traces_dashboard(
+                project_uuid, from_timestamp, to_timestamp
+            )
+        )
+        if not latencies_quantiles:
+            raise TraceNotFoundError(
+                f'Latencies quantiles for root traces for {project_uuid} not found'
+            )
+        return LatenciesWidgetDTO.model_validate(latencies_quantiles)
+
+    def get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
+        self,
+        project_uuid: UUID,
+        from_timestamp: datetime,
+        to_timestamp: datetime,
+    ):
+        self._check_project(project_uuid)
+        latencies_quantiles = self.trace_dao.get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
+            project_uuid, from_timestamp, to_timestamp
+        )
+        latencies_quantiles_dto = [
+            LatenciesWidgetDTO.model_validate(project_and_session_latencies)
+            for project_and_session_latencies in latencies_quantiles
+        ]
+        if not latencies_quantiles_dto:
+            raise TraceNotFoundError(
+                f'Latencies quantiles for root traces for {project_uuid} grouped by session_uuid not found'
+            )
+        return latencies_quantiles_dto
+
+    def get_latencies_quantiles_for_span_leaf_dashboard(
+        self,
+        project_uuid: UUID,
+        from_timestamp: datetime,
+        to_timestamp: datetime,
+    ):
+        self._check_project(project_uuid)
+        latencies_quantiles = (
+            self.trace_dao.get_latencies_quantiles_for_span_leaf_dashboard(
+                project_uuid, from_timestamp, to_timestamp
+            )
+        )
+        latencies_quantiles_dto = [
+            LatenciesWidgetDTO.model_validate(span_latencies)
+            for span_latencies in latencies_quantiles
+        ]
+        if not latencies_quantiles_dto:
+            raise TraceNotFoundError(
+                f'Latencies quantiles for leaf span for {project_uuid} grouped by span_name not found'
+            )
+        return latencies_quantiles_dto
 
     def _check_project(self, project_uuid: UUID):
         project = self.project_dao.get_by_uuid(project_uuid)

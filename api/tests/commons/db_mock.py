@@ -659,7 +659,9 @@ def get_sample_project_in(
 def get_sample_session() -> list:
     return [
         Trace(
-            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             trace_id='c5359ae1a36f536fcfba1795c541787b',
             span_id='21b3dd065aa8c0f2',
             parent_span_id='',
@@ -749,7 +751,9 @@ def get_sample_session() -> list:
             links=[],
         ),
         Trace(
-            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 1, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             trace_id='c5359ae1a36f536fcfba1795c541787b',
             span_id='4aacf5e0c1de652c',
             parent_span_id='',
@@ -794,7 +798,9 @@ def get_sample_session() -> list:
             links=[],
         ),
         Trace(
-            timestamp=datetime.datetime.now(tz=datetime.UTC),
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 2, 0, 0, tzinfo=datetime.timezone.utc
+            ),
             trace_id='c5359ae1a36f536fcfba1795c541787b',
             span_id='9bf725dcae06912e',
             parent_span_id='',
@@ -841,6 +847,121 @@ def get_sample_session() -> list:
     ]
 
 
+def get_sample_session_tree() -> List[Trace]:
+    return [
+        Trace(
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 0, 0, tzinfo=datetime.timezone.utc
+            ),
+            trace_id='61631e0e43fd5cdf9b4b855462d83452',
+            span_id='dd250200569ce295',
+            parent_span_id='',
+            trace_state='',
+            span_name='ChannelWrite<...,action>.task',
+            span_kind='Internal',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={},
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'traceloop.association.properties.langgraph_checkpoint_ns': 'action:c6f1c3fb-c537-7bb7-fec1-d5b2cb87b57c',
+                'traceloop.association.properties.langgraph_node': 'action',
+                'traceloop.association.properties.langgraph_path': '["__pregel_pull","action"]',
+                'traceloop.association.properties.langgraph_step': '4',
+                'traceloop.association.properties.langgraph_triggers': '["branch:agent:should_continue:action"]',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID),
+                'traceloop.entity.input': '{"inputs": {"messages": [{"lc": 1, "type": "constructor", "id": ["langchain", "schema", "messages", "ToolMessage"], "kwargs": {"content": "Page: Steve Jobs\\nSummary: Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman, inventor, and investor best known for co-founding the technology company Apple Inc. Jobs was also the founder of NeXT and chairman and majority shareholder of Pixar. He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.\\nJobs was born in San Francisco in 1955 and adopted shortly afterwards. He attended Reed College in 1972 before withdrawing that same year. In 1974, he traveled through India, seeking enlightenment before later studying Zen Buddhism. He and Wozniak co-founded Apple in 1976 to further develop and sell Wozniak\'s Apple I personal computer. Together, the duo gained fame and wealth a year later with production and sale of the Apple II, one of the first highly successful mass-produced microcomputers. \\nJobs saw the commercial potential of the Xerox Alto in 1979, which was mouse-driven and had a graphical user interface (GUI). This led to the development of the largely unsuccessful Apple Lisa in 1983, followed by the breakthrough Macintosh in 1984, the first mass-produced computer with a GUI. The Macintosh launched the desktop publishing industry in 1985 (for example, the Aldus Pagemaker) with the addition of the Apple LaserWriter, the first laser printer to feature vector graphics and PostScript.\\nIn 1985, Jobs departed Apple after a long power struggle with the company\'s board and its then-CEO, John Sculley. That same year, Jobs took some Apple employees with him to found NeXT, a computer platform development company that specialized in computers for higher-education and business markets, serving as its CEO. In 1986, he bought the computer graphics division of Lucasfilm, which was spun off independently as Pixar. Pixar produced the first computer-animated feature film, Toy Story (1995), and became a leading animation studio, producing dozens of commercially successful and critically acclaimed films.\\nIn 1997, Jobs returned to Apple as CEO after the company\'s acquisition of NeXT. He was largely responsible for reviving Apple, which was on the verge of bankruptcy. He worked closely with British designer Jony Ive to develop a line of products and services that had larger cultural ramifications, beginning with the \\"Think different\\" advertising campaign, and leading to the iMac, iTunes, Mac OS X, Apple Store, iPod, iTunes Store, iPhone, App Store, and iPad. Jobs was also a board member at Gap Inc. from 1999 to 2002. In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor. He died of tumor-related respiratory arrest in 2011; in 2022, he was posthumously awarded the Presidential Medal of Freedom. Since his death, he has won 141 patents; Jobs holds over 450 patents in total.\\n\\nPage: Steve Jobs (film)\\nSummary: Steve Jobs is a 2015 biographical drama film directed by Danny Boyle and written by Aaron Sorkin. A British-American co-production, it was adapted from the 2011 biography by Walter Isaacson and interviews conducted by Sorkin. The film covers fourteen years in the life of Apple Inc. co-founder Steve Jobs, specifically ahead of three press conferences he gave during that time: the formal unveiling of the Macintosh 128K on January 24, 1984; the unveiling of the NeXT Computer on October 12, 1988; and the unveiling of the iMac G3 on May 6, 1998. Jobs is portrayed by Michael Fassbender, with Kate Winslet as Joanna Hoffman, Seth Rogen as Steve Wozniak, and Jeff Daniels as John Sculley in supporting roles.\\nDevelopment began in 2011 after the rights to Isaacson\'s book were acquired. Filming began in January 2015. A variety of actors were considered and cast before Fassbender eventually took the role. Editing was extensive on the project, with editor Elliot Graham starting while the film was still shooting. Daniel Pemberton served as composer, with a focus on dividing the score into three distinguishable sections", "type": "tool", "name": "wikipedia", "tool_call_id": "call_N74miCWuGpUVMaaeLpHnDuSg", "status": "success"}}]}, "tags": ["seq:step:2", "langsmith:hidden"], "metadata": {"thread_id": "00000000-0000-0000-0000-000000000092", "langgraph_step": 4, "langgraph_node": "action", "langgraph_triggers": ["branch:agent:should_continue:action"], "langgraph_path": ["__pregel_pull", "action"], "langgraph_checkpoint_ns": "action:c6f1c3fb-c537-7bb7-fec1-d5b2cb87b57c"}, "kwargs": {"name": "ChannelWrite<...,action>"}}',
+                'traceloop.entity.name': 'ChannelWrite<...,action>',
+                'traceloop.entity.output': '{"outputs": {"messages": [{"lc": 1, "type": "constructor", "id": ["langchain", "schema", "messages", "ToolMessage"], "kwargs": {"content": "Page: Steve Jobs\\nSummary: Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman, inventor, and investor best known for co-founding the technology company Apple Inc. Jobs was also the founder of NeXT and chairman and majority shareholder of Pixar. He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.\\nJobs was born in San Francisco in 1955 and adopted shortly afterwards. He attended Reed College in 1972 before withdrawing that same year. In 1974, he traveled through India, seeking enlightenment before later studying Zen Buddhism. He and Wozniak co-founded Apple in 1976 to further develop and sell Wozniak\'s Apple I personal computer. Together, the duo gained fame and wealth a year later with production and sale of the Apple II, one of the first highly successful mass-produced microcomputers. \\nJobs saw the commercial potential of the Xerox Alto in 1979, which was mouse-driven and had a graphical user interface (GUI). This led to the development of the largely unsuccessful Apple Lisa in 1983, followed by the breakthrough Macintosh in 1984, the first mass-produced computer with a GUI. The Macintosh launched the desktop publishing industry in 1985 (for example, the Aldus Pagemaker) with the addition of the Apple LaserWriter, the first laser printer to feature vector graphics and PostScript.\\nIn 1985, Jobs departed Apple after a long power struggle with the company\'s board and its then-CEO, John Sculley. That same year, Jobs took some Apple employees with him to found NeXT, a computer platform development company that specialized in computers for higher-education and business markets, serving as its CEO. In 1986, he bought the computer graphics division of Lucasfilm, which was spun off independently as Pixar. Pixar produced the first computer-animated feature film, Toy Story (1995), and became a leading animation studio, producing dozens of commercially successful and critically acclaimed films.\\nIn 1997, Jobs returned to Apple as CEO after the company\'s acquisition of NeXT. He was largely responsible for reviving Apple, which was on the verge of bankruptcy. He worked closely with British designer Jony Ive to develop a line of products and services that had larger cultural ramifications, beginning with the \\"Think different\\" advertising campaign, and leading to the iMac, iTunes, Mac OS X, Apple Store, iPod, iTunes Store, iPhone, App Store, and iPad. Jobs was also a board member at Gap Inc. from 1999 to 2002. In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor. He died of tumor-related respiratory arrest in 2011; in 2022, he was posthumously awarded the Presidential Medal of Freedom. Since his death, he has won 141 patents; Jobs holds over 450 patents in total.\\n\\nPage: Steve Jobs (film)\\nSummary: Steve Jobs is a 2015 biographical drama film directed by Danny Boyle and written by Aaron Sorkin. A British-American co-production, it was adapted from the 2011 biography by Walter Isaacson and interviews conducted by Sorkin. The film covers fourteen years in the life of Apple Inc. co-founder Steve Jobs, specifically ahead of three press conferences he gave during that time: the formal unveiling of the Macintosh 128K on January 24, 1984; the unveiling of the NeXT Computer on October 12, 1988; and the unveiling of the iMac G3 on May 6, 1998. Jobs is portrayed by Michael Fassbender, with Kate Winslet as Joanna Hoffman, Seth Rogen as Steve Wozniak, and Jeff Daniels as John Sculley in supporting roles.\\nDevelopment began in 2011 after the rights to Isaacson\'s book were acquired. Filming began in January 2015. A variety of actors were considered and cast before Fassbender eventually took the role. Editing was extensive on the project, with editor Elliot Graham starting while the film was still shooting. Daniel Pemberton served as composer, with a focus on dividing the score into three distinguishable sections", "type": "tool", "name": "wikipedia", "tool_call_id": "call_N74miCWuGpUVMaaeLpHnDuSg", "status": "success"}}]}, "kwargs": {"tags": ["seq:step:2", "langsmith:hidden"]}}',
+                'traceloop.entity.path': 'action',
+                'traceloop.span.kind': 'task',
+                'traceloop.workflow.name': 'LangGraph',
+                'gen_ai.usage.completion_tokens': '10',
+                'gen_ai.usage.prompt_tokens': '500',
+                'llm.request.type': 'chat',
+                'llm.usage.total_tokens': '510',
+            },
+            duration=808036,
+            status_code='Unset',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+        Trace(
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 8, 0, tzinfo=datetime.timezone.utc
+            ),
+            trace_id='61631e0e43fd5cdf9b4b855462d83452',
+            span_id='6fd4061cad7dd30d',
+            parent_span_id='dd250200569ce295',
+            trace_state='',
+            span_name='ChannelWrite<...,agent>.task',
+            span_kind='Internal',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={},
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'traceloop.association.properties.langgraph_checkpoint_ns': 'action:c6f1c3fb-c537-7bb7-fec1-d5b2cb87b57c',
+                'traceloop.association.properties.langgraph_node': 'action',
+                'traceloop.association.properties.langgraph_path': '["__pregel_pull","action"]',
+                'traceloop.association.properties.langgraph_step': '4',
+                'traceloop.association.properties.langgraph_triggers': '["branch:agent:should_continue:action"]',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID),
+                'traceloop.entity.input': '{"inputs": {"messages": [{"lc": 1, "type": "constructor", "id": ["langchain", "schema", "messages", "ToolMessage"], "kwargs": {"content": "Page: Steve Jobs\\nSummary: Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman, inventor, and investor best known for co-founding the technology company Apple Inc. Jobs was also the founder of NeXT and chairman and majority shareholder of Pixar. He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.\\nJobs was born in San Francisco in 1955 and adopted shortly afterwards. He attended Reed College in 1972 before withdrawing that same year. In 1974, he traveled through India, seeking enlightenment before later studying Zen Buddhism. He and Wozniak co-founded Apple in 1976 to further develop and sell Wozniak\'s Apple I personal computer. Together, the duo gained fame and wealth a year later with production and sale of the Apple II, one of the first highly successful mass-produced microcomputers. \\nJobs saw the commercial potential of the Xerox Alto in 1979, which was mouse-driven and had a graphical user interface (GUI). This led to the development of the largely unsuccessful Apple Lisa in 1983, followed by the breakthrough Macintosh in 1984, the first mass-produced computer with a GUI. The Macintosh launched the desktop publishing industry in 1985 (for example, the Aldus Pagemaker) with the addition of the Apple LaserWriter, the first laser printer to feature vector graphics and PostScript.\\nIn 1985, Jobs departed Apple after a long power struggle with the company\'s board and its then-CEO, John Sculley. That same year, Jobs took some Apple employees with him to found NeXT, a computer platform development company that specialized in computers for higher-education and business markets, serving as its CEO. In 1986, he bought the computer graphics division of Lucasfilm, which was spun off independently as Pixar. Pixar produced the first computer-animated feature film, Toy Story (1995), and became a leading animation studio, producing dozens of commercially successful and critically acclaimed films.\\nIn 1997, Jobs returned to Apple as CEO after the company\'s acquisition of NeXT. He was largely responsible for reviving Apple, which was on the verge of bankruptcy. He worked closely with British designer Jony Ive to develop a line of products and services that had larger cultural ramifications, beginning with the \\"Think different\\" advertising campaign, and leading to the iMac, iTunes, Mac OS X, Apple Store, iPod, iTunes Store, iPhone, App Store, and iPad. Jobs was also a board member at Gap Inc. from 1999 to 2002. In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor. He died of tumor-related respiratory arrest in 2011; in 2022, he was posthumously awarded the Presidential Medal of Freedom. Since his death, he has won 141 patents; Jobs holds over 450 patents in total.\\n\\nPage: Steve Jobs (film)\\nSummary: Steve Jobs is a 2015 biographical drama film directed by Danny Boyle and written by Aaron Sorkin. A British-American co-production, it was adapted from the 2011 biography by Walter Isaacson and interviews conducted by Sorkin. The film covers fourteen years in the life of Apple Inc. co-founder Steve Jobs, specifically ahead of three press conferences he gave during that time: the formal unveiling of the Macintosh 128K on January 24, 1984; the unveiling of the NeXT Computer on October 12, 1988; and the unveiling of the iMac G3 on May 6, 1998. Jobs is portrayed by Michael Fassbender, with Kate Winslet as Joanna Hoffman, Seth Rogen as Steve Wozniak, and Jeff Daniels as John Sculley in supporting roles.\\nDevelopment began in 2011 after the rights to Isaacson\'s book were acquired. Filming began in January 2015. A variety of actors were considered and cast before Fassbender eventually took the role. Editing was extensive on the project, with editor Elliot Graham starting while the film was still shooting. Daniel Pemberton served as composer, with a focus on dividing the score into three distinguishable sections", "type": "tool", "name": "wikipedia", "tool_call_id": "call_N74miCWuGpUVMaaeLpHnDuSg", "status": "success"}}]}, "tags": ["seq:step:2", "langsmith:hidden"], "metadata": {"thread_id": "00000000-0000-0000-0000-000000000092", "langgraph_step": 4, "langgraph_node": "action", "langgraph_triggers": ["branch:agent:should_continue:action"], "langgraph_path": ["__pregel_pull", "action"], "langgraph_checkpoint_ns": "action:c6f1c3fb-c537-7bb7-fec1-d5b2cb87b57c"}, "kwargs": {"name": "ChannelWrite<...,action>"}}',
+                'traceloop.entity.name': 'ChannelWrite<...,action>',
+                'traceloop.entity.output': '{"outputs": {"messages": [{"lc": 1, "type": "constructor", "id": ["langchain", "schema", "messages", "ToolMessage"], "kwargs": {"content": "Page: Steve Jobs\\nSummary: Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman, inventor, and investor best known for co-founding the technology company Apple Inc. Jobs was also the founder of NeXT and chairman and majority shareholder of Pixar. He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.\\nJobs was born in San Francisco in 1955 and adopted shortly afterwards. He attended Reed College in 1972 before withdrawing that same year. In 1974, he traveled through India, seeking enlightenment before later studying Zen Buddhism. He and Wozniak co-founded Apple in 1976 to further develop and sell Wozniak\'s Apple I personal computer. Together, the duo gained fame and wealth a year later with production and sale of the Apple II, one of the first highly successful mass-produced microcomputers. \\nJobs saw the commercial potential of the Xerox Alto in 1979, which was mouse-driven and had a graphical user interface (GUI). This led to the development of the largely unsuccessful Apple Lisa in 1983, followed by the breakthrough Macintosh in 1984, the first mass-produced computer with a GUI. The Macintosh launched the desktop publishing industry in 1985 (for example, the Aldus Pagemaker) with the addition of the Apple LaserWriter, the first laser printer to feature vector graphics and PostScript.\\nIn 1985, Jobs departed Apple after a long power struggle with the company\'s board and its then-CEO, John Sculley. That same year, Jobs took some Apple employees with him to found NeXT, a computer platform development company that specialized in computers for higher-education and business markets, serving as its CEO. In 1986, he bought the computer graphics division of Lucasfilm, which was spun off independently as Pixar. Pixar produced the first computer-animated feature film, Toy Story (1995), and became a leading animation studio, producing dozens of commercially successful and critically acclaimed films.\\nIn 1997, Jobs returned to Apple as CEO after the company\'s acquisition of NeXT. He was largely responsible for reviving Apple, which was on the verge of bankruptcy. He worked closely with British designer Jony Ive to develop a line of products and services that had larger cultural ramifications, beginning with the \\"Think different\\" advertising campaign, and leading to the iMac, iTunes, Mac OS X, Apple Store, iPod, iTunes Store, iPhone, App Store, and iPad. Jobs was also a board member at Gap Inc. from 1999 to 2002. In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor. He died of tumor-related respiratory arrest in 2011; in 2022, he was posthumously awarded the Presidential Medal of Freedom. Since his death, he has won 141 patents; Jobs holds over 450 patents in total.\\n\\nPage: Steve Jobs (film)\\nSummary: Steve Jobs is a 2015 biographical drama film directed by Danny Boyle and written by Aaron Sorkin. A British-American co-production, it was adapted from the 2011 biography by Walter Isaacson and interviews conducted by Sorkin. The film covers fourteen years in the life of Apple Inc. co-founder Steve Jobs, specifically ahead of three press conferences he gave during that time: the formal unveiling of the Macintosh 128K on January 24, 1984; the unveiling of the NeXT Computer on October 12, 1988; and the unveiling of the iMac G3 on May 6, 1998. Jobs is portrayed by Michael Fassbender, with Kate Winslet as Joanna Hoffman, Seth Rogen as Steve Wozniak, and Jeff Daniels as John Sculley in supporting roles.\\nDevelopment began in 2011 after the rights to Isaacson\'s book were acquired. Filming began in January 2015. A variety of actors were considered and cast before Fassbender eventually took the role. Editing was extensive on the project, with editor Elliot Graham starting while the film was still shooting. Daniel Pemberton served as composer, with a focus on dividing the score into three distinguishable sections", "type": "tool", "name": "wikipedia", "tool_call_id": "call_N74miCWuGpUVMaaeLpHnDuSg", "status": "success"}}]}, "kwargs": {"tags": ["seq:step:2", "langsmith:hidden"]}}',
+                'traceloop.entity.path': 'action',
+                'traceloop.span.kind': 'task',
+                'traceloop.workflow.name': 'LangGraph',
+                'gen_ai.usage.completion_tokens': '20',
+                'gen_ai.usage.prompt_tokens': '500',
+                'llm.request.type': 'chat',
+                'llm.usage.total_tokens': '520',
+            },
+            duration=732713,
+            status_code='Unset',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+        Trace(
+            timestamp=datetime.datetime(
+                2025, 3, 12, 15, 0, 16, 0, tzinfo=datetime.timezone.utc
+            ),
+            trace_id='61631e0e43fd5cdf9b4b855462d83452',
+            span_id='731fa4f1f5068187',
+            parent_span_id='dd250200569ce295',
+            trace_state='',
+            span_name='ChannelWrite<...,agent>.task',
+            span_kind='Internal',
+            service_name=str(SERVICE_NAME),
+            resource_attributes={},
+            scope_name='opentelemetry.instrumentation.langchain',
+            scope_version='0.38.12',
+            span_attributes={
+                'traceloop.association.properties.langgraph_checkpoint_ns': 'action:c6f1c3fb-c537-7bb7-fec1-d5b2cb87b57c',
+                'traceloop.association.properties.langgraph_node': 'action',
+                'traceloop.association.properties.langgraph_path': '["__pregel_pull","action"]',
+                'traceloop.association.properties.langgraph_step': '4',
+                'traceloop.association.properties.langgraph_triggers': '["branch:agent:should_continue:action"]',
+                'traceloop.association.properties.session_uuid': str(SESSION_UUID),
+                'traceloop.entity.input.': '{"inputs": {"messages": [{"lc": 1, "type": "constructor", "id": ["langchain", "schema", "messages", "ToolMessage"], "kwargs": {"content": "Page: Steve Jobs\\nSummary: Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman, inventor, and investor best known for co-founding the technology company Apple Inc. Jobs was also the founder of NeXT and chairman and majority shareholder of Pixar. He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.\\nJobs was born in San Francisco in 1955 and adopted shortly afterwards. He attended Reed College in 1972 before withdrawing that same year. In 1974, he traveled through India, seeking enlightenment before later studying Zen Buddhism. He and Wozniak co-founded Apple in 1976 to further develop and sell Wozniak\'s Apple I personal computer. Together, the duo gained fame and wealth a year later with production and sale of the Apple II, one of the first highly successful mass-produced microcomputers. \\nJobs saw the commercial potential of the Xerox Alto in 1979, which was mouse-driven and had a graphical user interface (GUI). This led to the development of the largely unsuccessful Apple Lisa in 1983, followed by the breakthrough Macintosh in 1984, the first mass-produced computer with a GUI. The Macintosh launched the desktop publishing industry in 1985 (for example, the Aldus Pagemaker) with the addition of the Apple LaserWriter, the first laser printer to feature vector graphics and PostScript.\\nIn 1985, Jobs departed Apple after a long power struggle with the company\'s board and its then-CEO, John Sculley. That same year, Jobs took some Apple employees with him to found NeXT, a computer platform development company that specialized in computers for higher-education and business markets, serving as its CEO. In 1986, he bought the computer graphics division of Lucasfilm, which was spun off independently as Pixar. Pixar produced the first computer-animated feature film, Toy Story (1995), and became a leading animation studio, producing dozens of commercially successful and critically acclaimed films.\\nIn 1997, Jobs returned to Apple as CEO after the company\'s acquisition of NeXT. He was largely responsible for reviving Apple, which was on the verge of bankruptcy. He worked closely with British designer Jony Ive to develop a line of products and services that had larger cultural ramifications, beginning with the \\"Think different\\" advertising campaign, and leading to the iMac, iTunes, Mac OS X, Apple Store, iPod, iTunes Store, iPhone, App Store, and iPad. Jobs was also a board member at Gap Inc. from 1999 to 2002. In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor. He died of tumor-related respiratory arrest in 2011; in 2022, he was posthumously awarded the Presidential Medal of Freedom. Since his death, he has won 141 patents; Jobs holds over 450 patents in total.\\n\\nPage: Steve Jobs (film)\\nSummary: Steve Jobs is a 2015 biographical drama film directed by Danny Boyle and written by Aaron Sorkin. A British-American co-production, it was adapted from the 2011 biography by Walter Isaacson and interviews conducted by Sorkin. The film covers fourteen years in the life of Apple Inc. co-founder Steve Jobs, specifically ahead of three press conferences he gave during that time: the formal unveiling of the Macintosh 128K on January 24, 1984; the unveiling of the NeXT Computer on October 12, 1988; and the unveiling of the iMac G3 on May 6, 1998. Jobs is portrayed by Michael Fassbender, with Kate Winslet as Joanna Hoffman, Seth Rogen as Steve Wozniak, and Jeff Daniels as John Sculley in supporting roles.\\nDevelopment began in 2011 after the rights to Isaacson\'s book were acquired. Filming began in January 2015. A variety of actors were considered and cast before Fassbender eventually took the role. Editing was extensive on the project, with editor Elliot Graham starting while the film was still shooting. Daniel Pemberton served as composer, with a focus on dividing the score into three distinguishable sections", "type": "tool", "name": "wikipedia", "tool_call_id": "call_N74miCWuGpUVMaaeLpHnDuSg", "status": "success"}}]}, "tags": ["seq:step:2", "langsmith:hidden"], "metadata": {"thread_id": "00000000-0000-0000-0000-000000000092", "langgraph_step": 4, "langgraph_node": "action", "langgraph_triggers": ["branch:agent:should_continue:action"], "langgraph_path": ["__pregel_pull", "action"], "langgraph_checkpoint_ns": "action:c6f1c3fb-c537-7bb7-fec1-d5b2cb87b57c"}, "kwargs": {"name": "ChannelWrite<...,action>"}}',
+                'traceloop.entity.name': 'ChannelWrite<...,action>',
+                'traceloop.entity.output': '{"outputs": {"messages": [{"lc": 1, "type": "constructor", "id": ["langchain", "schema", "messages", "ToolMessage"], "kwargs": {"content": "Page: Steve Jobs\\nSummary: Steven Paul Jobs (February 24, 1955 – October 5, 2011) was an American businessman, inventor, and investor best known for co-founding the technology company Apple Inc. Jobs was also the founder of NeXT and chairman and majority shareholder of Pixar. He was a pioneer of the personal computer revolution of the 1970s and 1980s, along with his early business partner and fellow Apple co-founder Steve Wozniak.\\nJobs was born in San Francisco in 1955 and adopted shortly afterwards. He attended Reed College in 1972 before withdrawing that same year. In 1974, he traveled through India, seeking enlightenment before later studying Zen Buddhism. He and Wozniak co-founded Apple in 1976 to further develop and sell Wozniak\'s Apple I personal computer. Together, the duo gained fame and wealth a year later with production and sale of the Apple II, one of the first highly successful mass-produced microcomputers. \\nJobs saw the commercial potential of the Xerox Alto in 1979, which was mouse-driven and had a graphical user interface (GUI). This led to the development of the largely unsuccessful Apple Lisa in 1983, followed by the breakthrough Macintosh in 1984, the first mass-produced computer with a GUI. The Macintosh launched the desktop publishing industry in 1985 (for example, the Aldus Pagemaker) with the addition of the Apple LaserWriter, the first laser printer to feature vector graphics and PostScript.\\nIn 1985, Jobs departed Apple after a long power struggle with the company\'s board and its then-CEO, John Sculley. That same year, Jobs took some Apple employees with him to found NeXT, a computer platform development company that specialized in computers for higher-education and business markets, serving as its CEO. In 1986, he bought the computer graphics division of Lucasfilm, which was spun off independently as Pixar. Pixar produced the first computer-animated feature film, Toy Story (1995), and became a leading animation studio, producing dozens of commercially successful and critically acclaimed films.\\nIn 1997, Jobs returned to Apple as CEO after the company\'s acquisition of NeXT. He was largely responsible for reviving Apple, which was on the verge of bankruptcy. He worked closely with British designer Jony Ive to develop a line of products and services that had larger cultural ramifications, beginning with the \\"Think different\\" advertising campaign, and leading to the iMac, iTunes, Mac OS X, Apple Store, iPod, iTunes Store, iPhone, App Store, and iPad. Jobs was also a board member at Gap Inc. from 1999 to 2002. In 2003, Jobs was diagnosed with a pancreatic neuroendocrine tumor. He died of tumor-related respiratory arrest in 2011; in 2022, he was posthumously awarded the Presidential Medal of Freedom. Since his death, he has won 141 patents; Jobs holds over 450 patents in total.\\n\\nPage: Steve Jobs (film)\\nSummary: Steve Jobs is a 2015 biographical drama film directed by Danny Boyle and written by Aaron Sorkin. A British-American co-production, it was adapted from the 2011 biography by Walter Isaacson and interviews conducted by Sorkin. The film covers fourteen years in the life of Apple Inc. co-founder Steve Jobs, specifically ahead of three press conferences he gave during that time: the formal unveiling of the Macintosh 128K on January 24, 1984; the unveiling of the NeXT Computer on October 12, 1988; and the unveiling of the iMac G3 on May 6, 1998. Jobs is portrayed by Michael Fassbender, with Kate Winslet as Joanna Hoffman, Seth Rogen as Steve Wozniak, and Jeff Daniels as John Sculley in supporting roles.\\nDevelopment began in 2011 after the rights to Isaacson\'s book were acquired. Filming began in January 2015. A variety of actors were considered and cast before Fassbender eventually took the role. Editing was extensive on the project, with editor Elliot Graham starting while the film was still shooting. Daniel Pemberton served as composer, with a focus on dividing the score into three distinguishable sections", "type": "tool", "name": "wikipedia", "tool_call_id": "call_N74miCWuGpUVMaaeLpHnDuSg", "status": "success"}}]}, "kwargs": {"tags": ["seq:step:2", "langsmith:hidden"]}}',
+                'traceloop.entity.path': 'action',
+                'traceloop.span.kind': 'task',
+                'traceloop.workflow.name': 'LangGraph',
+            },
+            duration=762634,
+            status_code='Error',
+            status_message='',
+            events=[],
+            links=[],
+        ),
+    ]
+
+
 def get_sample_session_tuple():
     Row = namedtuple(
         'Row',
@@ -850,7 +971,7 @@ def get_sample_session_tuple():
             'created_at',
             'latest_trace_ts',
             'traces',
-            'durations',
+            'duration',
             'no_label',
             'completion_tokens',
             'prompt_tokens',
@@ -887,6 +1008,71 @@ def get_sample_session_tuple():
             1127,
             'a8dd1f4d-d076-4035-99e2-443c550c71a4',
             0,
+        ),
+    ]
+    return [Row(*item) for item in d]
+
+
+def get_sample_trace_roots():
+    Row = namedtuple(
+        'Row',
+        [
+            'project_uuid',
+            'session_uuid',
+            'trace_id',
+            'span_id',
+            'spans',
+            'created_at',
+            'latest_span_ts',
+            'duration',
+            'completion_tokens',
+            'prompt_tokens',
+            'total_tokens',
+            'number_of_errors',
+        ],
+    )
+    d = [
+        (
+            '00000000-0000-0000-0000-000000000000',
+            '286751f8-398c-4a8c-898f-78caf9453fde',
+            'trace-1',
+            'span-153463652',
+            5,
+            '2025-03-17 13:14:56.706105000',
+            '2025-03-17 13:14:56.706209000',
+            1355537000,
+            62,
+            1669,
+            1731,
+            0,
+        ),
+        (
+            '00000000-0000-0000-0000-000000000000',
+            '286751f8-398c-4a8c-898f-78caf9453fdd',
+            'trace-2',
+            'span-12345',
+            10,
+            '2025-03-18 13:14:56.706105000',
+            '2025-03-18 13:14:56.706209000',
+            355537000,
+            60,
+            500,
+            560,
+            0,
+        ),
+        (
+            '00000000-0000-0000-0000-000000000000',
+            '286751f8-398c-4a8c-898f-78caf9453fdd',
+            'trace-2',
+            'span-63453453',
+            3,
+            '2025-03-19 13:14:56.706105000',
+            '2025-03-19 13:14:56.706209000',
+            500000000,
+            1,
+            10,
+            11,
+            2,
         ),
     ]
     return [Row(*item) for item in d]

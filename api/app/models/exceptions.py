@@ -185,20 +185,20 @@ def schema_exception_handler(_, err: SchemaException):
     )
 
 
+def reformat_validation_error_message(err: RequestValidationError):
+    error_messages = [pydantic_error['msg'] for pydantic_error in err.errors()]
+    return '; '.join(error_messages)
+
+
 def request_validation_exception_handler(_, err: RequestValidationError):
-    validation_errors = err.errors()
-    error_messages = [error['msg'] for error in validation_errors]
-    parts = error_messages[0].split(',', 1)
-    error_type = parts[0].strip()
-    error_message = parts[1].strip() if len(parts) > 1 else ''
+    reformatted_message = reformat_validation_error_message(err)
     logger.error(
-        'A validation error [%s] has been raised with message [%s]',
-        error_type,
-        error_message,
+        'A validation error has been raised with message [%s]',
+        reformatted_message,
     )
     return JSONResponse(
-        status_code=422,  # https://www.rfc-editor.org/rfc/rfc9110.html#name-422-unprocessable-content
-        content=jsonable_encoder(ErrorOut(error_message)),
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder(ErrorOut(reformatted_message)),
     )
 
 
