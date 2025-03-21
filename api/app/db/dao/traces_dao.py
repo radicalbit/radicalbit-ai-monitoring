@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import re
 from typing import Optional
 from uuid import UUID
@@ -20,10 +21,13 @@ from sqlalchemy import (
     text,
 )
 
+from app.core import get_config
 from app.db.database import Database
 from app.db.tables.traces_table import Trace
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import TraceSortColumnError
+
+logger = logging.getLogger(get_config().log_config.logger_name)
 
 
 class TraceDAO:
@@ -461,6 +465,81 @@ class TraceDAO:
             )
 
             return session.execute(traces)
+
+    def delete_traces_by_project_uuid_trace_id(
+        self,
+        project_uuid: UUID,
+        trace_id: str,
+    ):
+        with self.db.begin_session() as session:
+            count_query = (
+                select(func.count())
+                .select_from(Trace)
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    Trace.trace_id == trace_id,
+                )
+            )
+            initial_count = session.execute(count_query).scalar()
+
+            if initial_count == 0:
+                logger.info('No traces found to delete.')
+                return 0
+
+            delete_query = text("""
+                    ALTER TABLE default.otel_traces DELETE
+                    WHERE ServiceName = :project_uuid AND TraceId = :trace_id
+                """)
+
+            session.execute(
+                delete_query,
+                {'project_uuid': str(project_uuid), 'trace_id': trace_id},
+            )
+            session.commit()
+
+            logger.info('Deleted %i rows for trace_id %s', initial_count, trace_id)
+            return initial_count
+
+    def delete_traces_by_project_uuid_session_uuid(
+        self,
+        project_uuid: UUID,
+        session_uuid: UUID,
+    ):
+        with self.db.begin_session() as session:
+            count_query = (
+                select(func.count())
+                .select_from(Trace)
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                )
+                .filter(
+                    text(
+                        "SpanAttributes['traceloop.association.properties.session_uuid'] = :session_uuid"
+                    ),
+                )
+            ).params(session_uuid=str(session_uuid))
+            initial_count = session.execute(count_query).scalar()
+
+            if initial_count == 0:
+                logger.info('No traces found to delete.')
+                return 0
+
+            delete_query = text("""
+                ALTER TABLE default.otel_traces DELETE
+                WHERE ServiceName = :project_uuid
+                AND SpanAttributes['traceloop.association.properties.session_uuid'] = :session_uuid
+            """)
+
+            session.execute(
+                delete_query,
+                {'project_uuid': str(project_uuid), 'session_uuid': str(session_uuid)},
+            )
+            session.commit()
+
+            logger.info(
+                'Deleted %i rows for session_uuid %s', initial_count, session_uuid
+            )
+            return initial_count
 
     def get_latencies_quantiles_for_root_traces_dashboard(
         self,

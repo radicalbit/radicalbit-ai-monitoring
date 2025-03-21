@@ -92,6 +92,28 @@ class TraceRoute:
         def get_span_by_id(project_uuid: UUID, trace_id: str, span_id: str):
             return trace_service.get_span_by_id(project_uuid, trace_id, span_id)
 
+        @router.delete('/project/{project_uuid}/trace/{trace_id}', status_code=204)
+        def delete_traces_by_project_uuid_trace_id(
+            project_uuid: UUID,
+            trace_id: str,
+        ):
+            return trace_service.delete_traces_by_project_uuid_trace_id(
+                project_uuid=project_uuid,
+                trace_id=trace_id,
+            )
+
+        @router.delete(
+            '/project/{project_uuid}/session/{session_uuid}', status_code=204
+        )
+        def delete_traces_by_project_uuid_session_uuid(
+            project_uuid: UUID,
+            session_uuid: UUID,
+        ):
+            return trace_service.delete_traces_by_project_uuid_session_uuid(
+                project_uuid=project_uuid,
+                session_uuid=session_uuid,
+            )
+
         @router.get(
             '/dashboard/project/{project_uuid}/root_latencies',
             status_code=200,

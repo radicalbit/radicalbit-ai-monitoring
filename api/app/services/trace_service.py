@@ -93,6 +93,26 @@ class TraceService:
             )
         return SpanDTO.from_row_span(row)
 
+    def delete_traces_by_project_uuid_trace_id(
+        self,
+        project_uuid: UUID,
+        trace_id: str,
+    ) -> int:
+        self._check_project(project_uuid)
+        return self.trace_dao.delete_traces_by_project_uuid_trace_id(
+            project_uuid, trace_id
+        )
+
+    def delete_traces_by_project_uuid_session_uuid(
+        self,
+        project_uuid: UUID,
+        session_uuid: UUID,
+    ) -> int:
+        self._check_project(project_uuid)
+        return self.trace_dao.delete_traces_by_project_uuid_session_uuid(
+            project_uuid, session_uuid
+        )
+
     def get_latencies_quantiles_for_root_traces_dashboard(
         self,
         project_uuid: UUID,
