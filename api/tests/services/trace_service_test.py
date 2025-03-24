@@ -1,5 +1,7 @@
+import datetime
 import unittest
 from unittest.mock import MagicMock
+import uuid
 
 from fastapi_pagination import Page, Params
 
@@ -7,6 +9,7 @@ from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
 from app.models.traces.tracing_dto import SessionDTO, TraceDTO
+from app.models.traces.widget_dto import TraceTimeseriesDTO
 from app.services.trace_service import TraceService
 from tests.commons import db_mock
 
@@ -37,6 +40,39 @@ class TraceServiceTest(unittest.TestCase):
         assert res.items is not None
         assert len(res.items) == 2
         assert all(isinstance(x, SessionDTO) for x in res.items)
+
+    def test_trace_by_time(self):
+        self.trace_dao.get_traces_by_time_dashboard = MagicMock(
+            return_value=db_mock.get_sample_dao_trace_time()
+        )
+        res = self.trace_service.get_traces_by_time_dashboard(
+            project_uuid=uuid.UUID(int=0),
+            from_datetime=datetime.datetime(
+                year=2025, month=3, day=15, hour=9, minute=0
+            ),
+            to_datetime=datetime.datetime(year=2025, month=3, day=20, hour=9, minute=0),
+            n=20,
+        )
+        assert isinstance(res, TraceTimeseriesDTO)
+        assert len(res.traces) == 20
+        assert res.traces[8].count == 1
+        assert res.traces[8].start_date == datetime.datetime(
+            year=2025, month=3, day=17, hour=9, minute=0
+        )
+        assert res.traces[16].count == 7
+        assert res.traces[16].start_date == datetime.datetime(
+            year=2025, month=3, day=19, hour=9, minute=0
+        )
+
+    def test_interval_size_in_seconds(self):
+        interval_size_in_second = self.trace_service._extract_interval(
+            from_datetime=datetime.datetime(
+                year=2025, month=3, day=15, hour=9, minute=0
+            ),
+            to_datetime=datetime.datetime(year=2025, month=3, day=15, hour=9, minute=1),
+            n=3,
+        )
+        assert interval_size_in_second == 20
 
     def test_get_all_root_traces_by_project_uuid(self):
         page = Page.create(

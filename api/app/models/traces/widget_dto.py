@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
@@ -38,3 +39,51 @@ class LatenciesWidgetDTO(BaseModel):
         populate_by_name=True,
         alias_generator=to_camel,
     )
+
+
+class TraceCount(BaseModel):
+    count: int
+    start_date: datetime
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, from_attributes=True
+    )
+
+
+class TraceTimeseriesDTO(BaseModel):
+    project_uuid: UUID
+    from_datetime: datetime
+    to_datetime: datetime
+    n: int
+    traces: list[TraceCount]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, from_attributes=True
+    )
+
+    @staticmethod
+    def from_raw(
+        project_uuid: UUID,
+        from_datetime: datetime,
+        to_datetime: datetime,
+        n: int,
+        interval_size_seconds: int,
+        rows: list[dict],
+    ) -> 'TraceTimeseriesDTO':
+        start_date = from_datetime
+        traces = []
+        for i in range(n):
+            next_date = start_date + timedelta(seconds=interval_size_seconds)
+            count = [
+                i['count'] for i in rows if start_date <= i['start_date'] <= next_date
+            ]
+            tr = TraceCount(count=count[0] if count else 0, start_date=start_date)
+            traces.append(tr)
+            start_date += timedelta(seconds=interval_size_seconds)
+        return TraceTimeseriesDTO(
+            project_uuid=project_uuid,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            n=n,
+            traces=traces,
+        )

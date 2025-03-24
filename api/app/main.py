@@ -21,11 +21,13 @@ from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.db.database import Database, DatabaseDialect
 from app.models.exceptions import (
+    GenericValidationError,
     MetricsError,
     ModelError,
     ProjectError,
     SchemaException,
     TraceError,
+    generic_validation_exception_handler,
     internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
@@ -158,5 +160,6 @@ app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(ProjectError, project_exception_handler)
 app.add_exception_handler(TraceError, trace_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
+app.add_exception_handler(GenericValidationError, generic_validation_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
 app.add_exception_handler(Exception, internal_exception_handler)
