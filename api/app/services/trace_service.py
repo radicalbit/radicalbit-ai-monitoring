@@ -1,15 +1,19 @@
 from datetime import datetime
+import logging
 from typing import Optional
 from uuid import UUID
 
 from fastapi_pagination import Page, Params
 
+from app.core import get_config
 from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectNotFoundError, TraceNotFoundError
 from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
-from app.models.traces.widget_dto import LatenciesWidgetDTO
+from app.models.traces.widget_dto import LatenciesWidgetDTO, TraceTimeseriesDTO
+
+logger = logging.getLogger(get_config().log_config.logger_name)
 
 
 class TraceService:
@@ -173,7 +177,35 @@ class TraceService:
             )
         return latencies_quantiles_dto
 
+    def get_traces_by_time_dashboard(
+        self,
+        project_uuid: UUID,
+        from_datetime: datetime,
+        to_datetime: datetime,
+        n: int,
+    ) -> TraceTimeseriesDTO:
+        self._check_project(project_uuid)
+        interval_size_seconds = self._extract_interval(from_datetime, to_datetime, n)
+        results = self.trace_dao.get_traces_by_time_dashboard(
+            project_uuid, from_datetime, to_datetime, interval_size_seconds
+        )
+        return TraceTimeseriesDTO.from_raw(
+            project_uuid=project_uuid,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            n=n,
+            interval_size_seconds=interval_size_seconds,
+            rows=results,
+        )
+
     def _check_project(self, project_uuid: UUID):
         project = self.project_dao.get_by_uuid(project_uuid)
         if not project:
             raise ProjectNotFoundError(f'Project {project_uuid} not found')
+
+    @staticmethod
+    def _extract_interval(
+        from_datetime: datetime, to_datetime: datetime, n: int
+    ) -> int:
+        time_diff_seconds = (to_datetime - from_datetime).total_seconds()
+        return int(time_diff_seconds / n)

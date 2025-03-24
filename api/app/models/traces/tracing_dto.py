@@ -152,8 +152,7 @@ class TraceDTO(BaseModel):
             total_errors += 1 if trace['status_code'] == 'Error' else 0
 
             # Find latest timestamp
-            if trace['created_at'] > latest_timestamp:
-                latest_timestamp = trace['created_at']
+            latest_timestamp = max(trace['created_at'], latest_timestamp)
 
         # Function to build tree recursively
         def build_tree(span_id: str) -> TreeNode:

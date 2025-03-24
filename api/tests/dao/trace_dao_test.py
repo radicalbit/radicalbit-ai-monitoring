@@ -283,3 +283,185 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
             761137.95,
             762334.79,
         )
+
+    def test_get_traces_by_time_size_15(self):
+        trace_one = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_two = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=10,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_three = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_four = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=10,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        self.insert([trace_one, trace_two, trace_three, trace_four])
+        res = self.trace_dao.get_traces_by_time_dashboard(
+            project_uuid=db_mock.PROJECT_UUID,
+            from_datetime=datetime.datetime(
+                year=2025, month=3, day=15, hour=9, minute=0
+            ),
+            to_datetime=datetime.datetime(year=2025, month=3, day=20, hour=9, minute=0),
+            interval_size=1200,
+        )
+        logger.info('%s', res)
+        assert len(res) == 2
+        assert res[0]['count'] == 2
+        assert res[0]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=17, hour=9, minute=0
+        )
+        assert res[1]['count'] == 2
+        assert res[1]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=19, hour=10, minute=0
+        )
+
+    def test_get_traces_by_time_size_45(self):
+        trace_one = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_two = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=45,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_three = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_four = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=45,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        self.insert([trace_one, trace_two, trace_three, trace_four])
+        res = self.trace_dao.get_traces_by_time_dashboard(
+            project_uuid=db_mock.PROJECT_UUID,
+            from_datetime=datetime.datetime(
+                year=2025, month=3, day=15, hour=9, minute=0
+            ),
+            to_datetime=datetime.datetime(year=2025, month=3, day=20, hour=9, minute=0),
+            interval_size=1800,
+        )
+        assert len(res) == 4
+        assert all(i['count'] for i in res) == 1
+        assert res[0]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=17, hour=9, minute=0
+        )
+        assert res[1]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=17, hour=9, minute=30
+        )
+        assert res[2]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=19, hour=10, minute=0
+        )
+        assert res[3]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=19, hour=10, minute=30
+        )
+
+    def test_get_traces_by_time_size_days(self):
+        trace_one = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_two = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=45,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_three = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_four = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=45,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        self.insert([trace_one, trace_two, trace_three, trace_four])
+        res = self.trace_dao.get_traces_by_time_dashboard(
+            project_uuid=db_mock.PROJECT_UUID,
+            from_datetime=datetime.datetime(
+                year=2025, month=3, day=15, hour=9, minute=0
+            ),
+            to_datetime=datetime.datetime(year=2025, month=3, day=20, hour=9, minute=0),
+            interval_size=345600,  # four days
+        )
+        assert len(res) == 1
+        assert res[0]['count'] == 4
+        assert res[0]['start_date'] == datetime.datetime(
+            year=2025, month=3, day=17, hour=9, minute=0
+        )

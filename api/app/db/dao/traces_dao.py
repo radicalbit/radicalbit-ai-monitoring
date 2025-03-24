@@ -9,6 +9,7 @@ from fastapi_pagination.ext.sqlalchemy import paginate
 from sqlalchemy import (
     Integer,
     Row,
+    RowMapping,
     String,
     and_,
     asc,
@@ -45,7 +46,7 @@ class TraceDAO:
             formatted_column_name = re.sub('(?=[A-Z])', '_', column_name).lower()
             if formatted_column_name not in [
                 'traces',
-                'durations',
+                'duration',
                 'created_at',
                 'latest_trace_ts',
             ]:
@@ -139,7 +140,7 @@ class TraceDAO:
                     .cast(String)
                     .label('latest_trace_ts'),
                     func.count(parent_span_filter_stmt.c.trace_id).label('traces'),
-                    func.sum(parent_span_filter_stmt.c.duration).label('durations'),
+                    func.sum(parent_span_filter_stmt.c.duration).label('duration'),
                 )
                 .group_by(
                     parent_span_filter_stmt.c.project_uuid,
@@ -697,3 +698,44 @@ class TraceDAO:
                 )
             )
             return session.execute(stmt).one_or_none()
+
+    def get_traces_by_time_dashboard(
+        self,
+        project_uuid: UUID,
+        from_datetime: datetime,
+        to_datetime: datetime,
+        interval_size: int,
+    ) -> list[RowMapping]:
+        with self.db.begin_session() as session:
+            filter_stmt = (
+                select(
+                    Trace.trace_id,
+                    Trace.parent_span_id,
+                    Trace.service_name,
+                    Trace.timestamp,
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    Trace.parent_span_id == '',
+                    Trace.timestamp >= from_datetime,
+                    Trace.timestamp <= to_datetime,
+                )
+                .subquery()
+            )
+            min_ts = select(
+                func.min(filter_stmt.c.timestamp).label('min_timestamp')
+            ).cte('min_timestamp')
+            min_timestamp_scalar = select(min_ts.c.min_timestamp).scalar_subquery()
+            stmt = (
+                select(
+                    func.count(filter_stmt.c.trace_id).label('count'),
+                    func.toStartOfInterval(
+                        filter_stmt.c.timestamp,
+                        func.toIntervalSecond(str(interval_size)),
+                        min_timestamp_scalar,
+                    ).label('start_date'),
+                )
+                .group_by(text('start_date'))
+                .order_by(text('start_date'))
+            )
+            return list(session.execute(stmt).mappings())

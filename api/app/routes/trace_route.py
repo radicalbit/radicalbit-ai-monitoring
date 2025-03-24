@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import logging
 from typing import Annotated, List, Optional
 from uuid import UUID
@@ -9,8 +9,9 @@ from fastapi_pagination import Page, Params
 
 from app.core import get_config
 from app.models.commons.order_type import OrderType
+from app.models.exceptions import TimestampsRangeError
 from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
-from app.models.traces.widget_dto import LatenciesWidgetDTO
+from app.models.traces.widget_dto import LatenciesWidgetDTO, TraceTimeseriesDTO
 from app.services.trace_service import TraceService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -54,15 +55,21 @@ class TraceRoute:
             _order: Annotated[OrderType, Query()] = OrderType.ASC,
             _sort: Annotated[Optional[str], Query()] = None,
         ):
+            if from_timestamp and to_timestamp:
+                if from_timestamp > to_timestamp:
+                    raise TimestampsRangeError(
+                        message='to_timestamp must be greater than or equal to from_timestamp'
+                    )
+
             params = Params(page=_page, size=_limit)
             return trace_service.get_all_root_traces_by_project_uuid(
                 project_uuid=project_uuid,
                 trace_id=trace_id,
                 session_uuid=session_uuid,
-                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp)
+                from_timestamp=datetime.fromtimestamp(from_timestamp)
                 if from_timestamp
                 else None,
-                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp)
+                to_timestamp=datetime.fromtimestamp(to_timestamp)
                 if to_timestamp
                 else None,
                 params=params,
@@ -160,6 +167,30 @@ class TraceRoute:
                 project_uuid=project_uuid,
                 from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
                 to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+            )
+
+        @router.get(
+            '/dashboard/project/{project_uuid}/trace_by_time',
+            status_code=200,
+            response_model=TraceTimeseriesDTO,
+        )
+        def get_traces_by_time_dashboard(
+            project_uuid: UUID,
+            from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
+            to_timestamp: Annotated[int, Query(alias='toTimestamp')],
+            n: int,
+        ):
+            if n <= 0:
+                raise TimestampsRangeError(message='n must be greater than zero')
+            if from_timestamp > to_timestamp:
+                raise TimestampsRangeError(
+                    message='to_timestamp must be greater than or equal to from_timestamp'
+                )
+            return trace_service.get_traces_by_time_dashboard(
+                project_uuid,
+                datetime.fromtimestamp(from_timestamp),
+                datetime.fromtimestamp(to_timestamp),
+                n,
             )
 
         return router
