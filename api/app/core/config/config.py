@@ -2,24 +2,19 @@ from functools import lru_cache
 import logging
 from typing import Dict, List, Optional
 
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
-base_dir = 'resources'
+from pydantic_settings import BaseSettings
 
 
 class ClickHouseConfig(BaseSettings):
-    db_host: str = Field(alias='db_host_ch', default='localhost')
-    db_port: int = Field(alias='db_port_ch', default=9002)
-    db_user: str = Field(alias='db_user_ch', default='default')
-    db_pwd: str = Field(alias='db_pwd_ch', default='default')
-    db_name: str = Field(alias='db_name_ch', default='default')
-    db_schema: str = Field(alias='db_schema_ch', default='default')
+    clickhouse_db_host: str = 'localhost'
+    clickhouse_db_port: int = 9002
+    clickhouse_db_user: str = 'default'
+    clickhouse_db_pwd: str = 'default'
+    clickhouse_db_name: str = 'default'
+    clickhouse_db_schema: str = 'default'
 
 
 class DBConfig(BaseSettings):
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/db.conf')
-
     db_host: str = 'localhost'
     db_port: int = 5432
     db_user: str = 'postgres'
@@ -30,8 +25,6 @@ class DBConfig(BaseSettings):
 
 class FileUploadConfig(BaseSettings):
     """File upload configuration to be set for the server"""
-
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/files.conf')
 
     max_mega_bytes: int = 50
     accepted_file_types: List[str] = ['.csv']
@@ -44,14 +37,10 @@ class FileUploadConfig(BaseSettings):
 class KubernetesConfig(BaseSettings):
     """Config to interact with Kubernetes Cluster"""
 
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/kubernetes.conf')
-
     kubeconfig_file_path: Optional[str] = None
 
 
 class S3Config(BaseSettings):
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/s3.conf')
-
     aws_access_key_id: str = 'access-key'
     aws_secret_access_key: str = 'secret-key'
     aws_region: str = 'us-east-1'
@@ -60,8 +49,6 @@ class S3Config(BaseSettings):
 
 
 class SparkConfig(BaseSettings):
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/spark.conf')
-
     spark_image: str = 'radicalbit/radicalbit-spark-py:latest'
     spark_image_pull_policy: str = 'IfNotPresent'
     spark_reference_app_path: str = 'local:///opt/spark/custom_jobs/reference_job.py'
@@ -79,7 +66,6 @@ class HealthCheckFilter(logging.Filter):
 class LogConfig(BaseSettings):
     """Logging configuration to be set for the server"""
 
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/logger.conf')
     logger_name: str = 'radicalbit-ai-monitoring'
     log_format: str = '%(levelname)s | %(asctime)s | %(message)s'
     log_level: str = 'DEBUG'
@@ -140,7 +126,6 @@ class LogConfig(BaseSettings):
 
 
 class AppConfig(BaseSettings):
-    model_config = SettingsConfigDict(env_file=f'{base_dir}/application.conf')
     http_interface: str = '0.0.0.0'
     http_port: int = 9000
     log_config: LogConfig = LogConfig()

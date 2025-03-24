@@ -7,7 +7,7 @@ from testcontainers.clickhouse import ClickHouseContainer
 
 from app.core import get_config
 from app.core.config import ClickHouseConfig
-from app.db.database import ClickHouseBaseTable, Database, DatabaseDialect
+from app.db.clickhouse_database import ClickHouseBaseTable, ClickHouseDatabase
 from app.db.tables.traces_table import Trace
 
 T = TypeVar('T')
@@ -30,13 +30,13 @@ class DatabaseIntegrationClickhouse(unittest.TestCase):
         )
         cls.container.start()
         cls.db_conf = ClickHouseConfig(
-            db_host_ch='localhost',
-            db_port_ch=cls.container.get_exposed_port(9000),
-            db_user_ch='default',
-            db_pwd_ch='default',
-            db_name_ch='default',
+            clickhouse_db_host='localhost',
+            clickhouse_db_port=cls.container.get_exposed_port(9000),
+            clickhouse_db_user='default',
+            clickhouse_db_pwd='default',
+            clickhouse_db_name='default',
         )
-        cls.db = Database(dialect=DatabaseDialect.CLICKHOUSE, conf=cls.db_conf)
+        cls.db = ClickHouseDatabase(conf=cls.db_conf)
         cls.db.connect()
         ClickHouseBaseTable.metadata.create_all(cls.db._engine)
 

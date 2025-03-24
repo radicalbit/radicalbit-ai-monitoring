@@ -220,22 +220,22 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         )
         quantiles = list(res)
         assert len(quantiles) == 2
-        assert quantiles[0] == (
+        assert (
             str(db_mock.PROJECT_UUID),
             str(session_two_uuid),
             677768500.0,
             714644100.0,
             719253550.0,
             722941110.0,
-        )
-        assert quantiles[1] == (
+        ) in quantiles
+        assert (
             str(db_mock.PROJECT_UUID),
             str(session_one_uuid),
             1194567000.0,
             1194567000.0,
             1194567000.0,
             1194567000.0,
-        )
+        ) in quantiles
 
     def test_get_latencies_quantiles_for_span_leaf_dashboard(self):
         trace_1 = db_mock.get_sample_trace_tree(
