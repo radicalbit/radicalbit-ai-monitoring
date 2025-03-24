@@ -11,7 +11,11 @@ from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectNotFoundError, TraceNotFoundError
 from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
-from app.models.traces.widget_dto import LatenciesWidgetDTO, TraceTimeseriesDTO
+from app.models.traces.widget_dto import (
+    LatenciesWidgetDTO,
+    SessionsTracesDTO,
+    TraceTimeseriesDTO,
+)
 
 logger = logging.getLogger(get_config().log_config.logger_name)
 
@@ -189,7 +193,7 @@ class TraceService:
         results = self.trace_dao.get_traces_by_time_dashboard(
             project_uuid, from_datetime, to_datetime, interval_size_seconds
         )
-        return TraceTimeseriesDTO.from_raw(
+        return TraceTimeseriesDTO.from_row(
             project_uuid=project_uuid,
             from_datetime=from_datetime,
             to_datetime=to_datetime,
@@ -209,3 +213,20 @@ class TraceService:
     ) -> int:
         time_diff_seconds = (to_datetime - from_datetime).total_seconds()
         return int(time_diff_seconds / n)
+
+    def get_session_traces_dashboard(
+        self,
+        project_uuid: UUID,
+        from_datetime: datetime,
+        to_datetime: datetime,
+    ) -> SessionsTracesDTO:
+        self._check_project(project_uuid)
+        rows = self.trace_dao.get_sessions_traces(
+            project_uuid, from_datetime, to_datetime
+        )
+        return SessionsTracesDTO.from_row(
+            project_uuid=project_uuid,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            rows=rows,
+        )

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import unittest
 from unittest.mock import MagicMock
 import uuid
@@ -10,7 +10,7 @@ from starlette.testclient import TestClient
 
 from app.models.commons.order_type import OrderType
 from app.models.traces.tracing_dto import SessionDTO
-from app.models.traces.widget_dto import TraceTimeseriesDTO
+from app.models.traces.widget_dto import SessionsTracesDTO, TraceTimeseriesDTO
 from app.routes.trace_route import TraceRoute
 from app.services.trace_service import TraceService
 from tests.commons import db_mock
@@ -44,13 +44,41 @@ class TraceRouteTest(unittest.TestCase):
             sort=None,
         )
 
+    def test_get_traces_by_sessions(self):
+        session_uuid = uuid.uuid4()
+        session_uuid_one = uuid.uuid4()
+        from_datetime = datetime.now() - timedelta(hours=1)
+        to_datetime = datetime.now()
+        session_traces_dto = SessionsTracesDTO.from_row(
+            project_uuid=db_mock.PROJECT_UUID,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            rows=[
+                db_mock.get_sample_trace_by_session(
+                    session_uuid=str(session_uuid), count=10
+                ),
+                db_mock.get_sample_trace_by_session(
+                    session_uuid=str(session_uuid_one), count=4
+                ),
+            ],
+        )
+        self.trace_service.get_session_traces_dashboard = MagicMock(
+            return_value=session_traces_dto
+        )
+
+        res = self.client.get(
+            f'{self.prefix}/dashboard/project/{db_mock.PROJECT_UUID}/traces-by-session?fromTimestamp={int(from_datetime.timestamp())}&toTimestamp={int(to_datetime.timestamp())}'
+        )
+        assert res.status_code == 200
+        assert jsonable_encoder(session_traces_dto) == res.json()
+
     def test_get_trace_time(self):
         traces = db_mock.get_sample_dao_trace_time()
         interval_in_seconds = (
             datetime(year=2025, month=3, day=20, hour=9, minute=0)
             - datetime(year=2025, month=3, day=15, hour=9, minute=0)
         ).total_seconds() / 20
-        trace_timeseries_dto = TraceTimeseriesDTO.from_raw(
+        trace_timeseries_dto = TraceTimeseriesDTO.from_row(
             project_uuid=uuid.UUID(int=0),
             from_datetime=datetime(year=2025, month=3, day=15, hour=9, minute=0),
             to_datetime=datetime(year=2025, month=3, day=20, hour=9, minute=0),

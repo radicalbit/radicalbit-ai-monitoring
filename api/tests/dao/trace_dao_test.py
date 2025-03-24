@@ -465,3 +465,25 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         assert res[0]['start_date'] == datetime.datetime(
             year=2025, month=3, day=17, hour=9, minute=0
         )
+
+    def test_get_trace_by_sessions_dashboard(self):
+        session_uuid_one = uuid.uuid4()
+        session_uuid_two = uuid.uuid4()
+        trace_1 = db_mock.get_sample_trace_tree(session_uuid=session_uuid_one)
+        trace_2 = db_mock.get_sample_trace_tree(session_uuid=session_uuid_one)
+        trace_3 = db_mock.get_sample_trace_tree(session_uuid=session_uuid_two)
+        trace_4 = db_mock.get_sample_trace_tree(session_uuid=session_uuid_two)
+        trace_5 = db_mock.get_sample_trace_tree(session_uuid=session_uuid_two)
+        self.insert([trace_1, trace_2, trace_3, trace_4, trace_5])
+        from_timestamp = datetime.datetime.now(tz=datetime.UTC) - datetime.timedelta(
+            hours=1
+        )
+        to_timestamp = datetime.datetime.now(tz=datetime.UTC)
+        res = self.trace_dao.get_sessions_traces(
+            db_mock.PROJECT_UUID, from_timestamp, to_timestamp
+        )
+        assert len(res) == 2
+        assert res[0]['session_uuid'] == str(session_uuid_two)
+        assert res[0]['count'] == 3
+        assert res[1]['session_uuid'] == str(session_uuid_one)
+        assert res[1]['count'] == 2

@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
 from pydantic.alias_generators import to_camel
+from sqlalchemy import RowMapping
 
 from app.models.utils import nano_to_millis
 
@@ -62,7 +63,7 @@ class TraceTimeseriesDTO(BaseModel):
     )
 
     @staticmethod
-    def from_raw(
+    def from_row(
         project_uuid: UUID,
         from_datetime: datetime,
         to_datetime: datetime,
@@ -86,4 +87,38 @@ class TraceTimeseriesDTO(BaseModel):
             to_datetime=to_datetime,
             n=n,
             traces=traces,
+        )
+
+
+class TraceCountSession(BaseModel):
+    count: int
+    session_uuid: str
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, from_attributes=True
+    )
+
+
+class SessionsTracesDTO(BaseModel):
+    project_uuid: UUID
+    from_datetime: datetime
+    to_datetime: datetime
+    traces: list[TraceCountSession]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, from_attributes=True
+    )
+
+    @staticmethod
+    def from_row(
+        project_uuid: UUID,
+        from_datetime: datetime,
+        to_datetime: datetime,
+        rows: list[RowMapping | dict],
+    ) -> 'SessionsTracesDTO':
+        return SessionsTracesDTO(
+            project_uuid=project_uuid,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+            traces=[TraceCountSession(**i) for i in rows],
         )
