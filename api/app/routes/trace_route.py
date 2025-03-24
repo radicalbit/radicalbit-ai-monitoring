@@ -11,7 +11,11 @@ from app.core import get_config
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import TimestampsRangeError
 from app.models.traces.tracing_dto import SessionDTO, SpanDTO, TraceDTO
-from app.models.traces.widget_dto import LatenciesWidgetDTO, TraceTimeseriesDTO
+from app.models.traces.widget_dto import (
+    LatenciesWidgetDTO,
+    SessionsTracesDTO,
+    TraceTimeseriesDTO,
+)
 from app.services.trace_service import TraceService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -133,8 +137,8 @@ class TraceRoute:
         ):
             return trace_service.get_latencies_quantiles_for_root_traces_dashboard(
                 project_uuid=project_uuid,
-                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
-                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+                from_timestamp=datetime.fromtimestamp(from_timestamp),
+                to_timestamp=datetime.fromtimestamp(to_timestamp),
             )
 
         @router.get(
@@ -149,8 +153,8 @@ class TraceRoute:
         ):
             return trace_service.get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
                 project_uuid=project_uuid,
-                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
-                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+                from_timestamp=datetime.fromtimestamp(from_timestamp),
+                to_timestamp=datetime.fromtimestamp(to_timestamp),
             )
 
         @router.get(
@@ -165,8 +169,8 @@ class TraceRoute:
         ):
             return trace_service.get_latencies_quantiles_for_span_leaf_dashboard(
                 project_uuid=project_uuid,
-                from_timestamp=datetime.datetime.fromtimestamp(from_timestamp),
-                to_timestamp=datetime.datetime.fromtimestamp(to_timestamp),
+                from_timestamp=datetime.fromtimestamp(from_timestamp),
+                to_timestamp=datetime.fromtimestamp(to_timestamp),
             )
 
         @router.get(
@@ -191,6 +195,26 @@ class TraceRoute:
                 datetime.fromtimestamp(from_timestamp),
                 datetime.fromtimestamp(to_timestamp),
                 n,
+            )
+
+        @router.get(
+            '/dashboard/project/{project_uuid}/traces-by-session',
+            status_code=200,
+            response_model=SessionsTracesDTO,
+        )
+        def get_sessions_traces_dashboard(
+            project_uuid: UUID,
+            from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
+            to_timestamp: Annotated[int, Query(alias='toTimestamp')],
+        ):
+            if from_timestamp > to_timestamp:
+                raise TimestampsRangeError(
+                    message='to_timestamp must be greater than or equal to from_timestamp'
+                )
+            return trace_service.get_session_traces_dashboard(
+                project_uuid=project_uuid,
+                from_datetime=datetime.fromtimestamp(from_timestamp),
+                to_datetime=datetime.fromtimestamp(to_timestamp),
             )
 
         return router

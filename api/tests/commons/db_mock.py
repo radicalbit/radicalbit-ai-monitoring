@@ -881,3 +881,7 @@ def get_sample_dao_trace_time():
         {'count': 1, 'start_date': datetime.datetime(2025, 3, 17, 9, 37, 0, 0)},
         {'count': 7, 'start_date': datetime.datetime(2025, 3, 19, 12, 13, 0, 0)},
     ]
+
+
+def get_sample_trace_by_session(session_uuid: str, count: int) -> dict:
+    return {'session_uuid': session_uuid, 'count': count}

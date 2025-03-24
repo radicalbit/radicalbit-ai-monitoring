@@ -9,7 +9,7 @@ from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.models.commons.order_type import OrderType
 from app.models.traces.tracing_dto import SessionDTO, TraceDTO
-from app.models.traces.widget_dto import TraceTimeseriesDTO
+from app.models.traces.widget_dto import SessionsTracesDTO, TraceTimeseriesDTO
 from app.services.trace_service import TraceService
 from tests.commons import db_mock
 
@@ -91,3 +91,33 @@ class TraceServiceTest(unittest.TestCase):
         assert res.items is not None
         assert len(res.items) == 3
         assert all(isinstance(trace, TraceDTO) for trace in res.items)
+
+    def test_get_trace_by_sessions_dashboard(self):
+        session_uuid = uuid.uuid4()
+        session_uuid_one = uuid.uuid4()
+        self.trace_dao.get_sessions_traces = MagicMock(
+            return_value=[
+                db_mock.get_sample_trace_by_session(
+                    session_uuid=str(session_uuid), count=10
+                ),
+                db_mock.get_sample_trace_by_session(
+                    session_uuid=str(session_uuid_one), count=4
+                ),
+            ]
+        )
+        from_datetime = datetime.datetime.now(tz=datetime.UTC) - datetime.timedelta(
+            hours=1
+        )
+        to_datetime = datetime.datetime.now(tz=datetime.UTC)
+        res = self.trace_service.get_session_traces_dashboard(
+            project_uuid=db_mock.PROJECT_UUID,
+            from_datetime=from_datetime,
+            to_datetime=to_datetime,
+        )
+        assert isinstance(res, SessionsTracesDTO)
+        assert len(res.traces) == 2
+        assert res.project_uuid == db_mock.PROJECT_UUID
+        assert res.traces[0].session_uuid == str(session_uuid)
+        assert res.traces[0].count == 10
+        assert res.traces[1].session_uuid == str(session_uuid_one)
+        assert res.traces[1].count == 4

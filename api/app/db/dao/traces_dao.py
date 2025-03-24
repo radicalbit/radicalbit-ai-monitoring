@@ -739,3 +739,32 @@ class TraceDAO:
                 .order_by(text('start_date'))
             )
             return list(session.execute(stmt).mappings())
+
+    def get_sessions_traces(
+        self, project_uuid: UUID, from_datetime: datetime, to_datetime: datetime
+    ) -> list[RowMapping]:
+        with self.db.begin_session() as session:
+            filter_stmt = (
+                select(
+                    Trace.service_name.label('project_uuid'),
+                    Trace.trace_id,
+                    Trace.parent_span_id,
+                    Trace.timestamp,
+                    literal_column(
+                        "SpanAttributes['traceloop.association.properties.session_uuid']"
+                    ).label('session_uuid'),
+                )
+                .filter(
+                    Trace.service_name == str(project_uuid),
+                    Trace.parent_span_id == '',
+                    Trace.timestamp >= from_datetime,
+                    Trace.timestamp <= to_datetime,
+                )
+                .subquery()
+            )
+            stmt = (
+                select(filter_stmt.c.session_uuid, func.count(filter_stmt.c.trace_id))
+                .group_by(filter_stmt.c.session_uuid)
+                .order_by(desc(func.count(filter_stmt.c.trace_id)))
+            )
+            return list(session.execute(stmt).mappings())
