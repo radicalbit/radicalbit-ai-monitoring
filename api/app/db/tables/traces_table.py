@@ -2,7 +2,7 @@ from clickhouse_sqlalchemy.engines import MergeTree
 from clickhouse_sqlalchemy.types import Array, DateTime64, LowCardinality, Map, Nested
 from sqlalchemy import BigInteger, Column, String, func
 
-from app.db.database import ClickHouseBaseTable
+from app.db.clickhouse_database import ClickHouseBaseTable
 
 
 class Trace(ClickHouseBaseTable):

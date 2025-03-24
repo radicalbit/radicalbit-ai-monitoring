@@ -5,7 +5,7 @@ import testing.postgresql
 
 from app.core.config import DBConfig
 from app.db import database
-from app.db.database import Database, DatabaseDialect
+from app.db.database import Database
 
 Postgresql = testing.postgresql.PostgresqlFactory(cache_initialized_db=True)
 
@@ -16,7 +16,7 @@ class DatabaseIntegration(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.db_conf = DBConfig()
-        cls.db = Database(dialect=DatabaseDialect.POSTGRES, conf=cls.db_conf)
+        cls.db = Database(conf=cls.db_conf)
 
     def setUp(self):
         self.postgresql = Postgresql()

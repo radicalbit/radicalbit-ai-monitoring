@@ -23,7 +23,7 @@ from sqlalchemy import (
 )
 
 from app.core import get_config
-from app.db.database import Database
+from app.db.clickhouse_database import ClickHouseDatabase
 from app.db.tables.traces_table import Trace
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import TraceSortColumnError
@@ -32,7 +32,7 @@ logger = logging.getLogger(get_config().log_config.logger_name)
 
 
 class TraceDAO:
-    def __init__(self, database: Database):
+    def __init__(self, database: ClickHouseDatabase):
         self.db = database
 
     def get_all_sessions(

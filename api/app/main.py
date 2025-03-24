@@ -10,6 +10,7 @@ from spark_on_k8s.k8s.sync_client import KubernetesClientManager
 from starlette.middleware.cors import CORSMiddleware
 
 from app.core import get_config
+from app.db.clickhouse_database import ClickHouseDatabase
 from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
@@ -19,7 +20,7 @@ from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.db.dao.traces_dao import TraceDAO
-from app.db.database import Database, DatabaseDialect
+from app.db.database import Database
 from app.models.exceptions import (
     GenericValidationError,
     MetricsError,
@@ -53,10 +54,8 @@ from app.services.trace_service import TraceService
 dictConfig(get_config().log_config.model_dump())
 logger = logging.getLogger(get_config().log_config.logger_name)
 
-database = Database(dialect=DatabaseDialect.POSTGRES, conf=get_config().db_config)
-ch_database = Database(
-    dialect=DatabaseDialect.CLICKHOUSE, conf=get_config().clickhouse_config
-)
+database = Database(conf=get_config().db_config)
+ch_database = ClickHouseDatabase(conf=get_config().clickhouse_config)
 
 if get_config().kubernetes_config.kubeconfig_file_path:
     k8s_client_manager = KubernetesClientManager(

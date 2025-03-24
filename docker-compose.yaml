@@ -30,12 +30,12 @@ services:
       DB_PWD: "postgres"
       DB_NAME: "radicalbit"
       DB_SCHEMA: "public"
-      DB_HOST_CH: "clickhouse"
-      DB_PORT_CH: 9000
-      DB_USER_CH: "default"
-      DB_PWD_CH: "default"
-      DB_NAME_CH: "default"
-      DB_SCHEMA_CH: "default"
+      CLICKHOUSE_DB_HOST: "clickhouse"
+      CLICKHOUSE_DB_PORT: 9000
+      CLICKHOUSE_DB_USER: "default"
+      CLICKHOUSE_DB_PWD: "default"
+      CLICKHOUSE_DB_NAME: "default"
+      CLICKHOUSE_DB_SCHEMA: "default"
       AWS_ACCESS_KEY_ID: "minio"
       AWS_SECRET_ACCESS_KEY: "minio123"
       AWS_REGION: "us-east-1"
