@@ -1,5 +1,5 @@
 import { Button, Upload } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { modelsApiSlice } from '@State/models/api';
 
 const { useImportCurrentDataMutation } = modelsApiSlice;

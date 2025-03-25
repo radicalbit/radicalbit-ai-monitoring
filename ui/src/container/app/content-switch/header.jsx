@@ -2,7 +2,7 @@ import { PathsEnum } from '@Src/constants';
 import MainModelsHeader from '@Src/container/models/Details/header';
 import MainListModelsHeader from '@Src/container/models/List/header';
 import LaunchpadHeader from '@Src/container/launchpad/header';
-import { Navigate, Route, Routes } from 'react-router';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import ProjectListHeader from '@Container/tracing/project-list/header';
 import ProjectDetailHeader from '@Container/tracing/project-detail/header/header';
 

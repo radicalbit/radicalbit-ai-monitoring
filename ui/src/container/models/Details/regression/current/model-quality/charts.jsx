@@ -3,7 +3,7 @@ import LineChart from '@Components/charts/line-chart';
 import { MODEL_QUALITY_FIELD } from '@Container/models/Details/constants';
 import { useGetCurrentModelQualityQueryWithPolling } from '@State/models/polling-hook';
 import { modelsApiSlice } from '@State/models/api';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const { useGetReferenceModelQualityQuery } = modelsApiSlice;
 

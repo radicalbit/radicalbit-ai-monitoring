@@ -2,7 +2,7 @@ import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { useGetCurrentDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { useFormbitContext } from '@radicalbit/formbit';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 

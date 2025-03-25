@@ -14,7 +14,7 @@ import {
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import Body from './body';
 

@@ -6,7 +6,7 @@ import { modelsApiSlice } from '@State/models/api';
 import { useGetCurrentImportsQueryWithPolling } from '@State/models/polling-hook';
 import { Spin, Void } from '@radicalbit/radicalbit-design-system';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { getColumns } from './columns';
 
 const { useGetCurrentImportsQuery } = modelsApiSlice;

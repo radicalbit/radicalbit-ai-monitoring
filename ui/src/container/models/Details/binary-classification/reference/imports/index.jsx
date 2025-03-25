@@ -5,7 +5,7 @@ import LogoSquared from '@Img/logo-collapsed.svg';
 import { modelsApiSlice } from '@State/models/api';
 import { useGetReferenceImportsQueryWithPolling } from '@State/models/polling-hook';
 import { Spin, Void } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { NamespaceEnum } from '@Src/constants';
 import { getColumns } from './columns';
 

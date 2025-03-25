@@ -9,7 +9,7 @@ import {
   Board, DataTable, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { CHART_COLOR } from '@Helpers/common-chart-options';
 import {
   AccuracyChart,

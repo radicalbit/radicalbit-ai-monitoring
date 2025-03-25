@@ -11,7 +11,7 @@ import LogoSquared from '@Img/logo-collapsed.svg';
 import { Spinner, Void } from '@radicalbit/radicalbit-design-system';
 import { NamespaceEnum } from '@Src/constants';
 import { tracingApiSlice } from '@State/tracing/api';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getColumns } from './columns';
 
 const { useGetAllProjectQuery } = tracingApiSlice;

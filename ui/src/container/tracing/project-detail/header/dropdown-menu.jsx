@@ -1,7 +1,7 @@
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
 import { Dropdown, FontAwesomeIcon, Popconfirm } from '@radicalbit/radicalbit-design-system';
 import { tracingApiSlice } from '@Src/store/state/tracing/api';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const { useDeleteProjectMutation } = tracingApiSlice;
 

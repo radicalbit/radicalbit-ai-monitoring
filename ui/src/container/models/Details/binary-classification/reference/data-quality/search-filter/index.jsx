@@ -5,7 +5,7 @@ import {
   Button, FontAwesomeIcon, FormField, Select, Toggle,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 

@@ -15,7 +15,7 @@ import { ModalsEnum, NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { useGetOverallModelListQueryWithPolling } from '@State/models/polling-hook';
 import { memo } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { alertsApiSlice } from '@State/alerts/api';
 import { getColumns } from './columns';

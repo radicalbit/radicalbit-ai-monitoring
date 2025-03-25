@@ -2,7 +2,7 @@ import useModals from '@Hooks/use-modals';
 import { DEFAULT_POLLING_INTERVAL, JOB_STATUS, NamespaceEnum } from '@Src/constants';
 import { selectors as contextConfigurationSelectors } from '@State/context-configuration';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { modelsApiSlice } from './api';
 
 const { selectQueryParamsSelector } = contextConfigurationSelectors;

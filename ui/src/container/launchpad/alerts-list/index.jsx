@@ -4,7 +4,7 @@ import { METRICS_TABS, MODEL_TABS_ENUM } from '@Container/models/Details/constan
 import { DataTable, SectionTitle, NewHeader } from '@radicalbit/radicalbit-design-system';
 import { NamespaceEnum } from '@Src/constants';
 import { alertsApiSlice } from '@State/alerts/api';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { getColumns } from './columns';
 import { getSkeletonColumns } from './skeleton-columns';
 

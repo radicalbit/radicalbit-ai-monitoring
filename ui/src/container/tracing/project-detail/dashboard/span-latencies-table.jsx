@@ -1,19 +1,53 @@
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import { numberFormatter } from '@Src/constants';
 import { tracingApiSlice } from '@State/tracing/api';
-import { DataTable } from '@radicalbit/radicalbit-design-system';
+import { useFormbitContext } from '@radicalbit/formbit';
+import { DataTable, Skeleton } from '@radicalbit/radicalbit-design-system';
+import isEmpty from 'lodash/isEmpty';
+import { useParams } from 'react-router-dom';
+import { filtersToQueryParams } from './filters';
 
 const {
   useGetSpanLatenciesQuery,
 } = tracingApiSlice;
 
 function SpanLatenciesTable() {
-  const { data, isSuccess } = useGetSpanLatenciesQuery();
+  const { uuid } = useParams();
+
+  const { form } = useFormbitContext();
+  const fromTimestamp = form?.fromTimestamp;
+  const toTimestamp = form?.toTimestamp;
+  const queryParams = filtersToQueryParams(fromTimestamp, toTimestamp);
+
+  const {
+    data, isSuccess, isLoading, isError,
+  } = useGetSpanLatenciesQuery({ uuid, queryParams });
+
+  if (isLoading) {
+    return <Skeleton active paragraph={{ rows: 5 }} />;
+  }
+
+  if (isError) {
+    return <SomethingWentWrong size="small" />;
+  }
 
   if (isSuccess) {
+    // e.g. 204 no content
+    if (isEmpty(data)) {
+      return (
+        <DataTable
+          columns={columns}
+          dataSource={[]}
+          size="small"
+        />
+      );
+    }
+
     return (
       <DataTable
         columns={columns}
         dataSource={data}
+        size="small"
       />
     );
   }

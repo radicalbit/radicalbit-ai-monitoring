@@ -13,8 +13,7 @@ import {
   Board, DataTable, FontAwesomeIcon, SectionTitle, Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import { memo } from 'react';
-import { useParams } from 'react-router';
-import { useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import {
   AdjR2Chart,
   MaeChart,

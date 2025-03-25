@@ -1,6 +1,6 @@
 import { tracingApiSlice } from '@State/tracing/api';
 import { useFormbitContext } from '@radicalbit/formbit';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 
 const { useAddNewProjectMutation } = tracingApiSlice;

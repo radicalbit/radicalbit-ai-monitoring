@@ -8,7 +8,7 @@ import {
   Spinner,
 } from '@radicalbit/radicalbit-design-system';
 import moment from 'moment';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import {
   columnsComparison,
