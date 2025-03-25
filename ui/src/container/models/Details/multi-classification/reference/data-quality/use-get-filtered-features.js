@@ -1,6 +1,6 @@
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import { useFormbitContext } from '@radicalbit/formbit';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { modelsApiSlice } from '@State/models/api';
 
 const { useGetReferenceDataQualityQuery } = modelsApiSlice;

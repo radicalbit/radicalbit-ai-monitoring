@@ -1,6 +1,6 @@
 import { useFormbitContext } from '@radicalbit/formbit';
 import { modelsApiSlice } from '@State/models/api';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const { useEditModelMutation, useGetModelByUUIDQuery } = modelsApiSlice;
 

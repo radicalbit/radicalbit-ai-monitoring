@@ -4,7 +4,7 @@ import { globalConfigSliceActions } from '@State/global-configuration/slice';
 import { modelsApiSlice } from '@State/models/api';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const { useImportReferenceDataMutation } = modelsApiSlice;
 

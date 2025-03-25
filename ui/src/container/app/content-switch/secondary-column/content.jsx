@@ -2,7 +2,7 @@ import ProjectDetailSecondaryColumnContent from '@Src/container/tracing/project-
 import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
 import { PathsEnum } from '@Src/constants';
 import SecondaryColumnModelsContent from '@Src/container/models/Details/secondary-column/content';
-import { Route, Routes } from 'react-router';
+import { Route, Routes } from 'react-router-dom';
 
 export default function SecondaryContentSwitch() {
   const isProjectTracingEnabled = getIsProjectTracingEnabled();

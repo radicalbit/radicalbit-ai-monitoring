@@ -1,5 +1,5 @@
 import { modelsApiSlice } from '@State/models/api';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useSearchParams } from 'react-router-dom';
 import { ModelTypeEnum } from '@State/models/constants';
 import { FEATURE_TYPE } from '@Container/models/Details/constants';

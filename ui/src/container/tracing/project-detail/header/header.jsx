@@ -9,6 +9,7 @@ import {
   NewHeader,
   RelativeDateTime,
   SectionTitle,
+  Skeleton,
 } from '@radicalbit/radicalbit-design-system';
 import { useParams } from 'react-router-dom';
 import DropdownMenu from './dropdown-menu';
@@ -44,31 +45,39 @@ function ProjectDetailHeaderInner() {
 
 function Title() {
   const { uuid } = useParams();
-  const { data } = useGetProjectByUUIDQuery({ uuid });
+  const { data, isLoading } = useGetProjectByUUIDQuery({ uuid });
 
   const name = data?.name;
+
+  if (isLoading) {
+    return <Skeleton.Input active />;
+  }
 
   return <h1>{name || ''}</h1>;
 }
 
 function Subtitle() {
   const { uuid } = useParams();
-  const { data } = useGetProjectByUUIDQuery({ uuid });
+  const { data, isSuccess } = useGetProjectByUUIDQuery({ uuid });
 
   const createdAt = data?.createdAt ?? 0;
   const updatedAt = data?.updatedAt ?? 0;
 
-  return (
-    <>
-      {'Created: '}
+  if (isSuccess) {
+    return (
+      <>
+        {'Created: '}
 
-      <RelativeDateTime threshold={3} timestamp={createdAt} withTooltip />
+        <RelativeDateTime threshold={3} timestamp={createdAt} withTooltip />
 
-      {' • Updated: '}
+        {' • Updated: '}
 
-      <RelativeDateTime threshold={3} timestamp={updatedAt} withTooltip />
-    </>
-  );
+        <RelativeDateTime threshold={3} timestamp={updatedAt} withTooltip />
+      </>
+    );
+  }
+
+  return false;
 }
 
 export default ProjectDetailHeader;

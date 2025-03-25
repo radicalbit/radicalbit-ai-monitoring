@@ -5,7 +5,7 @@ import ImportCurrentDatasetButton from '@Components/ImportButton/import-current-
 import ImportReferenceButton from '@Components/ImportButton/import-reference-button';
 import { selectIsShowConfettiForModelCreation } from '@State/global-configuration/selectors';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import ImportCompletionButton from '@Components/ImportButton/import-completion-button';
 
 function JobStatus({ jobStatus }) {

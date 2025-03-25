@@ -14,7 +14,7 @@ import {
   Pin,
   SectionTitle,
 } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { CHART_COLOR } from '@Helpers/common-chart-options';
 import chartOptions from './options';
 

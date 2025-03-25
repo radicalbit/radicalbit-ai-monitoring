@@ -1,5 +1,5 @@
 import { Button, DataTable } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { memo } from 'react';
 import { modelsApiSlice } from '@Store/state/models/api';
 import { OVERVIEW_ROW_TYPE } from '@Container/models/Details/constants';

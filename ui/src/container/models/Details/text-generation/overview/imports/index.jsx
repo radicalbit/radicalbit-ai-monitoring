@@ -5,7 +5,7 @@ import { NamespaceEnum } from '@Src/constants';
 import { modelsApiSlice } from '@State/models/api';
 import { useGetCompletionImportsQueryWithPolling } from '@State/models/polling-hook';
 import { Spin, Void } from '@radicalbit/radicalbit-design-system';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { getColumns } from './columns';
 
 const { useGetCompletionImportsQuery } = modelsApiSlice;

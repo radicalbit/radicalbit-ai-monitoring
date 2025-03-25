@@ -6,6 +6,9 @@ const { setNotificationMessage } = notificationActions;
 
 const errorWhiteList = {
   inferSchema: 404,
+  getTraceLatencies: true,
+  getSessionLatencies: true,
+  getSpanLatencies: true,
 };
 
 const successWhiteList = {};

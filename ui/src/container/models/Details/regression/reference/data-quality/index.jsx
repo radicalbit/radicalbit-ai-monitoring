@@ -5,7 +5,7 @@ import { modelsApiSlice } from '@State/models/api';
 import { useGetReferenceDataQualityQueryWithPolling } from '@State/models/polling-hook';
 import { FormbitContextProvider } from '@radicalbit/formbit';
 import { memo } from 'react';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import DataPointDistribution from './data-point-distribution';
 import SearchFeatureList from './search-filter';
 import DataQualityList from './data-quality-list';

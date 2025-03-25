@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import qs from 'query-string';
 import { useCallback } from 'react';
 import { ModalsEnum } from '@Src/constants';

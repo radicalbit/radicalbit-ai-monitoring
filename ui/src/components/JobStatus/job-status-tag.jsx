@@ -1,7 +1,7 @@
 import { JOB_STATUS } from '@Src/constants';
 import { Tag } from '@radicalbit/radicalbit-design-system';
 import { modelsApiSlice } from '@State/models/api';
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 
 const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 
