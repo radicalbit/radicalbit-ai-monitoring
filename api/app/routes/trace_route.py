@@ -6,6 +6,8 @@ from uuid import UUID
 from fastapi import APIRouter
 from fastapi.params import Query
 from fastapi_pagination import Page, Params
+from starlette.responses import Response
+from starlette.status import HTTP_204_NO_CONTENT
 
 from app.core import get_config
 from app.models.commons.order_type import OrderType
@@ -135,11 +137,16 @@ class TraceRoute:
             from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
             to_timestamp: Annotated[int, Query(alias='toTimestamp')],
         ):
-            return trace_service.get_latencies_quantiles_for_root_traces_dashboard(
-                project_uuid=project_uuid,
-                from_timestamp=datetime.fromtimestamp(from_timestamp),
-                to_timestamp=datetime.fromtimestamp(to_timestamp),
+            dashboard_result = (
+                trace_service.get_latencies_quantiles_for_root_traces_dashboard(
+                    project_uuid=project_uuid,
+                    from_timestamp=datetime.fromtimestamp(from_timestamp),
+                    to_timestamp=datetime.fromtimestamp(to_timestamp),
+                )
             )
+            if not dashboard_result:
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            return dashboard_result
 
         @router.get(
             '/dashboard/project/{project_uuid}/root_latencies_session',
@@ -151,11 +158,15 @@ class TraceRoute:
             from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
             to_timestamp: Annotated[int, Query(alias='toTimestamp')],
         ):
-            return trace_service.get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
+            dashboard_result = trace_service.get_latencies_quantiles_for_root_traces_dashboard_by_session_uuid(
                 project_uuid=project_uuid,
                 from_timestamp=datetime.fromtimestamp(from_timestamp),
                 to_timestamp=datetime.fromtimestamp(to_timestamp),
             )
+
+            if not dashboard_result:
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            return dashboard_result
 
         @router.get(
             '/dashboard/project/{project_uuid}/leaf_latencies',
@@ -167,11 +178,17 @@ class TraceRoute:
             from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
             to_timestamp: Annotated[int, Query(alias='toTimestamp')],
         ):
-            return trace_service.get_latencies_quantiles_for_span_leaf_dashboard(
-                project_uuid=project_uuid,
-                from_timestamp=datetime.fromtimestamp(from_timestamp),
-                to_timestamp=datetime.fromtimestamp(to_timestamp),
+            dashboard_result = (
+                trace_service.get_latencies_quantiles_for_span_leaf_dashboard(
+                    project_uuid=project_uuid,
+                    from_timestamp=datetime.fromtimestamp(from_timestamp),
+                    to_timestamp=datetime.fromtimestamp(to_timestamp),
+                )
             )
+
+            if not dashboard_result:
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            return dashboard_result
 
         @router.get(
             '/dashboard/project/{project_uuid}/trace_by_time',
@@ -182,20 +199,21 @@ class TraceRoute:
             project_uuid: UUID,
             from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
             to_timestamp: Annotated[int, Query(alias='toTimestamp')],
-            n: int,
         ):
-            if n <= 0:
-                raise TimestampsRangeError(message='n must be greater than zero')
             if from_timestamp > to_timestamp:
                 raise TimestampsRangeError(
                     message='to_timestamp must be greater than or equal to from_timestamp'
                 )
-            return trace_service.get_traces_by_time_dashboard(
+            dashboard_result = trace_service.get_traces_by_time_dashboard(
                 project_uuid,
                 datetime.fromtimestamp(from_timestamp),
                 datetime.fromtimestamp(to_timestamp),
-                n,
+                15,  # FIXME this should be proportional
             )
+
+            if not dashboard_result:
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            return dashboard_result
 
         @router.get(
             '/dashboard/project/{project_uuid}/traces-by-session',
@@ -211,10 +229,14 @@ class TraceRoute:
                 raise TimestampsRangeError(
                     message='to_timestamp must be greater than or equal to from_timestamp'
                 )
-            return trace_service.get_session_traces_dashboard(
+            dashboard_result = trace_service.get_session_traces_dashboard(
                 project_uuid=project_uuid,
                 from_datetime=datetime.fromtimestamp(from_timestamp),
                 to_datetime=datetime.fromtimestamp(to_timestamp),
             )
+
+            if not dashboard_result:
+                return Response(status_code=HTTP_204_NO_CONTENT)
+            return dashboard_result
 
         return router

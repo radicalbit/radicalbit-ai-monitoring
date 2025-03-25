@@ -92,7 +92,7 @@ class TraceRouteTest(unittest.TestCase):
         res = self.client.get(
             f'{self.prefix}/dashboard/project/{str(uuid.UUID(int=0))}/trace_by_time/'
             f'?fromTimestamp={datetime(year=2025, month=3, day=15, hour=9, minute=0).timestamp()}'
-            f'&toTimestamp={datetime(year=2025, month=3, day=20, hour=9, minute=0).timestamp()}&n=20'
+            f'&toTimestamp={datetime(year=2025, month=3, day=20, hour=9, minute=0).timestamp()}'
         )
         assert res.status_code == 200
         assert jsonable_encoder(trace_timeseries_dto) == res.json()
@@ -100,5 +100,5 @@ class TraceRouteTest(unittest.TestCase):
             uuid.UUID(int=0),
             datetime(year=2025, month=3, day=15, hour=9, minute=0),
             datetime(year=2025, month=3, day=20, hour=9, minute=0),
-            20,
+            15,
         )
