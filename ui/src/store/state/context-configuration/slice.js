@@ -37,9 +37,13 @@ export const initialState = {
   [NamespaceEnum.ALERTS]: defaultState(),
   [NamespaceEnum.MODELS_WIP]: defaultState(),
   [NamespaceEnum.PROJECTS]: defaultState(),
-  [NamespaceEnum.SESSIONS_LIST]: defaultState(),
-  [NamespaceEnum.SESSION_TRACES]: defaultState(),
+  [NamespaceEnum.SESSIONS_LIST]: defaultState(pageSize, { createdAt: SortOrderEnum.DESCEND }, undefined, undefined),
   [NamespaceEnum.TRACES_LIST]: defaultState(pageSize, { createdAt: SortOrderEnum.DESCEND }, undefined, {
+    sessionUuid: null,
+    fromTimestamp: null,
+    toTimestamp: null,
+  }),
+  [NamespaceEnum.SESSION_TRACES]: defaultState(pageSize, { createdAt: SortOrderEnum.DESCEND }, undefined, {
     sessionUuid: null,
     fromTimestamp: null,
     toTimestamp: null,

@@ -8,7 +8,7 @@ const getSessionColumns = (
 
   columnFactory({
     title: 'UUID',
-    key: 'uuid',
+    key: 'sessionUuid',
     activeFilters,
     activeSorter,
     render: ({ sessionUuid }) => (
@@ -22,6 +22,14 @@ const getSessionColumns = (
     title: 'Traces',
     key: 'traces',
     dataIndex: 'traces',
+    activeFilters,
+    activeSorter,
+  }),
+
+  columnFactory({
+    title: 'Errors',
+    key: 'numberOfErrors',
+    dataIndex: 'numberOfErrors',
     activeFilters,
     activeSorter,
   }),
@@ -48,26 +56,6 @@ const getSessionColumns = (
     dataIndex: 'totalTokens',
     activeFilters,
     activeSorter,
-  }),
-
-  columnFactory({
-    title: 'Errors',
-    key: 'numberOfErrors',
-    dataIndex: 'numberOfErrors',
-    activeFilters,
-    activeSorter,
-  }),
-
-  columnFactory({
-    title: 'Durations',
-    dataIndex: 'durationsMs',
-    key: 'durationsMs',
-    activeFilters,
-    activeSorter,
-    sorter: false,
-    align: 'right',
-    width: '13%',
-    render: (date) => `${date}ms`,
   }),
 
   columnFactory({

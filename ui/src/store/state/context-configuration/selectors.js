@@ -29,7 +29,7 @@ const selectQueryParamsSelector = createDraftSafeSelector(
 
     const extrenaFiltersQuery = fn ? fn(externalFilters) : '';
 
-    return `${paginationQuery}${sorterQuery}${filterQuery}&${extrenaFiltersQuery}`;
+    return `${paginationQuery}${sorterQuery}${filterQuery}${extrenaFiltersQuery ? `&${extrenaFiltersQuery}` : ''}`;
   },
 );
 

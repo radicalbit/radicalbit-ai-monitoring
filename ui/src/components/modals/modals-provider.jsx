@@ -4,6 +4,7 @@ import AddNewModel from './add-new-model';
 import CurrentImportsDetailModal from './current-import-detail-modal';
 import CompletionImportDetailModal from './completion-import-detail-modal';
 import AddNewProjectModal from './add-new-project';
+import TraceDetailModal from './trace-detail-modal';
 
 export default function ModalsProvider() {
   const { modalPayload: { modalName } } = useModals();
@@ -20,6 +21,9 @@ export default function ModalsProvider() {
 
     case ModalsEnum.ADD_NEW_PROJECT:
       return <AddNewProjectModal />;
+
+    case ModalsEnum.TRACE_DETAIL:
+      return <TraceDetailModal />;
 
     default:
       return false;

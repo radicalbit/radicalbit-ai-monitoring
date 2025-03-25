@@ -2,18 +2,20 @@ import { FormbitContextProvider, useFormbitContext } from '@radicalbit/formbit';
 import {
   DatePicker, FormField, Input,
 } from '@radicalbit/radicalbit-design-system';
-import dayjs from 'dayjs';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { isEmpty } from 'lodash';
 import { NamespaceEnum } from '@Src/constants';
 import {
-  thunks, selectors as contextConfigurationSelectors,
+  selectors as contextConfigurationSelectors,
+  thunks,
 } from '@State/context-configuration';
+import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import schema from './schema';
 
 function Filters() {
-  const { externalFilters } = useSelector((state) => contextConfigurationSelectors.selectContextConfiguration(state, NamespaceEnum.TRACES_LIST));
+  const { externalFilters } = useSelector((state) => contextConfigurationSelectors.selectContextConfiguration(state, NamespaceEnum.SESSION_TRACES));
 
   return (
     <FormbitContextProvider initialValues={externalFilters} schema={schema}>
@@ -24,7 +26,16 @@ function Filters() {
 
 function FiltersInner() {
   const dispatch = useDispatch();
-  const { form } = useFormbitContext();
+  const { form, write } = useFormbitContext();
+
+  const [searchParams] = useSearchParams();
+  const sessionUuid = searchParams.get('sessionUuid');
+
+  useEffect(() => {
+    if (sessionUuid) {
+      write('sessionUuid', sessionUuid);
+    }
+  }, []);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -32,7 +43,7 @@ function FiltersInner() {
         return;
       }
 
-      dispatch(thunks.changeExternalFilters({ namespace: NamespaceEnum.TRACES_LIST, externalFilters: form }));
+      dispatch(thunks.changeExternalFilters({ namespace: NamespaceEnum.SESSION_TRACES, externalFilters: form }));
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
@@ -51,20 +62,12 @@ function FiltersInner() {
 }
 
 function SessionUuidInput() {
-  const { form, write, error } = useFormbitContext();
+  const { form, error } = useFormbitContext();
   const sessionUuid = form?.sessionUuid;
-
-  const handleOnChange = ({ target: { value } }) => {
-    write('sessionUuid', value);
-  };
 
   return (
     <FormField label="SessionUuid" message={error('sessionUuid')} modifier="w-[310px]">
-      <Input
-        allowClear
-        onChange={handleOnChange}
-        value={sessionUuid}
-      />
+      <Input disabled value={sessionUuid} />
     </FormField>
   );
 }
