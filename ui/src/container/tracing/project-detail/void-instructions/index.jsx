@@ -1,7 +1,34 @@
 import MarkdownToJsx, { RuleType } from 'markdown-to-jsx';
+import { useParams } from 'react-router';
+import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import tracingInstructions from './tracing-instructions.md?raw';
 
 function InstructionsComponent() {
+  return (
+    <Board
+      header={(
+        <SectionTitle
+          size="large"
+          title="How to connect"
+          titleColor="primary"
+        />
+    )}
+      main={(
+        <MarkdownRenderComponent />
+      )}
+      modifier="max-w-[800px] w-full"
+    />
+  );
+}
+
+function MarkdownRenderComponent() {
+  const { uuid } = useParams();
+
+  const traceWithUUID = tracingInstructions.replace(
+    "f'{project_uuid}'",
+    `"${uuid}"`,
+  );
+
   return (
     <MarkdownToJsx
       options={{
@@ -21,14 +48,22 @@ function InstructionsComponent() {
                 </pre>
               );
             case RuleType.link:
-              return <a className="underline" href={node.target} style={{ color: 'var(--coo-primary-01)' }}>{node.children[0].text}</a>;
+              return (
+                <a
+                  className="underline"
+                  href={node.target}
+                  style={{ color: 'var(--coo-primary-01)' }}
+                >
+                  {node.children[0].text}
+                </a>
+              );
             default:
               return next();
           }
         },
       }}
     >
-      {tracingInstructions}
+      {traceWithUUID}
     </MarkdownToJsx>
   );
 }

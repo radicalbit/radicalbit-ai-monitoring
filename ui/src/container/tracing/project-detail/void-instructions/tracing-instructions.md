@@ -9,7 +9,7 @@ from traceloop.sdk import Traceloop
 
 Traceloop.init(
     api_endpoint="http://localhost:4318/",
-    app_name=f'{project_uuid}'  # Replace with your project UUID
+    app_name=f'{project_uuid}'
 )
 ```
 
