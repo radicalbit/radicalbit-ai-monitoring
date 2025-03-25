@@ -63,9 +63,9 @@ export const tracingApiSlice = apiService.injectEndpoints({
       providesTags: (_, __, { uuid }) => [
         { type: API_TAGS.SESSIONS, id: uuid },
       ],
-      query: ({ uuid }) => ({
+      query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/session/all/${uuid}`,
+        url: `/traces/session/all/${uuid}${queryParams ? `?${queryParams}` : ''}`,
         method: 'get',
       }),
     }),
@@ -77,6 +77,28 @@ export const tracingApiSlice = apiService.injectEndpoints({
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/traces/project/${uuid}${queryParams ? `?${queryParams}` : ''}`,
+        method: 'get',
+      }),
+    }),
+
+    getTraceDetailByUUID: builder.query({
+      providesTags: (_, __, { uuid }) => [
+        { type: API_TAGS.TRACE_DETAIL, id: uuid },
+      ],
+      query: ({ projectUuid, traceUuid }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/traces/project/${projectUuid}/trace/${traceUuid}`,
+        method: 'get',
+      }),
+    }),
+
+    getSpanDetailByUUID: builder.query({
+      providesTags: (_, __, { spanId }) => [
+        { type: API_TAGS.SPAN_DETAIL, id: spanId },
+      ],
+      query: ({ projectUuid, traceUuid, spanId }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/traces/project/${projectUuid}/trace/${traceUuid}/span/${spanId}`,
         method: 'get',
       }),
     }),

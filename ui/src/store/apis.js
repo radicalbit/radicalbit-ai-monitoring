@@ -14,6 +14,8 @@ export const API_TAGS = {
   PROJECT: 'PROJECT',
   SESSIONS: 'SESSIONS',
   TRACE_LIST: 'TRACE_LIST',
+  TRACE_DETAIL: 'TRACE_DETAIL',
+  SPAN_DETAIL: 'SPAN_DETAIL',
 };
 
 export const apiService = createApi({
