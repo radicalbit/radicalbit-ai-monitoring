@@ -466,6 +466,59 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
             year=2025, month=3, day=17, hour=9, minute=0
         )
 
+    def test_get_traces_by_time_wrong_timestamp_size(self):
+        trace_one = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_two = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=17,
+                hour=9,
+                minute=10,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_three = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=0,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        trace_four = db_mock.get_sample_trace(
+            timestamp=datetime.datetime(
+                year=2025,
+                month=3,
+                day=19,
+                hour=10,
+                minute=10,
+                tzinfo=datetime.timezone.utc,
+            )
+        )
+        self.insert([trace_one, trace_two, trace_three, trace_four])
+        res = self.trace_dao.get_traces_by_time_dashboard(
+            project_uuid=db_mock.PROJECT_UUID,
+            from_datetime=datetime.datetime(
+                year=2025, month=3, day=20, hour=9, minute=0
+            ),
+            to_datetime=datetime.datetime(year=2025, month=3, day=15, hour=9, minute=0),
+            interval_size=1200,
+        )
+        logger.info('%s', res)
+        assert len(res) == 0
+
     def test_get_trace_by_sessions_dashboard(self):
         session_uuid_one = uuid.uuid4()
         session_uuid_two = uuid.uuid4()
