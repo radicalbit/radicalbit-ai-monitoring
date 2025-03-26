@@ -225,10 +225,6 @@ class TraceRoute:
             from_timestamp: Annotated[int, Query(alias='fromTimestamp')],
             to_timestamp: Annotated[int, Query(alias='toTimestamp')],
         ):
-            if from_timestamp > to_timestamp:
-                raise TimestampsRangeError(
-                    message='to_timestamp must be greater than or equal to from_timestamp'
-                )
             dashboard_result = trace_service.get_session_traces_dashboard(
                 project_uuid=project_uuid,
                 from_datetime=datetime.fromtimestamp(from_timestamp),
