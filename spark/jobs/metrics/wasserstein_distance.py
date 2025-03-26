@@ -22,6 +22,7 @@ class WassersteinDistance(DriftDetector):
         feature_dict_to_append["has_drift"] = bool(
             result_tmp["WassersteinDistance"] <= threshold
         )
+        feature_dict_to_append["limit"] = threshold
         return feature_dict_to_append
 
     @property

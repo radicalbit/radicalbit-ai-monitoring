@@ -1,5 +1,4 @@
 import datetime
-import json
 import uuid
 
 import deepdiff
@@ -280,7 +279,6 @@ def test_drift_small(spark_fixture, drift_small_dataset):
         prefix_id=prefix_id,
     )
 
-    print(json.dumps(drift, indent=2))
     assert not deepdiff.DeepDiff(
         drift,
         res.test_drift_small_res,

@@ -23,6 +23,7 @@ class HellingerDistance(DriftDetector):
         feature_dict_to_append["has_drift"] = bool(
             result_tmp["HellingerDistance"] <= threshold
         )
+        feature_dict_to_append["limit"] = threshold
         return feature_dict_to_append
 
     @property
