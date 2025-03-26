@@ -50,6 +50,7 @@ class Chi2Test(DriftDetector):
         feature_dict_to_append["type"] = DriftAlgorithmType.CHI2
         feature_dict_to_append["value"] = float(result_tmp["pValue"])
         feature_dict_to_append["has_drift"] = bool(result_tmp["pValue"] <= p_value)
+        feature_dict_to_append["limit"] = p_value
         return feature_dict_to_append
 
     def __have_same_size(self) -> bool:

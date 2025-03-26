@@ -1,11 +1,16 @@
 from pyspark.sql import DataFrame
-import numpy as np
+from pyspark.errors.exceptions.captured import IllegalArgumentException
+
 from typing import Tuple, Dict, Optional
 from pyspark.sql import functions as f
 from pyspark.ml.feature import Bucketizer
-
+import numpy as np
 from utils.drift_detector import DriftDetector
 from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
+from utils.logger import logger_config
+import logging
+
+logger = logging.getLogger(logger_config.get("logger_name", "default"))
 
 
 class KullbackLeiblerDivergence(DriftDetector):
@@ -14,19 +19,25 @@ class KullbackLeiblerDivergence(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        result_tmp = self.compute_distance(feature.name, feature.field_type)
         feature_dict_to_append["type"] = DriftAlgorithmType.KL
-        if not result_tmp["KullbackLeiblerDivergence"]:
-            feature_dict_to_append["value"] = None
-            feature_dict_to_append["has_drift"] = None
-        else:
+        feature_dict_to_append["value"] = -1.0
+        feature_dict_to_append["has_drift"] = False
+        feature_dict_to_append["limit"] = threshold
+        try:
+            result_tmp = self.compute_distance(feature.name, feature.field_type)
+            if not result_tmp["KullbackLeiblerDivergence"]:
+                return feature_dict_to_append
             feature_dict_to_append["value"] = float(
                 result_tmp["KullbackLeiblerDivergence"]
             )
             feature_dict_to_append["has_drift"] = bool(
                 result_tmp["KullbackLeiblerDivergence"] <= threshold
             )
-        return feature_dict_to_append
+            feature_dict_to_append["limit"] = threshold
+            return feature_dict_to_append
+        except IllegalArgumentException as e:
+            logger.error(e.desc)
+            return feature_dict_to_append
 
     @property
     def supported_feature_types(self) -> list[FieldTypes]:
