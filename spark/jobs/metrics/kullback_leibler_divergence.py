@@ -1,7 +1,7 @@
 from pyspark.sql import DataFrame
 from pyspark.errors.exceptions.captured import IllegalArgumentException
 
-from typing import Tuple, Dict, Optional
+from typing import Optional
 from pyspark.sql import functions as f
 from pyspark.ml.feature import Bucketizer
 import numpy as np
@@ -27,13 +27,14 @@ class KullbackLeiblerDivergence(DriftDetector):
             result_tmp = self.compute_distance(feature.name, feature.field_type)
             if not result_tmp["KullbackLeiblerDivergence"]:
                 return feature_dict_to_append
-            feature_dict_to_append["value"] = float(
-                result_tmp["KullbackLeiblerDivergence"]
+            feature_dict_to_append.update(
+                {
+                    "value": float(result_tmp["KullbackLeiblerDivergence"]),
+                    "has_drift": bool(
+                        result_tmp["KullbackLeiblerDivergence"] <= threshold
+                    ),
+                }
             )
-            feature_dict_to_append["has_drift"] = bool(
-                result_tmp["KullbackLeiblerDivergence"] <= threshold
-            )
-            feature_dict_to_append["limit"] = threshold
             return feature_dict_to_append
         except IllegalArgumentException as e:
             logger.error(e.desc)
@@ -94,7 +95,7 @@ class KullbackLeiblerDivergence(DriftDetector):
 
     def __bucketize_continuous_values(
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
-    ) -> Tuple[DataFrame, DataFrame]:
+    ) -> tuple[DataFrame, DataFrame]:
         """
         This function creates buckets from the reference and uses the same to split current data.
 
@@ -284,7 +285,7 @@ class KullbackLeiblerDivergence(DriftDetector):
                 )
             )
 
-    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> dict:
         """
         Returns the Kullback-Leibler Divergence.
 
