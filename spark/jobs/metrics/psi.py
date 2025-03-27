@@ -1,5 +1,3 @@
-from typing import List
-
 import numpy as np
 from math import inf
 import pyspark.sql.functions as F
@@ -37,7 +35,7 @@ class PSI(DriftDetector):
         self.prefix_id = prefix_id
 
     @property
-    def supported_feature_types(self) -> List[FieldTypes]:
+    def supported_feature_types(self) -> list[FieldTypes]:
         return [FieldTypes.numerical]
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
@@ -45,11 +43,15 @@ class PSI(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        result_tmp = self.calculate_psi(feature.name)
         feature_dict_to_append["type"] = DriftAlgorithmType.PSI
+        feature_dict_to_append["limit"] = threshold
+        result_tmp = self.calculate_psi(feature.name)
+        if result_tmp["psi_value"] is None:
+            feature_dict_to_append["value"] = -1
+            feature_dict_to_append["has_drift"] = False
+            return feature_dict_to_append
         feature_dict_to_append["value"] = float(result_tmp["psi_value"])
         feature_dict_to_append["has_drift"] = bool(result_tmp["psi_value"] >= threshold)
-        feature_dict_to_append["limit"] = threshold
         return feature_dict_to_append
 
     @staticmethod
