@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Tuple, Optional, Dict, List
 import numpy as np
 from pyspark.sql import functions as f
 from pyspark.sql import DataFrame
@@ -17,17 +17,13 @@ class HellingerDistance(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        feature_dict_to_append["type"] = DriftAlgorithmType.HELLINGER
-        feature_dict_to_append["limit"] = threshold
         result_tmp = self.compute_distance(feature.name, feature.field_type)
-        if result_tmp["HellingerDistance"] is None:
-            feature_dict_to_append["value"] = -1
-            feature_dict_to_append["has_drift"] = False
-            return feature_dict_to_append
+        feature_dict_to_append["type"] = DriftAlgorithmType.HELLINGER
         feature_dict_to_append["value"] = float(result_tmp["HellingerDistance"])
         feature_dict_to_append["has_drift"] = bool(
             result_tmp["HellingerDistance"] <= threshold
         )
+        feature_dict_to_append["limit"] = threshold
         return feature_dict_to_append
 
     @property
@@ -83,7 +79,7 @@ class HellingerDistance(DriftDetector):
     @staticmethod
     def __calculate_kde_continuous_pdf_on_partition(
         df: DataFrame, column_name: str, bins: int
-    ) -> list:
+    ) -> List:
         """
         Estimate the probability density function using KDE for each partition (workers).
 
@@ -109,7 +105,7 @@ class HellingerDistance(DriftDetector):
     @staticmethod
     def __calculate_kde_continuous_pdf(
         df: DataFrame, column_name: str, bins: int
-    ) -> tuple:
+    ) -> Tuple:
         """
         Estimate the probability density function using KDE.
 
@@ -300,7 +296,7 @@ class HellingerDistance(DriftDetector):
                     * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
                 )
 
-    def compute_distance(self, on_column: str, data_type: FieldTypes) -> dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Hellinger Distance.
 

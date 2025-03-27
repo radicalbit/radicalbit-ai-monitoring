@@ -1,3 +1,4 @@
+from typing import Dict
 import numpy as np
 from pyspark.sql import functions as f
 from pyspark.sql import DataFrame
@@ -15,18 +16,13 @@ class WassersteinDistance(DriftDetector):
         if not kwargs["threshold"]:
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
-        feature_dict_to_append["type"] = DriftAlgorithmType.WASSERSTEIN
-        feature_dict_to_append["limit"] = threshold
         result_tmp = self.compute_distance(feature.name)
-        if result_tmp["WassersteinDistance"] is None:
-            feature_dict_to_append["value"] = -1
-            feature_dict_to_append["has_drift"] = False
-            return feature_dict_to_append
+        feature_dict_to_append["type"] = DriftAlgorithmType.WASSERSTEIN
         feature_dict_to_append["value"] = float(result_tmp["WassersteinDistance"])
         feature_dict_to_append["has_drift"] = bool(
             result_tmp["WassersteinDistance"] <= threshold
         )
-
+        feature_dict_to_append["limit"] = threshold
         return feature_dict_to_append
 
     @property
@@ -79,7 +75,7 @@ class WassersteinDistance(DriftDetector):
 
         return wasserstein_distance(reference_values, current_values)
 
-    def compute_distance(self, on_column: str) -> dict:
+    def compute_distance(self, on_column: str) -> Dict:
         """
         Returns the Wasserstein Distance as a dictionary.
 

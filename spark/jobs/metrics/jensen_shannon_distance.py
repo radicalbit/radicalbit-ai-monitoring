@@ -1,7 +1,6 @@
-from typing import Optional
-
 from pyspark.sql import DataFrame
 import numpy as np
+from typing import Tuple, Dict
 from pyspark.sql import functions as f
 from pyspark.ml.feature import Bucketizer
 from scipy.spatial.distance import jensenshannon
@@ -21,19 +20,19 @@ class JensenShannonDistance(DriftDetector):
             raise AttributeError("threshold is not defined in kwargs")
         threshold = kwargs["threshold"]
         feature_dict_to_append["type"] = DriftAlgorithmType.JS
-        feature_dict_to_append["limit"] = threshold
         feature_dict_to_append["value"] = -1.0
         feature_dict_to_append["has_drift"] = False
+        feature_dict_to_append["limit"] = threshold
         try:
             result_tmp = self.compute_distance(feature.name, feature.field_type)
             if not result_tmp["JensenShannonDistance"]:
                 return feature_dict_to_append
-            feature_dict_to_append.update(
-                {
-                    "value": float(result_tmp["JensenShannonDistance"]),
-                    "has_drift": bool(result_tmp["JensenShannonDistance"] <= threshold),
-                }
+            feature_dict_to_append["type"] = DriftAlgorithmType.JS
+            feature_dict_to_append["value"] = float(result_tmp["JensenShannonDistance"])
+            feature_dict_to_append["has_drift"] = bool(
+                result_tmp["JensenShannonDistance"] <= threshold
             )
+            feature_dict_to_append["limit"] = threshold
             return feature_dict_to_append
         except IllegalArgumentException as e:
             logger.error(e.desc)
@@ -92,7 +91,7 @@ class JensenShannonDistance(DriftDetector):
 
     def __bucketize_continuous_values(
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
-    ) -> tuple[DataFrame, DataFrame]:
+    ) -> Tuple[DataFrame, DataFrame]:
         """
         This function creates 10 buckets from the reference and uses the same to split current data.
 
@@ -165,7 +164,7 @@ class JensenShannonDistance(DriftDetector):
 
     def __jensen_shannon_distance(
         self, column_name: str, data_type: FieldTypes
-    ) -> Optional[float]:
+    ) -> float:
         """
         Compute the Jensen-Shannon Distance according to the data type (discrete or continuous).
 
@@ -237,7 +236,7 @@ class JensenShannonDistance(DriftDetector):
             reference_values = np.array(list(reference_category_dict.values()))
             current_values = np.array(list(current_category_dict.values()))
 
-            return float(jensenshannon(reference_values, current_values))
+            return jensenshannon(reference_values, current_values)
 
         elif data_type == FieldTypes.numerical:
             reference_bucket_percentage, current_bucket_percentage = (
@@ -268,9 +267,9 @@ class JensenShannonDistance(DriftDetector):
             reference_values = np.array(list(reference_bucket_dict.values()))
             current_values = np.array(list(current_bucket_dict.values()))
 
-            return float(jensenshannon(reference_values, current_values))
+            return jensenshannon(reference_values, current_values)
 
-    def compute_distance(self, on_column: str, data_type: FieldTypes) -> dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
         """
         Returns the Jensen-Shannon Distance.
 
