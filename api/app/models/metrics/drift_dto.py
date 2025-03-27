@@ -10,8 +10,9 @@ from app.models.job_status import JobStatus
 
 class FeatureDriftCalculation(BaseModel):
     type: DriftAlgorithmType
-    value: Optional[float] = None
-    has_drift: Optional[bool] = None
+    value: float
+    has_drift: bool
+    limit: float
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 

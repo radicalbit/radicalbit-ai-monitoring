@@ -16,12 +16,12 @@ from radicalbit_platform_sdk.models import (
     FieldType,
     Granularity,
     ModelDefinition,
+    ModelDriftMethod,
     ModelType,
     OutputType,
     ProjectDefinition,
     SupportedTypes,
 )
-from radicalbit_platform_sdk.models.drift_method import ModelDriftMethod
 
 
 class ClientTest(unittest.TestCase):

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
@@ -9,8 +9,9 @@ from radicalbit_platform_sdk.models.field_type import FieldType
 
 class FeatureDriftCalculation(BaseModel):
     type: DriftAlgorithmType
-    value: Optional[float] = None
-    has_drift: Optional[bool] = None
+    value: float
+    has_drift: bool
+    limit: float
 
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 

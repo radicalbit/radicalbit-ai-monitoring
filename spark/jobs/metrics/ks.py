@@ -53,7 +53,7 @@ class KolmogorovSmirnovTest(DriftDetector):
         feature_dict_to_append["type"] = DriftAlgorithmType.KS
         feature_dict_to_append["value"] = float(result_tmp["ks_statistic"])
         feature_dict_to_append["has_drift"] = bool(result_tmp["ks_statistic"] > p_value)
-        feature_dict_to_append["limit"] = p_value
+        feature_dict_to_append["limit"] = float(p_value)
         return feature_dict_to_append
 
     @staticmethod

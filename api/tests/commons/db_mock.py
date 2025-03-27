@@ -527,17 +527,23 @@ drift_dict = {
         {
             'featureName': 'gender',
             'fieldType': 'categorical',
-            'driftCalc': [{'type': 'CHI2', 'value': 0.87, 'hasDrift': True}],
+            'driftCalc': [
+                {'type': 'CHI2', 'value': 0.87, 'hasDrift': True, 'limit': 0.05}
+            ],
         },
         {
             'featureName': 'city',
             'fieldType': 'categorical',
-            'driftCalc': [{'type': 'CHI2', 'value': 0.12, 'hasDrift': False}],
+            'driftCalc': [
+                {'type': 'CHI2', 'value': 0.12, 'hasDrift': False, 'limit': 0.05}
+            ],
         },
         {
             'featureName': 'age',
             'fieldType': 'numerical',
-            'driftCalc': [{'type': 'KS', 'value': 0.92, 'hasDrift': True}],
+            'driftCalc': [
+                {'type': 'KS', 'value': 0.92, 'hasDrift': True, 'limit': 0.1}
+            ],
         },
     ]
 }

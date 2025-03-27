@@ -51,7 +51,7 @@ from .model_type import ModelType
 from .project_definition import ProjectDefinition, CreateProject
 from .supported_types import SupportedTypes
 from .drift_algorithm_type import DriftAlgorithmType
-from .drift_method import DriftMethod
+from .drift_method import DriftMethod, ModelDriftMethod
 
 __all__ = [
     'OutputType',
@@ -66,6 +66,7 @@ __all__ = [
     'CompletionResponses',
     'DatasetStats',
     'DriftMethod',
+    'ModelDriftMethod',
     'DriftAlgorithmType',
     'ModelQuality',
     'BinaryClassificationModelQuality',
