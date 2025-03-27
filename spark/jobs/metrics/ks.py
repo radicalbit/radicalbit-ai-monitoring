@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 from math import ceil, sqrt
 from numpy import linspace, interp
@@ -39,7 +41,7 @@ class KolmogorovSmirnovTest(DriftDetector):
         self.current_size = self.current_data.count()
 
     @property
-    def supported_feature_types(self) -> list[FieldTypes]:
+    def supported_feature_types(self) -> List[FieldTypes]:
         return [FieldTypes.numerical]
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
