@@ -300,17 +300,17 @@ class ModelCurrentDatasetTest(unittest.TestCase):
                             {
                                 "featureName": "gender",
                                 "fieldType": "categorical",
-                                "driftCalc": [{"type": "CHI2", "value": 0.87, "hasDrift": true}]
+                                "driftCalc": [{"type": "CHI2", "value": 0.87, "hasDrift": true, "limit": 0.05}]
                             },
                             {
                                 "featureName": "city",
                                 "fieldType": "categorical",
-                                "driftCalc": [{"type": "CHI2", "value": 0.12, "hasDrift": false}]
+                                "driftCalc": [{"type": "CHI2", "value": 0.12, "hasDrift": false, "limit": 0.05}]
                             },
                             {
                                 "featureName": "age",
                                 "fieldType": "numerical",
-                                "driftCalc": [{"type": "KS", "value": 0.92, "hasDrift": true}]
+                                "driftCalc": [{"type": "KS", "value": 0.92, "hasDrift": true, "limit": 0.1}]
                             }
                         ]
                     }
@@ -327,11 +327,13 @@ class ModelCurrentDatasetTest(unittest.TestCase):
         assert drift.feature_metrics[1].drift_calc[0].type == DriftAlgorithmType.CHI2
         assert drift.feature_metrics[1].drift_calc[0].value == 0.12
         assert drift.feature_metrics[1].drift_calc[0].has_drift is False
+        assert drift.feature_metrics[1].drift_calc[0].limit == 0.05
         assert drift.feature_metrics[2].feature_name == 'age'
         assert drift.feature_metrics[2].field_type == FieldType.numerical
         assert drift.feature_metrics[2].drift_calc[0].type == DriftAlgorithmType.KS
         assert drift.feature_metrics[2].drift_calc[0].value == 0.92
         assert drift.feature_metrics[2].drift_calc[0].has_drift is True
+        assert drift.feature_metrics[2].drift_calc[0].limit == 0.1
         assert model_current_dataset.status() == JobStatus.SUCCEEDED
 
     @responses.activate

@@ -25,16 +25,16 @@ class ModelDriftMethod:
             FieldType.categorical: [
                 DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05),
                 DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1),
-                DriftMethod(name=DriftAlgorithmType.JS, threshold=0.2),
-                DriftMethod(name=DriftAlgorithmType.KL, threshold=0.3),
+                DriftMethod(name=DriftAlgorithmType.JS, threshold=0.1),
+                DriftMethod(name=DriftAlgorithmType.KL, threshold=0.1),
             ],
             FieldType.numerical: [
                 DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1),
-                DriftMethod(name=DriftAlgorithmType.WASSERSTEIN, threshold=0.2),
+                DriftMethod(name=DriftAlgorithmType.WASSERSTEIN, threshold=0.1),
                 DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05),
-                DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.3),
-                DriftMethod(name=DriftAlgorithmType.JS, threshold=0.2),
-                DriftMethod(name=DriftAlgorithmType.KL, threshold=0.3),
+                DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1),
+                DriftMethod(name=DriftAlgorithmType.JS, threshold=0.1),
+                DriftMethod(name=DriftAlgorithmType.KL, threshold=0.1),
             ],
             FieldType.datetime: [],
         }

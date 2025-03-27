@@ -96,7 +96,7 @@ class ColumnDefinition(BaseModel, validate_assignment=True):
                 )
 
     @model_validator(mode='after')
-    def validate_drift_algorithms(self) -> Self:
+    def validate_selection_drift_algorithms(self) -> Self:
         if self.drift:
             for method in self.drift:
                 match method.name:
@@ -128,14 +128,28 @@ class ColumnDefinition(BaseModel, validate_assignment=True):
                             )
         return self
 
-    def _get_default_drift_methods(self) -> List[DriftMethod]:
+    def get_default_drift_methods(self) -> Optional[List[DriftMethod]]:
+        if self.drift == []:
+            return None
         match self.field_type:
             case FieldType.categorical:
-                return [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05)]
+                return [
+                    DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05),
+                    DriftMethod(name=DriftAlgorithmType.JS, threshold=0.1),
+                    DriftMethod(name=DriftAlgorithmType.KL, threshold=0.1),
+                    DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1),
+                ]
             case FieldType.numerical:
-                return [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05)]
+                return [
+                    DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05),
+                    DriftMethod(name=DriftAlgorithmType.WASSERSTEIN, threshold=0.1),
+                    DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1),
+                    DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1),
+                    DriftMethod(name=DriftAlgorithmType.JS, threshold=0.1),
+                    DriftMethod(name=DriftAlgorithmType.KL, threshold=0.1),
+                ]
             case _:
-                return []
+                return None
 
 
 class OutputType(BaseModel, validate_assignment=True):
@@ -282,10 +296,14 @@ class ModelIn(BaseModel, validate_assignment=True):
             if column and column.drift is not None:
                 raise ValueError('Drift can only be enabled on the features field')
 
+        return self
+
+    @model_validator(mode='after')
+    def set_default_feature_drift_algorithms(self) -> Self:
         if self.features:
             for feature in self.features:
-                if feature.drift is None:
-                    feature.drift = feature._get_default_drift_methods()
+                if not feature.drift:
+                    feature.drift = feature.get_default_drift_methods()
 
         return self
 
