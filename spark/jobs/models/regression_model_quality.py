@@ -1,17 +1,17 @@
+from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
-from enum import Enum
 
 
 class RegressionMetricType(str, Enum):
-    MAE = "mae"
-    MAPE = "mape"
-    MSE = "mse"
-    RMSE = "rmse"
-    R2 = "r2"
-    ADJ_R2 = "adj_r2"
-    VAR = "variance"
+    MAE = 'mae'
+    MAPE = 'mape'
+    MSE = 'mse'
+    RMSE = 'rmse'
+    R2 = 'r2'
+    ADJ_R2 = 'adj_r2'
+    VAR = 'variance'
 
 
 class ModelQualityRegression(BaseModel):
@@ -28,4 +28,4 @@ class Histogram(BaseModel):
     buckets: List[float]
     values: Optional[List[int]] = None
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')

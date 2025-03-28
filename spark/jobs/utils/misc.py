@@ -4,20 +4,20 @@ from utils.models import Granularity
 
 
 def split_dict(dictionary):
-    cleaned_dict = dict()
+    cleaned_dict = {}
     for k, v in dictionary.items():
-        feature, metric = tuple(k.rsplit("-", 1))
-        cleaned_dict.setdefault(feature, dict())[metric] = v
+        feature, metric = tuple(k.rsplit('-', 1))
+        cleaned_dict.setdefault(feature, {})[metric] = v
     return cleaned_dict
 
 
 def create_time_format(granularity: Granularity):
     match granularity:
         case Granularity.HOUR:
-            return "yyyy-MM-dd HH"
+            return 'yyyy-MM-dd HH'
         case Granularity.DAY:
-            return "yyyy-MM-dd"
+            return 'yyyy-MM-dd'
         case Granularity.WEEK:
-            return "yyyy-MM-dd"
+            return 'yyyy-MM-dd'
         case Granularity.MONTH:
-            return "yyyy-MM"
+            return 'yyyy-MM'

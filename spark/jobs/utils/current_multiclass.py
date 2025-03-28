@@ -1,21 +1,20 @@
-from typing import List, Dict
-
-from pandas import DataFrame
-from pyspark.ml.evaluation import MulticlassClassificationEvaluator
-from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
+from typing import Dict, List
 
 from metrics.data_quality_calculator import DataQualityCalculator
 from metrics.drift_calculator import DriftCalculator
 from models.current_dataset import CurrentDataset
 from models.data_quality import (
-    NumericalFeatureMetrics,
     CategoricalFeatureMetrics,
     ClassMetrics,
     MultiClassDataQuality,
+    NumericalFeatureMetrics,
 )
 from models.reference_dataset import ReferenceDataset
+from pandas import DataFrame
+from pyspark.ml.evaluation import MulticlassClassificationEvaluator
+from pyspark.mllib.evaluation import MulticlassMetrics
+from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
 from utils.misc import create_time_format
 from utils.models import Granularity
 
@@ -37,20 +36,20 @@ class CurrentMetricsMulticlassService:
         self.index_label_map = index_label_map
         self.indexed_current = indexed_current
         self.model_quality_multiclass_classificator_global = {
-            "f1": "f1",
-            "accuracy": "accuracy",
-            "weightedPrecision": "weighted_precision",
-            "weightedRecall": "weighted_recall",
-            "weightedTruePositiveRate": "weighted_true_positive_rate",
-            "weightedFalsePositiveRate": "weighted_false_positive_rate",
-            "weightedFMeasure": "weighted_f_measure",
+            'f1': 'f1',
+            'accuracy': 'accuracy',
+            'weightedPrecision': 'weighted_precision',
+            'weightedRecall': 'weighted_recall',
+            'weightedTruePositiveRate': 'weighted_true_positive_rate',
+            'weightedFalsePositiveRate': 'weighted_false_positive_rate',
+            'weightedFMeasure': 'weighted_f_measure',
         }
         self.model_quality_multiclass_classificator_by_label = {
-            "truePositiveRateByLabel": "true_positive_rate",
-            "falsePositiveRateByLabel": "false_positive_rate",
-            "precisionByLabel": "precision",
-            "recallByLabel": "recall",
-            "fMeasureByLabel": "f_measure",
+            'truePositiveRateByLabel': 'true_positive_rate',
+            'falsePositiveRateByLabel': 'false_positive_rate',
+            'precisionByLabel': 'precision',
+            'recallByLabel': 'recall',
+            'fMeasureByLabel': 'f_measure',
         }
         self.prefix_id = prefix_id
 
@@ -84,8 +83,8 @@ class CurrentMetricsMulticlassService:
         if self.current.model.granularity == Granularity.WEEK:
             dataset_with_group = self.indexed_current.select(
                 [
-                    f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
-                    f"{self.prefix_id}_{self.current.model.target.name}-idx",
+                    f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx',
+                    f'{self.prefix_id}_{self.current.model.target.name}-idx',
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -98,20 +97,20 @@ class CurrentMetricsMulticlassService:
                                             self.current.model.granularity
                                         ),
                                     ),
-                                    "sunday",
+                                    'sunday',
                                 ),
                                 7,
                             )
                         ),
-                        "yyyy-MM-dd HH:mm:ss",
-                    ).alias("time_group"),
+                        'yyyy-MM-dd HH:mm:ss',
+                    ).alias('time_group'),
                 ]
             )
         else:
             dataset_with_group = self.indexed_current.select(
                 [
-                    f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
-                    f"{self.prefix_id}_{self.current.model.target.name}-idx",
+                    f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx',
+                    f'{self.prefix_id}_{self.current.model.target.name}-idx',
                     self.current.model.outputs.prediction.name,
                     self.current.model.target.name,
                     F.date_format(
@@ -121,27 +120,27 @@ class CurrentMetricsMulticlassService:
                                 create_time_format(self.current.model.granularity),
                             )
                         ),
-                        "yyyy-MM-dd HH:mm:ss",
-                    ).alias("time_group"),
+                        'yyyy-MM-dd HH:mm:ss',
+                    ).alias('time_group'),
                 ]
             )
 
         list_of_time_group = (
-            dataset_with_group.select("time_group")
+            dataset_with_group.select('time_group')
             .distinct()
-            .orderBy(F.col("time_group").asc())
+            .orderBy(F.col('time_group').asc())
             .rdd.flatMap(lambda x: x)
             .collect()
         )
         array_of_groups = [
-            dataset_with_group.where(F.col("time_group") == x)
+            dataset_with_group.where(F.col('time_group') == x)
             for x in list_of_time_group
         ]
 
         return [
             {
-                "class_name": label,
-                "metrics": {
+                'class_name': label,
+                'metrics': {
                     metric_label: self.__evaluate_multi_class_classification(
                         self.indexed_current, metric_name, float(index)
                     )
@@ -150,11 +149,11 @@ class CurrentMetricsMulticlassService:
                         metric_label,
                     ) in self.model_quality_multiclass_classificator_by_label.items()
                 },
-                "grouped_metrics": {
+                'grouped_metrics': {
                     metric_label: [
                         {
-                            "timestamp": group,
-                            "value": self.__evaluate_multi_class_classification(
+                            'timestamp': group,
+                            'value': self.__evaluate_multi_class_classification(
                                 group_dataset, metric_name, float(index)
                             ),
                         }
@@ -174,12 +173,12 @@ class CurrentMetricsMulticlassService:
         try:
             return MulticlassClassificationEvaluator(
                 metricName=metric_name,
-                predictionCol=f"{self.prefix_id}_{self.current.model.outputs.prediction.name}-idx",
-                labelCol=f"{self.prefix_id}_{self.current.model.target.name}-idx",
+                predictionCol=f'{self.prefix_id}_{self.current.model.outputs.prediction.name}-idx',
+                labelCol=f'{self.prefix_id}_{self.current.model.target.name}-idx',
                 metricLabel=class_index,
             ).evaluate(dataset)
         except Exception:
-            return float("nan")
+            return float('nan')
 
     def __calc_multiclass_global_metrics(self) -> Dict:
         return {
@@ -195,8 +194,8 @@ class CurrentMetricsMulticlassService:
     def __calc_confusion_matrix(self):
         prediction_and_labels = self.indexed_current.select(
             *[
-                f"{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx",
-                f"{self.prefix_id}_{self.reference.model.target.name}-idx",
+                f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx',
+                f'{self.prefix_id}_{self.reference.model.target.name}-idx',
             ]
         ).rdd
         multiclass_metrics_calculator = MulticlassMetrics(prediction_and_labels)
@@ -205,14 +204,12 @@ class CurrentMetricsMulticlassService:
     def calculate_model_quality(self) -> Dict:
         metrics_by_label = self.calculate_multiclass_model_quality_group_by_timestamp()
         global_metrics = self.__calc_multiclass_global_metrics()
-        global_metrics["confusion_matrix"] = self.__calc_confusion_matrix()
-        metrics = {
-            "classes": list(self.index_label_map.values()),
-            "class_metrics": metrics_by_label,
-            "global_metrics": global_metrics,
+        global_metrics['confusion_matrix'] = self.__calc_confusion_matrix()
+        return {
+            'classes': list(self.index_label_map.values()),
+            'class_metrics': metrics_by_label,
+            'global_metrics': global_metrics,
         }
-
-        return metrics
 
     def calculate_data_quality(self) -> MultiClassDataQuality:
         feature_metrics = []

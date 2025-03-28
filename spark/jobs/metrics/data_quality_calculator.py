@@ -1,20 +1,19 @@
 from math import inf
-from typing import List, Dict
+from typing import Dict, List
 
+from models.data_quality import (
+    CategoricalFeatureMetrics,
+    ClassMetrics,
+    Histogram,
+    NumericalFeatureMetrics,
+    NumericalTargetMetrics,
+)
 import numpy as np
-import pyspark.sql.functions as F
 from pandas import DataFrame
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
 from pyspark.sql.types import IntegerType
-
-from models.data_quality import (
-    NumericalFeatureMetrics,
-    Histogram,
-    CategoricalFeatureMetrics,
-    ClassMetrics,
-    NumericalTargetMetrics,
-)
 from utils.misc import split_dict
 from utils.models import ModelOut
 from utils.spark import check_not_null
@@ -30,39 +29,39 @@ class DataQualityCalculator:
         ]
 
         mean_agg = [
-            (F.mean(check_not_null(x))).alias(f"{x}-mean") for x in numerical_features
+            (F.mean(check_not_null(x))).alias(f'{x}-mean') for x in numerical_features
         ]
 
         max_agg = [
-            (F.max(check_not_null(x))).alias(f"{x}-max") for x in numerical_features
+            (F.max(check_not_null(x))).alias(f'{x}-max') for x in numerical_features
         ]
 
         min_agg = [
-            (F.min(check_not_null(x))).alias(f"{x}-min") for x in numerical_features
+            (F.min(check_not_null(x))).alias(f'{x}-min') for x in numerical_features
         ]
 
         median_agg = [
-            (F.median(check_not_null(x))).alias(f"{x}-median")
+            (F.median(check_not_null(x))).alias(f'{x}-median')
             for x in numerical_features
         ]
 
         perc_25_agg = [
-            (F.percentile(check_not_null(x), 0.25)).alias(f"{x}-perc_25")
+            (F.percentile(check_not_null(x), 0.25)).alias(f'{x}-perc_25')
             for x in numerical_features
         ]
 
         perc_75_agg = [
-            (F.percentile(check_not_null(x), 0.75)).alias(f"{x}-perc_75")
+            (F.percentile(check_not_null(x), 0.75)).alias(f'{x}-perc_75')
             for x in numerical_features
         ]
 
         std_agg = [
-            (F.std(check_not_null(x))).alias(f"{x}-std") for x in numerical_features
+            (F.std(check_not_null(x))).alias(f'{x}-std') for x in numerical_features
         ]
 
         missing_values_agg = [
             (F.count(F.when(F.col(x).isNull() | F.isnan(x), x))).alias(
-                f"{x}-missing_values"
+                f'{x}-missing_values'
             )
             for x in numerical_features
         ]
@@ -71,7 +70,7 @@ class DataQualityCalculator:
             (
                 (F.count(F.when(F.col(x).isNull() | F.isnan(x), x)) / dataframe_count)
                 * 100
-            ).alias(f"{x}-missing_values_perc")
+            ).alias(f'{x}-missing_values_perc')
             for x in numerical_features
         ]
 
@@ -104,7 +103,7 @@ class DataQualityCalculator:
             for k, v in histograms.items()
         }
 
-        numerical_features_metrics = [
+        return [
             NumericalFeatureMetrics.from_dict(
                 feature_name,
                 metrics,
@@ -112,8 +111,6 @@ class DataQualityCalculator:
             )
             for feature_name, metrics in global_data_quality.items()
         ]
-
-        return numerical_features_metrics
 
     @staticmethod
     def categorical_metrics(
@@ -124,19 +121,19 @@ class DataQualityCalculator:
         ]
 
         missing_values_agg = [
-            (F.count(F.when(F.col(x).isNull(), x))).alias(f"{x}-missing_values")
+            (F.count(F.when(F.col(x).isNull(), x))).alias(f'{x}-missing_values')
             for x in categorical_features
         ]
 
         missing_values_perc_agg = [
             ((F.count(F.when(F.col(x).isNull(), x)) / dataframe_count) * 100).alias(
-                f"{x}-missing_values_perc"
+                f'{x}-missing_values_perc'
             )
             for x in categorical_features
         ]
 
         distinct_values = [
-            (F.countDistinct(check_not_null(x))).alias(f"{x}-distinct_values")
+            (F.countDistinct(check_not_null(x))).alias(f'{x}-distinct_values')
             for x in categorical_features
         ]
 
@@ -155,10 +152,10 @@ class DataQualityCalculator:
                 dataframe.select(column)
                 .filter(F.isnotnull(column))
                 .groupBy(column)
-                .agg(*[F.count(check_not_null(column)).alias(f"{prefix_id}_count")])
+                .agg(*[F.count(check_not_null(column)).alias(f'{prefix_id}_count')])
                 .withColumn(
-                    f"{prefix_id}_freq",
-                    F.col(f"{prefix_id}_count") / dataframe_count,
+                    f'{prefix_id}_freq',
+                    F.col(f'{prefix_id}_count') / dataframe_count,
                 )
                 .toPandas()
                 .set_index(column)
@@ -167,7 +164,7 @@ class DataQualityCalculator:
             for column in categorical_features
         }
 
-        categorical_features_metrics = [
+        return [
             CategoricalFeatureMetrics.from_dict(
                 feature_name=feature_name,
                 global_metrics=metrics,
@@ -177,8 +174,6 @@ class DataQualityCalculator:
             for feature_name, metrics in global_data_quality.items()
         ]
 
-        return categorical_features_metrics
-
     @staticmethod
     def class_metrics(
         class_column: str, dataframe: DataFrame, dataframe_count: int, prefix_id: str
@@ -187,22 +182,21 @@ class DataQualityCalculator:
             dataframe.select(class_column)
             .filter(F.isnotnull(class_column))
             .groupBy(class_column)
-            .agg(*[F.count(check_not_null(class_column)).alias(f"{prefix_id}_count")])
+            .agg(*[F.count(check_not_null(class_column)).alias(f'{prefix_id}_count')])
             .orderBy(class_column)
             .withColumn(
-                f"{prefix_id}_percentage",
-                (F.col(f"{prefix_id}_count") / dataframe_count) * 100,
+                f'{prefix_id}_percentage',
+                (F.col(f'{prefix_id}_count') / dataframe_count) * 100,
             )
             .toPandas()
             .set_index(class_column)
-            .to_dict(orient="index")
+            .to_dict(orient='index')
         )
-
         return [
             ClassMetrics(
                 name=str(label),
-                count=metrics[f"{prefix_id}_count"],
-                percentage=metrics[f"{prefix_id}_percentage"],
+                count=metrics[f'{prefix_id}_count'],
+                percentage=metrics[f'{prefix_id}_percentage'],
             )
             for label, metrics in class_metrics_dict.items()
         ]
@@ -215,15 +209,15 @@ class DataQualityCalculator:
         columns: List[str],
         prefix_id: str,
     ) -> Dict[str, Histogram]:
-        current = current_dataframe.withColumn(f"{prefix_id}_type", F.lit("current"))
+        current = current_dataframe.withColumn(f'{prefix_id}_type', F.lit('current'))
         reference = reference_dataframe.withColumn(
-            f"{prefix_id}_type", F.lit("reference")
+            f'{prefix_id}_type', F.lit('reference')
         )
 
         def create_histogram(feature: str):
             reference_and_current = current.select(
-                [feature, f"{prefix_id}_type"]
-            ).unionByName(reference.select([feature, f"{prefix_id}_type"]))
+                [feature, f'{prefix_id}_type']
+            ).unionByName(reference.select([feature, f'{prefix_id}_type']))
 
             max_value = reference_and_current.agg(
                 F.max(
@@ -255,38 +249,38 @@ class DataQualityCalculator:
                 buckets = generated_buckets
 
             bucketizer = Bucketizer(
-                splits=buckets, inputCol=feature, outputCol="bucket"
+                splits=buckets, inputCol=feature, outputCol='bucket'
             )
-            result = bucketizer.setHandleInvalid("keep").transform(
+            result = bucketizer.setHandleInvalid('keep').transform(
                 reference_and_current
             )
 
             current_df = (
-                result.filter(F.col(f"{prefix_id}_type") == "current")
-                .groupBy("bucket")
-                .agg(F.count(F.col(feature)).alias("curr_count"))
+                result.filter(F.col(f'{prefix_id}_type') == 'current')
+                .groupBy('bucket')
+                .agg(F.count(F.col(feature)).alias('curr_count'))
             )
             reference_df = (
-                result.filter(F.col(f"{prefix_id}_type") == "reference")
-                .groupBy("bucket")
-                .agg(F.count(F.col(feature)).alias("ref_count"))
+                result.filter(F.col(f'{prefix_id}_type') == 'reference')
+                .groupBy('bucket')
+                .agg(F.count(F.col(feature)).alias('ref_count'))
             )
 
             buckets_number = list(range(10))
             bucket_df = spark_session.createDataFrame(
                 buckets_number, IntegerType()
-            ).withColumnRenamed("value", "bucket")
+            ).withColumnRenamed('value', 'bucket')
             tot_df = (
-                bucket_df.join(current_df, on=["bucket"], how="left")
-                .join(reference_df, on=["bucket"], how="left")
+                bucket_df.join(current_df, on=['bucket'], how='left')
+                .join(reference_df, on=['bucket'], how='left')
                 .fillna(0)
-                .orderBy("bucket")
+                .orderBy('bucket')
             )
             # workaround if all values are the same to not have errors
             if len(generated_buckets) == 1:
-                tot_df = tot_df.filter(F.col("bucket") == 1)
-            cur = tot_df.select("curr_count").rdd.flatMap(lambda x: x).collect()
-            ref = tot_df.select("ref_count").rdd.flatMap(lambda x: x).collect()
+                tot_df = tot_df.filter(F.col('bucket') == 1)
+            cur = tot_df.select('curr_count').rdd.flatMap(lambda x: x).collect()
+            ref = tot_df.select('ref_count').rdd.flatMap(lambda x: x).collect()
             return Histogram(
                 buckets=buckets_spacing, reference_values=ref, current_values=cur
             )
@@ -307,39 +301,39 @@ class DataQualityCalculator:
         ]
 
         mean_agg = [
-            (F.mean(check_not_null(x))).alias(f"{x}-mean") for x in numerical_features
+            (F.mean(check_not_null(x))).alias(f'{x}-mean') for x in numerical_features
         ]
 
         max_agg = [
-            (F.max(check_not_null(x))).alias(f"{x}-max") for x in numerical_features
+            (F.max(check_not_null(x))).alias(f'{x}-max') for x in numerical_features
         ]
 
         min_agg = [
-            (F.min(check_not_null(x))).alias(f"{x}-min") for x in numerical_features
+            (F.min(check_not_null(x))).alias(f'{x}-min') for x in numerical_features
         ]
 
         median_agg = [
-            (F.median(check_not_null(x))).alias(f"{x}-median")
+            (F.median(check_not_null(x))).alias(f'{x}-median')
             for x in numerical_features
         ]
 
         perc_25_agg = [
-            (F.percentile(check_not_null(x), 0.25)).alias(f"{x}-perc_25")
+            (F.percentile(check_not_null(x), 0.25)).alias(f'{x}-perc_25')
             for x in numerical_features
         ]
 
         perc_75_agg = [
-            (F.percentile(check_not_null(x), 0.75)).alias(f"{x}-perc_75")
+            (F.percentile(check_not_null(x), 0.75)).alias(f'{x}-perc_75')
             for x in numerical_features
         ]
 
         std_agg = [
-            (F.std(check_not_null(x))).alias(f"{x}-std") for x in numerical_features
+            (F.std(check_not_null(x))).alias(f'{x}-std') for x in numerical_features
         ]
 
         missing_values_agg = [
             (F.count(F.when(F.col(x).isNull() | F.isnan(x), x))).alias(
-                f"{x}-missing_values"
+                f'{x}-missing_values'
             )
             for x in numerical_features
         ]
@@ -348,7 +342,7 @@ class DataQualityCalculator:
             (
                 (F.count(F.when(F.col(x).isNull() | F.isnan(x), x)) / current_count)
                 * 100
-            ).alias(f"{x}-missing_values_perc")
+            ).alias(f'{x}-missing_values_perc')
             for x in numerical_features
         ]
 
@@ -380,7 +374,7 @@ class DataQualityCalculator:
             )
         )
 
-        numerical_features_metrics = [
+        return [
             NumericalFeatureMetrics.from_dict(
                 feature_name,
                 metrics,
@@ -389,8 +383,7 @@ class DataQualityCalculator:
             for feature_name, metrics in global_data_quality.items()
         ]
 
-        return numerical_features_metrics
-
+    @staticmethod
     def regression_target_metrics(
         target_column: str, dataframe: DataFrame, dataframe_count: int
     ) -> NumericalTargetMetrics:
@@ -436,15 +429,15 @@ class DataQualityCalculator:
             dataframe.select(target_column)
             .filter(F.isnotnull(target_column))
             .agg(
-                F.mean(target_column).alias("mean"),
-                F.stddev(target_column).alias("std"),
-                F.max(target_column).alias("max"),
-                F.min(target_column).alias("min"),
-                F.median(target_column).alias("median"),
-                F.percentile_approx(target_column, 0.25).alias("perc_25"),
-                F.percentile_approx(target_column, 0.75).alias("perc_75"),
+                F.mean(target_column).alias('mean'),
+                F.stddev(target_column).alias('std'),
+                F.max(target_column).alias('max'),
+                F.min(target_column).alias('min'),
+                F.median(target_column).alias('median'),
+                F.percentile_approx(target_column, 0.25).alias('perc_25'),
+                F.percentile_approx(target_column, 0.75).alias('perc_75'),
                 F.count(F.when(F.col(target_column).isNull(), target_column)).alias(
-                    "missing_values"
+                    'missing_values'
                 ),
                 (
                     (
@@ -457,7 +450,7 @@ class DataQualityCalculator:
                         / dataframe_count
                     )
                     * 100
-                ).alias("missing_values_perc"),
+                ).alias('missing_values_perc'),
             )
             .toPandas()
             .iloc[0]

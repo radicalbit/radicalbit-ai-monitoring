@@ -1,28 +1,28 @@
 test_current_statistics_res = {
-    "n_variables": 14,
-    "n_observations": 100,
-    "missing_cells": 7,
-    "missing_cells_perc": 0.5,
-    "duplicate_rows": 2,
-    "duplicate_rows_perc": 2.0,
-    "numeric": 7,
-    "categorical": 6,
-    "datetime": 1,
+    'n_variables': 14,
+    'n_observations': 100,
+    'missing_cells': 7,
+    'missing_cells_perc': 0.5,
+    'duplicate_rows': 2,
+    'duplicate_rows_perc': 2.0,
+    'numeric': 7,
+    'categorical': 6,
+    'datetime': 1,
 }
 
 test_data_quality_res = {
-    "n_observations": 100,
-    "target_metrics": {
-        "feature_name": "ground_truth",
-        "type": "numerical",
-        "missing_value": {"count": 0, "percentage": 0.0},
-        "mean": 288.63,
-        "std": 317.1797010012979,
-        "min": 9.0,
-        "max": 1651.0,
-        "median_metrics": {"perc_25": 82.0, "median": 167.5, "perc_75": 354.0},
-        "histogram": {
-            "buckets": [
+    'n_observations': 100,
+    'target_metrics': {
+        'feature_name': 'ground_truth',
+        'type': 'numerical',
+        'missing_value': {'count': 0, 'percentage': 0.0},
+        'mean': 288.63,
+        'std': 317.1797010012979,
+        'min': 9.0,
+        'max': 1651.0,
+        'median_metrics': {'perc_25': 82.0, 'median': 167.5, 'perc_75': 354.0},
+        'histogram': {
+            'buckets': [
                 2.0,
                 342.8,
                 683.6,
@@ -35,23 +35,23 @@ test_data_quality_res = {
                 3069.2000000000003,
                 3410.0,
             ],
-            "reference_values": [204, 144, 165, 89, 44, 23, 26, 22, 9, 5],
-            "current_values": [74, 14, 8, 2, 2, 0, 0, 0, 0, 0],
+            'reference_values': [204, 144, 165, 89, 44, 23, 26, 22, 9, 5],
+            'current_values': [74, 14, 8, 2, 2, 0, 0, 0, 0, 0],
         },
     },
-    "feature_metrics": [
+    'feature_metrics': [
         {
-            "feature_name": "weathersit",
-            "type": "numerical",
-            "missing_value": {"count": 0, "percentage": 0.0},
-            "mean": 1.45,
-            "std": 0.5573204290227127,
-            "min": 1.0,
-            "max": 3.0,
-            "median_metrics": {"perc_25": 1.0, "median": 1.0, "perc_75": 2.0},
-            "class_median_metrics": [],
-            "histogram": {
-                "buckets": [
+            'feature_name': 'weathersit',
+            'type': 'numerical',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'mean': 1.45,
+            'std': 0.5573204290227127,
+            'min': 1.0,
+            'max': 3.0,
+            'median_metrics': {'perc_25': 1.0, 'median': 1.0, 'perc_75': 2.0},
+            'class_median_metrics': [],
+            'histogram': {
+                'buckets': [
                     1.0,
                     1.2,
                     1.4,
@@ -64,26 +64,26 @@ test_data_quality_res = {
                     2.8,
                     3.0,
                 ],
-                "reference_values": [463, 0, 0, 0, 0, 247, 0, 0, 0, 21],
-                "current_values": [58, 0, 0, 0, 0, 39, 0, 0, 0, 3],
+                'reference_values': [463, 0, 0, 0, 0, 247, 0, 0, 0, 21],
+                'current_values': [58, 0, 0, 0, 0, 39, 0, 0, 0, 3],
             },
         },
         {
-            "feature_name": "temp",
-            "type": "numerical",
-            "missing_value": {"count": 2, "percentage": 2.0},
-            "mean": 0.28181619795918367,
-            "std": 0.10183360371563194,
-            "min": 0.0591304,
-            "max": 0.573333,
-            "median_metrics": {
-                "perc_25": 0.19874975,
-                "median": 0.26749999999999996,
-                "perc_75": 0.3432335,
+            'feature_name': 'temp',
+            'type': 'numerical',
+            'missing_value': {'count': 2, 'percentage': 2.0},
+            'mean': 0.28181619795918367,
+            'std': 0.10183360371563194,
+            'min': 0.0591304,
+            'max': 0.573333,
+            'median_metrics': {
+                'perc_25': 0.19874975,
+                'median': 0.26749999999999996,
+                'perc_75': 0.3432335,
             },
-            "class_median_metrics": [],
-            "histogram": {
-                "buckets": [
+            'class_median_metrics': [],
+            'histogram': {
+                'buckets': [
                     0.0591304,
                     0.13938405999999998,
                     0.21963771999999998,
@@ -96,26 +96,26 @@ test_data_quality_res = {
                     0.78141334,
                     0.861667,
                 ],
-                "reference_values": [7, 36, 90, 104, 93, 80, 93, 101, 103, 24],
-                "current_values": [5, 27, 26, 21, 15, 3, 1, 0, 0, 0],
+                'reference_values': [7, 36, 90, 104, 93, 80, 93, 101, 103, 24],
+                'current_values': [5, 27, 26, 21, 15, 3, 1, 0, 0, 0],
             },
         },
         {
-            "feature_name": "atemp",
-            "type": "numerical",
-            "missing_value": {"count": 1, "percentage": 1.0},
-            "mean": 0.28198808787878793,
-            "std": 0.09538584350774348,
-            "min": 0.0790696,
-            "max": 0.542929,
-            "median_metrics": {
-                "perc_25": 0.2166045,
-                "median": 0.263879,
-                "perc_75": 0.339734,
+            'feature_name': 'atemp',
+            'type': 'numerical',
+            'missing_value': {'count': 1, 'percentage': 1.0},
+            'mean': 0.28198808787878793,
+            'std': 0.09538584350774348,
+            'min': 0.0790696,
+            'max': 0.542929,
+            'median_metrics': {
+                'perc_25': 0.2166045,
+                'median': 0.263879,
+                'perc_75': 0.339734,
             },
-            "class_median_metrics": [],
-            "histogram": {
-                "buckets": [
+            'class_median_metrics': [],
+            'histogram': {
+                'buckets': [
                     0.0790696,
                     0.15525223999999999,
                     0.23143488,
@@ -128,26 +128,26 @@ test_data_quality_res = {
                     0.7647133599999999,
                     0.840896,
                 ],
-                "reference_values": [11, 34, 97, 99, 98, 93, 122, 112, 57, 8],
-                "current_values": [8, 21, 35, 18, 13, 3, 1, 0, 0, 0],
+                'reference_values': [11, 34, 97, 99, 98, 93, 122, 112, 57, 8],
+                'current_values': [8, 21, 35, 18, 13, 3, 1, 0, 0, 0],
             },
         },
         {
-            "feature_name": "hum",
-            "type": "numerical",
-            "missing_value": {"count": 0, "percentage": 0.0},
-            "mean": 0.5767590300000002,
-            "std": 0.17338158044464802,
-            "min": 0.0,
-            "max": 0.948261,
-            "median_metrics": {
-                "perc_25": 0.4671605,
-                "median": 0.538125,
-                "perc_75": 0.6866479999999999,
+            'feature_name': 'hum',
+            'type': 'numerical',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'mean': 0.5767590300000002,
+            'std': 0.17338158044464802,
+            'min': 0.0,
+            'max': 0.948261,
+            'median_metrics': {
+                'perc_25': 0.4671605,
+                'median': 0.538125,
+                'perc_75': 0.6866479999999999,
             },
-            "class_median_metrics": [],
-            "histogram": {
-                "buckets": [
+            'class_median_metrics': [],
+            'histogram': {
+                'buckets': [
                     0.0,
                     0.09725,
                     0.1945,
@@ -160,26 +160,26 @@ test_data_quality_res = {
                     0.8752500000000001,
                     0.9725,
                 ],
-                "reference_values": [1, 1, 3, 18, 95, 173, 164, 169, 73, 34],
-                "current_values": [1, 1, 0, 7, 22, 24, 18, 12, 9, 6],
+                'reference_values': [1, 1, 3, 18, 95, 173, 164, 169, 73, 34],
+                'current_values': [1, 1, 0, 7, 22, 24, 18, 12, 9, 6],
             },
         },
         {
-            "feature_name": "windspeed",
-            "type": "numerical",
-            "missing_value": {"count": 1, "percentage": 1.0},
-            "mean": 0.22147813232323232,
-            "std": 0.0817791420054435,
-            "min": 0.0454083,
-            "max": 0.507463,
-            "median_metrics": {
-                "perc_25": 0.165519,
-                "median": 0.22015,
-                "perc_75": 0.2636855,
+            'feature_name': 'windspeed',
+            'type': 'numerical',
+            'missing_value': {'count': 1, 'percentage': 1.0},
+            'mean': 0.22147813232323232,
+            'std': 0.0817791420054435,
+            'min': 0.0454083,
+            'max': 0.507463,
+            'median_metrics': {
+                'perc_25': 0.165519,
+                'median': 0.22015,
+                'perc_75': 0.2636855,
             },
-            "class_median_metrics": [],
-            "histogram": {
-                "buckets": [
+            'class_median_metrics': [],
+            'histogram': {
+                'buckets': [
                     0.0223917,
                     0.07089883,
                     0.11940595999999999,
@@ -192,91 +192,91 @@ test_data_quality_res = {
                     0.45895587,
                     0.507463,
                 ],
-                "reference_values": [26, 99, 191, 173, 124, 62, 35, 14, 6, 1],
-                "current_values": [2, 5, 18, 22, 29, 12, 4, 5, 1, 1],
+                'reference_values': [26, 99, 191, 173, 124, 62, 35, 14, 6, 1],
+                'current_values': [2, 5, 18, 22, 29, 12, 4, 5, 1, 1],
             },
         },
         {
-            "feature_name": "season",
-            "type": "categorical",
-            "missing_value": {"count": 0, "percentage": 0.0},
-            "category_frequency": [
-                {"name": "1", "count": 79, "frequency": 0.79},
-                {"name": "2", "count": 21, "frequency": 0.21},
+            'feature_name': 'season',
+            'type': 'categorical',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'category_frequency': [
+                {'name': '1', 'count': 79, 'frequency': 0.79},
+                {'name': '2', 'count': 21, 'frequency': 0.21},
             ],
-            "distinct_value": 2,
+            'distinct_value': 2,
         },
         {
-            "feature_name": "yr",
-            "type": "categorical",
-            "missing_value": {"count": 0, "percentage": 0.0},
-            "category_frequency": [{"name": "0", "count": 100, "frequency": 1.0}],
-            "distinct_value": 1,
+            'feature_name': 'yr',
+            'type': 'categorical',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'category_frequency': [{'name': '0', 'count': 100, 'frequency': 1.0}],
+            'distinct_value': 1,
         },
         {
-            "feature_name": "mnth",
-            "type": "categorical",
-            "missing_value": {"count": 1, "percentage": 1.0},
-            "category_frequency": [
-                {"name": "1", "count": 28, "frequency": 0.28},
-                {"name": "3", "count": 32, "frequency": 0.32},
-                {"name": "4", "count": 10, "frequency": 0.1},
-                {"name": "2", "count": 29, "frequency": 0.29},
+            'feature_name': 'mnth',
+            'type': 'categorical',
+            'missing_value': {'count': 1, 'percentage': 1.0},
+            'category_frequency': [
+                {'name': '1', 'count': 28, 'frequency': 0.28},
+                {'name': '3', 'count': 32, 'frequency': 0.32},
+                {'name': '4', 'count': 10, 'frequency': 0.1},
+                {'name': '2', 'count': 29, 'frequency': 0.29},
             ],
-            "distinct_value": 4,
+            'distinct_value': 4,
         },
         {
-            "feature_name": "holiday",
-            "type": "categorical",
-            "missing_value": {"count": 1, "percentage": 1.0},
-            "category_frequency": [
-                {"name": "1", "count": 2, "frequency": 0.02},
-                {"name": "0", "count": 97, "frequency": 0.97},
+            'feature_name': 'holiday',
+            'type': 'categorical',
+            'missing_value': {'count': 1, 'percentage': 1.0},
+            'category_frequency': [
+                {'name': '1', 'count': 2, 'frequency': 0.02},
+                {'name': '0', 'count': 97, 'frequency': 0.97},
             ],
-            "distinct_value": 2,
+            'distinct_value': 2,
         },
         {
-            "feature_name": "weekday",
-            "type": "categorical",
-            "missing_value": {"count": 1, "percentage": 1.0},
-            "category_frequency": [
-                {"name": "1", "count": 15, "frequency": 0.15},
-                {"name": "6", "count": 13, "frequency": 0.13},
-                {"name": "3", "count": 14, "frequency": 0.14},
-                {"name": "5", "count": 14, "frequency": 0.14},
-                {"name": "4", "count": 15, "frequency": 0.15},
-                {"name": "2", "count": 14, "frequency": 0.14},
-                {"name": "0", "count": 14, "frequency": 0.14},
+            'feature_name': 'weekday',
+            'type': 'categorical',
+            'missing_value': {'count': 1, 'percentage': 1.0},
+            'category_frequency': [
+                {'name': '1', 'count': 15, 'frequency': 0.15},
+                {'name': '6', 'count': 13, 'frequency': 0.13},
+                {'name': '3', 'count': 14, 'frequency': 0.14},
+                {'name': '5', 'count': 14, 'frequency': 0.14},
+                {'name': '4', 'count': 15, 'frequency': 0.15},
+                {'name': '2', 'count': 14, 'frequency': 0.14},
+                {'name': '0', 'count': 14, 'frequency': 0.14},
             ],
-            "distinct_value": 7,
+            'distinct_value': 7,
         },
         {
-            "feature_name": "workingday",
-            "type": "categorical",
-            "missing_value": {"count": 0, "percentage": 0.0},
-            "category_frequency": [
-                {"name": "1", "count": 70, "frequency": 0.7},
-                {"name": "0", "count": 30, "frequency": 0.3},
+            'feature_name': 'workingday',
+            'type': 'categorical',
+            'missing_value': {'count': 0, 'percentage': 0.0},
+            'category_frequency': [
+                {'name': '1', 'count': 70, 'frequency': 0.7},
+                {'name': '0', 'count': 30, 'frequency': 0.3},
             ],
-            "distinct_value": 2,
+            'distinct_value': 2,
         },
     ],
 }
 
 test_model_quality_res = {
-    "global_metrics": {
-        "mae": 71.82559791564941,
-        "mape": 64.05699022707124,
-        "mse": 17820.506660010054,
-        "rmse": 133.49347047706138,
-        "r2": 0.8210737408739541,
-        "adj_r2": 0.7987079584831984,
-        "variance": 118288.02759401732,
-        "residuals": {
-            "ks": {"p_value": -2.220446049250313e-16, "statistic": 0.6999575270692112},
-            "correlation_coefficient": 0.9312137386402216,
-            "histogram": {
-                "buckets": [
+    'global_metrics': {
+        'mae': 71.82559791564941,
+        'mape': 64.05699022707124,
+        'mse': 17820.506660010054,
+        'rmse': 133.49347047706138,
+        'r2': 0.8210737408739541,
+        'adj_r2': 0.7987079584831984,
+        'variance': 118288.02759401732,
+        'residuals': {
+            'ks': {'p_value': -2.220446049250313e-16, 'statistic': 0.6999575270692112},
+            'correlation_coefficient': 0.9312137386402216,
+            'histogram': {
+                'buckets': [
                     -691.5699999999999,
                     -601.625,
                     -511.67999999999995,
@@ -289,9 +289,9 @@ test_model_quality_res = {
                     117.93499999999995,
                     207.88,
                 ],
-                "values": [1, 1, 1, 2, 3, 20, 62, 6, 4],
+                'values': [1, 1, 1, 2, 3, 20, 62, 6, 4],
             },
-            "standardized_residuals": [
+            'standardized_residuals': [
                 0.4446159899234772,
                 0.4991498291492462,
                 0.21789957582950592,
@@ -393,7 +393,7 @@ test_model_quality_res = {
                 0.4154243469238281,
                 0.020535197108983994,
             ],
-            "predictions": [
+            'predictions': [
                 113.83,
                 95.03,
                 104.1,
@@ -495,7 +495,7 @@ test_model_quality_res = {
                 876.47,
                 1234.71,
             ],
-            "targets": [
+            'targets': [
                 120,
                 108,
                 82,
@@ -597,72 +597,72 @@ test_model_quality_res = {
                 879,
                 1188,
             ],
-            "regression_line": {
-                "coefficient": 1.0043705635148725,
-                "intercept": 48.00912425270233,
+            'regression_line': {
+                'coefficient': 1.0043705635148725,
+                'intercept': 48.00912425270233,
             },
         },
     },
-    "grouped_metrics": {
-        "mae": [
-            {"timestamp": "2011-01-01 00:00:00", "value": 35.67896665375808},
-            {"timestamp": "2011-02-01 00:00:00", "value": 89.13965238373855},
-            {"timestamp": "2011-03-01 00:00:00", "value": 91.54030847549438},
-            {"timestamp": "2011-04-01 00:00:00", "value": 63.352996826171875},
+    'grouped_metrics': {
+        'mae': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': 35.67896665375808},
+            {'timestamp': '2011-02-01 00:00:00', 'value': 89.13965238373855},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 91.54030847549438},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 63.352996826171875},
         ],
-        "mape": [
-            {"timestamp": "2011-01-01 00:00:00", "value": 106.34668638669385},
-            {"timestamp": "2011-02-01 00:00:00", "value": 50.266650033642435},
-            {"timestamp": "2011-03-01 00:00:00", "value": 53.63275529139244},
-            {"timestamp": "2011-04-01 00:00:00", "value": 14.766409719281478},
+        'mape': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': 106.34668638669385},
+            {'timestamp': '2011-02-01 00:00:00', 'value': 50.266650033642435},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 53.63275529139244},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 14.766409719281478},
         ],
-        "mse": [
-            {"timestamp": "2011-01-01 00:00:00", "value": 2848.1117152678507},
-            {"timestamp": "2011-02-01 00:00:00", "value": 21631.812814960613},
-            {"timestamp": "2011-03-01 00:00:00", "value": 31460.34954782362},
-            {"timestamp": "2011-04-01 00:00:00", "value": 6540.166909402423},
+        'mse': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': 2848.1117152678507},
+            {'timestamp': '2011-02-01 00:00:00', 'value': 21631.812814960613},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 31460.34954782362},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 6540.166909402423},
         ],
-        "rmse": [
-            {"timestamp": "2011-01-01 00:00:00", "value": 53.36770292290882},
-            {"timestamp": "2011-02-01 00:00:00", "value": 147.07757414018158},
-            {"timestamp": "2011-03-01 00:00:00", "value": 177.37065582509305},
-            {"timestamp": "2011-04-01 00:00:00", "value": 80.87129842782556},
+        'rmse': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': 53.36770292290882},
+            {'timestamp': '2011-02-01 00:00:00', 'value': 147.07757414018158},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 177.37065582509305},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 80.87129842782556},
         ],
-        "r2": [
-            {"timestamp": "2011-01-01 00:00:00", "value": 0.17834457710460982},
-            {"timestamp": "2011-02-01 00:00:00", "value": 0.3895389519246505},
-            {"timestamp": "2011-03-01 00:00:00", "value": 0.7043715304337479},
-            {"timestamp": "2011-04-01 00:00:00", "value": 0.9678020649997567},
+        'r2': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': 0.17834457710460982},
+            {'timestamp': '2011-02-01 00:00:00', 'value': 0.3895389519246505},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 0.7043715304337479},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 0.9678020649997567},
         ],
-        "adj_r2": [
-            {"timestamp": "2011-01-01 00:00:00", "value": -0.3533148141806426},
-            {"timestamp": "2011-02-01 00:00:00", "value": -0.005465255653516854},
-            {"timestamp": "2011-03-01 00:00:00", "value": 0.5417758721723092},
-            {"timestamp": "2011-04-01 00:00:00", "value": 1.1448907075010948},
+        'adj_r2': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': -0.3533148141806426},
+            {'timestamp': '2011-02-01 00:00:00', 'value': -0.005465255653516854},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 0.5417758721723092},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 1.1448907075010948},
         ],
-        "variance": [
-            {"timestamp": "2011-01-01 00:00:00", "value": 4720.867246089001},
-            {"timestamp": "2011-02-01 00:00:00", "value": 70942.48575413873},
-            {"timestamp": "2011-03-01 00:00:00", "value": 150522.0080596708},
-            {"timestamp": "2011-04-01 00:00:00", "value": 163422.9263027128},
+        'variance': [
+            {'timestamp': '2011-01-01 00:00:00', 'value': 4720.867246089001},
+            {'timestamp': '2011-02-01 00:00:00', 'value': 70942.48575413873},
+            {'timestamp': '2011-03-01 00:00:00', 'value': 150522.0080596708},
+            {'timestamp': '2011-04-01 00:00:00', 'value': 163422.9263027128},
         ],
     },
 }
 
 test_model_quality_abalone_res = {
-    "global_metrics": {
-        "mae": 1.9353551476456505,
-        "mape": 31.485240568260803,
-        "mse": 27.08087257249268,
-        "rmse": 5.203928571040602,
-        "r2": 0.5889298283658604,
-        "adj_r2": 0.5879429967988539,
-        "variance": 66.05376508457398,
-        "residuals": {
-            "ks": {"p_value": 4.479538961987828e-11, "statistic": 0.40476190476190477},
-            "correlation_coefficient": 0.7947413198857094,
-            "histogram": {
-                "buckets": [
+    'global_metrics': {
+        'mae': 1.9353551476456505,
+        'mape': 31.485240568260803,
+        'mse': 27.08087257249268,
+        'rmse': 5.203928571040602,
+        'r2': 0.5889298283658604,
+        'adj_r2': 0.5879429967988539,
+        'variance': 66.05376508457398,
+        'residuals': {
+            'ks': {'p_value': 4.479538961987828e-11, 'statistic': 0.40476190476190477},
+            'correlation_coefficient': 0.7947413198857094,
+            'histogram': {
+                'buckets': [
                     -27.0,
                     -21.7,
                     -16.4,
@@ -675,9 +675,9 @@ test_model_quality_abalone_res = {
                     20.699999999999996,
                     26.0,
                 ],
-                "values": [21, 36, 79, 130, 121, 3099, 120, 66, 53, 34],
+                'values': [21, 36, 79, 130, 121, 3099, 120, 66, 53, 34],
             },
-            "standardized_residuals": [
+            'standardized_residuals': [
                 0.004549179691821337,
                 0.004549179691821337,
                 0.004549179691821337,
@@ -4438,7 +4438,7 @@ test_model_quality_abalone_res = {
                 0.004549179691821337,
                 0.004549179691821337,
             ],
-            "predictions": [
+            'predictions': [
                 21,
                 12,
                 18,
@@ -8199,7 +8199,7 @@ test_model_quality_abalone_res = {
                 18,
                 23,
             ],
-            "targets": [
+            'targets': [
                 21,
                 12,
                 18,
@@ -11960,40 +11960,40 @@ test_model_quality_abalone_res = {
                 18,
                 23,
             ],
-            "regression_line": {
-                "coefficient": 0.7957916804773302,
-                "intercept": 2.7608502737828453,
+            'regression_line': {
+                'coefficient': 0.7957916804773302,
+                'intercept': 2.7608502737828453,
             },
         },
     },
-    "grouped_metrics": {
-        "mae": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 1.7926136363636365},
-            {"timestamp": "2024-09-01 00:00:00", "value": 2.1183970856102006},
+    'grouped_metrics': {
+        'mae': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 1.7926136363636365},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 2.1183970856102006},
         ],
-        "mape": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 30.1274916886482},
-            {"timestamp": "2024-09-01 00:00:00", "value": 33.21227667455193},
+        'mape': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 30.1274916886482},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 33.21227667455193},
         ],
-        "mse": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 25.292613636363637},
-            {"timestamp": "2024-09-01 00:00:00", "value": 29.374013357619916},
+        'mse': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 25.292613636363637},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 29.374013357619916},
         ],
-        "rmse": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 5.02917623834795},
-            {"timestamp": "2024-09-01 00:00:00", "value": 5.41977982556671},
+        'rmse': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 5.02917623834795},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 5.41977982556671},
         ],
-        "r2": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 0.6170457372079308},
-            {"timestamp": "2024-09-01 00:00:00", "value": 0.5523034482262631},
+        'r2': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 0.6170457372079308},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 0.5523034482262631},
         ],
-        "adj_r2": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 0.6154060662445013},
-            {"timestamp": "2024-09-01 00:00:00", "value": 0.5498420743924429},
+        'adj_r2': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 0.6154060662445013},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 0.5498420743924429},
         ],
-        "variance": [
-            {"timestamp": "2024-08-01 00:00:00", "value": 65.26589761248866},
-            {"timestamp": "2024-09-01 00:00:00", "value": 67.00857403333812},
+        'variance': [
+            {'timestamp': '2024-08-01 00:00:00', 'value': 65.26589761248866},
+            {'timestamp': '2024-09-01 00:00:00', 'value': 67.00857403333812},
         ],
     },
 }

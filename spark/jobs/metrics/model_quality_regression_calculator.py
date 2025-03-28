@@ -1,20 +1,19 @@
-import numpy as np
 from math import inf
 
+from models.regression_model_quality import (
+    Histogram,
+    ModelQualityRegression,
+    RegressionMetricType,
+)
+import numpy as np
+from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.ml.feature import Bucketizer, StandardScaler, VectorAssembler
+from pyspark.ml.regression import LinearRegression
+from pyspark.ml.stat import KolmogorovSmirnovTest
 from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
 from pyspark.sql.types import ArrayType, FloatType
-from pyspark.ml.feature import StandardScaler, VectorAssembler, Bucketizer
-from pyspark.ml.stat import KolmogorovSmirnovTest
-from pyspark.ml.regression import LinearRegression
-
-from models.regression_model_quality import (
-    RegressionMetricType,
-    ModelQualityRegression,
-    Histogram,
-)
 from utils.models import ModelOut
-from pyspark.ml.evaluation import RegressionEvaluator
 from utils.spark import is_not_null
 
 
@@ -30,7 +29,7 @@ class ModelQualityRegressionCalculator:
         try:
             dataframe = dataframe.withColumn(
                 model.outputs.prediction.name,
-                F.col(model.outputs.prediction.name).cast("float"),
+                F.col(model.outputs.prediction.name).cast('float'),
             )
             match metric_name:
                 case RegressionMetricType.ADJ_R2:
@@ -54,7 +53,7 @@ class ModelQualityRegressionCalculator:
                     # Source: https://en.wikipedia.org/wiki/Mean_absolute_percentage_error
                     # mape = 100 * (abs(actual - predicted) / actual) / n
                     _dataframe = dataframe.withColumn(
-                        f"{prefix_id}_mape",
+                        f'{prefix_id}_mape',
                         F.abs(
                             (
                                 F.col(model.outputs.prediction.name)
@@ -64,12 +63,12 @@ class ModelQualityRegressionCalculator:
                         ),
                     )
                     return (
-                        _dataframe.agg({f"{prefix_id}_mape": "avg"}).collect()[0][0]
+                        _dataframe.agg({f'{prefix_id}_mape': 'avg'}).collect()[0][0]
                         * 100
                     )
                 case RegressionMetricType.VAR:
                     return RegressionEvaluator(
-                        metricName="var",
+                        metricName='var',
                         labelCol=model.target.name,
                         predictionCol=model.outputs.prediction.name,
                     ).evaluate(dataframe)
@@ -85,7 +84,7 @@ class ModelQualityRegressionCalculator:
                         predictionCol=model.outputs.prediction.name,
                     ).evaluate(dataframe)
         except Exception:
-            return float("nan")
+            return float('nan')
 
     @staticmethod
     def __calc_mq_metrics(
@@ -119,19 +118,19 @@ class ModelQualityRegressionCalculator:
             is_not_null(model.outputs.prediction.name) & is_not_null(model.target.name)
         ).select(model.outputs.prediction.name, model.target.name)
         dataframe_clean = dataframe_clean.withColumn(
-            f"{prefix_id}_residual",
+            f'{prefix_id}_residual',
             F.col(model.target.name) - F.col(model.outputs.prediction.name),
         )
         va = (
             VectorAssembler()
-            .setInputCols([f"{prefix_id}_residual"])
-            .setOutputCol(f"{prefix_id}_residual_vector")
+            .setInputCols([f'{prefix_id}_residual'])
+            .setOutputCol(f'{prefix_id}_residual_vector')
         )
         data_va = va.transform(dataframe_clean)
 
         residual_scaler = StandardScaler(
-            inputCol=f"{prefix_id}_residual_vector",
-            outputCol=f"{prefix_id}_std_residual_vector",
+            inputCol=f'{prefix_id}_residual_vector',
+            outputCol=f'{prefix_id}_std_residual_vector',
             withMean=True,
             withStd=True,
         )
@@ -139,11 +138,10 @@ class ModelQualityRegressionCalculator:
         data_scaled = residual_scaler_model.transform(data_va)
 
         vector2list = F.udf(lambda x: x.toArray().tolist(), ArrayType(FloatType()))
-        data_norm = data_scaled.withColumn(
-            f"{prefix_id}_std_residual",
-            vector2list(F.col(f"{prefix_id}_std_residual_vector")).getItem(0),
+        return data_scaled.withColumn(
+            f'{prefix_id}_std_residual',
+            vector2list(F.col(f'{prefix_id}_std_residual_vector')).getItem(0),
         )
-        return data_norm
 
     @staticmethod
     def create_histogram(dataframe: DataFrame, feature: str):
@@ -176,18 +174,18 @@ class ModelQualityRegressionCalculator:
         else:
             buckets = generated_buckets
 
-        bucketizer = Bucketizer(splits=buckets, inputCol=feature, outputCol="bucket")
-        bucket_result = bucketizer.setHandleInvalid("keep").transform(base_df)
+        bucketizer = Bucketizer(splits=buckets, inputCol=feature, outputCol='bucket')
+        bucket_result = bucketizer.setHandleInvalid('keep').transform(base_df)
         result_df = (
-            bucket_result.groupBy("bucket")
-            .agg(F.count(F.col(feature)).alias("value_count"))
+            bucket_result.groupBy('bucket')
+            .agg(F.count(F.col(feature)).alias('value_count'))
             .fillna(0)
-            .orderBy("bucket")
+            .orderBy('bucket')
         )
         # workaround if all values are the same to not have errors
         if len(generated_buckets) == 1:
-            result_df = result_df.filter(F.col("bucket") == 1)
-        res = result_df.select("value_count").rdd.flatMap(lambda x: x).collect()
+            result_df = result_df.filter(F.col('bucket') == 1)
+        res = result_df.select('value_count').rdd.flatMap(lambda x: x).collect()
         return Histogram(buckets=buckets_spacing, values=res)
 
     @staticmethod
@@ -198,23 +196,23 @@ class ModelQualityRegressionCalculator:
                 & is_not_null(model.target.name)
             )
             .select(model.outputs.prediction.name, model.target.name)
-            .withColumnRenamed(model.outputs.prediction.name, f"{prefix_id}_regr_pred")
+            .withColumnRenamed(model.outputs.prediction.name, f'{prefix_id}_regr_pred')
         )
 
-        va = VectorAssembler(inputCols=[model.target.name], outputCol="features")
+        va = VectorAssembler(inputCols=[model.target.name], outputCol='features')
 
         data_va = va.transform(dataframe_clean)
 
-        train_data = data_va.select("features", f"{prefix_id}_regr_pred")
+        train_data = data_va.select('features', f'{prefix_id}_regr_pred')
 
-        lr = LinearRegression(labelCol=f"{prefix_id}_regr_pred")
+        lr = LinearRegression(labelCol=f'{prefix_id}_regr_pred')
 
         # Fit the model to the data and call this model lrModel
         lr_model = lr.fit(train_data)
         c = lr_model.coefficients[0]
         i = lr_model.intercept
 
-        return {"coefficient": float(c), "intercept": float(i)}
+        return {'coefficient': float(c), 'intercept': float(i)}
 
     @staticmethod
     def residual_metrics(model: ModelOut, dataframe: DataFrame, prefix_id: str):
@@ -222,31 +220,31 @@ class ModelQualityRegressionCalculator:
             model, dataframe, prefix_id
         )
         ks_result = KolmogorovSmirnovTest.test(
-            residual_df_norm, f"{prefix_id}_residual", "norm", 0.0, 1.0
+            residual_df_norm, f'{prefix_id}_residual', 'norm', 0.0, 1.0
         ).first()
         return {
-            "ks": {
-                "p_value": ks_result.pValue,
-                "statistic": ks_result.statistic,
+            'ks': {
+                'p_value': ks_result.pValue,
+                'statistic': ks_result.statistic,
             },
-            "correlation_coefficient": dataframe.corr(
+            'correlation_coefficient': dataframe.corr(
                 model.outputs.prediction.name, model.target.name
             ),
-            "histogram": ModelQualityRegressionCalculator.create_histogram(
-                residual_df_norm, f"{prefix_id}_residual"
+            'histogram': ModelQualityRegressionCalculator.create_histogram(
+                residual_df_norm, f'{prefix_id}_residual'
             ).model_dump(serialize_as_any=True),
-            "standardized_residuals": residual_df_norm.select(
-                f"{prefix_id}_std_residual"
+            'standardized_residuals': residual_df_norm.select(
+                f'{prefix_id}_std_residual'
             )
             .rdd.flatMap(lambda x: x)
             .collect(),
-            "predictions": residual_df_norm.select(model.outputs.prediction.name)
+            'predictions': residual_df_norm.select(model.outputs.prediction.name)
             .rdd.flatMap(lambda x: x)
             .collect(),
-            "targets": residual_df_norm.select(model.target.name)
+            'targets': residual_df_norm.select(model.target.name)
             .rdd.flatMap(lambda x: x)
             .collect(),
-            "regression_line": ModelQualityRegressionCalculator.get_regression_line(
+            'regression_line': ModelQualityRegressionCalculator.get_regression_line(
                 model, dataframe, prefix_id
             ),
         }

@@ -1,18 +1,17 @@
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
+from models.statistics import Statistics
 import pyspark.sql.functions as F
 
-from models.statistics import Statistics
-
-N_VARIABLES = "n_variables"
-N_OBSERVATION = "n_observations"
-MISSING_CELLS = "missing_cells"
-MISSING_CELLS_PERC = "missing_cells_perc"
-DUPLICATE_ROWS = "duplicate_rows"
-DUPLICATE_ROWS_PERC = "duplicate_rows_perc"
-NUMERIC = "numeric"
-CATEGORICAL = "categorical"
-DATETIME = "datetime"
+N_VARIABLES = 'n_variables'
+N_OBSERVATION = 'n_observations'
+MISSING_CELLS = 'missing_cells'
+MISSING_CELLS_PERC = 'missing_cells_perc'
+DUPLICATE_ROWS = 'duplicate_rows'
+DUPLICATE_ROWS_PERC = 'duplicate_rows_perc'
+NUMERIC = 'numeric'
+CATEGORICAL = 'categorical'
+DATETIME = 'datetime'
 
 
 # FIXME use pydantic struct like data quality
@@ -31,7 +30,7 @@ def calculate_statistics_reference(
         reference_dataset.reference.select(
             [
                 F.count(F.when(F.isnan(c) | F.col(c).isNull(), c)).alias(c)
-                if t not in ("datetime", "date", "timestamp", "bool", "boolean")
+                if t not in ('datetime', 'date', 'timestamp', 'bool', 'boolean')
                 else F.count(F.when(F.col(c).isNull(), c)).alias(c)
                 for c, t in reference_dataset.reference.dtypes
             ]
@@ -78,7 +77,7 @@ def calculate_statistics_reference(
             ]
         )
         .toPandas()
-        .to_dict(orient="records")[0]
+        .to_dict(orient='records')[0]
     )
 
     return Statistics(**stats)
@@ -98,7 +97,7 @@ def calculate_statistics_current(
         current_dataset.current.select(
             [
                 F.count(F.when(F.isnan(c) | F.col(c).isNull(), c)).alias(c)
-                if t not in ("datetime", "date", "timestamp", "bool", "boolean")
+                if t not in ('datetime', 'date', 'timestamp', 'bool', 'boolean')
                 else F.count(F.when(F.col(c).isNull(), c)).alias(c)
                 for c, t in current_dataset.current.dtypes
             ]
@@ -145,7 +144,7 @@ def calculate_statistics_current(
             ]
         )
         .toPandas()
-        .to_dict(orient="records")[0]
+        .to_dict(orient='records')[0]
     )
 
     return Statistics(**stats)

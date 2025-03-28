@@ -1,16 +1,12 @@
 from typing import List
 
 from pyspark.sql import DataFrame
-from pyspark.sql.types import (
-    DoubleType,
-    StructField,
-    StructType,
-)
 import pyspark.sql.functions as F
+from pyspark.sql.types import DoubleType, StructField, StructType
 from pyspark.sql.window import Window
-
-from utils.models import ModelOut, ModelType, ColumnDefinition
+from utils.models import ColumnDefinition, ModelOut, ModelType
 from utils.spark import apply_schema_to_dataframe
+
 # from utils.misc import rbit_prefix
 
 
@@ -28,9 +24,12 @@ class ReferenceDataset:
 
     @staticmethod
     def spark_schema(model: ModelOut):
-        all_features = (
-            model.features + [model.target] + [model.timestamp] + model.outputs.output
-        )
+        all_features = [
+            *model.features,
+            model.target,
+            model.timestamp,
+            *model.outputs.output,
+        ]
         if model.outputs.prediction_proba and model.model_type == ModelType.BINARY:
             enforce_float = [
                 model.target.name,
@@ -71,59 +70,57 @@ class ReferenceDataset:
         return [feature for feature in self.model.features if feature.is_categorical()]
 
     def get_numerical_variables(self) -> List[ColumnDefinition]:
-        all_features = (
-            self.model.features
-            + [self.model.target]
-            + [self.model.timestamp]
-            + self.model.outputs.output
-        )
+        all_features = [
+            *self.model.features,
+            self.model.target,
+            self.model.timestamp,
+            *self.model.outputs.output,
+        ]
         return [feature for feature in all_features if feature.is_numerical()]
 
     def get_categorical_variables(self) -> List[ColumnDefinition]:
-        all_features = (
-            self.model.features
-            + [self.model.target]
-            + [self.model.timestamp]
-            + self.model.outputs.output
-        )
+        all_features = [
+            *self.model.features,
+            self.model.target,
+            self.model.timestamp,
+            *self.model.outputs.output,
+        ]
         return [feature for feature in all_features if feature.is_categorical()]
 
     def get_datetime_variables(self) -> List[ColumnDefinition]:
-        all_features = (
-            self.model.features
-            + [self.model.target]
-            + [self.model.timestamp]
-            + self.model.outputs.output
-        )
+        all_features = [
+            *self.model.features,
+            self.model.target,
+            self.model.timestamp,
+            *self.model.outputs.output,
+        ]
         return [feature for feature in all_features if feature.is_datetime()]
 
     def get_all_variables(self) -> List[ColumnDefinition]:
-        return (
-            self.model.features
-            + [self.model.target]
-            + [self.model.timestamp]
-            + self.model.outputs.output
-        )
+        return [
+            *self.model.features,
+            self.model.target,
+            self.model.timestamp,
+            *self.model.outputs.output,
+        ]
 
     def get_string_indexed_dataframe(self):
-        """
-        Source: https://stackoverflow.com/questions/65911146/how-to-transform-multiple-categorical-columns-to-integers-maintaining-shared-val
-        """
+        """Source: https://stackoverflow.com/questions/65911146/how-to-transform-multiple-categorical-columns-to-integers-maintaining-shared-val"""
         predictions_df = self.reference.select(
             self.model.outputs.prediction.name
-        ).withColumnRenamed(self.model.outputs.prediction.name, "classes")
+        ).withColumnRenamed(self.model.outputs.prediction.name, 'classes')
         target_df = self.reference.select(self.model.target.name).withColumnRenamed(
-            self.model.target.name, "classes"
+            self.model.target.name, 'classes'
         )
         prediction_target_df = predictions_df.union(target_df).dropna()
         classes_index_df = (
-            prediction_target_df.select("classes")
+            prediction_target_df.select('classes')
             .distinct()
             .withColumn(
-                "classes_index",
+                'classes_index',
                 (
                     F.row_number().over(
-                        Window.partitionBy(F.lit("A")).orderBy("classes")
+                        Window.partitionBy(F.lit('A')).orderBy('classes')
                     )
                     - 1
                 ).cast(DoubleType()),
@@ -133,31 +130,31 @@ class ReferenceDataset:
             self.reference.join(
                 classes_index_df,
                 self.reference[self.model.outputs.prediction.name]
-                == classes_index_df["classes"],
-                how="inner",
+                == classes_index_df['classes'],
+                how='inner',
             )
             .withColumnRenamed(
-                "classes_index",
-                f"{self.prefix_id}_{self.model.outputs.prediction.name}-idx",
+                'classes_index',
+                f'{self.prefix_id}_{self.model.outputs.prediction.name}-idx',
             )
-            .drop("classes")
+            .drop('classes')
         )
         indexed_target_df = (
             indexed_prediction_df.join(
                 classes_index_df,
                 indexed_prediction_df[self.model.target.name]
-                == classes_index_df["classes"],
-                how="inner",
+                == classes_index_df['classes'],
+                how='inner',
             )
             .withColumnRenamed(
-                "classes_index", f"{self.prefix_id}_{self.model.target.name}-idx"
+                'classes_index', f'{self.prefix_id}_{self.model.target.name}-idx'
             )
-            .drop("classes")
+            .drop('classes')
         )
 
         index_label_map = {
-            str(float(row.__getitem__("classes_index"))): str(
-                row.__getitem__("classes")
+            str(float(row.__getitem__('classes_index'))): str(
+                row.__getitem__('classes')
             )
             for row in classes_index_df.collect()
         }

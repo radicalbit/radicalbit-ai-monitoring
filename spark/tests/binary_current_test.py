@@ -9,147 +9,147 @@ from jobs.models.current_dataset import CurrentDataset
 from jobs.models.reference_dataset import ReferenceDataset
 from jobs.utils.current_binary import CurrentMetricsService
 from jobs.utils.models import (
-    ModelOut,
-    ModelType,
-    DataType,
-    OutputType,
     ColumnDefinition,
-    SupportedTypes,
+    DataType,
     FieldTypes,
     Granularity,
+    ModelOut,
+    ModelType,
+    OutputType,
+    SupportedTypes,
 )
-from tests.utils.pytest_utils import my_approx, prefix_id
 import tests.results.binary_current_results as res
+from tests.utils.pytest_utils import my_approx, prefix_id
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset(spark_fixture, test_data_dir):
-    yield (
-        spark_fixture.read.csv(f"{test_data_dir}/current/dataset.csv", header=True),
-        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+    return (
+        spark_fixture.read.csv(f'{test_data_dir}/current/dataset.csv', header=True),
+        spark_fixture.read.csv(f'{test_data_dir}/reference/dataset.csv', header=True),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def complete_dataset(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/complete_dataset.csv", header=True
+            f'{test_data_dir}/current/complete_dataset.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/complete_dataset.csv", header=True
+            f'{test_data_dir}/reference/complete_dataset.csv', header=True
         ),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def current_joined(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/current_joined.csv", header=True
+            f'{test_data_dir}/current/current_joined.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/reference_joined.csv", header=True
+            f'{test_data_dir}/reference/reference_joined.csv', header=True
         ),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def easy_dataset(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/easy_dataset.csv", header=True
+            f'{test_data_dir}/current/easy_dataset.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/easy_dataset.csv", header=True
+            f'{test_data_dir}/reference/easy_dataset.csv', header=True
         ),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_cat_missing(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_cat_missing.csv", header=True
+            f'{test_data_dir}/current/dataset_cat_missing.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/dataset_cat_missing.csv", header=True
+            f'{test_data_dir}/reference/dataset_cat_missing.csv', header=True
         ),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_with_datetime(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_with_datetime.csv", header=True
+            f'{test_data_dir}/current/dataset_with_datetime.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/dataset_with_datetime.csv", header=True
+            f'{test_data_dir}/reference/dataset_with_datetime.csv', header=True
         ),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def easy_dataset_bucket_test(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/easy_dataset_bucket_test.csv", header=True
+            f'{test_data_dir}/current/easy_dataset_bucket_test.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/easy_dataset.csv", header=True
+            f'{test_data_dir}/reference/easy_dataset.csv', header=True
         ),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_for_hour(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_for_hour.csv", header=True
+            f'{test_data_dir}/current/dataset_for_hour.csv', header=True
         ),
-        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+        spark_fixture.read.csv(f'{test_data_dir}/reference/dataset.csv', header=True),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_for_day(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_for_day.csv", header=True
+            f'{test_data_dir}/current/dataset_for_day.csv', header=True
         ),
-        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+        spark_fixture.read.csv(f'{test_data_dir}/reference/dataset.csv', header=True),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_for_week(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_for_week.csv", header=True
+            f'{test_data_dir}/current/dataset_for_week.csv', header=True
         ),
-        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+        spark_fixture.read.csv(f'{test_data_dir}/reference/dataset.csv', header=True),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_for_month(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_for_month.csv", header=True
+            f'{test_data_dir}/current/dataset_for_month.csv', header=True
         ),
-        spark_fixture.read.csv(f"{test_data_dir}/reference/dataset.csv", header=True),
+        spark_fixture.read.csv(f'{test_data_dir}/reference/dataset.csv', header=True),
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def dataset_with_nulls(spark_fixture, test_data_dir):
-    yield (
+    return (
         spark_fixture.read.csv(
-            f"{test_data_dir}/current/dataset_nulls.csv", header=True
+            f'{test_data_dir}/current/dataset_nulls.csv', header=True
         ),
         spark_fixture.read.csv(
-            f"{test_data_dir}/reference/dataset_nulls.csv", header=True
+            f'{test_data_dir}/reference/dataset_nulls.csv', header=True
         ),
     )
 
@@ -157,53 +157,53 @@ def dataset_with_nulls(spark_fixture, test_data_dir):
 def test_calculation(spark_fixture, dataset):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -211,8 +211,8 @@ def test_calculation(spark_fixture, dataset):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -258,86 +258,86 @@ def test_calculation(spark_fixture, dataset):
 def test_calculation_current_joined(spark_fixture, current_joined):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="age", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name='age', type=SupportedTypes.int, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='sex', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="chest_pain_type",
+            name='chest_pain_type',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="resting_blood_pressure",
+            name='resting_blood_pressure',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="cholesterol", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name='cholesterol', type=SupportedTypes.int, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="fasting_blood_sugar",
+            name='fasting_blood_sugar',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="resting_ecg", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name='resting_ecg', type=SupportedTypes.int, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="max_heart_rate_achieved",
+            name='max_heart_rate_achieved',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="exercise_induced_angina",
+            name='exercise_induced_angina',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="st_depression",
+            name='st_depression',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="st_slope", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name='st_slope', type=SupportedTypes.int, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -345,8 +345,8 @@ def test_calculation_current_joined(spark_fixture, current_joined):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -384,53 +384,53 @@ def test_calculation_current_joined(spark_fixture, current_joined):
 def test_calculation_complete(spark_fixture, complete_dataset):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.bool, field_type=FieldTypes.categorical
+        name='target', type=SupportedTypes.bool, field_type=FieldTypes.categorical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -438,8 +438,8 @@ def test_calculation_complete(spark_fixture, complete_dataset):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -477,53 +477,53 @@ def test_calculation_complete(spark_fixture, complete_dataset):
 def test_calculation_easy_dataset(spark_fixture, easy_dataset):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -531,8 +531,8 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -570,53 +570,53 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
 def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -624,8 +624,8 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -663,53 +663,53 @@ def test_calculation_dataset_cat_missing(spark_fixture, dataset_cat_missing):
 def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -717,8 +717,8 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -756,53 +756,53 @@ def test_calculation_dataset_with_datetime(spark_fixture, dataset_with_datetime)
 def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket_test):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -810,8 +810,8 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -849,53 +849,53 @@ def test_calculation_easy_dataset_bucket_test(spark_fixture, easy_dataset_bucket
 def test_calculation_for_hour(spark_fixture, dataset_for_hour):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -903,8 +903,8 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -950,53 +950,53 @@ def test_calculation_for_hour(spark_fixture, dataset_for_hour):
 def test_calculation_for_day(spark_fixture, dataset_for_day):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.DAY
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -1004,8 +1004,8 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -1051,53 +1051,53 @@ def test_calculation_for_day(spark_fixture, dataset_for_day):
 def test_calculation_for_week(spark_fixture, dataset_for_week):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.WEEK
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -1105,8 +1105,8 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -1152,53 +1152,53 @@ def test_calculation_for_week(spark_fixture, dataset_for_week):
 def test_calculation_for_month(spark_fixture, dataset_for_month):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.MONTH
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -1206,8 +1206,8 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
@@ -1253,53 +1253,53 @@ def test_calculation_for_month(spark_fixture, dataset_for_month):
 def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction",
+            name='prediction',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=ColumnDefinition(
-            name="prediction_proba",
+            name='prediction_proba',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
             ColumnDefinition(
-                name="prediction_proba",
+                name='prediction_proba',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             ),
         ],
     )
     target = ColumnDefinition(
-        name="target", type=SupportedTypes.float, field_type=FieldTypes.numerical
+        name='target', type=SupportedTypes.float, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="datetime", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.MONTH
     features = [
         ColumnDefinition(
-            name="cat1", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat1', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="cat2", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='cat2', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="num1", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num1', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="num2", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='num2', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="model",
-        description="description",
+        name='model',
+        description='description',
         model_type=ModelType.BINARY,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -1307,8 +1307,8 @@ def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )

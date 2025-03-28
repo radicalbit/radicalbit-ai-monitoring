@@ -1,42 +1,42 @@
-from pyspark.sql import DataFrame
-from pyspark.errors.exceptions.captured import IllegalArgumentException
-
-from typing import Tuple, Dict, Optional
-from pyspark.sql import functions as f
-from pyspark.ml.feature import Bucketizer
-import numpy as np
-from utils.drift_detector import DriftDetector
-from utils.models import FieldTypes, ColumnDefinition, DriftAlgorithmType
-from utils.logger import logger_config
 import logging
+from typing import Dict, Optional, Tuple
 
-logger = logging.getLogger(logger_config.get("logger_name", "default"))
+import numpy as np
+from pyspark.errors.exceptions.captured import IllegalArgumentException
+from pyspark.ml.feature import Bucketizer
+from pyspark.sql import DataFrame, functions as f
+from utils.drift_detector import DriftDetector
+from utils.logger import logger_config
+from utils.models import ColumnDefinition, DriftAlgorithmType, FieldTypes
+
+logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
 class KullbackLeiblerDivergence(DriftDetector):
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
-        if not kwargs["threshold"]:
-            raise AttributeError("threshold is not defined in kwargs")
-        threshold = kwargs["threshold"]
-        feature_dict_to_append["type"] = DriftAlgorithmType.KL
-        feature_dict_to_append["value"] = -1.0
-        feature_dict_to_append["has_drift"] = False
-        feature_dict_to_append["limit"] = threshold
+        if not kwargs['threshold']:
+            raise AttributeError('threshold is not defined in kwargs')
+        threshold = kwargs['threshold']
+        feature_dict_to_append['type'] = DriftAlgorithmType.KL
+        feature_dict_to_append['value'] = -1.0
+        feature_dict_to_append['has_drift'] = False
+        feature_dict_to_append['limit'] = threshold
         try:
             result_tmp = self.compute_distance(feature.name, feature.field_type)
-            if not result_tmp["KullbackLeiblerDivergence"]:
+            if not result_tmp['KullbackLeiblerDivergence']:
                 return feature_dict_to_append
-            feature_dict_to_append["value"] = float(
-                result_tmp["KullbackLeiblerDivergence"]
+            feature_dict_to_append['value'] = float(
+                result_tmp['KullbackLeiblerDivergence']
             )
-            feature_dict_to_append["has_drift"] = bool(
-                result_tmp["KullbackLeiblerDivergence"] <= threshold
+            feature_dict_to_append['has_drift'] = bool(
+                result_tmp['KullbackLeiblerDivergence'] <= threshold
             )
-            feature_dict_to_append["limit"] = threshold
-            return feature_dict_to_append
+            feature_dict_to_append['limit'] = threshold
         except IllegalArgumentException as e:
             logger.error(e.desc)
+            return feature_dict_to_append
+        else:
             return feature_dict_to_append
 
     @property
@@ -44,14 +44,14 @@ class KullbackLeiblerDivergence(DriftDetector):
         return [FieldTypes.numerical, FieldTypes.categorical]
 
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
-        """
-        Initializes the KL-div object with necessary data and parameters.
+        """Initialize the KL-div object with necessary data and parameters.
 
         Parameters:
         - spark_session (SparkSession): The SparkSession object
         - reference_data (pyspark.sql.DataFrame): The DataFrame containing the reference data
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
         - prefix_id (str): A prefix to assign to temporary fields
+
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
@@ -65,8 +65,7 @@ class KullbackLeiblerDivergence(DriftDetector):
     def __calculate_category_percentages(
         self, df: DataFrame, column_name: str
     ) -> DataFrame:
-        """
-        Creates a new dataframe with categories and their percentages
+        """Create a new dataframe with categories and their percentages
 
         Parameters:
         - df (pyspark.sql.DataFrame): The spark df
@@ -74,29 +73,29 @@ class KullbackLeiblerDivergence(DriftDetector):
 
         Returns:
         DataFrame with two columns: category and percentage
+
         """
 
         df = df.filter(f.col(column_name).isNotNull())
         total_count = df.count()
 
         category_counts = df.groupBy(column_name).agg(
-            f.count("*").alias(f"{self.prefix_id}_count")
+            f.count('*').alias(f'{self.prefix_id}_count')
         )
 
         result_df = category_counts.withColumn(
-            f"{self.prefix_id}_percentage",
-            (f.col(f"{self.prefix_id}_count") / f.lit(total_count)),
+            f'{self.prefix_id}_percentage',
+            (f.col(f'{self.prefix_id}_count') / f.lit(total_count)),
         )
         return result_df.select(
-            f.col(column_name).alias(f"{self.prefix_id}_category"),
-            f.col(f"{self.prefix_id}_percentage"),
-        ).orderBy(f"{self.prefix_id}_category")
+            f.col(column_name).alias(f'{self.prefix_id}_category'),
+            f.col(f'{self.prefix_id}_percentage'),
+        ).orderBy(f'{self.prefix_id}_category')
 
     def __bucketize_continuous_values(
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
     ) -> Tuple[DataFrame, DataFrame]:
-        """
-        This function creates buckets from the reference and uses the same to split current data.
+        """Create buckets from the reference and uses the same to split current data.
 
         Parameters:
         - df_reference (DataFrame): The reference
@@ -105,6 +104,7 @@ class KullbackLeiblerDivergence(DriftDetector):
 
         Returns:
         - A Tuple of DataFrames containing reference and current percentages
+
         """
         reference = df_reference.select(column_name).filter(
             f.col(column_name).isNotNull()
@@ -117,50 +117,50 @@ class KullbackLeiblerDivergence(DriftDetector):
         reference_quantiles = reference.approxQuantile(
             column_name, self.percentiles, self.relative_error
         )
-        reference_buckets = [-float(np.inf)] + reference_quantiles + [float(np.inf)]
+        reference_buckets = [-float(np.inf), *reference_quantiles, float(np.inf)]
 
         bucketizer = Bucketizer(
             splits=reference_buckets,
             inputCol=column_name,
-            outputCol=f"{self.prefix_id}_bucket",
+            outputCol=f'{self.prefix_id}_bucket',
         )
 
-        reference_with_buckets = bucketizer.setHandleInvalid("keep").transform(
+        reference_with_buckets = bucketizer.setHandleInvalid('keep').transform(
             reference
         )
 
         reference_bucket_counts = reference_with_buckets.groupBy(
-            f"{self.prefix_id}_bucket"
-        ).agg(f.count("*").alias(f"{self.prefix_id}_count"))
+            f'{self.prefix_id}_bucket'
+        ).agg(f.count('*').alias(f'{self.prefix_id}_count'))
 
         reference_bucket_percentages = (
             reference_bucket_counts.withColumn(
-                f"{self.prefix_id}_percentage",
-                (f.col(f"{self.prefix_id}_count") / f.lit(reference_count)),
+                f'{self.prefix_id}_percentage',
+                (f.col(f'{self.prefix_id}_count') / f.lit(reference_count)),
             )
             .select(
-                f.col(f"{self.prefix_id}_bucket"),
-                f.col(f"{self.prefix_id}_percentage"),
+                f.col(f'{self.prefix_id}_bucket'),
+                f.col(f'{self.prefix_id}_percentage'),
             )
-            .orderBy(f"{self.prefix_id}_bucket")
+            .orderBy(f'{self.prefix_id}_bucket')
         )
 
-        current_with_buckets = bucketizer.setHandleInvalid("keep").transform(current)
+        current_with_buckets = bucketizer.setHandleInvalid('keep').transform(current)
 
         current_bucket_counts = current_with_buckets.groupBy(
-            f"{self.prefix_id}_bucket"
-        ).agg(f.count("*").alias(f"{self.prefix_id}_count"))
+            f'{self.prefix_id}_bucket'
+        ).agg(f.count('*').alias(f'{self.prefix_id}_count'))
 
         current_bucket_percentages = (
             current_bucket_counts.withColumn(
-                f"{self.prefix_id}_percentage",
-                (f.col(f"{self.prefix_id}_count") / f.lit(current_count)),
+                f'{self.prefix_id}_percentage',
+                (f.col(f'{self.prefix_id}_count') / f.lit(current_count)),
             )
             .select(
-                f.col(f"{self.prefix_id}_bucket"),
-                f.col(f"{self.prefix_id}_percentage"),
+                f.col(f'{self.prefix_id}_bucket'),
+                f.col(f'{self.prefix_id}_percentage'),
             )
-            .orderBy(f"{self.prefix_id}_bucket")
+            .orderBy(f'{self.prefix_id}_bucket')
         )
 
         return reference_bucket_percentages, current_bucket_percentages
@@ -168,8 +168,7 @@ class KullbackLeiblerDivergence(DriftDetector):
     def __kullback_leibler_divergence(
         self, column_name: str, data_type: FieldTypes
     ) -> Optional[float]:
-        """
-        Compute the KL-div according to the data type (discrete or continuous).
+        """Compute the KL-div according to the data type (discrete or continuous).
 
         Parameters:
         - column_name (str): The name of the column
@@ -178,12 +177,12 @@ class KullbackLeiblerDivergence(DriftDetector):
         Returns:
         None if at least one class (categorical variable) or bucket (continuous variable) is 0.0 in the current dataset,
          otherwise it returns the KL-divergence
+
         """
         column = column_name
 
         def align_dicts(reference_dict, current_dict) -> tuple:
-            """
-            Check if reference and current have the same keys.
+            """Check if reference and current have the same keys.
             When reference and current don't have the same keys,
             missing keys will be added in the shorter dictionary
             with a percentage of 0.0.
@@ -201,13 +200,14 @@ class KullbackLeiblerDivergence(DriftDetector):
 
             Returns:
             A tuple containing the aligned dictionaries.
+
             """
 
             dicts = (reference_dict, current_dict)
             all_keys = set().union(*dicts)
-            reference_dict, current_dict = [
+            reference_dict, current_dict = (
                 {key: d.get(key, 0.0) for key in all_keys} for d in dicts
-            ]
+            )
             return reference_dict, current_dict
 
         if data_type == FieldTypes.categorical:
@@ -221,17 +221,17 @@ class KullbackLeiblerDivergence(DriftDetector):
 
             reference_category_dict = (
                 reference_category_percentages.toPandas()
-                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
+                .set_index(f'{self.prefix_id}_category')[f'{self.prefix_id}_percentage']
                 .to_dict()
             )
 
             current_category_dict = (
                 current_category_percentages.toPandas()
-                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
+                .set_index(f'{self.prefix_id}_category')[f'{self.prefix_id}_percentage']
                 .to_dict()
             )
 
-            if not reference_category_dict.keys() == current_category_dict.keys():
+            if reference_category_dict.keys() != current_category_dict.keys():
                 reference_category_dict, current_category_dict = align_dicts(
                     reference_category_dict, current_category_dict
                 )
@@ -247,46 +247,42 @@ class KullbackLeiblerDivergence(DriftDetector):
                 )
             )
 
-        elif data_type == FieldTypes.numerical:
-            reference_bucket_percentage, current_bucket_percentage = (
-                self.__bucketize_continuous_values(
-                    df_reference=self.reference_data,
-                    df_current=self.current_data,
-                    column_name=column,
-                )
+        reference_bucket_percentage, current_bucket_percentage = (
+            self.__bucketize_continuous_values(
+                df_reference=self.reference_data,
+                df_current=self.current_data,
+                column_name=column,
+            )
+        )
+
+        reference_bucket_dict = (
+            reference_bucket_percentage.toPandas()
+            .set_index(f'{self.prefix_id}_bucket')[f'{self.prefix_id}_percentage']
+            .to_dict()
+        )
+
+        current_bucket_dict = (
+            current_bucket_percentage.toPandas()
+            .set_index(f'{self.prefix_id}_bucket')[f'{self.prefix_id}_percentage']
+            .to_dict()
+        )
+
+        if reference_bucket_dict.keys() != current_bucket_dict.keys():
+            reference_bucket_dict, current_bucket_dict = align_dicts(
+                reference_bucket_dict, current_bucket_dict
             )
 
-            reference_bucket_dict = (
-                reference_bucket_percentage.toPandas()
-                .set_index(f"{self.prefix_id}_bucket")[f"{self.prefix_id}_percentage"]
-                .to_dict()
-            )
+        reference_values = np.array(list(reference_bucket_dict.values()))
+        current_values = np.array(list(current_bucket_dict.values()))
 
-            current_bucket_dict = (
-                current_bucket_percentage.toPandas()
-                .set_index(f"{self.prefix_id}_bucket")[f"{self.prefix_id}_percentage"]
-                .to_dict()
-            )
-
-            if not reference_bucket_dict.keys() == current_bucket_dict.keys():
-                reference_bucket_dict, current_bucket_dict = align_dicts(
-                    reference_bucket_dict, current_bucket_dict
-                )
-
-            reference_values = np.array(list(reference_bucket_dict.values()))
-            current_values = np.array(list(current_bucket_dict.values()))
-
-            return (
-                None
-                if np.any(current_values == 0.0)
-                else np.sum(
-                    reference_values * np.log(reference_values / current_values)
-                )
-            )
+        return (
+            None
+            if np.any(current_values == 0.0)
+            else np.sum(reference_values * np.log(reference_values / current_values))
+        )
 
     def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
-        """
-        Returns the Kullback-Leibler Divergence.
+        """Return the Kullback-Leibler Divergence.
 
         Parameters:
         - on_column (str): The column to use for the distance computation
@@ -294,10 +290,11 @@ class KullbackLeiblerDivergence(DriftDetector):
 
         Returns:
         The divergence as a dictionary.
+
         """
 
         return {
-            "KullbackLeiblerDivergence": self.__kullback_leibler_divergence(
+            'KullbackLeiblerDivergence': self.__kullback_leibler_divergence(
                 column_name=on_column, data_type=data_type
             )
         }

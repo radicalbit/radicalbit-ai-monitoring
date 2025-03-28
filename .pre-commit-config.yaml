@@ -7,7 +7,6 @@ exclude: >
       api/.venv|
       api/tests|
       sdk|
-      spark|
       ui
   )$
 repos:
@@ -26,3 +25,9 @@ repos:
       - id: ruff-format
         args: [--config=api/pyproject.toml]
         files: ^((api/app)/.+)?[^/]+\.(py)$
+      - id: ruff
+        args: [--config=spark/pyproject.toml, --fix]
+        files: ^((spark/jobs)/.+)?[^/]+\.(py)$
+      - id: ruff-format
+        args: [--config=spark/pyproject.toml]
+        files: ^((spark/jobs)/.+)?[^/]+\.(py)$

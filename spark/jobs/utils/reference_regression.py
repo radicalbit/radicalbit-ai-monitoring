@@ -1,6 +1,6 @@
 from typing import List
-from models.regression_model_quality import ModelQualityRegression
-from models.reference_dataset import ReferenceDataset
+
+from metrics.data_quality_calculator import DataQualityCalculator
 from metrics.model_quality_regression_calculator import ModelQualityRegressionCalculator
 from models.data_quality import (
     CategoricalFeatureMetrics,
@@ -8,7 +8,8 @@ from models.data_quality import (
     NumericalTargetMetrics,
     RegressionDataQuality,
 )
-from metrics.data_quality_calculator import DataQualityCalculator
+from models.reference_dataset import ReferenceDataset
+from models.regression_model_quality import ModelQualityRegression
 
 
 class ReferenceMetricsRegressionService:
@@ -24,7 +25,7 @@ class ReferenceMetricsRegressionService:
             prefix_id=self.prefix_id,
         ).model_dump()
 
-        metrics["residuals"] = ModelQualityRegressionCalculator.residual_metrics(
+        metrics['residuals'] = ModelQualityRegressionCalculator.residual_metrics(
             model=self.reference.model,
             dataframe=self.reference.reference,
             prefix_id=self.prefix_id,

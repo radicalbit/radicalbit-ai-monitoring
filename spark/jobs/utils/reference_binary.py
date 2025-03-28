@@ -1,45 +1,45 @@
 from typing import List
 
-from pyspark.sql import DataFrame
+from metrics.data_quality_calculator import DataQualityCalculator
+from models.data_quality import (
+    BinaryClassDataQuality,
+    CategoricalFeatureMetrics,
+    ClassMetrics,
+    NumericalFeatureMetrics,
+)
+from models.reference_dataset import ReferenceDataset
 from pyspark.ml.evaluation import (
     BinaryClassificationEvaluator,
     MulticlassClassificationEvaluator,
 )
 from pyspark.mllib.evaluation import MulticlassMetrics
-from pyspark.sql.types import DoubleType
+from pyspark.sql import DataFrame
 import pyspark.sql.functions as F
+from pyspark.sql.types import DoubleType
 
-from metrics.data_quality_calculator import DataQualityCalculator
-from models.data_quality import (
-    NumericalFeatureMetrics,
-    CategoricalFeatureMetrics,
-    ClassMetrics,
-    BinaryClassDataQuality,
-)
-from models.reference_dataset import ReferenceDataset
 from .spark import is_not_null
 
 
 class ReferenceMetricsService:
     # Model Quality
     model_quality_binary_classificator = {
-        "areaUnderROC": "area_under_roc",
-        "areaUnderPR": "area_under_pr",
+        'areaUnderROC': 'area_under_roc',
+        'areaUnderPR': 'area_under_pr',
     }
 
     model_quality_multiclass_classificator = {
-        "f1": "f1",
-        "accuracy": "accuracy",
-        "weightedPrecision": "weighted_precision",
-        "weightedRecall": "weighted_recall",
-        "weightedTruePositiveRate": "weighted_true_positive_rate",
-        "weightedFalsePositiveRate": "weighted_false_positive_rate",
-        "weightedFMeasure": "weighted_f_measure",
-        "truePositiveRateByLabel": "true_positive_rate",
-        "falsePositiveRateByLabel": "false_positive_rate",
-        "precisionByLabel": "precision",
-        "recallByLabel": "recall",
-        "fMeasureByLabel": "f_measure",
+        'f1': 'f1',
+        'accuracy': 'accuracy',
+        'weightedPrecision': 'weighted_precision',
+        'weightedRecall': 'weighted_recall',
+        'weightedTruePositiveRate': 'weighted_true_positive_rate',
+        'weightedFalsePositiveRate': 'weighted_false_positive_rate',
+        'weightedFMeasure': 'weighted_f_measure',
+        'truePositiveRateByLabel': 'true_positive_rate',
+        'falsePositiveRateByLabel': 'false_positive_rate',
+        'precisionByLabel': 'precision',
+        'recallByLabel': 'recall',
+        'fMeasureByLabel': 'f_measure',
     }
 
     def __init__(self, reference: ReferenceDataset, prefix_id: str):
@@ -56,7 +56,7 @@ class ReferenceMetricsService:
                 rawPredictionCol=self.reference.model.outputs.prediction_proba.name,
             ).evaluate(dataset)
         except Exception:
-            return float("nan")
+            return float('nan')
 
     def __evaluate_multi_class_classification(
         self, dataset: DataFrame, metric_name: str
@@ -71,7 +71,7 @@ class ReferenceMetricsService:
                 metricLabel=1,
             ).evaluate(dataset)
         except Exception:
-            return float("nan")
+            return float('nan')
 
     # FIXME use pydantic struct like data quality
     def __calc_bc_metrics(self) -> dict[str, float]:
@@ -147,10 +147,10 @@ class ReferenceMetricsService:
         ).count()
 
         return {
-            "true_positive_count": tp,
-            "false_positive_count": fp,
-            "true_negative_count": tn,
-            "false_negative_count": fn,
+            'true_positive_count': tp,
+            'false_positive_count': fp,
+            'true_negative_count': tn,
+            'false_negative_count': fn,
         }
 
     def __calculate_log_loss(self) -> dict[str, float]:
@@ -161,7 +161,7 @@ class ReferenceMetricsService:
                 & is_not_null(self.reference.model.outputs.prediction_proba.name)
             )
             .withColumn(
-                f"{self.prefix_id}_prediction_proba_class0",
+                f'{self.prefix_id}_prediction_proba_class0',
                 F.when(
                     F.col(self.reference.model.outputs.prediction.name) == 0,
                     F.col(self.reference.model.outputs.prediction_proba.name),
@@ -170,7 +170,7 @@ class ReferenceMetricsService:
                 ),
             )
             .withColumn(
-                f"{self.prefix_id}_prediction_proba_class1",
+                f'{self.prefix_id}_prediction_proba_class1',
                 F.when(
                     F.col(self.reference.model.outputs.prediction.name) == 1,
                     F.col(self.reference.model.outputs.prediction_proba.name),
@@ -178,7 +178,7 @@ class ReferenceMetricsService:
                     1 - F.col(self.reference.model.outputs.prediction_proba.name)
                 ),
             )
-            .withColumn(f"{self.prefix_id}_weight_logloss_def", F.lit(1.0))
+            .withColumn(f'{self.prefix_id}_weight_logloss_def', F.lit(1.0))
             .withColumn(
                 self.reference.model.outputs.prediction.name,
                 F.col(self.reference.model.outputs.prediction.name).cast(DoubleType()),
@@ -192,15 +192,15 @@ class ReferenceMetricsService:
         dataset_proba_vector = dataset_with_proba.select(
             self.reference.model.outputs.prediction.name,
             self.reference.model.target.name,
-            f"{self.prefix_id}_weight_logloss_def",
+            f'{self.prefix_id}_weight_logloss_def',
             F.array(
-                F.col(f"{self.prefix_id}_prediction_proba_class0"),
-                F.col(f"{self.prefix_id}_prediction_proba_class1"),
-            ).alias(f"{self.prefix_id}_prediction_proba_vector"),
+                F.col(f'{self.prefix_id}_prediction_proba_class0'),
+                F.col(f'{self.prefix_id}_prediction_proba_class1'),
+            ).alias(f'{self.prefix_id}_prediction_proba_vector'),
         ).rdd
 
         metrics = MulticlassMetrics(dataset_proba_vector)
-        return {"log_loss": metrics.logLoss()}
+        return {'log_loss': metrics.logLoss()}
 
     def calculate_data_quality_numerical(self) -> List[NumericalFeatureMetrics]:
         return DataQualityCalculator.numerical_metrics(
@@ -228,24 +228,24 @@ class ReferenceMetricsService:
         # FIXME this should be avoided if we are sure that we have all classes in the file
 
         if len(metrics) == 1:
-            if metrics[0].name == "1.0":
-                return metrics + [
+            if metrics[0].name == '1.0':
+                return [
+                    *metrics,
                     ClassMetrics(
-                        name="0.0",
+                        name='0.0',
                         count=0,
                         percentage=0.0,
-                    )
+                    ),
                 ]
-            else:
-                return metrics + [
-                    ClassMetrics(
-                        name="1.0",
-                        count=0,
-                        percentage=0.0,
-                    )
-                ]
-        else:
-            return metrics
+            return [
+                *metrics,
+                ClassMetrics(
+                    name='1.0',
+                    count=0,
+                    percentage=0.0,
+                ),
+            ]
+        return metrics
 
     def calculate_data_quality(self) -> BinaryClassDataQuality:
         feature_metrics = []

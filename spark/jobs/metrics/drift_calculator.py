@@ -1,7 +1,7 @@
-from pyspark.sql import SparkSession
 from metrics.drift_factory_pattern import FeatureDriftManager
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
+from pyspark.sql import SparkSession
 
 
 class DriftCalculator:
@@ -18,7 +18,6 @@ class DriftCalculator:
             current_dataset.current,
             prefix_id,
         )
-        drift_results = drift_manager.compute_drift_for_all_features(
+        return drift_manager.compute_drift_for_all_features(
             reference_dataset.model.features
         )
-        return drift_results

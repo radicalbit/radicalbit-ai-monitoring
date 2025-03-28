@@ -1,115 +1,115 @@
 import datetime
 import uuid
 
-import pytest
 import deepdiff
+import pytest
 
 from jobs.metrics.statistics import calculate_statistics_reference
-from jobs.utils.reference_regression import ReferenceMetricsRegressionService
 from jobs.models.reference_dataset import ReferenceDataset
 from jobs.utils.models import (
-    ModelOut,
-    ModelType,
-    DataType,
-    OutputType,
     ColumnDefinition,
-    SupportedTypes,
+    DataType,
     FieldTypes,
     Granularity,
+    ModelOut,
+    ModelType,
+    OutputType,
+    SupportedTypes,
 )
-from tests.utils.pytest_utils import my_approx, prefix_id
+from jobs.utils.reference_regression import ReferenceMetricsRegressionService
 import tests.results.regression_reference_results as res
+from tests.utils.pytest_utils import my_approx, prefix_id
 
 
-@pytest.fixture()
+@pytest.fixture
 def reference_bike(spark_fixture, test_data_dir):
-    yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/regression/reference_bike.csv", header=True
+    return spark_fixture.read.csv(
+        f'{test_data_dir}/reference/regression/reference_bike.csv', header=True
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def reference_bike_nulls(spark_fixture, test_data_dir):
-    yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/regression/reference_bike_nulls.csv", header=True
+    return spark_fixture.read.csv(
+        f'{test_data_dir}/reference/regression/reference_bike_nulls.csv', header=True
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def reference_abalone(spark_fixture, test_data_dir):
-    yield spark_fixture.read.csv(
-        f"{test_data_dir}/reference/regression/regression_abalone_reference.csv",
+    return spark_fixture.read.csv(
+        f'{test_data_dir}/reference/regression/regression_abalone_reference.csv',
         header=True,
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def reference_dataset(reference_bike):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="predictions",
+            name='predictions',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=None,
         output=[
             ColumnDefinition(
-                name="predictions",
+                name='predictions',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             )
         ],
     )
     target = ColumnDefinition(
-        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        name='ground_truth', type=SupportedTypes.int, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="dteday", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='dteday', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="season", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='season', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="yr", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='yr', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="mnth", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='mnth', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="holiday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='holiday', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="weekday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='weekday', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="workingday",
+            name='workingday',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
-            name="weathersit",
+            name='weathersit',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="temp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='temp', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="atemp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='atemp', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="hum", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='hum', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="windspeed", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='windspeed', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="regression model",
-        description="description",
+        name='regression model',
+        description='description',
         model_type=ModelType.REGRESSION,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -117,84 +117,84 @@ def reference_dataset(reference_bike):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
 
-    yield ReferenceDataset(
+    return ReferenceDataset(
         raw_dataframe=reference_bike, model=model, prefix_id=prefix_id
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def reference_dataset_nulls(spark_fixture, reference_bike_nulls):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="predictions",
+            name='predictions',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         prediction_proba=None,
         output=[
             ColumnDefinition(
-                name="predictions",
+                name='predictions',
                 type=SupportedTypes.float,
                 field_type=FieldTypes.numerical,
             )
         ],
     )
     target = ColumnDefinition(
-        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        name='ground_truth', type=SupportedTypes.int, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="dteday", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='dteday', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.HOUR
     features = [
         ColumnDefinition(
-            name="season", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='season', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="yr", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='yr', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="mnth", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='mnth', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="holiday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='holiday', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="weekday", type=SupportedTypes.int, field_type=FieldTypes.categorical
+            name='weekday', type=SupportedTypes.int, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="workingday",
+            name='workingday',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
         ),
         ColumnDefinition(
-            name="weathersit",
+            name='weathersit',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="temp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='temp', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="atemp", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='atemp', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="hum", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='hum', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="windspeed", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='windspeed', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="regression model",
-        description="description",
+        name='regression model',
+        description='description',
         model_type=ModelType.REGRESSION,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -202,82 +202,82 @@ def reference_dataset_nulls(spark_fixture, reference_bike_nulls):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
 
-    yield ReferenceDataset(
+    return ReferenceDataset(
         raw_dataframe=reference_bike_nulls, model=model, prefix_id=prefix_id
     )
 
 
-@pytest.fixture()
+@pytest.fixture
 def reference_dataset_abalone(spark_fixture, reference_abalone):
     output = OutputType(
         prediction=ColumnDefinition(
-            name="prediction", type=SupportedTypes.int, field_type=FieldTypes.numerical
+            name='prediction', type=SupportedTypes.int, field_type=FieldTypes.numerical
         ),
         prediction_proba=None,
         output=[
             ColumnDefinition(
-                name="prediction",
+                name='prediction',
                 type=SupportedTypes.int,
                 field_type=FieldTypes.numerical,
             )
         ],
     )
     target = ColumnDefinition(
-        name="ground_truth", type=SupportedTypes.int, field_type=FieldTypes.numerical
+        name='ground_truth', type=SupportedTypes.int, field_type=FieldTypes.numerical
     )
     timestamp = ColumnDefinition(
-        name="timestamp", type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+        name='timestamp', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
     )
     granularity = Granularity.MONTH
     features = [
         ColumnDefinition(
-            name="Sex", type=SupportedTypes.string, field_type=FieldTypes.categorical
+            name='Sex', type=SupportedTypes.string, field_type=FieldTypes.categorical
         ),
         ColumnDefinition(
-            name="Length", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='Length', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="Diameter", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='Diameter', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="Height", type=SupportedTypes.float, field_type=FieldTypes.numerical
+            name='Height', type=SupportedTypes.float, field_type=FieldTypes.numerical
         ),
         ColumnDefinition(
-            name="Whole_weight",
+            name='Whole_weight',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="Shucked_weight",
+            name='Shucked_weight',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="Viscera_weight",
+            name='Viscera_weight',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="Shell_weight",
+            name='Shell_weight',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
         ),
         ColumnDefinition(
-            name="pred_id",
+            name='pred_id',
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
         ),
     ]
     model = ModelOut(
         uuid=uuid.uuid4(),
-        name="regression model",
-        description="description",
+        name='regression model',
+        description='description',
         model_type=ModelType.REGRESSION,
         data_type=DataType.TABULAR,
         timestamp=timestamp,
@@ -285,13 +285,13 @@ def reference_dataset_abalone(spark_fixture, reference_abalone):
         outputs=output,
         target=target,
         features=features,
-        frameworks="framework",
-        algorithm="algorithm",
+        frameworks='framework',
+        algorithm='algorithm',
         created_at=str(datetime.datetime.now()),
         updated_at=str(datetime.datetime.now()),
     )
 
-    yield ReferenceDataset(
+    return ReferenceDataset(
         raw_dataframe=reference_abalone, model=model, prefix_id=prefix_id
     )
 
@@ -340,13 +340,13 @@ def test_data_quality_metrics(reference_dataset):
     )
     data_quality = regression_service.calculate_data_quality()
 
-    features = res.test_data_quality_metrics_res["feature_metrics"]
-    target = res.test_data_quality_metrics_res["target_metrics"]
+    features = res.test_data_quality_metrics_res['feature_metrics']
+    target = res.test_data_quality_metrics_res['target_metrics']
 
     computed = data_quality.model_dump(serialize_as_any=True, exclude_none=True)
 
-    computed_features = computed["feature_metrics"]
-    computed_target = computed["target_metrics"]
+    computed_features = computed['feature_metrics']
+    computed_target = computed['target_metrics']
 
     assert not deepdiff.DeepDiff(
         computed_features,
