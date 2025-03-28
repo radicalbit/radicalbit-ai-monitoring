@@ -1,5 +1,6 @@
 import logging
-from typing import Dict, Optional, Tuple
+import math
+from typing import Optional
 
 import numpy as np
 from pyspark.errors.exceptions.captured import IllegalArgumentException
@@ -24,15 +25,18 @@ class KullbackLeiblerDivergence(DriftDetector):
         feature_dict_to_append['limit'] = threshold
         try:
             result_tmp = self.compute_distance(feature.name, feature.field_type)
-            if not result_tmp['KullbackLeiblerDivergence']:
-                return feature_dict_to_append
-            feature_dict_to_append['value'] = float(
+            if result_tmp['KullbackLeiblerDivergence'] is None or math.isnan(
                 result_tmp['KullbackLeiblerDivergence']
+            ):
+                return feature_dict_to_append
+            feature_dict_to_append.update(
+                {
+                    'value': float(result_tmp['KullbackLeiblerDivergence']),
+                    'has_drift': bool(
+                        result_tmp['KullbackLeiblerDivergence'] <= threshold
+                    ),
+                }
             )
-            feature_dict_to_append['has_drift'] = bool(
-                result_tmp['KullbackLeiblerDivergence'] <= threshold
-            )
-            feature_dict_to_append['limit'] = threshold
         except IllegalArgumentException as e:
             logger.error(e.desc)
             return feature_dict_to_append
@@ -94,7 +98,7 @@ class KullbackLeiblerDivergence(DriftDetector):
 
     def __bucketize_continuous_values(
         self, df_reference: DataFrame, df_current: DataFrame, column_name: str
-    ) -> Tuple[DataFrame, DataFrame]:
+    ) -> tuple[DataFrame, DataFrame]:
         """Create buckets from the reference and uses the same to split current data.
 
         Parameters:
@@ -281,7 +285,7 @@ class KullbackLeiblerDivergence(DriftDetector):
             else np.sum(reference_values * np.log(reference_values / current_values))
         )
 
-    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> dict:
         """Return the Kullback-Leibler Divergence.
 
         Parameters:

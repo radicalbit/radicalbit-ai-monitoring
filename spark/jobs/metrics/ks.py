@@ -1,5 +1,5 @@
+import math
 from math import ceil, sqrt
-from typing import List
 
 import numpy as np
 from numpy import interp, linspace
@@ -40,7 +40,7 @@ class KolmogorovSmirnovTest(DriftDetector):
         self.current_size = self.current_data.count()
 
     @property
-    def supported_feature_types(self) -> List[FieldTypes]:
+    def supported_feature_types(self) -> list[FieldTypes]:
         return [FieldTypes.numerical]
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
@@ -48,11 +48,15 @@ class KolmogorovSmirnovTest(DriftDetector):
         if not kwargs['p_value']:
             raise AttributeError('p_value is not defined in kwargs')
         p_value = self.__critical_value(significance_level=kwargs['p_value'])
-        result_tmp = self.test(feature.name, feature.name)
         feature_dict_to_append['type'] = DriftAlgorithmType.KS
+        feature_dict_to_append['limit'] = float(p_value)
+        result_tmp = self.test(feature.name, feature.name)
+        if result_tmp['ks_statistic'] is None or math.isnan(result_tmp['ks_statistic']):
+            feature_dict_to_append['value'] = -1
+            feature_dict_to_append['has_drift'] = False
+            return feature_dict_to_append
         feature_dict_to_append['value'] = float(result_tmp['ks_statistic'])
         feature_dict_to_append['has_drift'] = bool(result_tmp['ks_statistic'] > p_value)
-        feature_dict_to_append['limit'] = float(p_value)
         return feature_dict_to_append
 
     @staticmethod
