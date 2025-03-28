@@ -19,12 +19,16 @@ function FromTimestampInput() {
   const fromTimestamp = form?.fromTimestamp;
 
   const handleOnChange = (evt) => {
-    write('fromTimestamp', evt, { successCallback: validateForm });
+    write('fromTimestamp', evt, {
+      // "() => validateForm()" is needed, "successCallback: validateForm" won't work
+      successCallback: () => validateForm(),
+    });
   };
 
   return (
     <FormField label="From timestamp" message={error('fromTimestamp')} required>
       <DatePicker
+        maxDate={dayjs()}
         onChange={handleOnChange}
         onOk={handleOnChange}
         showTime
@@ -43,7 +47,10 @@ function ToTimestampInput() {
   const toTimestamp = form?.toTimestamp;
 
   const handleOnChange = (evt) => {
-    write('toTimestamp', evt, { successCallback: validateForm });
+    write('toTimestamp', evt, {
+      // "() => validateForm()" is needed, "successCallback: validateForm" won't work
+      successCallback: () => validateForm(),
+    });
   };
 
   return (

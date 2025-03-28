@@ -17,11 +17,12 @@ function SpanLatenciesTable() {
   const { form } = useFormbitContext();
   const fromTimestamp = form?.fromTimestamp;
   const toTimestamp = form?.toTimestamp;
+  const skip = !fromTimestamp || !toTimestamp;
   const queryParams = filtersToQueryParams(fromTimestamp, toTimestamp);
 
   const {
     data, isSuccess, isLoading, isError,
-  } = useGetSpanLatenciesQuery({ uuid, queryParams });
+  } = useGetSpanLatenciesQuery({ uuid, queryParams }, { skip });
 
   if (isLoading) {
     return <Skeleton active paragraph={{ rows: 5 }} />;
@@ -43,6 +44,16 @@ function SpanLatenciesTable() {
       );
     }
 
+    return (
+      <DataTable
+        columns={columns}
+        dataSource={data}
+        size="small"
+      />
+    );
+  }
+
+  if (data) {
     return (
       <DataTable
         columns={columns}
