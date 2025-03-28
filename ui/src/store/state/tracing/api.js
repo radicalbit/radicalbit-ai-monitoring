@@ -104,7 +104,6 @@ export const tracingApiSlice = apiService.injectEndpoints({
     }),
 
     getTraceLatencies: builder.query({
-      // providesTags: TODO
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/traces/dashboard/project/${uuid}/root_latencies?${queryParams}`,
@@ -113,7 +112,6 @@ export const tracingApiSlice = apiService.injectEndpoints({
     }),
 
     getSessionLatencies: builder.query({
-      // providesTags: TODO
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/traces/dashboard/project/${uuid}/root_latencies_session?${queryParams}`,
@@ -122,10 +120,17 @@ export const tracingApiSlice = apiService.injectEndpoints({
     }),
 
     getSpanLatencies: builder.query({
-      // providesTags: TODO
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
         url: `/traces/dashboard/project/${uuid}/leaf_latencies?${queryParams}`,
+        method: 'get',
+      }),
+    }),
+
+    getTraceByTime: builder.query({
+      query: ({ uuid, queryParams }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/traces/dashboard/project/${uuid}/trace_by_time?n=15&${queryParams}`,
         method: 'get',
       }),
     }),

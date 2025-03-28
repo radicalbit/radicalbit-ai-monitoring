@@ -3,7 +3,12 @@ import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-opt
 import { numberFormatter } from '@Src/constants';
 
 export default function lineChartOptions(title, color, currentDataset, referenceDataset) {
-  const currentDatasetFormatted = currentDataset.map(({ timestamp, value }) => [timestamp, (value > 1000) ? Number.parseFloat(value).toExponential(2) : numberFormatter().format(value)]);
+  const currentDatasetFormatted = currentDataset.map(({ timestamp, value }) => [
+    timestamp,
+    (value > 1000)
+      ? Number.parseFloat(value).toExponential(2)
+      : numberFormatter().format(value),
+  ]);
 
   const series = [
     commonChartOptions.seriesOptions(CHART_TYPE.LINE, title, CHART_COLOR.LINE_CHART_COLOR, currentDatasetFormatted),

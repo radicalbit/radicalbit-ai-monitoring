@@ -18,10 +18,11 @@ function TraceLatenciesTable() {
   const fromTimestamp = form?.fromTimestamp;
   const toTimestamp = form?.toTimestamp;
   const queryParams = filtersToQueryParams(fromTimestamp, toTimestamp);
+  const skip = !fromTimestamp || !toTimestamp;
 
   const {
     data, isSuccess, isLoading, isError,
-  } = useGetTraceLatenciesQuery({ uuid, queryParams });
+  } = useGetTraceLatenciesQuery({ uuid, queryParams }, { skip });
 
   if (isLoading) {
     return <Skeleton active paragraph={{ rows: 2 }} />;
@@ -48,6 +49,16 @@ function TraceLatenciesTable() {
         columns={columns}
         dataSource={[data]}
         pagination={false}
+        size="small"
+      />
+    );
+  }
+
+  if (data) {
+    return (
+      <DataTable
+        columns={columns}
+        dataSource={[data]}
         size="small"
       />
     );
