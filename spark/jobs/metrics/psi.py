@@ -1,18 +1,17 @@
+from math import inf
 from typing import List
 
 import numpy as np
-from math import inf
-import pyspark.sql.functions as F
 from pyspark.ml.feature import Bucketizer
+from pyspark.sql import DataFrame, SparkSession
+import pyspark.sql.functions as F
 from pyspark.sql.types import IntegerType
-from pyspark.sql import SparkSession, DataFrame
 from utils.drift_detector import DriftDetector
-from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
+from utils.models import ColumnDefinition, DriftAlgorithmType, FieldTypes
 
 
 class PSI(DriftDetector):
-    """
-    This class implements the PSI (population stability index).
+    """Implement the PSI (population stability index).
     It is designed to compare two sample distributions and determine if they differ significantly.
     """
 
@@ -23,13 +22,13 @@ class PSI(DriftDetector):
         current_data: DataFrame,
         prefix_id: str,
     ) -> None:
-        """
-        Initializes the Population Stability Index with the provided data and parameters.
+        """Initialize the Population Stability Index with the provided data and parameters.
 
         Parameters:
         - spark_session(SparkSession): The SparkSession object.
         - reference_data (DataFrame): The reference data as a Spark DataFrame.
         - current_data (DataFrame): The current data as a Spark DataFrame.
+
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
@@ -42,20 +41,19 @@ class PSI(DriftDetector):
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
-        if not kwargs["threshold"]:
-            raise AttributeError("threshold is not defined in kwargs")
-        threshold = kwargs["threshold"]
+        if not kwargs['threshold']:
+            raise AttributeError('threshold is not defined in kwargs')
+        threshold = kwargs['threshold']
         result_tmp = self.calculate_psi(feature.name)
-        feature_dict_to_append["type"] = DriftAlgorithmType.PSI
-        feature_dict_to_append["value"] = float(result_tmp["psi_value"])
-        feature_dict_to_append["has_drift"] = bool(result_tmp["psi_value"] >= threshold)
-        feature_dict_to_append["limit"] = threshold
+        feature_dict_to_append['type'] = DriftAlgorithmType.PSI
+        feature_dict_to_append['value'] = float(result_tmp['psi_value'])
+        feature_dict_to_append['has_drift'] = bool(result_tmp['psi_value'] >= threshold)
+        feature_dict_to_append['limit'] = threshold
         return feature_dict_to_append
 
     @staticmethod
     def sub_psi(e_perc, a_perc):
-        """
-        Calculate the actual PSI value from comparing the values.
+        """Calculate the actual PSI value from comparing the values.
         Update the actual value to a very small number if equal to zero
         """
         if a_perc == 0:
@@ -63,22 +61,21 @@ class PSI(DriftDetector):
         if e_perc == 0:
             e_perc = 0.0001
 
-        value = (e_perc - a_perc) * np.log(e_perc / a_perc)
-        return value
+        return (e_perc - a_perc) * np.log(e_perc / a_perc)
 
     def calculate_psi(self, feature) -> dict:
         # first compute bucket as a list from 0 to 10 (or distinct().count() of the values in columns)
 
         current = self.current_data.withColumn(
-            f"{self.prefix_id}_type", F.lit("current")
+            f'{self.prefix_id}_type', F.lit('current')
         )
         reference = self.reference_data.withColumn(
-            f"{self.prefix_id}_type", F.lit("reference")
+            f'{self.prefix_id}_type', F.lit('reference')
         )
 
         reference_and_current = (
-            current.select([feature, f"{self.prefix_id}_type"])
-            .unionByName(reference.select([feature, f"{self.prefix_id}_type"]))
+            current.select([feature, f'{self.prefix_id}_type'])
+            .unionByName(reference.select([feature, f'{self.prefix_id}_type']))
             .dropna()
         )
 
@@ -120,42 +117,42 @@ class PSI(DriftDetector):
         else:
             buckets = generated_buckets
 
-        bucketizer = Bucketizer(splits=buckets, inputCol=feature, outputCol="bucket")
-        result = bucketizer.setHandleInvalid("keep").transform(reference_and_current)
+        bucketizer = Bucketizer(splits=buckets, inputCol=feature, outputCol='bucket')
+        result = bucketizer.setHandleInvalid('keep').transform(reference_and_current)
 
         current_df = (
-            result.filter(F.col(f"{self.prefix_id}_type") == "current")
-            .groupBy("bucket")
-            .agg(F.count(F.col(feature)).alias("curr_count"))
+            result.filter(F.col(f'{self.prefix_id}_type') == 'current')
+            .groupBy('bucket')
+            .agg(F.count(F.col(feature)).alias('curr_count'))
         )
         reference_df = (
-            result.filter(F.col(f"{self.prefix_id}_type") == "reference")
-            .groupBy("bucket")
-            .agg(F.count(F.col(feature)).alias("ref_count"))
+            result.filter(F.col(f'{self.prefix_id}_type') == 'reference')
+            .groupBy('bucket')
+            .agg(F.count(F.col(feature)).alias('ref_count'))
         )
 
         buckets_number = list(range(10))
         bucket_df = self.spark_session.createDataFrame(
             buckets_number, IntegerType()
-        ).withColumnRenamed("value", "bucket")
+        ).withColumnRenamed('value', 'bucket')
         tot_df = (
-            bucket_df.join(current_df, on=["bucket"], how="left")
-            .join(reference_df, on=["bucket"], how="left")
+            bucket_df.join(current_df, on=['bucket'], how='left')
+            .join(reference_df, on=['bucket'], how='left')
             .fillna(0)
-            .orderBy("bucket")
+            .orderBy('bucket')
         )
         # workaround if all values are the same to not have errors
         if len(generated_buckets) == 1:
-            tot_df = tot_df.filter(F.col("bucket") == 1)
-        current_hist = tot_df.select("curr_count").rdd.flatMap(lambda x: x).collect()
-        reference_hist = tot_df.select("ref_count").rdd.flatMap(lambda x: x).collect()
+            tot_df = tot_df.filter(F.col('bucket') == 1)
+        current_hist = tot_df.select('curr_count').rdd.flatMap(lambda x: x).collect()
+        reference_hist = tot_df.select('ref_count').rdd.flatMap(lambda x: x).collect()
         current_fractions = [x / sum(current_hist) for x in current_hist]
         reference_fractions = [x / sum(reference_hist) for x in reference_hist]
 
         # compute PSI for each bucket and sum
         psi_value = sum(
             PSI.sub_psi(reference_fractions[i], current_fractions[i])
-            for i in range(0, len(reference_fractions))
+            for i in range(len(reference_fractions))
         )
 
-        return {"psi_value": float(psi_value)}
+        return {'psi_value': float(psi_value)}

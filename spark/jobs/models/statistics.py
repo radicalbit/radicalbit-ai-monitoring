@@ -1,6 +1,6 @@
-from pydantic import BaseModel, ConfigDict
-
 from typing import Optional
+
+from pydantic import BaseModel, ConfigDict
 
 
 class Statistics(BaseModel):
@@ -14,4 +14,4 @@ class Statistics(BaseModel):
     categorical: int
     datetime: int
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')

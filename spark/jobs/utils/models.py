@@ -1,64 +1,59 @@
 from enum import Enum
-from typing import Optional, List
+from typing import List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel
-from pyspark.sql.types import (
-    StringType,
-    DoubleType,
-    IntegerType,
-    TimestampType,
-)
+from pyspark.sql.types import DoubleType, IntegerType, StringType, TimestampType
 
 
 class JobStatus(str, Enum):
-    IMPORTING = "IMPORTING"
-    SUCCEEDED = "SUCCEEDED"
-    ERROR = "ERROR"
+    IMPORTING = 'IMPORTING'
+    SUCCEEDED = 'SUCCEEDED'
+    ERROR = 'ERROR'
 
 
 class SupportedTypes(str, Enum):
-    string = "string"
-    int = "int"
-    float = "float"
-    bool = "bool"
-    datetime = "datetime"
+    string = 'string'
+    int = 'int'
+    float = 'float'
+    bool = 'bool'
+    datetime = 'datetime'
 
 
 class FieldTypes(str, Enum):
-    categorical = "categorical"
-    numerical = "numerical"
-    datetime = "datetime"
+    categorical = 'categorical'
+    numerical = 'numerical'
+    datetime = 'datetime'
 
 
 class ModelType(str, Enum):
-    REGRESSION = "REGRESSION"
-    BINARY = "BINARY"
-    MULTI_CLASS = "MULTI_CLASS"
-    TEXT_GENERATION = "TEXT_GENERATION"
+    REGRESSION = 'REGRESSION'
+    BINARY = 'BINARY'
+    MULTI_CLASS = 'MULTI_CLASS'
+    TEXT_GENERATION = 'TEXT_GENERATION'
 
 
 class DataType(str, Enum):
-    TABULAR = "TABULAR"
-    TEXT = "TEXT"
-    IMAGE = "IMAGE"
+    TABULAR = 'TABULAR'
+    TEXT = 'TEXT'
+    IMAGE = 'IMAGE'
 
 
 class Granularity(str, Enum):
-    HOUR = "HOUR"
-    DAY = "DAY"
-    WEEK = "WEEK"
-    MONTH = "MONTH"
+    HOUR = 'HOUR'
+    DAY = 'DAY'
+    WEEK = 'WEEK'
+    MONTH = 'MONTH'
 
 
 class DriftAlgorithmType(str, Enum):
-    HELLINGER = "HELLINGER"
-    WASSERSTEIN = "WASSERSTEIN"
-    KS = "KS"
-    JS = "JS"
-    PSI = "PSI"
-    CHI2 = "CHI2"
-    KL = "KULLBACK"
+    HELLINGER = 'HELLINGER'
+    WASSERSTEIN = 'WASSERSTEIN'
+    KS = 'KS'
+    JS = 'JS'
+    PSI = 'PSI'
+    CHI2 = 'CHI2'
+    KL = 'KULLBACK'
 
 
 class DriftMethod(BaseModel):

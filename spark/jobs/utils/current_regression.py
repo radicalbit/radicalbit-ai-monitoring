@@ -1,9 +1,8 @@
 from typing import List, Optional
 
-from pyspark.sql import SparkSession
-import pyspark.sql.functions as F
-
 from metrics.data_quality_calculator import DataQualityCalculator
+from metrics.drift_calculator import DriftCalculator
+from metrics.model_quality_regression_calculator import ModelQualityRegressionCalculator
 from models.current_dataset import CurrentDataset
 from models.data_quality import (
     CategoricalFeatureMetrics,
@@ -13,10 +12,11 @@ from models.data_quality import (
 )
 from models.reference_dataset import ReferenceDataset
 from models.regression_model_quality import ModelQualityRegression, RegressionMetricType
-from metrics.model_quality_regression_calculator import ModelQualityRegressionCalculator
+from pyspark.sql import SparkSession
+import pyspark.sql.functions as F
+
 from .misc import create_time_format
 from .models import Granularity
-from metrics.drift_calculator import DriftCalculator
 
 
 class CurrentMetricsRegressionService:
@@ -33,17 +33,17 @@ class CurrentMetricsRegressionService:
         self.prefix_id = prefix_id
 
     def calculate_model_quality(self) -> ModelQualityRegression:
-        metrics = dict()
-        metrics["global_metrics"] = ModelQualityRegressionCalculator.numerical_metrics(
+        metrics = {}
+        metrics['global_metrics'] = ModelQualityRegressionCalculator.numerical_metrics(
             model=self.current.model,
             dataframe=self.current.current,
             dataframe_count=self.current.current_count,
             prefix_id=self.prefix_id,
         ).model_dump(serialize_as_any=True)
-        metrics["grouped_metrics"] = (
+        metrics['grouped_metrics'] = (
             self.calculate_regression_model_quality_group_by_timestamp()
         )
-        metrics["global_metrics"]["residuals"] = (
+        metrics['global_metrics']['residuals'] = (
             ModelQualityRegressionCalculator.residual_metrics(
                 model=self.current.model,
                 dataframe=self.current.current,
@@ -68,13 +68,13 @@ class CurrentMetricsRegressionService:
                                             self.current.model.granularity
                                         ),
                                     ),
-                                    "sunday",
+                                    'sunday',
                                 ),
                                 7,
                             )
                         ),
-                        "yyyy-MM-dd HH:mm:ss",
-                    ).alias("time_group"),
+                        'yyyy-MM-dd HH:mm:ss',
+                    ).alias('time_group'),
                 ]
             )
         else:
@@ -89,28 +89,28 @@ class CurrentMetricsRegressionService:
                                 create_time_format(self.current.model.granularity),
                             )
                         ),
-                        "yyyy-MM-dd HH:mm:ss",
-                    ).alias("time_group"),
+                        'yyyy-MM-dd HH:mm:ss',
+                    ).alias('time_group'),
                 ]
             )
 
         list_of_time_group = (
-            dataset_with_group.select("time_group")
+            dataset_with_group.select('time_group')
             .distinct()
-            .orderBy(F.col("time_group").asc())
+            .orderBy(F.col('time_group').asc())
             .rdd.flatMap(lambda x: x)
             .collect()
         )
         array_of_groups = [
-            dataset_with_group.where(F.col("time_group") == x)
+            dataset_with_group.where(F.col('time_group') == x)
             for x in list_of_time_group
         ]
 
         return {
             metric_name.value: [
                 {
-                    "timestamp": group,
-                    "value": ModelQualityRegressionCalculator.eval_model_quality_metric(
+                    'timestamp': group,
+                    'value': ModelQualityRegressionCalculator.eval_model_quality_metric(
                         self.current.model,
                         group_dataset,
                         group_dataset.count(),

@@ -1,12 +1,11 @@
-from typing import Tuple, Optional, Dict, List
-import numpy as np
-from pyspark.sql import functions as f
-from pyspark.sql import DataFrame
-from scipy.stats import gaussian_kde
 import itertools
+from typing import Dict, List, Optional, Tuple
 
+import numpy as np
+from pyspark.sql import DataFrame, functions as f
+from scipy.stats import gaussian_kde
 from utils.drift_detector import DriftDetector
-from utils.models import FieldTypes, DriftAlgorithmType, ColumnDefinition
+from utils.models import ColumnDefinition, DriftAlgorithmType, FieldTypes
 
 
 class HellingerDistance(DriftDetector):
@@ -14,16 +13,16 @@ class HellingerDistance(DriftDetector):
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
-        if not kwargs["threshold"]:
-            raise AttributeError("threshold is not defined in kwargs")
-        threshold = kwargs["threshold"]
+        if not kwargs['threshold']:
+            raise AttributeError('threshold is not defined in kwargs')
+        threshold = kwargs['threshold']
         result_tmp = self.compute_distance(feature.name, feature.field_type)
-        feature_dict_to_append["type"] = DriftAlgorithmType.HELLINGER
-        feature_dict_to_append["value"] = float(result_tmp["HellingerDistance"])
-        feature_dict_to_append["has_drift"] = bool(
-            result_tmp["HellingerDistance"] <= threshold
+        feature_dict_to_append['type'] = DriftAlgorithmType.HELLINGER
+        feature_dict_to_append['value'] = float(result_tmp['HellingerDistance'])
+        feature_dict_to_append['has_drift'] = bool(
+            result_tmp['HellingerDistance'] <= threshold
         )
-        feature_dict_to_append["limit"] = threshold
+        feature_dict_to_append['limit'] = threshold
         return feature_dict_to_append
 
     @property
@@ -31,8 +30,7 @@ class HellingerDistance(DriftDetector):
         return [FieldTypes.categorical, FieldTypes.numerical]
 
     def __init__(self, spark_session, reference_data, current_data, prefix_id) -> None:
-        """
-        Initializes the Hellinger Distance object with necessary data and parameters.
+        """Initialize the Hellinger Distance object with necessary data and parameters.
 
         Parameters:
         - spark_session (SparkSession): The SparkSession object
@@ -40,6 +38,7 @@ class HellingerDistance(DriftDetector):
         - current_data (pyspark.sql.DataFrame): The DataFrame containing the current data
         - reference_data_length (int): The reference length
         - current_data_length (int): The current length
+
         """
         self.spark_session = spark_session
         self.reference_data = reference_data
@@ -52,8 +51,7 @@ class HellingerDistance(DriftDetector):
     def __calculate_category_percentages(
         df: DataFrame, column_name: str, prefix_id: str
     ) -> DataFrame:
-        """
-        Creates a new dataframe with categories and their percentages
+        """Create a new dataframe with categories and their percentages
 
         Parameters:
         - df (pyspark.sql.DataFrame): The spark df
@@ -61,27 +59,27 @@ class HellingerDistance(DriftDetector):
 
         Returns:
         DataFrame with two columns: category and percentage
+
         """
 
         category_counts = df.groupBy(column_name).agg(
-            f.count("*").alias(f"{prefix_id}_count")
+            f.count('*').alias(f'{prefix_id}_count')
         )
         total_count = df.count()
         result_df = category_counts.withColumn(
-            f"{prefix_id}_percentage",
-            (f.col(f"{prefix_id}_count") / f.lit(total_count)),
+            f'{prefix_id}_percentage',
+            (f.col(f'{prefix_id}_count') / f.lit(total_count)),
         )
         return result_df.select(
-            f.col(column_name).alias(f"{prefix_id}_category"),
-            f.col(f"{prefix_id}_percentage"),
-        ).orderBy(f"{prefix_id}_category")
+            f.col(column_name).alias(f'{prefix_id}_category'),
+            f.col(f'{prefix_id}_percentage'),
+        ).orderBy(f'{prefix_id}_category')
 
     @staticmethod
     def __calculate_kde_continuous_pdf_on_partition(
         df: DataFrame, column_name: str, bins: int
     ) -> List:
-        """
-        Estimate the probability density function using KDE for each partition (workers).
+        """Estimate the probability density function using KDE for each partition (workers).
 
         Parameters:
         - df (pyspark.sql.DataFrame): The spark df
@@ -90,6 +88,7 @@ class HellingerDistance(DriftDetector):
 
         Returns:
         A list with the KDE processing for each worker.
+
         """
 
         def __compute_kde_on_partition(iterator):
@@ -106,8 +105,7 @@ class HellingerDistance(DriftDetector):
     def __calculate_kde_continuous_pdf(
         df: DataFrame, column_name: str, bins: int
     ) -> Tuple:
-        """
-        Estimate the probability density function using KDE.
+        """Estimate the probability density function using KDE.
 
         Parameters:
         - df (pyspark.sql.DataFrame): The spark df
@@ -116,6 +114,7 @@ class HellingerDistance(DriftDetector):
 
         Returns:
         Tuple with two objects: the interpolation points and the pdf
+
         """
 
         # np_array = df.select(column_name).toPandas().to_numpy().reshape(-1)
@@ -126,11 +125,11 @@ class HellingerDistance(DriftDetector):
         return x, pdf / np.sum(pdf)
 
     def __compute_bins_for_continuous_data(self) -> int:
-        """
-        Calculate the number of bins using the Sturges rule.
+        """Calculate the number of bins using the Sturges rule.
 
         Returns:
         Bins number as integer.
+
         """
         return int(np.ceil(np.log2(self.reference_data_length) + 1))
 
@@ -140,8 +139,7 @@ class HellingerDistance(DriftDetector):
         data_type: FieldTypes,
         process_on_partitions: bool = False,
     ) -> Optional[float]:
-        """
-        Compute the Hellinger Distasnce according to the data type (discrete or continuous).
+        """Compute the Hellinger Distasnce according to the data type (discrete or continuous).
 
         Parameters:
         - column_name (str): The name of the column
@@ -150,6 +148,7 @@ class HellingerDistance(DriftDetector):
 
         Returns:
         The Hellinger Distance value.
+
         """
         column = column_name
 
@@ -164,13 +163,13 @@ class HellingerDistance(DriftDetector):
 
             reference_category_dict = (
                 reference_category_percentages.toPandas()
-                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
+                .set_index(f'{self.prefix_id}_category')[f'{self.prefix_id}_percentage']
                 .to_dict()
             )
 
             current_category_dict = (
                 current_category_percentages.toPandas()
-                .set_index(f"{self.prefix_id}_category")[f"{self.prefix_id}_percentage"]
+                .set_index(f'{self.prefix_id}_category')[f'{self.prefix_id}_percentage']
                 .to_dict()
             )
 
@@ -179,19 +178,17 @@ class HellingerDistance(DriftDetector):
             Check if reference and current have the same keys.
             If not, missing keys will be added in the shorter dictionary with a percentage of 0.0.
             For example:
-            
             ref_dict = {"A": 0.5, "B": 0.5}
             curr_dict = {"A": 0.5, "B": 0.25, "C": 0.25}
-            
             The ref_dict will be modified as follows:
             ref_dict = {"A": 0.5, "B": 0.5, "C": 0.0}
             """
-            if not reference_category_dict.keys() == current_category_dict.keys():
+            if reference_category_dict.keys() != current_category_dict.keys():
                 dicts = (reference_category_dict, current_category_dict)
                 all_keys = set().union(*dicts)
-                reference_category_dict, current_category_dict = [
+                reference_category_dict, current_category_dict = (
                     {key: d.get(key, 0.0) for key in all_keys} for d in dicts
-                ]
+                )
 
             reference_values = np.array(list(reference_category_dict.values()))
             current_values = np.array(list(current_category_dict.values()))
@@ -200,7 +197,7 @@ class HellingerDistance(DriftDetector):
                 0.5 * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
             )
 
-        elif data_type == FieldTypes.numerical:
+        if data_type == FieldTypes.numerical:
             bins = self.__compute_bins_for_continuous_data()
 
             if process_on_partitions:
@@ -275,30 +272,28 @@ class HellingerDistance(DriftDetector):
                     )
                 )
 
-            else:
-                x1, reference_pdf = self.__calculate_kde_continuous_pdf(
-                    df=self.reference_data, column_name=column, bins=bins
-                )
+            x1, reference_pdf = self.__calculate_kde_continuous_pdf(
+                df=self.reference_data, column_name=column, bins=bins
+            )
 
-                x2, current_pdf = self.__calculate_kde_continuous_pdf(
-                    df=self.current_data, column_name=column, bins=bins
-                )
+            x2, current_pdf = self.__calculate_kde_continuous_pdf(
+                df=self.current_data, column_name=column, bins=bins
+            )
 
-                common_x = np.linspace(
-                    min(x1.min(), x2.min()), max(x1.max(), x2.max()), bins
-                )
+            common_x = np.linspace(
+                min(x1.min(), x2.min()), max(x1.max(), x2.max()), bins
+            )
 
-                reference_values = np.interp(common_x, x1, reference_pdf)
-                current_values = np.interp(common_x, x2, current_pdf)
+            reference_values = np.interp(common_x, x1, reference_pdf)
+            current_values = np.interp(common_x, x2, current_pdf)
 
-                return np.sqrt(
-                    0.5
-                    * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
-                )
+            return np.sqrt(
+                0.5 * np.sum((np.sqrt(reference_values) - np.sqrt(current_values)) ** 2)
+            )
+        return None
 
     def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
-        """
-        Returns the Hellinger Distance.
+        """Return the Hellinger Distance.
 
         Parameters:
         - on_column (str): The column to use for the distance computation
@@ -306,10 +301,11 @@ class HellingerDistance(DriftDetector):
 
         Returns:
         The distance as a dictionary.
+
         """
 
         return {
-            "HellingerDistance": self.__hellinger_distance(
+            'HellingerDistance': self.__hellinger_distance(
                 # We set process_on_partition=False until we find a strategy to
                 # automatically select the proper processing type.
                 column_name=on_column,

@@ -1,5 +1,6 @@
-from pydantic import BaseModel, confloat, ConfigDict
 from typing import List
+
+from pydantic import BaseModel, ConfigDict, confloat
 
 
 class Prob(BaseModel):
@@ -17,14 +18,14 @@ class Probs(BaseModel):
     perplexity: confloat(ge=1)
     probability: confloat(ge=0, le=1)
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class MeanPerFile(BaseModel):
     prob_tot_mean: confloat(ge=0, le=1)
     perplex_tot_mean: confloat(ge=1)
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class CompletionMetricsModel(BaseModel):

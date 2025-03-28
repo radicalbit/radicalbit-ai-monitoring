@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -8,14 +8,14 @@ class MedianMetrics(BaseModel):
     median: float
     perc_75: float
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class MissingValue(BaseModel):
     count: int
     percentage: float
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class ClassMedianMetrics(BaseModel):
@@ -23,7 +23,7 @@ class ClassMedianMetrics(BaseModel):
     mean: float
     median_metrics: MedianMetrics
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class FeatureMetrics(BaseModel):
@@ -37,11 +37,11 @@ class Histogram(BaseModel):
     reference_values: List[int]
     current_values: Optional[List[int]] = None
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class NumericalFeatureMetrics(FeatureMetrics):
-    type: str = "numerical"
+    type: str = 'numerical'
     mean: float
     std: float
     min: float
@@ -50,7 +50,7 @@ class NumericalFeatureMetrics(FeatureMetrics):
     class_median_metrics: List[ClassMedianMetrics]
     histogram: Histogram
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
     @classmethod
     def from_dict(
@@ -58,21 +58,21 @@ class NumericalFeatureMetrics(FeatureMetrics):
         feature_name: str,
         global_dict: Dict,
         histogram: Histogram,
-    ) -> "NumericalFeatureMetrics":
+    ) -> 'NumericalFeatureMetrics':
         return NumericalFeatureMetrics(
             feature_name=feature_name,
             missing_value=MissingValue(
-                count=global_dict.get("missing_values"),
-                percentage=global_dict.get("missing_values_perc"),
+                count=global_dict.get('missing_values'),
+                percentage=global_dict.get('missing_values_perc'),
             ),
-            mean=global_dict.get("mean"),
-            std=global_dict.get("std"),
-            min=global_dict.get("min"),
-            max=global_dict.get("max"),
+            mean=global_dict.get('mean'),
+            std=global_dict.get('std'),
+            min=global_dict.get('min'),
+            max=global_dict.get('max'),
             median_metrics=MedianMetrics(
-                median=global_dict.get("median"),
-                perc_25=global_dict.get("perc_25"),
-                perc_75=global_dict.get("perc_75"),
+                median=global_dict.get('median'),
+                perc_25=global_dict.get('perc_25'),
+                perc_75=global_dict.get('perc_75'),
             ),
             class_median_metrics=[],
             histogram=histogram,
@@ -80,7 +80,7 @@ class NumericalFeatureMetrics(FeatureMetrics):
 
 
 class NumericalTargetMetrics(FeatureMetrics):
-    type: str = "numerical"
+    type: str = 'numerical'
     mean: float
     std: float
     min: float
@@ -88,7 +88,7 @@ class NumericalTargetMetrics(FeatureMetrics):
     median_metrics: MedianMetrics
     histogram: Histogram
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
     @classmethod
     def from_dict(
@@ -96,21 +96,21 @@ class NumericalTargetMetrics(FeatureMetrics):
         feature_name: str,
         global_dict: Dict,
         histogram: Histogram,
-    ) -> "NumericalTargetMetrics":
+    ) -> 'NumericalTargetMetrics':
         return NumericalTargetMetrics(
             feature_name=feature_name,
             missing_value=MissingValue(
-                count=global_dict.get("missing_values"),
-                percentage=global_dict.get("missing_values_perc"),
+                count=global_dict.get('missing_values'),
+                percentage=global_dict.get('missing_values_perc'),
             ),
-            mean=global_dict.get("mean"),
-            std=global_dict.get("std"),
-            min=global_dict.get("min"),
-            max=global_dict.get("max"),
+            mean=global_dict.get('mean'),
+            std=global_dict.get('std'),
+            min=global_dict.get('min'),
+            max=global_dict.get('max'),
             median_metrics=MedianMetrics(
-                median=global_dict.get("median"),
-                perc_25=global_dict.get("perc_25"),
-                perc_75=global_dict.get("perc_75"),
+                median=global_dict.get('median'),
+                perc_25=global_dict.get('perc_25'),
+                perc_75=global_dict.get('perc_75'),
             ),
             histogram=histogram,
         )
@@ -121,15 +121,15 @@ class CategoryFrequency(BaseModel):
     count: int
     frequency: float
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class CategoricalFeatureMetrics(FeatureMetrics):
-    type: str = "categorical"
+    type: str = 'categorical'
     category_frequency: List[CategoryFrequency]
     distinct_value: int
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
     @classmethod
     def from_dict(
@@ -138,21 +138,21 @@ class CategoricalFeatureMetrics(FeatureMetrics):
         global_metrics: Dict,
         categories_metrics: Dict,
         prefix_id: str,
-    ) -> "CategoricalFeatureMetrics":
-        count: Dict = categories_metrics.get(f"{prefix_id}_count")
-        freq: Dict = categories_metrics.get(f"{prefix_id}_freq")
+    ) -> 'CategoricalFeatureMetrics':
+        count: Dict = categories_metrics.get(f'{prefix_id}_count')
+        freq: Dict = categories_metrics.get(f'{prefix_id}_freq')
         return CategoricalFeatureMetrics(
             feature_name=feature_name,
             missing_value=MissingValue(
-                count=global_metrics.get("missing_values"),
-                percentage=global_metrics.get("missing_values_perc"),
+                count=global_metrics.get('missing_values'),
+                percentage=global_metrics.get('missing_values_perc'),
             ),
-            distinct_value=global_metrics.get("distinct_values"),
+            distinct_value=global_metrics.get('distinct_values'),
             category_frequency=[
                 CategoryFrequency(
                     name=str(k), count=count.get(k), frequency=freq.get(k)
                 )
-                for k in count.keys()
+                for k in count
             ],
         )
 
@@ -163,7 +163,7 @@ class ClassMetrics(BaseModel):
     count: int
     percentage: float
 
-    model_config = ConfigDict(ser_json_inf_nan="null")
+    model_config = ConfigDict(ser_json_inf_nan='null')
 
 
 class BinaryClassDataQuality(BaseModel):

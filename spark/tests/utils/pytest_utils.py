@@ -1,6 +1,7 @@
-import pytest
-from _pytest.python_api import ApproxMapping
 import uuid
+
+from _pytest.python_api import ApproxMapping
+import pytest
 
 prefix_id = str(uuid.uuid4())
 
@@ -21,17 +22,19 @@ class ApproxNestedMapping(ApproxMapping):
 
     # TODO Implement a way to be used with list of nested dict
     def _yield_comparisons(self, actual):
-        for k in self.expected.keys():
+        for k in self.expected:
             if isinstance(actual[k], type(self.expected)):
                 gen = ApproxNestedMapping(
                     self.expected[k], rel=self.rel, abs=self.abs, nan_ok=self.nan_ok
                 )._yield_comparisons(actual[k])
+                yield from gen
                 for el in gen:
-                    yield el
+                    y = el
+                    yield y
             else:
                 yield actual[k], self.expected[k]
 
     def _check_type(self):
-        for key, value in self.expected.items():
+        for value in self.expected.values():
             if not isinstance(value, type(self.expected)):
                 super()._check_type()

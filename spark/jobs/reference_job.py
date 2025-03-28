@@ -1,22 +1,21 @@
-import sys
+import logging
 import os
+import sys
 import uuid
-
-import orjson
-from pyspark.sql.types import StructField, StructType, StringType
 
 from metrics.statistics import calculate_statistics_reference
 from models.reference_dataset import ReferenceDataset
-from utils.reference_regression import ReferenceMetricsRegressionService
-from utils.reference_binary import ReferenceMetricsService
-from utils.models import JobStatus, ModelOut, ModelType
-from utils.db import update_job_status, write_to_db
-
+import orjson
 from pyspark.sql import SparkSession
-
-import logging
-
+from pyspark.sql.types import StringType, StructField, StructType
+from utils.db import update_job_status, write_to_db
+from utils.logger import logger_config
+from utils.models import JobStatus, ModelOut, ModelType
+from utils.reference_binary import ReferenceMetricsService
 from utils.reference_multiclass import ReferenceMetricsMulticlassService
+from utils.reference_regression import ReferenceMetricsRegressionService
+
+logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
 def compute_metrics(reference_dataset, model, reference_uuid):
@@ -29,13 +28,13 @@ def compute_metrics(reference_dataset, model, reference_uuid):
             model_quality = metrics_service.calculate_model_quality()
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
-            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
-                "utf-8"
+            complete_record['MODEL_QUALITY'] = orjson.dumps(model_quality).decode(
+                'utf-8'
             )
-            complete_record["STATISTICS"] = statistics.model_dump_json(
+            complete_record['STATISTICS'] = statistics.model_dump_json(
                 serialize_as_any=True
             )
-            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+            complete_record['DATA_QUALITY'] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
         case ModelType.MULTI_CLASS:
@@ -45,14 +44,14 @@ def compute_metrics(reference_dataset, model, reference_uuid):
             statistics = calculate_statistics_reference(reference_dataset)
             data_quality = metrics_service.calculate_data_quality()
             model_quality = metrics_service.calculate_model_quality()
-            complete_record["STATISTICS"] = statistics.model_dump_json(
+            complete_record['STATISTICS'] = statistics.model_dump_json(
                 serialize_as_any=True
             )
-            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+            complete_record['DATA_QUALITY'] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
-            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
-                "utf-8"
+            complete_record['MODEL_QUALITY'] = orjson.dumps(model_quality).decode(
+                'utf-8'
             )
         case ModelType.REGRESSION:
             metrics_service = ReferenceMetricsRegressionService(
@@ -62,13 +61,13 @@ def compute_metrics(reference_dataset, model, reference_uuid):
             data_quality = metrics_service.calculate_data_quality()
             model_quality = metrics_service.calculate_model_quality()
 
-            complete_record["STATISTICS"] = statistics.model_dump_json(
+            complete_record['STATISTICS'] = statistics.model_dump_json(
                 serialize_as_any=True
             )
-            complete_record["MODEL_QUALITY"] = orjson.dumps(model_quality).decode(
-                "utf-8"
+            complete_record['MODEL_QUALITY'] = orjson.dumps(model_quality).decode(
+                'utf-8'
             )
-            complete_record["DATA_QUALITY"] = data_quality.model_dump_json(
+            complete_record['DATA_QUALITY'] = data_quality.model_dump_json(
                 serialize_as_any=True
             )
     return complete_record
@@ -85,21 +84,21 @@ def main(
     spark_context = spark_session.sparkContext
 
     spark_context._jsc.hadoopConfiguration().set(
-        "fs.s3a.access.key", os.getenv("AWS_ACCESS_KEY_ID")
+        'fs.s3a.access.key', os.getenv('AWS_ACCESS_KEY_ID')
     )
     spark_context._jsc.hadoopConfiguration().set(
-        "fs.s3a.secret.key", os.getenv("AWS_SECRET_ACCESS_KEY")
+        'fs.s3a.secret.key', os.getenv('AWS_SECRET_ACCESS_KEY')
     )
     spark_context._jsc.hadoopConfiguration().set(
-        "fs.s3a.endpoint.region", os.getenv("AWS_REGION")
+        'fs.s3a.endpoint.region', os.getenv('AWS_REGION')
     )
-    if os.getenv("S3_ENDPOINT_URL"):
+    if os.getenv('S3_ENDPOINT_URL'):
         spark_context._jsc.hadoopConfiguration().set(
-            "fs.s3a.endpoint", os.getenv("S3_ENDPOINT_URL")
+            'fs.s3a.endpoint', os.getenv('S3_ENDPOINT_URL')
         )
-        spark_context._jsc.hadoopConfiguration().set("fs.s3a.path.style.access", "true")
+        spark_context._jsc.hadoopConfiguration().set('fs.s3a.path.style.access', 'true')
         spark_context._jsc.hadoopConfiguration().set(
-            "fs.s3a.connection.ssl.enabled", "false"
+            'fs.s3a.connection.ssl.enabled', 'false'
         )
 
     raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
@@ -110,16 +109,16 @@ def main(
     complete_record = compute_metrics(reference_dataset, model, reference_uuid)
 
     complete_record.update(
-        {"UUID": str(uuid.uuid4()), "REFERENCE_UUID": reference_uuid}
+        {'UUID': str(uuid.uuid4()), 'REFERENCE_UUID': reference_uuid}
     )
 
     schema = StructType(
         [
-            StructField("UUID", StringType(), True),
-            StructField("REFERENCE_UUID", StringType(), True),
-            StructField("MODEL_QUALITY", StringType(), True),
-            StructField("DATA_QUALITY", StringType(), True),
-            StructField("STATISTICS", StringType(), True),
+            StructField('UUID', StringType(), True),
+            StructField('REFERENCE_UUID', StringType(), True),
+            StructField('MODEL_QUALITY', StringType(), True),
+            StructField('DATA_QUALITY', StringType(), True),
+            StructField('STATISTICS', StringType(), True),
         ]
     )
 
@@ -127,9 +126,9 @@ def main(
     update_job_status(reference_uuid, JobStatus.SUCCEEDED, dataset_table_name)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     spark_session = SparkSession.builder.appName(
-        "radicalbit_reference_metrics"
+        'radicalbit_reference_metrics'
     ).getOrCreate()
 
     # Json of ModelOut is first param
@@ -153,7 +152,7 @@ if __name__ == "__main__":
             dataset_table_name,
         )
     except Exception as e:
-        logging.exception(e)
+        logger.exception(e)
         update_job_status(reference_uuid, JobStatus.ERROR, dataset_table_name)
     finally:
         spark_session.stop()

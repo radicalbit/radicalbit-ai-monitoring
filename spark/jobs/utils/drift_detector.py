@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from utils.models import FieldTypes, ColumnDefinition
+from utils.models import ColumnDefinition, FieldTypes
 
 
 class DriftDetector(ABC):
