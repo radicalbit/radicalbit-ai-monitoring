@@ -1,4 +1,5 @@
-from typing import Dict, List
+import math
+from typing import Dict
 
 import numpy as np
 from pyspark.ml import Pipeline
@@ -37,7 +38,7 @@ class Chi2Test(DriftDetector):
         self.prefix_id = prefix_id
 
     @property
-    def supported_feature_types(self) -> List[FieldTypes]:
+    def supported_feature_types(self) -> list[FieldTypes]:
         return [FieldTypes.categorical]
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
@@ -45,11 +46,15 @@ class Chi2Test(DriftDetector):
         if not kwargs['p_value']:
             raise AttributeError('p_value is not defined in kwargs')
         p_value = kwargs['p_value']
-        result_tmp = self.test_goodness_fit(feature.name, feature.name)
         feature_dict_to_append['type'] = DriftAlgorithmType.CHI2
+        feature_dict_to_append['limit'] = p_value
+        result_tmp = self.test_goodness_fit(feature.name, feature.name)
+        if result_tmp['pValue'] is None or math.isnan(result_tmp['pValue']):
+            feature_dict_to_append['value'] = -1
+            feature_dict_to_append['has_drift'] = False
+            return feature_dict_to_append
         feature_dict_to_append['value'] = float(result_tmp['pValue'])
         feature_dict_to_append['has_drift'] = bool(result_tmp['pValue'] <= p_value)
-        feature_dict_to_append['limit'] = p_value
         return feature_dict_to_append
 
     def __have_same_size(self) -> bool:
@@ -249,7 +254,7 @@ class Chi2Test(DriftDetector):
             'statistic': result.select('statistic').collect()[0][0],
         }
 
-    def test_goodness_fit(self, reference_column, current_column) -> Dict:
+    def test_goodness_fit(self, reference_column, current_column) -> dict:
         """Performs the chi-square goodness of fit test.
 
         Returns:

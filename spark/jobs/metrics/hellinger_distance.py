@@ -1,5 +1,6 @@
 import itertools
-from typing import Dict, List, Optional, Tuple
+import math
+from typing import Optional
 
 import numpy as np
 from pyspark.sql import DataFrame, functions as f
@@ -16,13 +17,19 @@ class HellingerDistance(DriftDetector):
         if not kwargs['threshold']:
             raise AttributeError('threshold is not defined in kwargs')
         threshold = kwargs['threshold']
-        result_tmp = self.compute_distance(feature.name, feature.field_type)
         feature_dict_to_append['type'] = DriftAlgorithmType.HELLINGER
+        feature_dict_to_append['limit'] = threshold
+        result_tmp = self.compute_distance(feature.name, feature.field_type)
+        if result_tmp['HellingerDistance'] is None or math.isnan(
+            result_tmp['HellingerDistance']
+        ):
+            feature_dict_to_append['value'] = -1
+            feature_dict_to_append['has_drift'] = False
+            return feature_dict_to_append
         feature_dict_to_append['value'] = float(result_tmp['HellingerDistance'])
         feature_dict_to_append['has_drift'] = bool(
             result_tmp['HellingerDistance'] <= threshold
         )
-        feature_dict_to_append['limit'] = threshold
         return feature_dict_to_append
 
     @property
@@ -78,7 +85,7 @@ class HellingerDistance(DriftDetector):
     @staticmethod
     def __calculate_kde_continuous_pdf_on_partition(
         df: DataFrame, column_name: str, bins: int
-    ) -> List:
+    ) -> list:
         """Estimate the probability density function using KDE for each partition (workers).
 
         Parameters:
@@ -104,7 +111,7 @@ class HellingerDistance(DriftDetector):
     @staticmethod
     def __calculate_kde_continuous_pdf(
         df: DataFrame, column_name: str, bins: int
-    ) -> Tuple:
+    ) -> tuple:
         """Estimate the probability density function using KDE.
 
         Parameters:
@@ -292,7 +299,7 @@ class HellingerDistance(DriftDetector):
             )
         return None
 
-    def compute_distance(self, on_column: str, data_type: FieldTypes) -> Dict:
+    def compute_distance(self, on_column: str, data_type: FieldTypes) -> dict:
         """Return the Hellinger Distance.
 
         Parameters:
