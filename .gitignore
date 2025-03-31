@@ -3,6 +3,7 @@
 *.iml
 
 # VSCode specific
+**.vscode/
 .vscode/*
 !.vscode/extensions.json
 

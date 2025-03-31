@@ -29,7 +29,12 @@ class TraceService:
         self.trace_dao = trace_dao
         self.project_dao = project_dao
 
-    def get_all_sessions(
+    def get_all_sessions(self, project_uuid: UUID) -> list[SessionDTO]:
+        self._check_project(project_uuid)
+        sessions = self.trace_dao.get_all_sessions(project_uuid=project_uuid)
+        return [SessionDTO.model_validate(s) for s in sessions]
+
+    def get_all_sessions_paginated(
         self,
         project_uuid: UUID,
         params: Params = Params(),
@@ -37,7 +42,7 @@ class TraceService:
         sort: Optional[str] = None,
     ) -> Page[SessionDTO]:
         self._check_project(project_uuid)
-        sessions = self.trace_dao.get_all_sessions(
+        sessions = self.trace_dao.get_all_sessions_paginated(
             project_uuid=project_uuid, params=params, order=order, sort=sort
         )
         sessions_dto = [SessionDTO.model_validate(s) for s in sessions.items]
@@ -54,12 +59,26 @@ class TraceService:
         session_uuid: Optional[str] = None,
         from_timestamp: Optional[datetime] = None,
         to_timestamp: Optional[datetime] = None,
+    ) -> list[TraceDTO]:
+        self._check_project(project_uuid)
+        results = self.trace_dao.get_all_root_traces_by_project_uuid(
+            project_uuid, trace_id, session_uuid, from_timestamp, to_timestamp
+        )
+        return [TraceDTO.model_validate(trace) for trace in results]
+
+    def get_all_root_traces_by_project_uuid_paginated(
+        self,
+        project_uuid: UUID,
+        trace_id: Optional[str] = None,
+        session_uuid: Optional[str] = None,
+        from_timestamp: Optional[datetime] = None,
+        to_timestamp: Optional[datetime] = None,
         params: Params = Params(),
         order: OrderType = OrderType.ASC,
         sort: Optional[str] = None,
     ) -> Page[TraceDTO]:
         self._check_project(project_uuid)
-        results = self.trace_dao.get_all_root_traces_by_project_uuid(
+        results = self.trace_dao.get_all_root_traces_by_project_uuid_paginated(
             project_uuid,
             trace_id,
             session_uuid,

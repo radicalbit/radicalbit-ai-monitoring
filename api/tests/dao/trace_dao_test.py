@@ -41,6 +41,43 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         )
         self.insert([trace_1, trace_2, trace_3, trace_4])
         res = self.trace_dao.get_all_sessions(project_uuid=db_mock.PROJECT_UUID)
+        assert res is not None
+        session_one = [x for x in res if x['session_uuid'] == str(session_one_uuid)]
+        session_two = [x for x in res if x['session_uuid'] == str(session_two_uuid)]
+        assert session_one[0]['completion_tokens'] == 36
+        assert session_two[0]['completion_tokens'] == 62
+        assert session_one[0]['prompt_tokens'] == 1091
+        assert session_two[0]['prompt_tokens'] == 1669
+        assert session_one[0]['total_tokens'] == 1127
+        assert session_two[0]['total_tokens'] == 1731
+
+    def test_get_all_sessions_paginated(self):
+        session_one_uuid = uuid.uuid4()
+        session_two_uuid = uuid.uuid4()
+        trace_1 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid,
+            completion_tokens=11,
+            prompt_tokens=536,
+        )
+        trace_2 = db_mock.get_sample_trace(
+            session_uuid=session_one_uuid,
+            completion_tokens=25,
+            prompt_tokens=555,
+        )
+        trace_3 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            completion_tokens=34,
+            prompt_tokens=810,
+        )
+        trace_4 = db_mock.get_sample_trace(
+            session_uuid=session_two_uuid,
+            completion_tokens=28,
+            prompt_tokens=859,
+        )
+        self.insert([trace_1, trace_2, trace_3, trace_4])
+        res = self.trace_dao.get_all_sessions_paginated(
+            project_uuid=db_mock.PROJECT_UUID
+        )
         assert res.items is not None
         res = [x._mapping for x in res.items]
         session_one = [x for x in res if x['session_uuid'] == str(session_one_uuid)]
@@ -102,6 +139,22 @@ class TraceDAOTest(DatabaseIntegrationClickhouse):
         )
         self.insert([trace_1, trace_2, trace_3])
         res = self.trace_dao.get_all_root_traces_by_project_uuid(db_mock.PROJECT_UUID)
+        assert len(res) == 1
+        assert res[0]['trace_id'] == db_mock.TRACE_ID
+        assert res[0]['span_id'] == db_mock.SPAN_ID
+
+    def test_get_all_root_traces_by_project_uuid_paginated(self):
+        trace_1 = db_mock.get_sample_trace_tree()
+        trace_2 = db_mock.get_sample_trace_tree(
+            span_id=str(uuid.uuid4()), parent_span_id=db_mock.SPAN_ID
+        )
+        trace_3 = db_mock.get_sample_trace_tree(
+            span_id=str(uuid.uuid4()), parent_span_id=db_mock.SPAN_ID
+        )
+        self.insert([trace_1, trace_2, trace_3])
+        res = self.trace_dao.get_all_root_traces_by_project_uuid_paginated(
+            db_mock.PROJECT_UUID
+        )
         assert res.items is not None
         traces = [x._mapping for x in res.items]
         assert len(traces) == 1

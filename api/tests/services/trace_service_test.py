@@ -28,6 +28,14 @@ class TraceServiceTest(unittest.TestCase):
         ]
 
     def test_get_all_sessions(self):
+        self.trace_dao.get_all_sessions = MagicMock(
+            return_value=db_mock.get_sample_session_tuple()
+        )
+        res = self.trace_service.get_all_sessions(db_mock.PROJECT_UUID)
+        assert len(res) == 2
+        assert all(isinstance(x, SessionDTO) for x in res)
+
+    def test_get_all_sessions_paginated(self):
         page = Page.create(
             items=db_mock.get_sample_session_tuple(),
             total=len(db_mock.get_sample_session_tuple()),
@@ -35,8 +43,8 @@ class TraceServiceTest(unittest.TestCase):
             order=OrderType.ASC,
             sort=None,
         )
-        self.trace_dao.get_all_sessions = MagicMock(return_value=page)
-        res = self.trace_service.get_all_sessions(db_mock.PROJECT_UUID)
+        self.trace_dao.get_all_sessions_paginated = MagicMock(return_value=page)
+        res = self.trace_service.get_all_sessions_paginated(db_mock.PROJECT_UUID)
         assert res.items is not None
         assert len(res.items) == 2
         assert all(isinstance(x, SessionDTO) for x in res.items)
@@ -75,6 +83,16 @@ class TraceServiceTest(unittest.TestCase):
         assert interval_size_in_second == 20
 
     def test_get_all_root_traces_by_project_uuid(self):
+        self.trace_dao.get_all_root_traces_by_project_uuid = MagicMock(
+            return_value=db_mock.get_sample_trace_roots()
+        )
+        res = self.trace_service.get_all_root_traces_by_project_uuid(
+            db_mock.PROJECT_UUID
+        )
+        assert len(res) == 3
+        assert all(isinstance(trace, TraceDTO) for trace in res)
+
+    def test_get_all_root_traces_by_project_uuid_paginated(self):
         page = Page.create(
             items=db_mock.get_sample_trace_roots(),
             total=len(db_mock.get_sample_trace_roots()),
@@ -82,10 +100,10 @@ class TraceServiceTest(unittest.TestCase):
             order=OrderType.ASC,
             sort=None,
         )
-        self.trace_dao.get_all_root_traces_by_project_uuid = MagicMock(
+        self.trace_dao.get_all_root_traces_by_project_uuid_paginated = MagicMock(
             return_value=page
         )
-        res = self.trace_service.get_all_root_traces_by_project_uuid(
+        res = self.trace_service.get_all_root_traces_by_project_uuid_paginated(
             db_mock.PROJECT_UUID
         )
         assert res.items is not None
