@@ -29,7 +29,17 @@ class TraceRoute:
         router = APIRouter(tags=['trace_api'])
 
         @router.get(
-            '/session/all/{project_uuid}',
+            '/project/{project_uuid}/session/all',
+            status_code=200,
+            response_model=list[SessionDTO],
+        )
+        def get_all_session(project_uuid: UUID):
+            return trace_service.get_all_sessions(
+                project_uuid=project_uuid,
+            )
+
+        @router.get(
+            '/project/{project_uuid}/session',
             status_code=200,
             response_model=Page[SessionDTO],
         )
@@ -41,14 +51,47 @@ class TraceRoute:
             _sort: Annotated[Optional[str], Query()] = None,
         ):
             params = Params(page=_page, size=_limit)
-            return trace_service.get_all_sessions(
+            return trace_service.get_all_sessions_paginated(
                 project_uuid=project_uuid, params=params, order=_order, sort=_sort
             )
 
         @router.get(
-            '/project/{project_uuid}', status_code=200, response_model=Page[TraceDTO]
+            '/project/{project_uuid}/trace/all',
+            status_code=200,
+            response_model=list[TraceDTO],
         )
         def get_root_traces_by_project_uuid(
+            project_uuid: UUID,
+            trace_id: Annotated[Optional[str], Query(alias='traceId')] = None,
+            session_uuid: Annotated[Optional[str], Query(alias='sessionUuid')] = None,
+            from_timestamp: Annotated[
+                Optional[int], Query(alias='fromTimestamp')
+            ] = None,
+            to_timestamp: Annotated[Optional[int], Query(alias='toTimestamp')] = None,
+        ):
+            if from_timestamp and to_timestamp:
+                if from_timestamp > to_timestamp:
+                    raise TimestampsRangeError(
+                        message='to_timestamp must be greater than or equal to from_timestamp'
+                    )
+            return trace_service.get_all_root_traces_by_project_uuid(
+                project_uuid=project_uuid,
+                trace_id=trace_id,
+                session_uuid=session_uuid,
+                from_timestamp=datetime.fromtimestamp(from_timestamp)
+                if from_timestamp
+                else None,
+                to_timestamp=datetime.fromtimestamp(to_timestamp)
+                if to_timestamp
+                else None,
+            )
+
+        @router.get(
+            '/project/{project_uuid}/trace',
+            status_code=200,
+            response_model=Page[TraceDTO],
+        )
+        def get_root_traces_by_project_uuid_paginated(
             project_uuid: UUID,
             trace_id: Annotated[Optional[str], Query(alias='traceId')] = None,
             session_uuid: Annotated[Optional[str], Query(alias='sessionUuid')] = None,
@@ -68,7 +111,7 @@ class TraceRoute:
                     )
 
             params = Params(page=_page, size=_limit)
-            return trace_service.get_all_root_traces_by_project_uuid(
+            return trace_service.get_all_root_traces_by_project_uuid_paginated(
                 project_uuid=project_uuid,
                 trace_id=trace_id,
                 session_uuid=session_uuid,
