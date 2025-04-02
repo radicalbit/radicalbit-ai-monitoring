@@ -11,6 +11,7 @@ from starlette.middleware.cors import CORSMiddleware
 
 from app.core import get_config
 from app.db.clickhouse_database import ClickHouseDatabase
+from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
@@ -75,6 +76,7 @@ completion_dataset_dao = CompletionDatasetDAO(database)
 completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
 project_dao = ProjectDAO(database)
 trace_dao = TraceDAO(ch_database)
+api_key_dao = ApiKeyDAO(database)
 
 model_service = ModelService(
     model_dao=model_dao,
