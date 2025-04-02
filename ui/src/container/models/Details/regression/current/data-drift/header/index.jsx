@@ -18,7 +18,7 @@ function DataDriftHeader() {
 
 function TotalFeaturesCounter() {
   const { data } = useGetCurrentDriftQueryWithPolling();
-  const featureMetrics = data?.drift.featureMetrics.filter((feature) => feature.driftCalc.hasDrift) ?? [];
+  const featureMetrics = data?.drift.featureMetrics.filter((feature) => feature.driftCalc.some((d) => d.hasDrift)) ?? [];
   const featuresWithDriftCounter = featureMetrics.length;
   const featuresCounter = data?.drift.featureMetrics.length;
 
@@ -70,7 +70,7 @@ function CategoricalFeaturesCounter() {
   const { data } = useGetCurrentDriftQueryWithPolling();
 
   const featureMetrics = data?.drift.featureMetrics ?? [];
-  const categoricalWithDriftCounter = featureMetrics.filter(({ fieldType, driftCalc }) => fieldType === FEATURE_TYPE.CATEGORICAL && driftCalc.hasDrift).length;
+  const categoricalWithDriftCounter = featureMetrics.filter(({ fieldType, driftCalc }) => fieldType === FEATURE_TYPE.CATEGORICAL && driftCalc.some((d) => d.hasDrift)).length;
   const categoricalCounter = featureMetrics.filter(({ fieldType }) => fieldType === FEATURE_TYPE.CATEGORICAL).length;
 
   if (categoricalCounter === 0) {
@@ -124,7 +124,7 @@ function NumericalFeaturesCounter() {
 
   const featureMetrics = data?.drift.featureMetrics ?? [];
 
-  const numericalWithDriftCounter = featureMetrics.filter(({ fieldType, driftCalc }) => fieldType === FEATURE_TYPE.NUMERICAL && driftCalc.hasDrift).length;
+  const numericalWithDriftCounter = featureMetrics.filter(({ fieldType, driftCalc }) => fieldType === FEATURE_TYPE.NUMERICAL && driftCalc.some((d) => d.hasDrift)).length;
   const numericalCounter = featureMetrics.filter(({ fieldType }) => fieldType === FEATURE_TYPE.NUMERICAL).length;
 
   if (numericalCounter === 0) {

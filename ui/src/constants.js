@@ -1,5 +1,3 @@
-import { FEATURE_TYPE } from '@Container/models/Details/constants';
-
 export const pageSize = 20;
 export const startPage = 1;
 export const MAX_DECIMAL_ROUND = 3;
@@ -87,17 +85,18 @@ export const DRIFT_TEST_ENUM = {
   KS: 'KS',
   CHI2: 'CHI2',
   PSI: 'PSI',
+  HELLIGER: 'HELLINGER',
+  JS: 'JS',
+  KULLBACK: 'KULLBACK',
+  WASSERSTEIN: 'WASSERSTEIN',
 };
 
 export const DRIFT_TEST_ENUM_LABEL = {
   [DRIFT_TEST_ENUM.KS]: 'Kolmogorov-Smirnov (statistics)',
   [DRIFT_TEST_ENUM.CHI2]: 'Chi-Square Test (p-value)',
   [DRIFT_TEST_ENUM.PSI]: 'Population Stability Index',
-};
-
-// FIX: in the future the feature type comes from API
-export const DRIFT_FEATURE_TYPE_ENUM = {
-  [DRIFT_TEST_ENUM.KS]: FEATURE_TYPE.NUMERICAL,
-  [DRIFT_TEST_ENUM.CHI2]: FEATURE_TYPE.CATEGORICAL,
-  [DRIFT_TEST_ENUM.PSI]: FEATURE_TYPE.NUMERICAL,
+  [DRIFT_TEST_ENUM.HELLIGER]: 'Hellinger Distance',
+  [DRIFT_TEST_ENUM.JS]: 'Jensen-Shannon Distance',
+  [DRIFT_TEST_ENUM.KULLBACK]: 'Kullback-Leibler Divergence',
+  [DRIFT_TEST_ENUM.WASSERSTEIN]: 'Wasserstein Distance',
 };
