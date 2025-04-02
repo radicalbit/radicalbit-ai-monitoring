@@ -1,9 +1,8 @@
 import NoFeaturesAvailable from '@Components/ErrorPage/no-features';
 import { FEATURE_TYPE } from '@Container/models/Details/constants';
 import {
-  DRIFT_FEATURE_TYPE_ENUM,
-  DRIFT_TEST_ENUM_LABEL, numberFormatter,
-} from '@Src/constants';
+  fa1, faC, faChevronDown, faChevronUp,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   Board,
   Button,
@@ -14,9 +13,10 @@ import {
   Spinner,
   Tag,
 } from '@radicalbit/radicalbit-design-system';
+import { useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
-import { fa1, faC } from '@fortawesome/free-solid-svg-icons';
 import useGetFilteredFeatures from '../use-get-filtered-features';
+import DetailDriftTable from './table';
 
 function DataDriftList() {
   const items = useGetFilteredFeatures();
@@ -29,20 +29,61 @@ function DataDriftList() {
     <Spinner fullHeight fullWidth>
       <Virtuoso
         data={items}
-        itemContent={(idx, item) => (<FeatureRow key={idx} item={item} />)}
+        itemContent={(idx, item) => (<DriftFeatureBoard key={idx} item={item} />)}
         totalCount={items.length}
       />
     </Spinner>
   );
 }
 
-function FeatureRow({ item }) {
-  const driftAlgoritm = item?.driftCalc[0];
+function DriftFeatureBoard({ item }) {
+  const [showDetail, setShowDetail] = useState(false);
+  const hasDrift = item?.driftCalc.some((el) => el.hasDrift);
 
-  const pinType = driftAlgoritm.hasDrift ? 'filled-error' : 'filled';
-  const isError = driftAlgoritm.hasDrift ? 'is-error' : '';
-  const value = driftAlgoritm.value > 0 ? numberFormatter().format(driftAlgoritm.value) : '--';
+  const pinType = hasDrift ? 'filled-error' : 'filled';
   const buttonIcon = getButtonIcon(item.fieldType);
+
+  const handleOnClick = () => {
+    setShowDetail(!showDetail);
+  };
+
+  if (!showDetail) {
+    return (
+      <Board
+        key={item.featureName}
+        header={(
+          <NewHeader
+            details={{
+              one: (
+                <Button
+                  shape="circle"
+                  size="small"
+                  type="primary"
+                >
+                  <FontAwesomeIcon icon={buttonIcon} />
+                </Button>
+              ),
+              two: <FontAwesomeIcon icon={faChevronDown} />,
+            }}
+            title={(
+              <div className="flex gap-4 ml-2">
+                <Pin type={pinType} />
+
+                <SectionTitle
+                  size="small"
+                  title={item.featureName}
+                  titleSuffix={<Tag mode="text" type="secondary-light">{item.fieldType.toUpperCase()}</Tag>}
+                />
+              </div>
+            )}
+          />
+        )}
+        modifier="my-4 "
+        onClick={handleOnClick}
+        size="small"
+      />
+    );
+  }
 
   return (
     <Board
@@ -51,21 +92,6 @@ function FeatureRow({ item }) {
         <NewHeader
           details={{
             one: (
-              <div className="flex gap-4 justify-start">
-
-                {DRIFT_TEST_ENUM_LABEL[driftAlgoritm.type]}
-
-                <p className={`${isError} m-0`}>
-                  <b className="font-[var(--coo-font-weight-bold)]">
-                    {value}
-
-                    {' '}
-                  </b>
-
-                </p>
-              </div>
-            ),
-            two: (
               <Button
                 shape="circle"
                 size="small"
@@ -74,26 +100,28 @@ function FeatureRow({ item }) {
                 <FontAwesomeIcon icon={buttonIcon} />
               </Button>
             ),
+            two: <FontAwesomeIcon icon={faChevronUp} />,
           }}
           title={(
-            <div className="flex gap-2">
+            <div className="flex gap-4 ml-2">
               <Pin type={pinType} />
 
               <SectionTitle
                 size="small"
                 title={item.featureName}
-                titleSuffix={<Tag mode="text" type="secondary-light">{DRIFT_FEATURE_TYPE_ENUM[driftAlgoritm.type].toUpperCase()}</Tag>}
+                titleSuffix={<Tag mode="text" type="secondary-light">{item.fieldType.toUpperCase()}</Tag>}
               />
             </div>
           )}
         />
       )}
+      main={(<DetailDriftTable data={item?.driftCalc} />)}
       modifier="my-4 "
+      onClick={handleOnClick}
       size="small"
     />
   );
 }
-
 const getButtonIcon = (value) => {
   switch (value) {
     case FEATURE_TYPE.NUMERICAL:
