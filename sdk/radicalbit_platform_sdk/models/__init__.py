@@ -52,6 +52,8 @@ from .project_definition import ProjectDefinition, CreateProject
 from .supported_types import SupportedTypes
 from .drift_algorithm_type import DriftAlgorithmType
 from .drift_method import DriftMethod, ModelDriftMethod
+from .tracing import Session, Trace, Span, TreeNode
+from .widget import LatenciesWidget, TraceTimeseries, SessionsTraces
 
 __all__ = [
     'OutputType',
@@ -100,4 +102,11 @@ __all__ = [
     'FieldType',
     'CreateProject',
     'ProjectDefinition',
+    'Session',
+    'Trace',
+    'Span',
+    'TreeNode',
+    'LatenciesWidget',
+    'TraceTimeseries',
+    'SessionsTraces'
 ]
