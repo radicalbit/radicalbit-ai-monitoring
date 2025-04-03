@@ -65,7 +65,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
       ],
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/session/all/${uuid}${queryParams ? `?${queryParams}` : ''}`,
+        url: `/traces/project/${uuid}/session${queryParams ? `?${queryParams}` : ''}`,
         method: 'get',
       }),
     }),
@@ -76,7 +76,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
       ],
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/project/${uuid}${queryParams ? `?${queryParams}` : ''}`,
+        url: `/traces/project/${uuid}/trace${queryParams ? `?${queryParams}` : ''}`,
         method: 'get',
       }),
     }),
