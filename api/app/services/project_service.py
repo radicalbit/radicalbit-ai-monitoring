@@ -9,6 +9,7 @@ from app.db.tables.project_table import Project
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import ProjectInternalError, ProjectNotFoundError
 from app.models.traces.project_dto import ProjectIn, ProjectOut
+from app.services.api_key_security import ApiKeySecurity
 
 
 class ProjectService:
@@ -16,15 +17,22 @@ class ProjectService:
         self,
         project_dao: ProjectDAO,
         trace_dao: TraceDAO,
+        api_key_security: ApiKeySecurity,
     ):
         self.project_dao = project_dao
         self.trace_dao = trace_dao
+        self.api_key_security = api_key_security
 
     def create_project(self, project_in: ProjectIn) -> ProjectOut:
         try:
-            to_insert = project_in.to_project()
+            api_key_sec = self.api_key_security.generate_key()
+            to_insert = project_in.to_project(
+                api_key_sec.hashed_key, api_key_sec.obscured_key
+            )
             inserted = self.project_dao.insert(to_insert)
-            return ProjectOut.from_project(inserted)
+            return ProjectOut.from_project(
+                project=inserted, plain_api_key=api_key_sec.plain_key
+            )
         except Exception as e:
             raise ProjectInternalError(
                 f'An error occurred while creating the project: {e}'
@@ -33,7 +41,7 @@ class ProjectService:
     def get_project_by_uuid(self, project_uuid: UUID) -> ProjectOut:
         project = self._check_and_get_project(project_uuid)
         traces = self.trace_dao.count_distinct_traces_by_project_uuid(project_uuid)
-        return ProjectOut.from_project(project, traces)
+        return ProjectOut.from_project(project=project, traces=traces)
 
     def get_all_projects(self) -> List[ProjectOut]:
         projects = self.project_dao.get_all()
@@ -41,7 +49,7 @@ class ProjectService:
         projects_out = []
         for project in projects:
             traces = self.trace_dao.count_distinct_traces_by_project_uuid(project.uuid)
-            projects_out.append(ProjectOut.from_project(project, traces))
+            projects_out.append(ProjectOut.from_project(project=project, traces=traces))
 
         return projects_out
 
@@ -60,7 +68,7 @@ class ProjectService:
         projects_out = []
         for project in projects.items:
             traces = self.trace_dao.count_distinct_traces_by_project_uuid(project.uuid)
-            projects_out.append(ProjectOut.from_project(project, traces))
+            projects_out.append(ProjectOut.from_project(project=project, traces=traces))
 
         return Page.create(
             items=projects_out,
@@ -72,7 +80,7 @@ class ProjectService:
         project = self._check_and_get_project(project_uuid)
         traces = self.trace_dao.count_distinct_traces_by_project_uuid(project_uuid)
         self.project_dao.delete(project_uuid)
-        return ProjectOut.from_project(project, traces)
+        return ProjectOut.from_project(project=project, traces=traces)
 
     def _check_and_get_project(self, project_uuid: UUID) -> Project:
         project = self.project_dao.get_by_uuid(project_uuid)

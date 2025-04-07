@@ -45,6 +45,8 @@ from app.routes.model_route import ModelRoute
 from app.routes.project_route import ProjectRoute
 from app.routes.trace_route import TraceRoute
 from app.routes.upload_dataset_route import UploadDatasetRoute
+from app.services.api_key_security import ApiKeySecurity
+from app.services.api_key_service import ApiKeyService
 from app.services.file_service import FileService
 from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
@@ -119,7 +121,13 @@ metrics_service = MetricsService(
     completion_dataset_dao=completion_dataset_dao,
     model_service=model_service,
 )
-project_service = ProjectService(project_dao=project_dao, trace_dao=trace_dao)
+api_key_security = ApiKeySecurity()
+api_key_service = ApiKeyService(
+    api_key_dao=api_key_dao, api_key_security=api_key_security
+)
+project_service = ProjectService(
+    project_dao=project_dao, trace_dao=trace_dao, api_key_security=api_key_security
+)
 trace_service = TraceService(trace_dao=trace_dao, project_dao=project_dao)
 spark_k8s_service = SparkK8SService(spark_k8s_client)
 

@@ -1,5 +1,6 @@
 import uuid
 
+from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.project_dao import ProjectDAO
 from app.models.commons.order_type import OrderType
 from tests.commons import db_mock
@@ -11,11 +12,13 @@ class ProjectDAOTest(DatabaseIntegration):
     def setUpClass(cls):
         super().setUpClass()
         cls.project_dao = ProjectDAO(cls.db)
+        cls.api_key_dao = ApiKeyDAO(cls.db)
 
     def test_insert(self):
         project = db_mock.get_sample_project()
         inserted = self.project_dao.insert(project)
         assert inserted.uuid == project.uuid
+        assert len(inserted.api_keys) == 1
 
     def test_get_by_uuid(self):
         project = db_mock.get_sample_project()
