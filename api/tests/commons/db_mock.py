@@ -27,7 +27,7 @@ from app.models.model_dto import (
     OutputType,
     SupportedTypes,
 )
-from app.models.traces.api_key_dto import ApiKeySec
+from app.models.traces.api_key_dto import ApiKeyIn, ApiKeySec
 from app.models.traces.project_dto import ProjectIn
 
 MODEL_UUID = uuid.uuid4()
@@ -40,7 +40,7 @@ TRACE_ID = str(uuid.uuid4())
 SPAN_ID = str(uuid.uuid4())
 HASHED_KEY = 'da4af9c445b9bc1686ba63455d7c34aa569aeb09b95f395963dc7777a2afc6d4'
 PLAIN_KEY = 'sk-rb-SmnyH9HPJfwyRpJ2vfZEO0ugFWykvwarbEQ2PPpTezpsueV1'
-OBSCURED_KEY = 'sk-rb-Sm*******************************************eV1'
+OBSCURED_KEY = 'sk-rb-Sm...eV1'
 
 
 def get_sample_model(
@@ -667,6 +667,10 @@ def get_sample_api_key_sec(
     plain_key: str = PLAIN_KEY, hashed_key: str = HASHED_KEY
 ) -> ApiKeySec:
     return ApiKeySec(plain_key=plain_key, hashed_key=hashed_key)
+
+
+def get_sample_api_key_in(name: str = 'api_key') -> ApiKeyIn:
+    return ApiKeyIn(name=name)
 
 
 def get_sample_project(

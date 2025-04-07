@@ -188,6 +188,27 @@ class ProjectNotFoundError(ProjectError):
         super().__init__(self.message, self.status_code)
 
 
+class ApiKeyError(Exception):
+    def __init__(self, message, status_code):
+        self.message = message
+        self.status_code = status_code
+        super().__init__(self.message, self.status_code)
+
+
+class ApiKeyInternalError(ApiKeyError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        super().__init__(self.message, self.status_code)
+
+
+class ExistingApiKeyError(ApiKeyError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        super().__init__(self.message, self.status_code)
+
+
 def project_exception_handler(_, err: ProjectError):
     if err.status_code >= 500:
         logger.error(err.message)
@@ -232,4 +253,15 @@ def internal_exception_handler(_, exc: Exception) -> JSONResponse:
     return JSONResponse(
         status_code=500,
         content=jsonable_encoder(ErrorOut(f'Internal server error occurred {exc}')),
+    )
+
+
+def api_key_exception_handler(_, err: ApiKeyError):
+    if err.status_code >= 500:
+        logger.error(err.message)
+    else:
+        logger.warning(err.message)
+    return JSONResponse(
+        status_code=err.status_code,
+        content=jsonable_encoder(ErrorOut(err.message)),
     )
