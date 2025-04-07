@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, computed_field
 from pydantic.alias_generators import to_camel
@@ -12,7 +13,7 @@ class ApiKeySec(BaseModel):
 
     @computed_field(return_type=str)
     def obscured_key(self) -> str:
-        return self.plain_key[:8] + '*' * 43 + self.plain_key[-3:]
+        return self.plain_key[:8] + '...' + self.plain_key[-3:]
 
 
 class ApiKeyIn(BaseModel):
@@ -22,10 +23,13 @@ class ApiKeyIn(BaseModel):
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
     )
 
-    def to_api_key(self, hashed_key: str, obscured_key: str) -> ApiKey:
+    def to_api_key(
+        self, project_uuid: UUID, hashed_key: str, obscured_key: str
+    ) -> ApiKey:
         now = datetime.now(tz=timezone.utc)
         return ApiKey(
             name=self.name,
+            project_uuid=project_uuid,
             hashed_key=hashed_key,
             obscured_key=obscured_key,
             created_at=now,

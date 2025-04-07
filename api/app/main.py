@@ -23,12 +23,14 @@ from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.db.database import Database
 from app.models.exceptions import (
+    ApiKeyError,
     GenericValidationError,
     MetricsError,
     ModelError,
     ProjectError,
     SchemaException,
     TraceError,
+    api_key_exception_handler,
     generic_validation_exception_handler,
     internal_exception_handler,
     metrics_exception_handler,
@@ -38,6 +40,7 @@ from app.models.exceptions import (
     schema_exception_handler,
     trace_exception_handler,
 )
+from app.routes.api_key_route import ApiKeyRoute
 from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
 from app.routes.metrics_route import MetricsRoute
@@ -123,7 +126,7 @@ metrics_service = MetricsService(
 )
 api_key_security = ApiKeySecurity()
 api_key_service = ApiKeyService(
-    api_key_dao=api_key_dao, api_key_security=api_key_security
+    api_key_dao=api_key_dao, project_dao=project_dao, api_key_security=api_key_security
 )
 project_service = ProjectService(
     project_dao=project_dao, trace_dao=trace_dao, api_key_security=api_key_security
@@ -161,13 +164,14 @@ app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schem
 app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
 app.include_router(ProjectRoute.get_router(project_service), prefix='/api/projects')
 app.include_router(TraceRoute.get_router(trace_service), prefix='/api/traces')
-
+app.include_router(ApiKeyRoute.get_router(api_key_service), prefix='/api/api-key')
 app.include_router(HealthcheckRoute.get_healthcheck_route())
 
 app.add_exception_handler(ModelError, model_exception_handler)
 app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(ProjectError, project_exception_handler)
 app.add_exception_handler(TraceError, trace_exception_handler)
+app.add_exception_handler(ApiKeyError, api_key_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
 app.add_exception_handler(GenericValidationError, generic_validation_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
