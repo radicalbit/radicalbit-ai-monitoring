@@ -37,14 +37,14 @@ class ProjectRouteTest(unittest.TestCase):
     def test_create_project(self):
         project_in = db_mock.get_sample_project_in()
         project = db_mock.get_sample_project()
-        project_out = ProjectOut.from_project(project)
+        project_out = ProjectOut.from_project(
+            project=project, plain_api_key=db_mock.PLAIN_KEY
+        )
         self.project_service.create_project = MagicMock(return_value=project_out)
-
         res = self.client.post(
             f'{self.prefix}',
             json=jsonable_encoder(project_in),
         )
-
         assert res.status_code == 201
         assert jsonable_encoder(project_out) == res.json()
         self.project_service.create_project.assert_called_once_with(project_in)
@@ -54,7 +54,6 @@ class ProjectRouteTest(unittest.TestCase):
         self.project_service.create_project = MagicMock(
             side_effect=ProjectInternalError('error')
         )
-
         res = self.client.post(
             f'{self.prefix}',
             json=jsonable_encoder(project_in),

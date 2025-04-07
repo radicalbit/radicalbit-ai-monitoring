@@ -3,6 +3,7 @@ import datetime
 from typing import Dict, List, Optional
 import uuid
 
+from app.db.tables.api_key_table import ApiKey
 from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
 from app.db.tables.completion_dataset_table import CompletionDataset
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
@@ -26,6 +27,7 @@ from app.models.model_dto import (
     OutputType,
     SupportedTypes,
 )
+from app.models.traces.api_key_dto import ApiKeySec
 from app.models.traces.project_dto import ProjectIn
 
 MODEL_UUID = uuid.uuid4()
@@ -36,6 +38,9 @@ PROJECT_UUID = uuid.uuid4()
 SESSION_UUID = uuid.uuid4()
 TRACE_ID = str(uuid.uuid4())
 SPAN_ID = str(uuid.uuid4())
+HASHED_KEY = 'da4af9c445b9bc1686ba63455d7c34aa569aeb09b95f395963dc7777a2afc6d4'
+PLAIN_KEY = 'sk-rb-SmnyH9HPJfwyRpJ2vfZEO0ugFWykvwarbEQ2PPpTezpsueV1'
+OBSCURED_KEY = 'sk-rb-Sm*******************************************eV1'
 
 
 def get_sample_model(
@@ -641,15 +646,39 @@ def get_sample_completion_metrics(
     )
 
 
+def get_sample_api_key(
+    name: str = 'default',
+    project_uuid: PROJECT_UUID = PROJECT_UUID,
+    hashed_key: str = HASHED_KEY,
+    obscured_key: str = OBSCURED_KEY,
+) -> ApiKey:
+    now = datetime.datetime.now(tz=datetime.UTC)
+    return ApiKey(
+        name=name,
+        project_uuid=project_uuid,
+        hashed_key=hashed_key,
+        obscured_key=obscured_key,
+        created_at=now,
+        updated_at=now,
+    )
+
+
+def get_sample_api_key_sec(
+    plain_key: str = PLAIN_KEY, hashed_key: str = HASHED_KEY
+) -> ApiKeySec:
+    return ApiKeySec(plain_key=plain_key, hashed_key=hashed_key)
+
+
 def get_sample_project(
-    uuid: uuid.UUID = PROJECT_UUID,
-    name: str = 'project_name',
+    uuid: uuid.UUID = PROJECT_UUID, name: str = 'project_name'
 ) -> Project:
+    now = datetime.datetime.now(tz=datetime.UTC)
     return Project(
         uuid=uuid,
         name=name,
-        created_at=datetime.datetime.now(tz=datetime.UTC),
-        updated_at=datetime.datetime.now(tz=datetime.UTC),
+        created_at=now,
+        updated_at=now,
+        api_keys=[get_sample_api_key()],
     )
 
 

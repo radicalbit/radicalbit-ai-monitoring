@@ -1,6 +1,7 @@
 import uuid
 
 from sqlalchemy import BOOLEAN, TIMESTAMP, UUID, VARCHAR, Column
+from sqlalchemy.orm import relationship
 
 from app.db.dao.base_dao import BaseDAO
 from app.db.database import BaseTable, Reflected
@@ -20,3 +21,5 @@ class Project(Reflected, BaseTable, BaseDAO):
     created_at = Column('CREATED_AT', TIMESTAMP(timezone=True), nullable=False)
     updated_at = Column('UPDATED_AT', TIMESTAMP(timezone=True), nullable=False)
     deleted = Column('DELETED', BOOLEAN, nullable=False, default=False)
+
+    api_keys = relationship('ApiKey', backref='project')
