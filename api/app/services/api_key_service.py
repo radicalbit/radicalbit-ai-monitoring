@@ -1,11 +1,14 @@
 import logging
+from typing import Optional
 from uuid import UUID
 
+from fastapi_pagination import Page, Params
 from sqlalchemy.exc import IntegrityError
 
 from app.core import get_config
 from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.project_dao import ProjectDAO
+from app.models.commons.order_type import OrderType
 from app.models.exceptions import (
     ApiKeyInternalError,
     ExistingApiKeyError,
@@ -52,4 +55,28 @@ class ApiKeyService:
                 f'An error occurred while creating the api_key: {exc}'
             ) from exc
 
-        return ApiKeyOut.from_api_key(inserted, api_key_sec.plain_key)
+        return ApiKeyOut.from_api_key(inserted, api_key_sec.plain_key, project_uuid)
+
+    def get_all(self, project_uuid: UUID) -> list[ApiKeyOut]:
+        self._check_project(project_uuid=project_uuid)
+        api_keys = self.api_key_dao.get_all(project_uuid=project_uuid)
+        return [ApiKeyOut.from_api_key_obscured(i, project_uuid) for i in api_keys]
+
+    def get_all_paginated(
+        self,
+        project_uuid: UUID,
+        params: Params = Params(),
+        order: OrderType = OrderType.ASC,
+        sort: Optional[str] = None,
+    ) -> Page[ApiKeyOut]:
+        self._check_project(project_uuid=project_uuid)
+        api_keys = self.api_key_dao.get_all_paginated(
+            project_uuid=project_uuid, params=params, order=order, sort=sort
+        )
+        return Page.create(
+            items=[
+                ApiKeyOut.from_api_key_obscured(i, project_uuid) for i in api_keys.items
+            ],
+            params=params,
+            total=api_keys.total,
+        )

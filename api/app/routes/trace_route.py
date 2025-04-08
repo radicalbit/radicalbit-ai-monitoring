@@ -171,7 +171,7 @@ class TraceRoute:
             )
 
         @router.get(
-            '/dashboard/project/{project_uuid}/root_latencies',
+            '/dashboard/project/{project_uuid}/root-latencies',
             status_code=200,
             response_model=LatenciesWidgetDTO,
         )
@@ -192,7 +192,7 @@ class TraceRoute:
             return dashboard_result
 
         @router.get(
-            '/dashboard/project/{project_uuid}/root_latencies_session',
+            '/dashboard/project/{project_uuid}/root-latencies-session',
             status_code=200,
             response_model=List[LatenciesWidgetDTO],
         )
@@ -212,7 +212,7 @@ class TraceRoute:
             return dashboard_result
 
         @router.get(
-            '/dashboard/project/{project_uuid}/leaf_latencies',
+            '/dashboard/project/{project_uuid}/leaf-latencies',
             status_code=200,
             response_model=List[LatenciesWidgetDTO],
         )
@@ -234,7 +234,7 @@ class TraceRoute:
             return dashboard_result
 
         @router.get(
-            '/dashboard/project/{project_uuid}/trace_by_time',
+            '/dashboard/project/{project_uuid}/trace-by-time',
             status_code=200,
             response_model=TraceTimeseriesDTO,
         )

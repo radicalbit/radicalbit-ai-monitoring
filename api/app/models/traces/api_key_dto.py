@@ -39,17 +39,33 @@ class ApiKeyIn(BaseModel):
 
 class ApiKeyOut(BaseModel):
     name: str
+    project_uuid: UUID
     api_key: str
     created_at: str
+    updated_at: str
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
     )
 
     @staticmethod
-    def from_api_key(api_key: ApiKey, plain_api_key: str) -> 'ApiKeyOut':
+    def from_api_key(
+        api_key: ApiKey, plain_api_key: str, project_uuid: UUID
+    ) -> 'ApiKeyOut':
         return ApiKeyOut(
             name=api_key.name,
+            project_uuid=project_uuid,
             api_key=plain_api_key,
             created_at=str(api_key.created_at),
+            updated_at=str(api_key.updated_at),
+        )
+
+    @staticmethod
+    def from_api_key_obscured(api_key: ApiKey, project_uuid: UUID) -> 'ApiKeyOut':
+        return ApiKeyOut(
+            name=api_key.name,
+            project_uuid=project_uuid,
+            api_key=api_key.obscured_key,
+            created_at=str(api_key.created_at),
+            updated_at=str(api_key.updated_at),
         )

@@ -103,7 +103,7 @@ class TraceRouteTest(unittest.TestCase):
             return_value=trace_timeseries_dto
         )
         res = self.client.get(
-            f'{self.prefix}/dashboard/project/{str(uuid.UUID(int=0))}/trace_by_time/'
+            f'{self.prefix}/dashboard/project/{str(uuid.UUID(int=0))}/trace-by-time/'
             f'?fromTimestamp={datetime(year=2025, month=3, day=15, hour=9, minute=0).timestamp()}'
             f'&toTimestamp={datetime(year=2025, month=3, day=20, hour=9, minute=0).timestamp()}'
         )

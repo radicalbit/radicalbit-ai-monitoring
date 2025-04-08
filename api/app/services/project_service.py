@@ -64,7 +64,6 @@ class ProjectService:
             order=order,
             sort=sort,
         )
-
         projects_out = []
         for project in projects.items:
             traces = self.trace_dao.count_distinct_traces_by_project_uuid(project.uuid)

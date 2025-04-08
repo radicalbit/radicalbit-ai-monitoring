@@ -54,6 +54,7 @@ class ProjectOut(BaseModel):
             api_key_out = ApiKeyOut.from_api_key(
                 api_key=project.api_keys[0],
                 plain_api_key=plain_api_key,
+                project_uuid=project.uuid,
             )
         return ProjectOut(
             uuid=project.uuid,
