@@ -55,3 +55,13 @@ class ApiKeyDAO:
                     else stmt.order_by(desc(order_by_column_name(sort)))
                 )
             return paginate(session, stmt, params)
+
+    def get_api_key(self, project_uuid: UUID, name: str) -> ApiKey:
+        with self.db.begin_session() as session:
+            return session.scalar(
+                select(ApiKey).where(
+                    ApiKey.name == name,
+                    ApiKey.project_uuid == project_uuid,
+                    ApiKey.deleted.is_(False),
+                )
+            )

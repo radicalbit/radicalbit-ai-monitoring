@@ -46,4 +46,12 @@ class ApiKeyRoute:
                 project_uuid, params, _order, _sort
             )
 
+        @router.get(
+            '/project/{project_uuid}/api-keys/{api_key_name}',
+            status_code=200,
+            response_model=ApiKeyOut,
+        )
+        def get_api_key(project_uuid: UUID, api_key_name: str):
+            return api_key_service.get_api_key(project_uuid, api_key_name)
+
         return router

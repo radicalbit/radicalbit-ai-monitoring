@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.project_dao import ProjectDAO
 from app.models.commons.order_type import OrderType
-from app.models.exceptions import ExistingApiKeyError
+from app.models.exceptions import ApiKeyNotFoundError, ExistingApiKeyError
 from app.models.traces.api_key_dto import ApiKeyOut
 from app.services.api_key_security import ApiKeySecurity
 from app.services.api_key_service import ApiKeyService
@@ -100,3 +100,25 @@ class ApiKeyServiceTest(unittest.TestCase):
         assert res.items[0].name == 'api_key'
         assert res.items[1].name == 'api_key_one'
         assert res.items[2].name == 'api_key_two'
+
+    def test_get_api_key(self):
+        api_key = db_mock.get_sample_api_key(name='api_key')
+        self.api_key_dao.get_api_key = MagicMock(return_value=api_key)
+        res = self.api_key_service.get_api_key(
+            project_uuid=db_mock.PROJECT_UUID, name='api_key'
+        )
+        self.api_key_dao.get_api_key.assert_called_once_with(
+            db_mock.PROJECT_UUID, 'api_key'
+        )
+        assert isinstance(res, ApiKeyOut)
+        assert res.name == 'api_key'
+        assert res.project_uuid == db_mock.PROJECT_UUID
+
+    def test_get_api_key_not_found(self):
+        self.api_key_dao.get_api_key = MagicMock(return_value=None)
+        pytest.raises(
+            ApiKeyNotFoundError,
+            self.api_key_service.get_api_key,
+            db_mock.PROJECT_UUID,
+            'api_key',
+        )
