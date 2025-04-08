@@ -1,5 +1,6 @@
 from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.project_dao import ProjectDAO
+from app.db.tables.api_key_table import ApiKey
 from tests.commons import db_mock
 from tests.commons.db_integration import DatabaseIntegration
 
@@ -55,3 +56,13 @@ class ApiKeyDAOTest(DatabaseIntegration):
         res = self.api_key_dao.get_all_paginated(db_mock.PROJECT_UUID, sort='name')
         assert len(res.items) == 4
         assert res.items[0].name == 'aaa'
+
+    def test_get_api_key(self):
+        api_key = db_mock.get_sample_api_key(name='aaa')
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        self.api_key_dao.insert(api_key)
+        res = self.api_key_dao.get_api_key(db_mock.PROJECT_UUID, 'aaa')
+        assert isinstance(res, ApiKey)
+        assert res.name == api_key.name
+        assert res.project_uuid == api_key.project_uuid

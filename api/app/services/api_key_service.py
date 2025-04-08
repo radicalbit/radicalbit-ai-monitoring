@@ -11,6 +11,7 @@ from app.db.dao.project_dao import ProjectDAO
 from app.models.commons.order_type import OrderType
 from app.models.exceptions import (
     ApiKeyInternalError,
+    ApiKeyNotFoundError,
     ExistingApiKeyError,
     ProjectNotFoundError,
 )
@@ -80,3 +81,10 @@ class ApiKeyService:
             params=params,
             total=api_keys.total,
         )
+
+    def get_api_key(self, project_uuid: UUID, name: str) -> ApiKeyOut:
+        self._check_project(project_uuid=project_uuid)
+        api_key = self.api_key_dao.get_api_key(project_uuid, name)
+        if not api_key:
+            raise ApiKeyNotFoundError(f'ApiKey {name} not found')
+        return ApiKeyOut.from_api_key_obscured(api_key, project_uuid)
