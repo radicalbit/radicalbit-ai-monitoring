@@ -715,6 +715,20 @@ files = [
 ]
 
 [[package]]
+name = "ipecharts"
+version = "1.0.8"
+description = "Apache Echarts Jupyter Widget."
+optional = true
+python-versions = ">=3.8"
+files = [
+    {file = "ipecharts-1.0.8-py3-none-any.whl", hash = "sha256:08a27e674c3bd03e00ca4fcedd12797a814cfc24a0ae4c896c7c5a1c4e36d76c"},
+    {file = "ipecharts-1.0.8.tar.gz", hash = "sha256:8819948dfea851ce053e77ea5cccda70371c4568084e6d630d94c0660ac0b8ee"},
+]
+
+[package.dependencies]
+ipywidgets = ">=8,<9"
+
+[[package]]
 name = "ipykernel"
 version = "6.29.5"
 description = "IPython Kernel for Jupyter"
@@ -2794,9 +2808,9 @@ files = [
 ]
 
 [extras]
-chart = []
+chart = ["ipecharts"]
 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "989507b1d8cc384f7d678764ab63614ecf4c777dcf9732e253f05d80f3ad5d41"
+content-hash = "f1551001ae99bb998d3c23f0192cf92f9c3cb6d2fc3e81bec3c90549499f38c5"

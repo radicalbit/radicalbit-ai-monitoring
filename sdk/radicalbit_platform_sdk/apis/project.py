@@ -18,9 +18,11 @@ class Project:
         self.__base_url = base_url
         self.__name = definition.name
 
+    @property
     def uuid(self) -> UUID:
         return self.__uuid
 
+    @property
     def name(self) -> str:
         return self.__name
 
