@@ -11,6 +11,7 @@ from app.models.exceptions import (
     ApiKeyError,
     ApiKeyNotFoundError,
     ExistingApiKeyError,
+    LastApiKeyError,
     api_key_exception_handler,
 )
 from app.models.traces.api_key_dto import ApiKeyOut
@@ -119,3 +120,23 @@ class ApiKeyRouteTest(unittest.TestCase):
             f'{self.prefix}/project/{db_mock.PROJECT_UUID}/api-keys/fake'
         )
         assert res.status_code == 404
+
+    def test_delete_api_key(self):
+        self.api_key_service.delete_api_key = MagicMock(return_value=1)
+        res = self.client.delete(
+            f'{self.prefix}/project/{db_mock.PROJECT_UUID}/api-keys/api_key'
+        )
+        assert res.status_code == 204
+        self.api_key_service.delete_api_key.assert_called_once_with(
+            db_mock.PROJECT_UUID, 'api_key'
+        )
+
+    def test_delete_api_key_last(self):
+        self.api_key_service.delete_api_key = MagicMock()
+        self.api_key_service.delete_api_key.side_effect = LastApiKeyError(
+            'ApiKey fake is the last key for that project'
+        )
+        res = self.client.delete(
+            f'{self.prefix}/project/{db_mock.PROJECT_UUID}/api-keys/fake'
+        )
+        assert res.status_code == 400

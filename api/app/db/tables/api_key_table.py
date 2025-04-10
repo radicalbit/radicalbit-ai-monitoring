@@ -1,4 +1,4 @@
-from sqlalchemy import BOOLEAN, TIMESTAMP, UUID, VARCHAR, Column, ForeignKey
+from sqlalchemy import TIMESTAMP, UUID, VARCHAR, Column, ForeignKey
 
 from app.db.dao.base_dao import BaseDAO
 from app.db.database import BaseTable, Reflected
@@ -19,4 +19,3 @@ class ApiKey(Reflected, BaseTable, BaseDAO):
     obscured_key = Column('OBSCURED_KEY', VARCHAR(128), nullable=False)
     created_at = Column('CREATED_AT', TIMESTAMP(timezone=True), nullable=False)
     updated_at = Column('UPDATED_AT', TIMESTAMP(timezone=True), nullable=False)
-    deleted = Column('DELETED', BOOLEAN(), nullable=False, default=False)

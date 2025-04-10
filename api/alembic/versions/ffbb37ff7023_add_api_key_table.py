@@ -27,7 +27,6 @@ def upgrade() -> None:
         sa.Column('OBSCURED_KEY', sa.String(128), nullable=False),
         sa.Column('CREATED_AT', sa.TIMESTAMP(timezone=True), nullable=False),
         sa.Column('UPDATED_AT', sa.TIMESTAMP(timezone=True), nullable=False),
-        sa.Column('DELETED', sa.BOOLEAN(), nullable=False),
         sa.PrimaryKeyConstraint("NAME", "PROJECT_UUID", name="pk_api_key"),
     )
 

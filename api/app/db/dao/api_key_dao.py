@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
-from sqlalchemy import Select, Sequence, asc, desc, select
+from sqlalchemy import Select, Sequence, asc, delete, desc, func, select
 
 from app.db.database import Database
 from app.db.tables.api_key_table import ApiKey
@@ -17,9 +17,7 @@ class ApiKeyDAO:
 
     @staticmethod
     def _get_all_stmt(project_uuid: UUID) -> Select:
-        return select(ApiKey).where(
-            ApiKey.project_uuid == project_uuid, ApiKey.deleted.is_(False)
-        )
+        return select(ApiKey).where(ApiKey.project_uuid == project_uuid)
 
     def insert(self, api_key: ApiKey) -> ApiKey:
         with self.db.begin_session() as session:
@@ -62,9 +60,23 @@ class ApiKeyDAO:
                 select(ApiKey).where(
                     ApiKey.name == name,
                     ApiKey.project_uuid == project_uuid,
-                    ApiKey.deleted.is_(False),
                 )
             )
+
+    def delete_api_key(self, project_uuid: UUID, name: str) -> int:
+        with self.db.begin_session() as session:
+            count_subquery = (
+                select(func.count(func.distinct(ApiKey.name)))
+                .where(ApiKey.project_uuid == project_uuid)
+                .scalar_subquery()
+            )
+
+            query = delete(ApiKey).where(
+                ApiKey.project_uuid == project_uuid,
+                ApiKey.name == name,
+                count_subquery > 1,
+            )
+            return session.execute(query).rowcount
 
     def get_by_hashed_key(self, hashed_key: str) -> Optional[ApiKey]:
         with self.db.begin_session() as session:

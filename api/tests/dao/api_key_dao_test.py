@@ -82,3 +82,17 @@ class ApiKeyDAOTest(DatabaseIntegration):
         self.api_key_dao.insert(api_key)
         res = self.api_key_dao.get_by_hashed_key('hashed new key')
         assert res is None
+
+    def test_delete_api_key(self):
+        api_key = db_mock.get_sample_api_key(name='aaa')
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        self.api_key_dao.insert(api_key)
+        res = self.api_key_dao.delete_api_key(db_mock.PROJECT_UUID, 'aaa')
+        assert res == 1
+
+    def test_delete_last_key(self):
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        res = self.api_key_dao.delete_api_key(db_mock.PROJECT_UUID, 'default')
+        assert res == 0

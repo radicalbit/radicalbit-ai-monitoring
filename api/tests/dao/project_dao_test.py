@@ -52,8 +52,12 @@ class ProjectDAOTest(DatabaseIntegration):
 
     def test_delete(self):
         project = db_mock.get_sample_project()
+        api_key = db_mock.get_sample_api_key(name='api_key')
         self.project_dao.insert(project)
+        self.api_key_dao.insert(api_key)
         rows = self.project_dao.delete(project.uuid)
         retrieved = self.project_dao.get_by_uuid(project.uuid)
+        api_key_retrieved = self.api_key_dao.get_all(db_mock.PROJECT_UUID)
+        assert api_key_retrieved == []
         assert rows == 1
         assert retrieved is None

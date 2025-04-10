@@ -13,6 +13,7 @@ from app.models.exceptions import (
     ApiKeyInternalError,
     ApiKeyNotFoundError,
     ExistingApiKeyError,
+    LastApiKeyError,
     ProjectNotFoundError,
 )
 from app.models.traces.api_key_dto import ApiKeyIn, ApiKeyOut
@@ -36,6 +37,11 @@ class ApiKeyService:
         project = self.project_dao.get_by_uuid(project_uuid)
         if not project:
             raise ProjectNotFoundError(f'Project {project_uuid} not found')
+
+    def _check_key(self, project_uuid: UUID, name: str):
+        api_key = self.api_key_dao.get_api_key(project_uuid, name)
+        if not api_key:
+            raise ApiKeyNotFoundError(f'ApiKey {name} not found')
 
     def create_api_key(self, project_uuid: UUID, api_key_in: ApiKeyIn) -> ApiKeyOut:
         self._check_project(project_uuid)
@@ -88,3 +94,10 @@ class ApiKeyService:
         if not api_key:
             raise ApiKeyNotFoundError(f'ApiKey {name} not found')
         return ApiKeyOut.from_api_key_obscured(api_key, project_uuid)
+
+    def delete_api_key(self, project_uuid: UUID, name: str):
+        self._check_project(project_uuid)
+        self._check_key(project_uuid, name)
+        int_rows = self.api_key_dao.delete_api_key(project_uuid, name)
+        if int_rows == 0:
+            raise LastApiKeyError(f'ApiKey {name} is the last key for that project')
