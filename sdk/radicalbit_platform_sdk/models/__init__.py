@@ -49,6 +49,7 @@ from .model_definition import (
 )
 from .model_type import ModelType
 from .project_definition import ProjectDefinition, CreateProject
+from .api_key_definition import ApiKeyDefinition, CreateApiKey
 from .supported_types import SupportedTypes
 from .drift_algorithm_type import DriftAlgorithmType
 from .drift_method import DriftMethod, ModelDriftMethod
@@ -108,5 +109,7 @@ __all__ = [
     'TreeNode',
     'LatenciesWidget',
     'TraceTimeseries',
-    'SessionsTraces'
+    'SessionsTraces',
+    'CreateApiKey',
+    'ApiKeyDefinition'
 ]

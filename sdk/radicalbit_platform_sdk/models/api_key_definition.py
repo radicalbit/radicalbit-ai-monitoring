@@ -1,14 +1,14 @@
-import uuid as uuid_lib
+from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict
 from pydantic.alias_generators import to_camel
 
 
-class BaseProjectDefinition(BaseModel):
-    """A base class for project definition.
+class BaseApiKeyDefinition(BaseModel):
+    """A base class for api_key definition.
 
     Attributes:
-        name: The name of the project.
+        name: The name of the api_key.
 
     """
 
@@ -19,12 +19,13 @@ class BaseProjectDefinition(BaseModel):
     )
 
 
-class CreateProject(BaseProjectDefinition):
+class CreateApiKey(BaseApiKeyDefinition):
     model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
 
 
-class ProjectDefinition(BaseProjectDefinition):
-    uuid: uuid_lib.UUID = Field(default_factory=lambda: uuid_lib.uuid4())
+class ApiKeyDefinition(BaseApiKeyDefinition):
+    api_key: str
+    project_uuid: UUID
     created_at: str
     updated_at: str
 
