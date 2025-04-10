@@ -8,7 +8,11 @@ from sqlalchemy.exc import IntegrityError
 from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.project_dao import ProjectDAO
 from app.models.commons.order_type import OrderType
-from app.models.exceptions import ApiKeyNotFoundError, ExistingApiKeyError
+from app.models.exceptions import (
+    ApiKeyNotFoundError,
+    ExistingApiKeyError,
+    LastApiKeyError,
+)
 from app.models.traces.api_key_dto import ApiKeyOut
 from app.services.api_key_security import ApiKeySecurity
 from app.services.api_key_service import ApiKeyService
@@ -119,6 +123,20 @@ class ApiKeyServiceTest(unittest.TestCase):
         pytest.raises(
             ApiKeyNotFoundError,
             self.api_key_service.get_api_key,
+            db_mock.PROJECT_UUID,
+            'api_key',
+        )
+
+    def test_delete_api_key(self):
+        self.api_key_dao.delete_api_key = MagicMock(return_value=1)
+        res = self.api_key_service.delete_api_key(db_mock.PROJECT_UUID, 'api_key')
+        assert res is None
+
+    def test_delete_api_key_last(self):
+        self.api_key_dao.delete_api_key = MagicMock(return_value=0)
+        pytest.raises(
+            LastApiKeyError,
+            self.api_key_service.delete_api_key,
             db_mock.PROJECT_UUID,
             'api_key',
         )

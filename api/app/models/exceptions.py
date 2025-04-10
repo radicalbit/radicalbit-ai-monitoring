@@ -248,6 +248,13 @@ class ExistingApiKeyError(ApiKeyError):
         super().__init__(self.message, self.status_code)
 
 
+class LastApiKeyError(ApiKeyError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_400_BAD_REQUEST
+        super().__init__(self.message, self.status_code)
+
+
 def api_key_exception_handler(_, err: ApiKeyError):
     if err.status_code >= 500:
         logger.error(err.message)

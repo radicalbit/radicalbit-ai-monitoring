@@ -54,4 +54,12 @@ class ApiKeyRoute:
         def get_api_key(project_uuid: UUID, api_key_name: str):
             return api_key_service.get_api_key(project_uuid, api_key_name)
 
+        @router.delete(
+            '/project/{project_uuid}/api-keys/{api_key_name}',
+            status_code=204,
+            response_model=None,
+        )
+        def delete_api_key(project_uuid: UUID, api_key_name: str):
+            return api_key_service.delete_api_key(project_uuid, api_key_name)
+
         return router

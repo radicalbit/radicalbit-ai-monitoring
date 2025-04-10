@@ -6,10 +6,11 @@ from uuid import UUID
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import paginate
 import sqlalchemy
-from sqlalchemy import asc, desc
+from sqlalchemy import asc, delete, desc
 from sqlalchemy.future import select as future_select
 
 from app.db.database import Database
+from app.db.tables.api_key_table import ApiKey
 from app.db.tables.project_table import Project
 from app.models.commons.order_type import OrderType
 
@@ -69,4 +70,8 @@ class ProjectDAO:
                 .where(Project.uuid == uuid, Project.deleted.is_(False))
                 .values(deleted=True, updated_at=deleted_at)
             )
+            delete_api_key = delete(ApiKey).where(
+                ApiKey.project_uuid == uuid,
+            )
+            session.execute(delete_api_key)
             return session.execute(query).rowcount
