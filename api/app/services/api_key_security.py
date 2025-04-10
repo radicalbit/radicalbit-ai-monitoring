@@ -1,8 +1,8 @@
-import hashlib
 import secrets
 import string
 
 from app.models.traces.api_key_dto import ApiKeySec
+from app.services.commons.keyed_hash_algorithm import hash_key
 
 
 class ApiKeySecurity:
@@ -17,5 +17,5 @@ class ApiKeySecurity:
 
     def generate_key(self) -> ApiKeySec:
         key = self._create_secret()
-        hashed_key = hashlib.sha3_256(key.encode('utf-8')).hexdigest()
+        hashed_key = hash_key(key)
         return ApiKeySec(plain_key=key, hashed_key=hashed_key)

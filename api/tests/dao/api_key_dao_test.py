@@ -66,3 +66,19 @@ class ApiKeyDAOTest(DatabaseIntegration):
         assert isinstance(res, ApiKey)
         assert res.name == api_key.name
         assert res.project_uuid == api_key.project_uuid
+
+    def test_get_by_hashed_key_ok(self):
+        api_key = db_mock.get_sample_api_key(name='new_api_key')
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        self.api_key_dao.insert(api_key)
+        res = self.api_key_dao.get_by_hashed_key(api_key.hashed_key)
+        assert res.hashed_key == api_key.hashed_key
+
+    def test_get_by_hashed_key_none(self):
+        api_key = db_mock.get_sample_api_key(name='new_api_key')
+        project = db_mock.get_sample_project()
+        self.project_dao.insert(project)
+        self.api_key_dao.insert(api_key)
+        res = self.api_key_dao.get_by_hashed_key('hashed new key')
+        assert res is None

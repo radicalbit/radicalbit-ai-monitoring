@@ -65,3 +65,8 @@ class ApiKeyDAO:
                     ApiKey.deleted.is_(False),
                 )
             )
+
+    def get_by_hashed_key(self, hashed_key: str) -> Optional[ApiKey]:
+        with self.db.begin_session() as session:
+            stmt = select(ApiKey).where(ApiKey.hashed_key == hashed_key)
+            return session.scalar(stmt)
