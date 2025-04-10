@@ -142,6 +142,38 @@ def trace_exception_handler(_, err: TraceError):
     )
 
 
+class OtelError(Exception):
+    def __init__(self, message, status_code):
+        self.message = message
+        self.status_code = status_code
+        super().__init__(self.message, self.status_code)
+
+
+class OtelUnauthorizedError(OtelError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_401_UNAUTHORIZED
+        super().__init__(self.message, self.status_code)
+
+
+class OtelInternalError(OtelError):
+    def __init__(self, message):
+        self.message = message
+        self.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        super().__init__(self.message, self.status_code)
+
+
+def otel_exception_handler(_, err: OtelError):
+    if err.status_code >= 500:
+        logger.error(err.message)
+    else:
+        logger.warning(err.message)
+    return JSONResponse(
+        status_code=err.status_code,
+        content=jsonable_encoder(ErrorOut(err.message)),
+    )
+
+
 class GenericValidationError(Exception):
     def __init__(self, message, status_code):
         self.message = message

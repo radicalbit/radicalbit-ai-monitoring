@@ -27,6 +27,7 @@ from app.models.exceptions import (
     GenericValidationError,
     MetricsError,
     ModelError,
+    OtelError,
     ProjectError,
     SchemaException,
     TraceError,
@@ -35,6 +36,7 @@ from app.models.exceptions import (
     internal_exception_handler,
     metrics_exception_handler,
     model_exception_handler,
+    otel_exception_handler,
     project_exception_handler,
     request_validation_exception_handler,
     schema_exception_handler,
@@ -45,6 +47,7 @@ from app.routes.healthcheck_route import HealthcheckRoute
 from app.routes.infer_schema_route import InferSchemaRoute
 from app.routes.metrics_route import MetricsRoute
 from app.routes.model_route import ModelRoute
+from app.routes.otel_route import OtelRoute
 from app.routes.project_route import ProjectRoute
 from app.routes.trace_route import TraceRoute
 from app.routes.upload_dataset_route import UploadDatasetRoute
@@ -53,6 +56,7 @@ from app.services.api_key_service import ApiKeyService
 from app.services.file_service import FileService
 from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
+from app.services.otel_service import OtelService
 from app.services.project_service import ProjectService
 from app.services.spark_k8s_service import SparkK8SService
 from app.services.trace_service import TraceService
@@ -132,6 +136,7 @@ project_service = ProjectService(
     project_dao=project_dao, trace_dao=trace_dao, api_key_security=api_key_security
 )
 trace_service = TraceService(trace_dao=trace_dao, project_dao=project_dao)
+otel_service = OtelService(api_key_dao=api_key_dao)
 spark_k8s_service = SparkK8SService(spark_k8s_client)
 
 
@@ -165,6 +170,7 @@ app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models
 app.include_router(ProjectRoute.get_router(project_service), prefix='/api/projects')
 app.include_router(TraceRoute.get_router(trace_service), prefix='/api/traces')
 app.include_router(ApiKeyRoute.get_router(api_key_service), prefix='/api/api-key')
+app.include_router(OtelRoute.get_router(otel_service), prefix='/api/otel')
 app.include_router(HealthcheckRoute.get_healthcheck_route())
 
 app.add_exception_handler(ModelError, model_exception_handler)
@@ -172,6 +178,7 @@ app.add_exception_handler(MetricsError, metrics_exception_handler)
 app.add_exception_handler(ProjectError, project_exception_handler)
 app.add_exception_handler(TraceError, trace_exception_handler)
 app.add_exception_handler(ApiKeyError, api_key_exception_handler)
+app.add_exception_handler(OtelError, otel_exception_handler)
 app.add_exception_handler(SchemaException, schema_exception_handler)
 app.add_exception_handler(GenericValidationError, generic_validation_exception_handler)
 app.add_exception_handler(RequestValidationError, request_validation_exception_handler)
