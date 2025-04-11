@@ -44,6 +44,3 @@ class ApiKey:
             f'updated_at={self.updated_at!r}, '
             f')'
         )
-
-    def delete(self) -> None:
-        pass

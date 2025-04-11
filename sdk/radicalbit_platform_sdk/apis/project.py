@@ -2,14 +2,21 @@ from typing import List, Optional
 from urllib.parse import urlencode
 from uuid import UUID
 
-from pydantic import ValidationError
+from pydantic import TypeAdapter, ValidationError
 import requests
 
+from radicalbit_platform_sdk.apis.api_key import ApiKey
 from radicalbit_platform_sdk.apis.tracing_root_trace import TracingRootTrace
 from radicalbit_platform_sdk.apis.tracing_session import TracingSession
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
-from radicalbit_platform_sdk.models import ProjectDefinition, Session, Trace
+from radicalbit_platform_sdk.models import (
+    ApiKeyDefinition,
+    CreateApiKey,
+    ProjectDefinition,
+    Session,
+    Trace,
+)
 
 
 class Project:
@@ -94,4 +101,61 @@ class Project:
             url=url,
             valid_response_code=200,
             func=__callback,
+        )
+
+    def create_api_key(self, api_key: CreateApiKey) -> ApiKey:
+        def __callback(response: requests.Response) -> ApiKey:
+            try:
+                response_api_key = ApiKeyDefinition.model_validate(response.json())
+                return ApiKey(self.__base_url, response_api_key)
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='POST',
+            url=f'{self.__base_url}/api/api-key/project/{str(self.uuid)}',
+            valid_response_code=201,
+            func=__callback,
+            data=api_key.model_dump_json(),
+        )
+
+    def get_api_key(self, name: str) -> ApiKey:
+        def __callback(response: requests.Response) -> ApiKey:
+            try:
+                response_api_key = ApiKeyDefinition.model_validate(response.json())
+                return ApiKey(self.__base_url, response_api_key)
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/api-key/project/{str(self.uuid)}/api-keys/{name}',
+            valid_response_code=200,
+            func=__callback,
+        )
+
+    def search_api_keys(self) -> List[ApiKey]:
+        def __callback(response: requests.Response) -> List[ApiKey]:
+            try:
+                adapter = TypeAdapter(List[ApiKeyDefinition])
+                api_keys_definitions = adapter.validate_python(response.json())
+                return [
+                    ApiKey(self.__base_url, api_key) for api_key in api_keys_definitions
+                ]
+            except ValidationError as e:
+                raise ClientError(f'Unable to parse response: {response.text}') from e
+
+        return invoke(
+            method='GET',
+            url=f'{self.__base_url}/api/api-key/project/{str(self.uuid)}/all',
+            valid_response_code=200,
+            func=__callback,
+        )
+
+    def delete_api_key(self, name: str) -> None:
+        invoke(
+            method='DELETE',
+            url=f'{self.__base_url}/api/api-key/project/{self.uuid}/api-keys/{name}',
+            valid_response_code=204,
+            func=lambda _: None,
         )
