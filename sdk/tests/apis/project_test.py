@@ -6,7 +6,11 @@ import uuid
 import responses
 
 from radicalbit_platform_sdk.apis import Project, TracingRootTrace, TracingSession
-from radicalbit_platform_sdk.models import ProjectDefinition
+from radicalbit_platform_sdk.models import (
+    ApiKeyDefinition,
+    CreateApiKey,
+    ProjectDefinition,
+)
 
 
 class ProjectTest(unittest.TestCase):
@@ -112,3 +116,91 @@ class ProjectTest(unittest.TestCase):
         assert isinstance(traces[0], TracingRootTrace)
         assert traces[0].id() == trace_id
         assert traces[0].session_uuid() == session_uuid
+
+    @responses.activate
+    def test_create_api_key(self):
+        api_key = CreateApiKey(
+            name='key',
+        )
+        api_key_definition = ApiKeyDefinition(
+            name=api_key.name,
+            api_key='sk-rb-Fndianwdindwa',
+            project_uuid=self.project_uuid,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        responses.add(
+            method=responses.POST,
+            url=f'{self.base_url}/api/api-key/project/{str(self.project_uuid)}',
+            body=api_key_definition.model_dump_json(),
+            status=201,
+            content_type='application/json',
+        )
+
+        api_key = self.project.create_api_key(api_key)
+        assert api_key.name == api_key_definition.name
+        assert api_key.project_uuid == self.project_uuid
+
+    @responses.activate
+    def test_get_single_api_key(self):
+        name = 'api-key'
+        api_key_definition = ApiKeyDefinition(
+            name=name,
+            api_key='sk-rb-Fndianwdindwa',
+            project_uuid=self.project_uuid,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        responses.add(
+            method=responses.GET,
+            url=f'{self.base_url}/api/api-key/project/{str(self.project_uuid)}/api-keys/{name}',
+            body=api_key_definition.model_dump_json(),
+            status=200,
+            content_type='application/json',
+        )
+        api_key = self.project.get_api_key(name)
+        assert api_key.name == api_key_definition.name
+        assert api_key.project_uuid == api_key_definition.project_uuid
+
+    @responses.activate
+    def test_search_api_keys(self):
+        name_one = 'api-key-onw'
+        name_two = 'api-key-two'
+        api_key_definition_one = ApiKeyDefinition(
+            name=name_one,
+            api_key='sk-rb-Fndianwdindwa',
+            project_uuid=self.project_uuid,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        api_key_definition_two = ApiKeyDefinition(
+            name=name_two,
+            api_key='sk-rb-Fnfawfaindwjgj',
+            project_uuid=self.project_uuid,
+            created_at=str(time.time()),
+            updated_at=str(time.time()),
+        )
+        responses.add(
+            method=responses.GET,
+            url=f'{self.base_url}/api/api-key/project/{str(self.project_uuid)}/all',
+            body=f'[{api_key_definition_one.model_dump_json()}, {api_key_definition_two.model_dump_json()}]',
+            status=200,
+            content_type='application/json',
+        )
+
+        api_keys = self.project.search_api_keys()
+        assert len(api_keys) == 2
+        assert api_keys[0].name == api_key_definition_one.name
+        assert api_keys[0].project_uuid == api_key_definition_one.project_uuid
+        assert api_keys[1].name == api_key_definition_two.name
+        assert api_keys[1].project_uuid == api_key_definition_two.project_uuid
+
+    @responses.activate
+    def test_delete_api(self):
+        name = 'api-key'
+        responses.add(
+            method=responses.DELETE,
+            url=f'{self.base_url}/api/api-key/project/{self.project_uuid}/api-keys/{name}',
+            status=204,
+        )
+        self.project.delete_api_key(name)

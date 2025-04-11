@@ -4,12 +4,10 @@ from uuid import UUID
 from pydantic import TypeAdapter, ValidationError
 import requests
 
-from radicalbit_platform_sdk.apis import ApiKey, Model, Project
+from radicalbit_platform_sdk.apis import Model, Project
 from radicalbit_platform_sdk.commons import invoke
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    ApiKeyDefinition,
-    CreateApiKey,
     CreateModel,
     CreateProject,
     ModelDefinition,
@@ -117,25 +115,3 @@ class Client:
             valid_response_code=200,
             func=__callback,
         )
-
-    def create_api_key(self, project_uuid: UUID, api_key: CreateApiKey) -> ApiKey:
-        def __callback(response: requests.Response) -> ApiKey:
-            try:
-                response_api_key = ApiKeyDefinition.model_validate(response.json())
-                return ApiKey(self.__base_url, response_api_key)
-            except ValidationError as e:
-                raise ClientError(f'Unable to parse response: {response.text}') from e
-
-        return invoke(
-            method='POST',
-            url=f'{self.__base_url}/api/api-key/project/{str(project_uuid)}',
-            valid_response_code=201,
-            func=__callback,
-            data=api_key.model_dump_json(),
-        )
-
-    def get_api_key(self, project_uuid: UUID, name: str) -> ApiKey:
-        pass
-
-    def search_api_keys(self, project_uuid: UUID) -> List[ApiKey]:
-        pass

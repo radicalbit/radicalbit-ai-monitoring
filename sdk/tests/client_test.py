@@ -8,9 +8,7 @@ import responses
 from radicalbit_platform_sdk.client import Client
 from radicalbit_platform_sdk.errors import ClientError
 from radicalbit_platform_sdk.models import (
-    ApiKeyDefinition,
     ColumnDefinition,
-    CreateApiKey,
     CreateModel,
     CreateProject,
     DataType,
@@ -426,49 +424,3 @@ class ClientTest(unittest.TestCase):
         projects = client.search_projects()
         assert projects[0].name == project_definition1.name
         assert projects[1].name == project_definition2.name
-
-    @responses.activate
-    def test_create_api_key(self):
-        base_url = 'http://api:9000'
-
-        project = CreateProject(
-            name='my project',
-        )
-        project_definition = ProjectDefinition(
-            name=project.name,
-            created_at=str(time.time()),
-            updated_at=str(time.time()),
-        )
-        responses.add(
-            method=responses.POST,
-            url=f'{base_url}/api/projects',
-            body=project_definition.model_dump_json(),
-            status=201,
-            content_type='application/json',
-        )
-
-        client = Client(base_url)
-        project = client.create_project(project)
-
-        api_key = CreateApiKey(
-            name='key',
-        )
-        api_key_definition = ApiKeyDefinition(
-            name=api_key.name,
-            api_key='sk-rb-Fndianwdindwa',
-            project_uuid=project.uuid,
-            created_at=str(time.time()),
-            updated_at=str(time.time()),
-        )
-        responses.add(
-            method=responses.POST,
-            url=f'{base_url}/api/api-key/project/{str(project.uuid)}',
-            body=api_key_definition.model_dump_json(),
-            status=201,
-            content_type='application/json',
-        )
-
-        client = Client(base_url)
-        api_key = client.create_api_key(project.uuid, api_key)
-        assert api_key.name == api_key_definition.name
-        assert api_key.project_uuid == project.uuid
