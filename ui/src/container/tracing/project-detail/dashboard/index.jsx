@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import Filters from './filters';
 import schema from './schema';
 import TraceByTimeLineChart from './trace-by-time-line-chart';
+import TracesBySessionHistogram from './traces-by-session-histogram';
 
 const initialValues = {
   fromTimestamp: dayjs().subtract(24, 'hour').toISOString(),
@@ -36,6 +37,8 @@ function ProjectDashboard() {
           />
 
           <TraceByTimeLineChart />
+
+          <TracesBySessionHistogram />
         </div>
       </div>
     </FormbitContextProvider>
