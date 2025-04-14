@@ -24,7 +24,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
       ],
       query: ({ data }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${data.uuid}`,
+        url: `/projects/${data.uuid}`,
         method: 'post',
         data,
       }),
@@ -106,7 +106,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
     getTraceLatencies: builder.query({
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/dashboard/project/${uuid}/root_latencies?${queryParams}`,
+        url: `/traces/dashboard/project/${uuid}/root-latencies?${queryParams}`,
         method: 'get',
       }),
     }),
@@ -114,7 +114,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
     getSessionLatencies: builder.query({
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/dashboard/project/${uuid}/root_latencies_session?${queryParams}`,
+        url: `/traces/dashboard/project/${uuid}/root-latencies-session?${queryParams}`,
         method: 'get',
       }),
     }),
@@ -122,7 +122,7 @@ export const tracingApiSlice = apiService.injectEndpoints({
     getSpanLatencies: builder.query({
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/dashboard/project/${uuid}/leaf_latencies?${queryParams}`,
+        url: `/traces/dashboard/project/${uuid}/leaf-latencies?${queryParams}`,
         method: 'get',
       }),
     }),
@@ -130,8 +130,42 @@ export const tracingApiSlice = apiService.injectEndpoints({
     getTraceByTime: builder.query({
       query: ({ uuid, queryParams }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/traces/dashboard/project/${uuid}/trace_by_time?n=15&${queryParams}`,
+        url: `/traces/dashboard/project/${uuid}/trace-by-time?n=15&${queryParams}`,
         method: 'get',
+      }),
+    }),
+
+    getApiKeyList: builder.query({
+      providesTags: [API_TAGS.API_KEY],
+      query: ({ uuid, queryParams }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/api-key/project/${uuid}?${queryParams}`,
+        method: 'get',
+      }),
+    }),
+
+    deleteApiKey: builder.mutation({
+      invalidatesTags: [API_TAGS.API_KEY],
+      query: ({ uuid, apiKeyName }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/api-key/project/${uuid}/api-keys/${apiKeyName}`,
+        method: 'delete',
+      }),
+    }),
+
+    addNewApiKey: builder.mutation({
+      invalidatesTags: (result) => {
+        if (result) {
+          return [API_TAGS.API_KEY];
+        }
+
+        return [];
+      },
+      query: ({ projectUuid, data }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/api-key/project/${projectUuid}`,
+        method: 'post',
+        data,
       }),
     }),
 

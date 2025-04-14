@@ -6,12 +6,21 @@ import {
   Input,
   SectionTitle,
 } from '@radicalbit/radicalbit-design-system';
+import { tracingApiSlice } from '@Src/store/state/tracing/api';
+
+const { useEditTracingProjectMutation } = tracingApiSlice;
 
 function EditProject() {
   const { form, isFormInvalid, isDirty } = useFormbitContext();
 
-  const handleOnClick = () => {
-    console.debug(form.editedName);
+  const [triggerEditProject] = useEditTracingProjectMutation();
+
+  const handleOnClick = async () => {
+    const response = await triggerEditProject(form);
+
+    if (response.error) {
+      console.error(response.error);
+    }
   };
 
   const isButtonDisabled = isFormInvalid() || !isDirty;
@@ -22,7 +31,7 @@ function EditProject() {
         <SectionTitle
           size="large"
           subtitle={`Your Project is currently named ${form.name}`}
-          title="Edit project name"
+          title="Edit project"
           titleColor="primary"
         />
       )}
@@ -31,6 +40,7 @@ function EditProject() {
           <EditProjectInput />
 
           <Button disabled={isButtonDisabled} onClick={handleOnClick}>Save Project</Button>
+
         </div>
       )}
       modifier="max-w-[800px] w-full"

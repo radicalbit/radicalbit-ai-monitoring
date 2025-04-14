@@ -6,6 +6,7 @@ import { useParams } from 'react-router';
 import DeleteProject from './delete-project';
 import EditProject from './edit-project';
 import schema from './schema';
+import ApiKeysProject from './api-keys';
 
 const { useGetProjectByUUIDQuery } = tracingApiSlice;
 
@@ -21,12 +22,15 @@ function SettingsInner() {
   useInitializeForm();
 
   return (
-    <div className="flex flex-col gap-4 items-center ">
+    <div className="flex flex-col gap-4 items-center mb-10">
+      <ApiKeysProject />
+
+      <InstructionsComponent />
+
       <EditProject />
 
       <DeleteProject />
 
-      <InstructionsComponent />
     </div>
   );
 }
