@@ -134,5 +134,13 @@ export const tracingApiSlice = apiService.injectEndpoints({
         method: 'get',
       }),
     }),
+
+    getTracesBySession: builder.query({
+      query: ({ uuid, queryParams }) => ({
+        baseUrl: import.meta.env.VITE_BASE_URL,
+        url: `/traces/dashboard/project/${uuid}/traces-by-session?${queryParams}`,
+        method: 'get',
+      }),
+    }),
   }),
 });

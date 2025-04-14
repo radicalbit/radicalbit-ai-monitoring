@@ -5,10 +5,10 @@ import { Skeleton } from '@radicalbit/radicalbit-design-system';
 import isEmpty from 'lodash/isEmpty';
 import { useParams } from 'react-router-dom';
 import { filtersToQueryParams } from '../filters';
-import LineChart from './line-chart';
+import BarChart from './bar-chart';
 
 const {
-  useGetTraceByTimeQuery,
+  useGetTracesBySessionQuery,
 } = tracingApiSlice;
 
 function TraceByTimeLineChart() {
@@ -21,7 +21,7 @@ function TraceByTimeLineChart() {
 
   const {
     data, isSuccess, isLoading, isError,
-  } = useGetTraceByTimeQuery({ uuid, queryParams });
+  } = useGetTracesBySessionQuery({ uuid, queryParams });
   const traces = data?.traces;
 
   if (isLoading) {
@@ -36,12 +36,12 @@ function TraceByTimeLineChart() {
     // e.g. 204 no content
     if (isEmpty(traces)) {
       return (
-        <LineChart currentData={[]} />
+        <BarChart currentData={[]} />
       );
     }
 
     return (
-      <LineChart currentData={traces} title="Traces by time" />
+      <BarChart currentData={traces} title="Traces by sessions" />
     );
   }
 
