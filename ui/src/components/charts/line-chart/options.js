@@ -1,13 +1,13 @@
 import * as commonChartOptions from '@Helpers/common-chart-options';
 import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
-import { numberFormatter } from '@Src/constants';
+import { echartNumberFormatter } from '@Src/constants';
 
 export default function lineChartOptions(title, color, currentDataset, referenceDataset) {
   const currentDatasetFormatted = currentDataset.map(({ timestamp, value }) => [
     timestamp,
     (value > 1000)
       ? Number.parseFloat(value).toExponential(2)
-      : numberFormatter().format(value),
+      : echartNumberFormatter().format(value),
   ]);
 
   const series = [
@@ -15,7 +15,7 @@ export default function lineChartOptions(title, color, currentDataset, reference
   ];
 
   if (referenceDataset) {
-    const referenceDatasetFormatted = referenceDataset.map(({ timestamp, value }) => [timestamp, (value > 1000) ? Number.parseFloat(value).toExponential(2) : numberFormatter().format(value)]);
+    const referenceDatasetFormatted = referenceDataset.map(({ timestamp, value }) => [timestamp, (value > 1000) ? Number.parseFloat(value).toExponential(2) : echartNumberFormatter().format(value)]);
 
     const referenceLine = {
       ...commonChartOptions.seriesOptions(CHART_TYPE.LINE, 'Reference', CHART_COLOR.REFERENCE, referenceDatasetFormatted),

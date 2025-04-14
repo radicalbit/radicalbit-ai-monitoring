@@ -83,6 +83,7 @@ const userLocale = navigator.languages && navigator.languages.length
   : navigator.language || 'en-US';
 
 export const numberFormatter = (options = defaultNumberFormatter) => new Intl.NumberFormat(userLocale, options);
+export const echartNumberFormatter = (options = defaultNumberFormatter) => new Intl.NumberFormat('en-US', options);
 
 export const DRIFT_TEST_ENUM = {
   KS: 'KS',

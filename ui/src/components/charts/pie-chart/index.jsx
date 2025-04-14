@@ -1,4 +1,5 @@
 import ReactEchartsCore from 'echarts-for-react/lib/core';
+import { PieChart as PieChartEchart } from 'echarts/charts';
 import {
   GridComponent,
   LegendComponent,
@@ -6,10 +7,9 @@ import {
   MarkPointComponent,
   TooltipComponent,
 } from 'echarts/components';
-import { PieChart as PieChartEchart } from 'echarts/charts';
 import * as echarts from 'echarts/lib/echarts';
 
-import { numberFormatter } from '@Src/constants';
+import { echartNumberFormatter } from '@Src/constants';
 import pieChartOptions from './options';
 
 echarts.use([
@@ -22,7 +22,7 @@ echarts.use([
 ]);
 
 function PieChart({ title, data }) {
-  const currentData = numberFormatter({ maximumSignificantDigits: 4 }).format(data * 100);
+  const currentData = echartNumberFormatter({ maximumSignificantDigits: 4 }).format(data * 100);
 
   if (data <= 0) {
     return (
@@ -68,8 +68,8 @@ function EvaluatedPieChart({ data }) {
     setTimeout(echart.resize);
   };
 
-  const currentData = numberFormatter({ maximumSignificantDigits: 4 }).format(data * 100);
-  const referenceData = numberFormatter({ maximumSignificantDigits: 4 }).format((1 - data) * 100);
+  const currentData = echartNumberFormatter({ maximumSignificantDigits: 4 }).format(data * 100);
+  const referenceData = echartNumberFormatter({ maximumSignificantDigits: 4 }).format((1 - data) * 100);
   return (
     <ReactEchartsCore
       echarts={echarts}
