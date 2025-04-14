@@ -7,12 +7,12 @@
 /usr/bin/mc mb myminio/test-bucket
 
 # Copy files from the project root to the correct paths in the MinIO bucket
-/usr/bin/mc cp /data/binary_classification/reference-income.csv myminio/test-bucket/e02f2aed-cd29-4703-8faf-2dcab9fc668e/reference/db15546e-16a3-4482-8317-323d66dbe409/
-/usr/bin/mc cp /data/binary_classification/current1-income.csv myminio/test-bucket/e02f2aed-cd29-4703-8faf-2dcab9fc668e/current/b73334fb-aac0-400c-9103-fe894e13bd95/
-/usr/bin/mc cp /data/multiclass-classification/3_classes_reference.csv myminio/test-bucket/756204a0-a6ba-44c2-b287-ca828e2b2441/reference/d8cb36a9-2f8b-4e45-bab0-aeaa259a9f46/
-/usr/bin/mc cp /data/multiclass-classification/3_classes_current1.csv myminio/test-bucket/756204a0-a6ba-44c2-b287-ca828e2b2441/current/dda74c14-91de-4ae8-a432-3a2f8ccdd153/
-/usr/bin/mc cp /data/regression/regression_abalone_reference.csv myminio/test-bucket/6c48c7e1-442b-4c48-a218-95d07f40a805/reference/6ae1390e-656a-45aa-acd4-6f6b38e6acf4/
-/usr/bin/mc cp /data/regression/regression_abalone_current1.csv myminio/test-bucket/6c48c7e1-442b-4c48-a218-95d07f40a805/current/edb6ed6c-6e2d-44fa-8a60-40540aec9c03/
+/usr/bin/mc cp /data/binary_classification/reference-income.csv myminio/test-bucket/48c3d064-b86b-437c-83ac-9b54bd5fdf9e/reference/dc929555-7be2-4188-b995-993177c83e8b/
+/usr/bin/mc cp /data/binary_classification/current1-income.csv myminio/test-bucket/48c3d064-b86b-437c-83ac-9b54bd5fdf9e/current/35d5c8af-332b-4e88-b302-e20e97c53f34/
+/usr/bin/mc cp /data/multiclass-classification/3_classes_reference.csv myminio/test-bucket/b1773457-b858-4b99-ae98-9639c999681a/reference/0fa1749a-e0b1-490c-91db-294db6b62ebe/
+/usr/bin/mc cp /data/multiclass-classification/3_classes_current1.csv myminio/test-bucket/b1773457-b858-4b99-ae98-9639c999681a/current/b404a54e-f159-499f-a0c2-edf09c562e3a/
+/usr/bin/mc cp /data/regression/regression_abalone_reference.csv myminio/test-bucket/3b9fbe63-6ae4-4907-8fc9-786e8a885992/reference/396d3a6f-fa7a-4c8c-8b0e-25da5c56b743/
+/usr/bin/mc cp /data/regression/regression_abalone_current1.csv myminio/test-bucket/3b9fbe63-6ae4-4907-8fc9-786e8a885992/current/0e61138f-ca9a-4502-aa90-4aea64c1a91f/
 
 # Exit the script
 exit 0
