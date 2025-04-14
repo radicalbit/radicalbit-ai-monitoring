@@ -1,7 +1,8 @@
+import { TRACING_TABS_ENUM } from '@Container/tracing/constants';
 import { tracingApiSlice } from '@State/tracing/api';
+
 import { useFormbitContext } from '@radicalbit/formbit';
-import { useNavigate } from 'react-router-dom';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const { useAddNewProjectMutation } = tracingApiSlice;
 
@@ -11,7 +12,7 @@ export default () => {
 
   const { isDirty, isFormInvalid, submitForm } = useFormbitContext();
 
-  const [triggerAddNewProject, args] = useAddNewProjectMutation();
+  const [triggerAddNewProject, args] = useAddNewProjectMutation({ fixedCacheKey: 'add-new-project' });
 
   const isSubmitDisabled = !isDirty || isFormInvalid();
 
@@ -31,7 +32,7 @@ export default () => {
 
       searchParams.delete('modal');
 
-      navigate({ pathname: `projects/${response.data.uuid}`, search: searchParams.toString() });
+      navigate({ pathname: `projects/${response.data.uuid}`, search: `tab=${TRACING_TABS_ENUM.SETTINGS}` });
     });
   };
 

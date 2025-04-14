@@ -16,6 +16,7 @@ export const API_TAGS = {
   TRACE_LIST: 'TRACE_LIST',
   TRACE_DETAIL: 'TRACE_DETAIL',
   SPAN_DETAIL: 'SPAN_DETAIL',
+  API_KEY: 'API_KEY',
 };
 
 export const apiService = createApi({

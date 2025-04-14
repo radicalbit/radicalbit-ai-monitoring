@@ -5,7 +5,6 @@ import {
 } from '@Src/constants';
 import { createSlice } from '@reduxjs/toolkit';
 import { isEmpty } from 'lodash';
-import dayjs from 'dayjs';
 import { queryString2configuration } from './utils';
 import thunks from './thunks';
 
@@ -48,6 +47,7 @@ export const initialState = {
     fromTimestamp: null,
     toTimestamp: null,
   }),
+  [NamespaceEnum.API_KEYS_LIST]: defaultState(5),
 };
 
 export const contextConfigurationSlice = createSlice({
