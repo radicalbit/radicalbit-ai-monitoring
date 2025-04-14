@@ -25,7 +25,7 @@ These methods recognize the `model_type` directly from the model passed as an ar
 
 	base_url = "http://localhost:9000"
 	client = Client(base_url)
-	model = client.get_model(id="e02f2aed-cd29-4703-8faf-2dcab9fc668e")
+	model = client.get_model(id="48c3d064-b86b-437c-83ac-9b54bd5fdf9e")
 
 	ref = model.get_reference_datasets()[0]
 	cur1 = model.get_current_datasets()[0]
@@ -48,7 +48,7 @@ These methods recognize the `model_type` directly from the model passed as an ar
 
 	base_url = "http://localhost:9000"
 	client = Client(base_url)
-	model = client.get_model(id="e02f2aed-cd29-4703-8faf-2dcab9fc668e")
+	model = client.get_model(id="48c3d064-b86b-437c-83ac-9b54bd5fdf9e")
 
 	ref = model.get_reference_datasets()[0]
 	cur1 = model.get_current_datasets()[0]
