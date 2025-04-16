@@ -51,8 +51,7 @@ function TraceDetail() {
         )}
       />
 
-      <Json data={jsonData} expandUntil={0} />
-
+      <Json className="h-[90%] overflow-y-scroll" data={jsonData} expandUntil={0} />
     </div>
   );
 }
