@@ -35,6 +35,7 @@ from app.models.dataset_dto import (
     FileReference,
     ReferenceDatasetDTO,
 )
+from app.models.dataset_type import DatasetType
 from app.models.exceptions import (
     FileTooLargeException,
     InvalidFileException,
@@ -47,6 +48,8 @@ from app.models.inferred_schema_dto import (
     SupportedTypes,
 )
 from app.models.job_status import JobStatus
+from app.models.model_dto import ModelOut
+from app.models.spark_app_config import get_spark_app_config
 from app.services.model_service import ModelService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -91,21 +94,9 @@ class FileService:
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
-            object_name = f'{str(model_out.uuid)}/reference/{_f_uuid}/{_f_name}'
-            self.s3_client.upload_fileobj(
-                csv_file.file,
-                self.bucket_name,
-                object_name,
-                ExtraArgs={
-                    'Metadata': {
-                        'model_uuid': str(model_out.uuid),
-                        'model_name': model_out.name,
-                        'file_type': 'reference',
-                    }
-                },
-            )
-
-            path = f's3://{self.bucket_name}/{object_name}'
+            file_type = 'reference'
+            object_name = f'{str(model_out.uuid)}/{file_type}/{_f_uuid}/{_f_name}'
+            path = self._upload_file_to_s3(csv_file, model_out, object_name, file_type)
 
             inserted_file = self.rd_dao.insert_reference_dataset(
                 ReferenceDataset(
@@ -119,16 +110,18 @@ class FileService:
 
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
-            spark_config = get_config().spark_config
+            spark_app_config = get_spark_app_config(
+                model_out.model_type, DatasetType.REFERENCE
+            )
             self.__submit_app(
                 app_name=str(model_out.uuid),
-                app_path=spark_config.spark_reference_app_path,
+                app_path=spark_app_config.app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
                     path.replace('s3://', 's3a://'),
                     str(inserted_file.uuid),
-                    ReferenceDatasetMetrics.__tablename__,
-                    ReferenceDataset.__tablename__,
+                    spark_app_config.metrics_table,
+                    spark_app_config.dataset_table,
                 ],
             )
 
@@ -224,21 +217,9 @@ class FileService:
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
-            object_name = f'{str(model_out.uuid)}/current/{_f_uuid}/{_f_name}'
-            self.s3_client.upload_fileobj(
-                csv_file.file,
-                self.bucket_name,
-                object_name,
-                ExtraArgs={
-                    'Metadata': {
-                        'model_uuid': str(model_out.uuid),
-                        'model_name': model_out.name,
-                        'file_type': 'current',
-                    }
-                },
-            )
-
-            path = f's3://{self.bucket_name}/{object_name}'
+            file_type = 'current'
+            object_name = f'{str(model_out.uuid)}/{file_type}/{_f_uuid}/{_f_name}'
+            path = self._upload_file_to_s3(csv_file, model_out, object_name, file_type)
 
             inserted_file = self.cd_dao.insert_current_dataset(
                 CurrentDataset(
@@ -253,17 +234,19 @@ class FileService:
 
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
-            spark_config = get_config().spark_config
+            spark_app_config = get_spark_app_config(
+                model_out.model_type, DatasetType.CURRENT
+            )
             self.__submit_app(
                 app_name=str(model_out.uuid),
-                app_path=spark_config.spark_current_app_path,
+                app_path=spark_app_config.app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
                     path.replace('s3://', 's3a://'),
                     str(inserted_file.uuid),
                     reference_dataset.path.replace('s3://', 's3a://'),
-                    CurrentDatasetMetrics.__tablename__,
-                    CurrentDataset.__tablename__,
+                    spark_app_config.metrics_table,
+                    spark_app_config.dataset_table,
                 ],
             )
 
@@ -350,21 +333,11 @@ class FileService:
         _f_name = validated_json_file.filename
         _f_uuid = uuid4()
         try:
-            object_name = f'{str(model_out.uuid)}/completion/{_f_uuid}/{_f_name}'
-            self.s3_client.upload_fileobj(
-                validated_json_file.file,
-                self.bucket_name,
-                object_name,
-                ExtraArgs={
-                    'Metadata': {
-                        'model_uuid': str(model_out.uuid),
-                        'model_name': model_out.name,
-                        'file_type': 'completion',
-                    }
-                },
+            file_type = 'completion'
+            object_name = f'{str(model_out.uuid)}/{file_type}/{_f_uuid}/{_f_name}'
+            path = self._upload_file_to_s3(
+                validated_json_file, model_out, object_name, file_type
             )
-
-            path = f's3://{self.bucket_name}/{object_name}'
 
             inserted_file = self.completion_dataset_dao.insert_completion_dataset(
                 CompletionDataset(
@@ -378,15 +351,17 @@ class FileService:
 
             logger.debug('File %s has been correctly stored in the db', inserted_file)
 
-            spark_config = get_config().spark_config
+            spark_app_config = get_spark_app_config(
+                model_out.model_type, DatasetType.COMPLETION
+            )
             self.__submit_app(
                 app_name=str(model_out.uuid),
-                app_path=spark_config.spark_completion_app_path,
+                app_path=spark_app_config.app_path,
                 app_arguments=[
                     path.replace('s3://', 's3a://'),
                     str(inserted_file.uuid),
-                    CompletionDatasetMetrics.__tablename__,
-                    CompletionDataset.__tablename__,
+                    spark_app_config.metrics_table,
+                    spark_app_config.dataset_table,
                 ],
             )
 
@@ -543,6 +518,27 @@ class FileService:
             CompletionDatasetDTO.from_completion_dataset(completion_dataset)
             for completion_dataset in completions
         ]
+
+    def _upload_file_to_s3(
+        self,
+        input_file: UploadFile,
+        model_out: ModelOut,
+        object_name: str,
+        file_type: str,
+    ):
+        self.s3_client.upload_fileobj(
+            input_file.file,
+            self.bucket_name,
+            object_name,
+            ExtraArgs={
+                'Metadata': {
+                    'model_uuid': str(model_out.uuid),
+                    'model_name': model_out.name,
+                    'file_type': file_type,
+                }
+            },
+        )
+        return f's3://{self.bucket_name}/{object_name}'
 
     @staticmethod
     def infer_schema(csv_file: UploadFile, sep: str = ',') -> InferredSchemaDTO:

@@ -24,7 +24,7 @@ def upgrade() -> None:
     sa.Column('UUID', sa.UUID(), nullable=False),
     sa.Column('CURRENT_UUID', sa.UUID(), nullable=False),
     sa.Column('METRICS', JSONEncodedDict(astext_type=Text()), nullable=True),
-    sa.Column('DRIFT', JSONEncodedDict(astext_type=Text()), nullable=True),
+    sa.Column('DRIFT_SCORE', sa.Float(), nullable=True),
     sa.ForeignKeyConstraint(['CURRENT_UUID'], ['current_dataset.UUID'], name=op.f('fk_current_dataset_embeddings_metrics_CURRENT_UUID_current_dataset')),
     sa.PrimaryKeyConstraint('UUID', name=op.f('pk_current_dataset_embeddings_metrics'))
     )
