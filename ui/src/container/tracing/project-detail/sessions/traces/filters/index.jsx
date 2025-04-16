@@ -35,7 +35,7 @@ function FiltersInner() {
     if (sessionUuid) {
       write('sessionUuid', sessionUuid);
     }
-  }, []);
+  }, [sessionUuid, write]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {

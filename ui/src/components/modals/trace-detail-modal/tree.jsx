@@ -20,7 +20,7 @@ function TreeComponent() {
   useEffect(() => {
     searchParams.set('expandedKey', '0-0');
     setSearchParams(searchParams);
-  }, []);
+  }, [searchParams, setSearchParams]);
 
   const onSelect = (_, info) => {
     searchParams.set('expandedKey', info.node.key);

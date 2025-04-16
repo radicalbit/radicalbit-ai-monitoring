@@ -35,8 +35,10 @@ function TracesList() {
 
   return (
     <Spinner fullHeight hideChildren modifier={modifier} spinning={isLoading}>
-      <div className="flex flex-col gap-2">
-        <Filters />
+      <div className="flex flex-col gap-4 p-4">
+        <div className="flex justify-end">
+          <Filters />
+        </div>
 
         <SmartTable
           clickable
