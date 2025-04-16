@@ -21,8 +21,10 @@ function SpanLatenciesTable() {
   const queryParams = filtersToQueryParams(fromTimestamp, toTimestamp);
 
   const {
-    data, isSuccess, isLoading, isError,
+    data = [], isSuccess, isLoading, isError,
   } = useGetSpanLatenciesQuery({ uuid, queryParams }, { skip });
+
+  const pagination = data.length > 10 ? { pageSize: 10 } : false;
 
   if (isLoading) {
     return <Skeleton active paragraph={{ rows: 5 }} />;
@@ -39,6 +41,7 @@ function SpanLatenciesTable() {
         <DataTable
           columns={columns}
           dataSource={[]}
+          pagination={pagination}
           size="small"
         />
       );
@@ -48,6 +51,7 @@ function SpanLatenciesTable() {
       <DataTable
         columns={columns}
         dataSource={data}
+        pagination={pagination}
         size="small"
       />
     );
@@ -58,6 +62,7 @@ function SpanLatenciesTable() {
       <DataTable
         columns={columns}
         dataSource={data}
+        pagination={pagination}
         size="small"
       />
     );
@@ -71,6 +76,7 @@ const columns = [
     title: 'Span Name',
     dataIndex: 'spanName',
     key: 'spanName',
+    width: '50%',
   },
   {
     title: '50th',

@@ -20,6 +20,8 @@ function TraceLatenciesTable() {
   const queryParams = filtersToQueryParams(fromTimestamp, toTimestamp);
   const skip = !fromTimestamp || !toTimestamp;
 
+  const pagination = false;
+
   const {
     data, isSuccess, isLoading, isError,
   } = useGetTraceLatenciesQuery({ uuid, queryParams }, { skip });
@@ -39,6 +41,7 @@ function TraceLatenciesTable() {
         <DataTable
           columns={columns}
           dataSource={[]}
+          pagination={pagination}
           size="small"
         />
       );
@@ -48,7 +51,7 @@ function TraceLatenciesTable() {
       <DataTable
         columns={columns}
         dataSource={[data]}
-        pagination={false}
+        pagination={pagination}
         size="small"
       />
     );
@@ -59,6 +62,7 @@ function TraceLatenciesTable() {
       <DataTable
         columns={columns}
         dataSource={[data]}
+        pagination={pagination}
         size="small"
       />
     );
@@ -68,6 +72,12 @@ function TraceLatenciesTable() {
 }
 
 const columns = [
+  {
+    title: '',
+    dataIndex: 'witdh',
+    key: 'witdh',
+    width: '50%',
+  },
   {
     title: '50th',
     dataIndex: 'p50Ms',
