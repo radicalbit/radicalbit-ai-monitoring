@@ -54,6 +54,12 @@ class SparkConfig(BaseSettings):
     spark_reference_app_path: str = 'local:///opt/spark/custom_jobs/reference_job.py'
     spark_current_app_path: str = 'local:///opt/spark/custom_jobs/current_job.py'
     spark_completion_app_path: str = 'local:///opt/spark/custom_jobs/completion_job.py'
+    spark_embeddings_reference_app_path: str = (
+        'local:///opt/spark/custom_jobs/embeddings_reference_job.py'
+    )
+    spark_embeddings_current_app_path: str = (
+        'local:///opt/spark/custom_jobs/embeddings_current_job.py'
+    )
     spark_namespace: str = 'spark'
     spark_service_account: str = 'spark'
 
