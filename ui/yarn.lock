@@ -927,10 +927,10 @@
   dependencies:
     yup "^1.4.0"
 
-"@radicalbit/radicalbit-design-system@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@radicalbit/radicalbit-design-system/-/radicalbit-design-system-2.0.0.tgz#7bd0ca2cb8253d1778e8f2bae230d730c8122f1b"
-  integrity sha512-GDxWoshN+ERIBi4xpEKpm7FKFyW6IkvhQqC0ETBcX6KbnG2HbaWiz4ATtxGQIDC3Emvqzyql9l6W9nK192wdBw==
+"@radicalbit/radicalbit-design-system@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@radicalbit/radicalbit-design-system/-/radicalbit-design-system-2.1.0.tgz#665d4e3361883047c90db2ee2a62780f4c266f5e"
+  integrity sha512-lHVte4x51jmcNqidgC8fNqfrD/ePgpDeBsKvvvGGdNhJ9eVVO9iWlCZKGX611wgCStFX0CcZXVyKZ8M5UVdGhQ==
   dependencies:
     "@babel/polyfill" "7.12.1"
     "@fortawesome/fontawesome-svg-core" "^6.5.1"

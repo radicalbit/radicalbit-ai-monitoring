@@ -14,7 +14,7 @@ import {
   StatusSelector,
   Tooltip,
 } from '@radicalbit/radicalbit-design-system';
-import { numberFormatter } from '@Src/constants';
+import { echartNumberFormatter, numberFormatter } from '@Src/constants';
 import MarkdownToJsx, { RuleType } from 'markdown-to-jsx';
 import { useState } from 'react';
 import useGetFilteredFeatures from './use-get-filtered-features';
@@ -144,11 +144,11 @@ function ColoredTokenBoardBody({ token, withDot = false }) {
 
 function ColoredTokenBoardTitle({ token }) {
   const formattedPerplexity = token.perplexity
-    ? numberFormatter().format(token.perplexity)
+    ? echartNumberFormatter().format(token.perplexity)
     : '--';
 
   const formattedProbability = token.probability
-    ? numberFormatter().format(token.probability)
+    ? echartNumberFormatter().format(token.probability)
     : '--';
 
   const modelName = token.modelName ? token.modelName : '--';

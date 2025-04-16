@@ -1,11 +1,11 @@
 import * as commonChartOptions from '@Helpers/common-chart-options';
 import { CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-options';
-import { numberFormatter } from '@Src/constants';
+import { echartNumberFormatter } from '@Src/constants';
 
 export default function chartOptions(dataset, barChartSelectedIndex) {
   const xAxisData = dataset.probs.map(({ token }) => token);
 
-  const seriesData = dataset.probs.map(({ prob }) => numberFormatter().format(prob));
+  const seriesData = dataset.probs.map(({ prob }) => echartNumberFormatter().format(prob));
 
   const barChartChangeColorFn = (p) => p.data <= 0.33 ? 'rgb(240,0,0)' : p.data > 0.33 && p.data <= 0.66 ? 'rgb(251,228,5)' : 'rgb(77,182,148)';
 
