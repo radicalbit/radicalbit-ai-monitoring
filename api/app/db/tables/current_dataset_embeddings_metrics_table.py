@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import UUID, Column, ForeignKey, Float
+from sqlalchemy import UUID, Column, Float, ForeignKey
 
 from app.db.dao.base_dao import BaseDAO
 from app.db.database import BaseTable, Reflected
