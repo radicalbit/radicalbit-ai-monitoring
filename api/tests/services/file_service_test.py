@@ -22,7 +22,7 @@ from app.models.dataset_dto import (
 )
 from app.models.exceptions import InvalidFileException, ModelNotFoundError
 from app.models.job_status import JobStatus
-from app.models.model_dto import ModelOut
+from app.models.model_dto import ModelOut, ModelType
 from app.services.file_service import FileService
 from app.services.model_service import ModelService
 from tests.commons import csv_file_mock as csv, db_mock, json_file_mock as json
@@ -293,6 +293,7 @@ class FileServiceTest(unittest.TestCase):
     def test_upload_completion_file_ok(self):
         file = json.get_completion_sample_json_file()
         model = db_mock.get_sample_model(
+            model_type=ModelType.TEXT_GENERATION,
             features=None,
             outputs=None,
             target=None,
