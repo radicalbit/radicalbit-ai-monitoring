@@ -50,6 +50,18 @@ class ProjectDAOTest(DatabaseIntegration):
         assert projects.items[0].name == project3.name
         assert len(projects.items) == 3
 
+    def test_update(self):
+        project = db_mock.get_sample_project()
+        api_key = db_mock.get_sample_api_key(name='api_key')
+        self.project_dao.insert(project)
+        self.api_key_dao.insert(api_key)
+        inserted = self.project_dao.get_by_uuid(project.uuid)
+        inserted.name = 'new_name_project'
+        rows = self.project_dao.update(inserted)
+        retrieved = self.project_dao.get_by_uuid(project.uuid)
+        assert rows == 1
+        assert retrieved.name == 'new_name_project'
+
     def test_delete(self):
         project = db_mock.get_sample_project()
         api_key = db_mock.get_sample_api_key(name='api_key')

@@ -62,6 +62,16 @@ class ProjectDAO:
 
             return paginate(session, stmt, params)
 
+    def update(self, project: Project) -> int:
+        with self.db.begin_session() as session:
+            project.updated_at = datetime.datetime.now(tz=datetime.UTC)
+            query = (
+                sqlalchemy.update(Project)
+                .where(Project.uuid == project.uuid, Project.deleted.is_(False))
+                .values(**project.attributes())
+            )
+            return session.execute(query).rowcount
+
     def delete(self, uuid: UUID) -> int:
         with self.db.begin_session() as session:
             deleted_at = datetime.datetime.now(tz=datetime.UTC)

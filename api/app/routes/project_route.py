@@ -45,6 +45,12 @@ class ProjectRoute:
                 params=params, order=_order, sort=_sort
             )
 
+        @router.post('/{project_uuid}', status_code=200, response_model=ProjectOut)
+        def update_project(project_in: ProjectIn, project_uuid: UUID):
+            project = project_service.update_project(project_in, project_uuid)
+            logger.info('Project %s with name %s updated.', project.uuid, project.name)
+            return project
+
         @router.delete('/{project_uuid}', status_code=200, response_model=ProjectOut)
         def delete_project(project_uuid: UUID):
             project = project_service.delete_project(project_uuid)
