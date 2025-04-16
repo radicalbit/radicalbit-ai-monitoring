@@ -6,6 +6,7 @@ import AddNewProjectModal from './add-new-project';
 import CompletionImportDetailModal from './completion-import-detail-modal';
 import CurrentImportsDetailModal from './current-import-detail-modal';
 import TraceDetailModal from './trace-detail-modal';
+import EditProjectModal from './edit-project';
 
 export default function ModalsProvider() {
   const { modalPayload: { modalName } } = useModals();
@@ -22,6 +23,9 @@ export default function ModalsProvider() {
 
     case ModalsEnum.ADD_NEW_PROJECT:
       return <AddNewProjectModal />;
+
+    case ModalsEnum.EDIT_PROJECT:
+      return <EditProjectModal />;
 
     case ModalsEnum.TRACE_DETAIL:
       return <TraceDetailModal />;

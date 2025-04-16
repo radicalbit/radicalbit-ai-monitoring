@@ -1,6 +1,6 @@
 import { Spinner } from '@radicalbit/radicalbit-design-system';
 import { numberFormatter } from '@Src/constants';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { Tree } from 'antd';
 import { useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';

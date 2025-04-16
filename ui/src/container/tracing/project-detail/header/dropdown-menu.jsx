@@ -1,17 +1,22 @@
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import useModals from '@Hooks/use-modals';
 import { Dropdown, FontAwesomeIcon, Popconfirm } from '@radicalbit/radicalbit-design-system';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { ModalsEnum } from '@Src/constants';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const { useDeleteProjectMutation } = tracingApiSlice;
 
 function DropdownMenu() {
+  const editProject = useEditProject();
+
   return (
     <Dropdown
       key="header-dropdown"
       menu={{
         items: [
           { label: <DeleteButton />, key: 'delete-project' },
+          editProject,
         ],
       }}
     >
@@ -47,5 +52,22 @@ function DeleteButton() {
     />
   );
 }
+
+const useEditProject = () => {
+  const { uuid } = useParams();
+  const { showModal } = useModals();
+
+  const handleOnClick = async () => {
+    showModal(ModalsEnum.EDIT_PROJECT, { uuid });
+  };
+
+  return (
+    {
+      label: 'Edit',
+      onClick: handleOnClick,
+      key: 'edit-project',
+    }
+  );
+};
 
 export default DropdownMenu;
