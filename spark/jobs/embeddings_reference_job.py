@@ -3,7 +3,9 @@ import os
 import sys
 import uuid
 
+from embeddings.embeddings_drift_detector import EmbeddingsDriftDetector
 from models.reference_dataset import ReferenceDataset
+import orjson
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
 from utils.db import update_job_status, write_to_db
@@ -13,9 +15,11 @@ from utils.models import JobStatus, ModelOut
 logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
-def compute_metrics(reference_dataset, model, reference_uuid):
-    # TODO: Define the logic of computing embeddings metrics
-    return {}
+def compute_metrics(reference_dataset: ReferenceDataset):
+    complete_record = {}
+    embedding_drift = EmbeddingsDriftDetector(reference_dataset.reference, '', 0.80)
+    complete_record['METRICS'] = orjson.dumps(embedding_drift).decode('utf-8')
+    return complete_record
 
 
 def main(
@@ -51,7 +55,7 @@ def main(
         model=model, raw_dataframe=raw_dataframe, prefix_id=reference_uuid
     )
 
-    complete_record = compute_metrics(reference_dataset, model, reference_uuid)
+    complete_record = compute_metrics(reference_dataset)
 
     complete_record.update(
         {'UUID': str(uuid.uuid4()), 'REFERENCE_UUID': reference_uuid}
