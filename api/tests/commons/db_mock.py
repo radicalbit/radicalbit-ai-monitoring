@@ -667,18 +667,6 @@ current_embeddings_metrics_dict = {
     'drift_score': {'current_timestamp': 1627849500, 'score': 0.35},
 }
 
-current_embeddings_drift_dict = {
-    'average_drift_score': 0.28,
-    'last_drift_score': {'current_timestamp': 1627849500, 'score': 0.35},
-    'drift_scores': [
-        {'current_timestamp': 1627849200, 'score': 0.15},
-        {'current_timestamp': 1627849260, 'score': 0.25},
-        {'current_timestamp': 1627849320, 'score': 0.30},
-        {'current_timestamp': 1627849380, 'score': 0.35},
-        {'current_timestamp': 1627849440, 'score': 0.40},
-    ],
-}
-
 
 def get_sample_reference_metrics(
     reference_uuid: uuid.UUID = REFERENCE_UUID,
@@ -735,12 +723,12 @@ def get_sample_reference_embeddings_metrics(
 def get_sample_current_embeddings_metrics(
     current_uuid: uuid.UUID = CURRENT_UUID,
     metrics: Dict = current_embeddings_metrics_dict,
-    drift: Dict = current_embeddings_drift_dict,
+    drift_score: float = 0.2,
 ) -> CurrentDatasetEmbeddingsMetrics:
     return CurrentDatasetEmbeddingsMetrics(
         current_uuid=current_uuid,
         metrics=metrics,
-        drift=drift,
+        drift_score=drift_score,
     )
 
 

@@ -22,6 +22,7 @@ class ModelType(str, Enum):
     BINARY = 'BINARY'
     MULTI_CLASS = 'MULTI_CLASS'
     TEXT_GENERATION = 'TEXT_GENERATION'
+    EMBEDDINGS = 'EMBEDDINGS'
 
 
 class DataType(str, Enum):
@@ -192,7 +193,7 @@ class ModelIn(BaseModel, validate_assignment=True):
     @model_validator(mode='after')
     def validate_fields(self) -> Self:
         checked_model_type = self.model_type
-        if checked_model_type == ModelType.TEXT_GENERATION:
+        if checked_model_type in [ModelType.TEXT_GENERATION, ModelType.EMBEDDINGS]:
             if any([self.target, self.features, self.outputs, self.timestamp]):
                 raise ValueError(
                     f'target, features, outputs and timestamp must not be provided for a {checked_model_type}'
@@ -231,7 +232,7 @@ class ModelIn(BaseModel, validate_assignment=True):
                         f'target must be a number for a {checked_model_type}, has been provided [{self.target}]'
                     )
                 return self
-            case ModelType.TEXT_GENERATION:
+            case ModelType.TEXT_GENERATION | ModelType.EMBEDDINGS:
                 return self
             case _:
                 raise ValueError('not supported type for model_type')
@@ -276,14 +277,14 @@ class ModelIn(BaseModel, validate_assignment=True):
                         f'prediction_proba must be None for a {checked_model_type}, has been provided [{self.outputs.prediction_proba}]'
                     )
                 return self
-            case ModelType.TEXT_GENERATION:
+            case ModelType.TEXT_GENERATION | ModelType.EMBEDDINGS:
                 return self
             case _:
                 raise ValueError('not supported type for model_type')
 
     @model_validator(mode='after')
     def timestamp_must_be_datetime(self) -> Self:
-        if self.model_type == ModelType.TEXT_GENERATION:
+        if self.model_type in [ModelType.TEXT_GENERATION, ModelType.EMBEDDINGS]:
             return self
         if not self.timestamp.type == SupportedTypes.datetime:
             raise ValueError('timestamp must be a datetime')
