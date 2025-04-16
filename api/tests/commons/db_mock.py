@@ -6,10 +6,16 @@ import uuid
 from app.db.tables.api_key_table import ApiKey
 from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
 from app.db.tables.completion_dataset_table import CompletionDataset
+from app.db.tables.current_dataset_embeddings_metrics_table import (
+    CurrentDatasetEmbeddingsMetrics,
+)
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
 from app.db.tables.model_table import Model
 from app.db.tables.project_table import Project
+from app.db.tables.reference_dataset_embeddings_metrics_table import (
+    ReferenceDatasetEmbeddingsMetrics,
+)
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.db.tables.traces_table import Trace
@@ -603,6 +609,76 @@ model_quality_completion_dict = {
     ],
 }
 
+reference_embeddings_metrics_dict = {
+    'reference_embeddings_metrics': {
+        'n_comp': 2,
+        'n_cluster': 5,
+        'inertia': 152.75,
+        'sil_score': 0.48,
+    },
+    'reference_embeddings': {
+        'centroid': {'x': 0.0, 'y': 0.0},
+        'values': [
+            {'timestamp': 1627849200, 'x': 1.23, 'y': 4.56},
+            {'timestamp': 1627849260, 'x': 2.34, 'y': 5.67},
+            {'timestamp': 1627849320, 'x': 3.45, 'y': 6.78},
+        ],
+    },
+    'histogram': {
+        'buckets': [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        'reference_values': [15, 25, 10, 5, 3],
+    },
+}
+
+current_embeddings_metrics_dict = {
+    'reference_embeddings_metrics': {
+        'n_comp': 2,
+        'n_cluster': 5,
+        'inertia': 152.75,
+        'sil_score': 0.48,
+    },
+    'reference_embeddings': {
+        'centroid': {'x': 0.0, 'y': 0.0},
+        'values': [
+            {'timestamp': 1627849200, 'x': 1.23, 'y': 4.56},
+            {'timestamp': 1627849260, 'x': 2.34, 'y': 5.67},
+            {'timestamp': 1627849320, 'x': 3.45, 'y': 6.78},
+        ],
+    },
+    'current_embedding_metrics': {
+        'n_comp': 2,
+        'n_cluster': 5,
+        'inertia': 165.20,
+        'sil_score': 0.42,
+    },
+    'current_embeddings': {
+        'centroid': {'x': 0.5, 'y': 0.5},
+        'values': [
+            {'timestamp': 1627849200, 'x': 1.23, 'y': 4.56},
+            {'timestamp': 1627849260, 'x': 2.34, 'y': 5.67},
+            {'timestamp': 1627849320, 'x': 3.45, 'y': 6.78},
+        ],
+    },
+    'histogram': {
+        'buckets': [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        'reference_values': [15, 25, 10, 5, 3],
+        'current_values': [20, 15, 10, 10, 3],
+    },
+    'drift_score': {'current_timestamp': 1627849500, 'score': 0.35},
+}
+
+current_embeddings_drift_dict = {
+    'average_drift_score': 0.28,
+    'last_drift_score': {'current_timestamp': 1627849500, 'score': 0.35},
+    'drift_scores': [
+        {'current_timestamp': 1627849200, 'score': 0.15},
+        {'current_timestamp': 1627849260, 'score': 0.25},
+        {'current_timestamp': 1627849320, 'score': 0.30},
+        {'current_timestamp': 1627849380, 'score': 0.35},
+        {'current_timestamp': 1627849440, 'score': 0.40},
+    ],
+}
+
 
 def get_sample_reference_metrics(
     reference_uuid: uuid.UUID = REFERENCE_UUID,
@@ -643,6 +719,28 @@ def get_sample_completion_metrics(
     return CompletionDatasetMetrics(
         completion_uuid=completion_uuid,
         model_quality=model_quality,
+    )
+
+
+def get_sample_reference_embeddings_metrics(
+    reference_uuid: uuid.UUID = REFERENCE_UUID,
+    metrics: Dict = reference_embeddings_metrics_dict,
+) -> ReferenceDatasetEmbeddingsMetrics:
+    return ReferenceDatasetEmbeddingsMetrics(
+        reference_uuid=reference_uuid,
+        metrics=metrics,
+    )
+
+
+def get_sample_current_embeddings_metrics(
+    current_uuid: uuid.UUID = CURRENT_UUID,
+    metrics: Dict = current_embeddings_metrics_dict,
+    drift: Dict = current_embeddings_drift_dict,
+) -> CurrentDatasetEmbeddingsMetrics:
+    return CurrentDatasetEmbeddingsMetrics(
+        current_uuid=current_uuid,
+        metrics=metrics,
+        drift=drift,
     )
 
 

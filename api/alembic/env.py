@@ -13,7 +13,10 @@ from app.db.tables.current_dataset_table import *
 from app.db.tables.current_dataset_metrics_table import *
 from app.db.tables.completion_dataset_table import *
 from app.db.tables.completion_dataset_metrics_table import *
+from app.db.tables.reference_dataset_embeddings_metrics_table import *
+from app.db.tables.current_dataset_embeddings_metrics_table import *
 from app.db.tables.project_table import *
+from app.db.tables.api_key_table import *
 from app.db.tables.commons.json_encoded_dict import JSONEncodedDict
 from app.db.database import Database, BaseTable
 
