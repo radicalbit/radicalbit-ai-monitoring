@@ -9,6 +9,7 @@ const errorWhiteList = {
   getTraceLatencies: true,
   getSessionLatencies: true,
   getSpanLatencies: true,
+  addNewApiKey: true,
 };
 
 const successWhiteList = {};

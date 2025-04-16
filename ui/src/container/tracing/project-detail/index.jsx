@@ -5,13 +5,17 @@ import {
   DETAIL_LAYOUT_LIGHT_MODE_CONFIGURATION,
 } from '@Container/layout/layout-provider/layout-provider-configuration';
 import getIsProjectTracingEnabled from '@Hooks/feature-flag/get-is-project-tracing-enabled';
-import { useSearchParams } from 'react-router-dom';
+import { tracingApiSlice } from '@State/tracing/api';
+import { useParams, useSearchParams } from 'react-router-dom';
+import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import { TRACING_TABS_ENUM } from '../constants';
 import ProjectDashboard from './dashboard';
 import SessionsList from './sessions';
 import SessionsTracesList from './sessions/traces';
-import TracesList from './traces';
 import Settings from './settings';
+import TracesList from './traces';
+
+const { useGetProjectByUUIDQuery } = tracingApiSlice;
 
 function ProjectDetail() {
   const isProjectTracingEnabled = getIsProjectTracingEnabled();
@@ -29,8 +33,16 @@ function ProjectDetail() {
 }
 
 function ProjectDetailInner() {
+  const { uuid } = useParams();
+
   const [searchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') || TRACING_TABS_ENUM.DASHBOARD;
+
+  const { isError } = useGetProjectByUUIDQuery({ uuid });
+
+  if (isError) {
+    return <SomethingWentWrong />;
+  }
 
   switch (activeTab) {
     case TRACING_TABS_ENUM.DASHBOARD:

@@ -1,17 +1,17 @@
+import useModals from '@Hooks/use-modals';
 import { tracingApiSlice } from '@State/tracing/api';
 import { useFormbitContext } from '@radicalbit/formbit';
-import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
 
-const { useAddNewProjectMutation } = tracingApiSlice;
+const { useEditTracingProjectMutation } = tracingApiSlice;
 
 export default () => {
-  const navigate = useNavigate();
+  const { modalPayload: { data: { uuid } } } = useModals();
   const [searchParams] = useSearchParams();
 
   const { isDirty, isFormInvalid, submitForm } = useFormbitContext();
 
-  const [triggerAddNewProject, args] = useAddNewProjectMutation();
+  const [triggerEditProject, args] = useEditTracingProjectMutation({ fixedCacheKey: `edit-new-project-${uuid}` });
 
   const isSubmitDisabled = !isDirty || isFormInvalid();
 
@@ -21,17 +21,14 @@ export default () => {
     }
 
     submitForm(async ({ form: { name } }, setError) => {
-      const response = await triggerAddNewProject({ name });
+      const response = await triggerEditProject({ uuid, name });
 
       if (response.error) {
-        console.error(response.error);
-        setError('silent.backed', response.error);
+        setError('silent.backend', response.error.message || response.error.data.message || 'Something went wrong');
         return;
       }
 
       searchParams.delete('modal');
-
-      navigate({ pathname: `projects/${response.data.uuid}`, search: searchParams.toString() });
     });
   };
 

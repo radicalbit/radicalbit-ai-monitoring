@@ -14,7 +14,7 @@ import {
 import { useParams } from 'react-router-dom';
 import DropdownMenu from './dropdown-menu';
 
-const { useGetProjectByUUIDQuery } = tracingApiSlice;
+const { useGetProjectByUUIDQuery, useEditTracingProjectMutation } = tracingApiSlice;
 
 function ProjectDetailHeader() {
   const isProjectTracingEnabled = getIsProjectTracingEnabled();
@@ -46,10 +46,11 @@ function ProjectDetailHeaderInner() {
 function Title() {
   const { uuid } = useParams();
   const { data, isLoading } = useGetProjectByUUIDQuery({ uuid });
+  const [, { isLoading: isEditing }] = useEditTracingProjectMutation({ fixedCacheKey: `edit-new-project-${uuid}` });
 
   const name = data?.name;
 
-  if (isLoading) {
+  if (isLoading || isEditing) {
     return <Skeleton.Input active />;
   }
 

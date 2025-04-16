@@ -6,6 +6,8 @@ import { useSearchParams } from 'react-router-dom';
 const { useAddNewApiKeyMutation, useAddNewProjectMutation } = tracingApiSlice;
 
 export default () => {
+  const { modalPayload: { data: { uuid } } } = useModals();
+
   const [searchParams] = useSearchParams();
   const { hideModal } = useModals();
 
@@ -16,17 +18,16 @@ export default () => {
 
   const isSubmitDisabled = !isDirty || isFormInvalid();
 
-  const handleOnSubmit = (projectUuid) => {
+  const handleOnSubmit = () => {
     if (isSubmitDisabled || args.isLoading) {
       return;
     }
 
     submitForm(async ({ form: { name } }, setError) => {
-      const response = await triggerAddNewApiKey({ projectUuid, data: { name } });
+      const response = await triggerAddNewApiKey({ uuid, data: { name } });
 
       if (response.error) {
-        console.error(response.error);
-        setError('silent.backed', response.error);
+        setError('silent.backend', response.error.message || response.error.data.message || 'Something went wrong');
         return;
       }
       addNewProjectArgs.reset();

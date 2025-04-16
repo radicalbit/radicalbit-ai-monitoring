@@ -8,8 +8,8 @@ The Traceloop SDK in the project that needs to be monitored must be configured a
 from traceloop.sdk import Traceloop
 
 Traceloop.init(
-    api_endpoint="http://localhost:4318/",
-    app_name=f'{project_uuid}'
+    api_endpoint="http://localhost:9000/api/otel",
+    api_key="<YOUR_API_KEY>" # Replace with your actual API key
 )
 ```
 
