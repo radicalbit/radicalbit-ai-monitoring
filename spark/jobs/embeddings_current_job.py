@@ -3,19 +3,13 @@ import os
 import sys
 import uuid
 
-from metrics.percentages import PercentageCalculator
-from metrics.statistics import calculate_statistics_current
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
-import orjson
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
-from utils.current_binary import CurrentMetricsService
-from utils.current_multiclass import CurrentMetricsMulticlassService
-from utils.current_regression import CurrentMetricsRegressionService
 from utils.db import update_job_status, write_to_db
 from utils.logger import logger_config
-from utils.models import JobStatus, ModelOut, ModelType
+from utils.models import JobStatus, ModelOut
 
 logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
@@ -23,9 +17,8 @@ logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 def compute_metrics(
     spark_session, current_dataset, reference_dataset, model, current_id
 ):
-    complete_record = {}
     # TODO: Define the logic of computing embeddings metrics
-    return complete_record
+    return {}
 
 
 def main(
