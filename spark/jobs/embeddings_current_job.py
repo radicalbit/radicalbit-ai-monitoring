@@ -73,7 +73,7 @@ def main(
             StructField('UUID', StringType(), True),
             StructField('CURRENT_UUID', StringType(), True),
             StructField('METRICS', StringType(), True),
-            StructField('DRIFT', StringType(), True),
+            StructField('DRIFT_SCORE', StringType(), True),
         ]
     )
 

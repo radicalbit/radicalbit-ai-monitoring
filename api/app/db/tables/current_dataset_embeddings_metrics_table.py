@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from sqlalchemy import UUID, Column, ForeignKey
+from sqlalchemy import UUID, Column, ForeignKey, Float
 
 from app.db.dao.base_dao import BaseDAO
 from app.db.database import BaseTable, Reflected
@@ -24,4 +24,4 @@ class CurrentDatasetEmbeddingsMetrics(Reflected, BaseTable, BaseDAO):
         nullable=False,
     )
     metrics = Column('METRICS', JSONEncodedDict, nullable=True)
-    drift = Column('DRIFT', JSONEncodedDict, nullable=True)
+    drift_score = Column('DRIFT_SCORE', Float, nullable=True)
