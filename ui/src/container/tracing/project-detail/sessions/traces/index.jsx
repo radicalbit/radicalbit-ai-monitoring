@@ -15,12 +15,19 @@ const { useGetTracesByProjectUUIDQuery } = tracingApiSlice;
 
 function SessionsTracesList() {
   const { showModal } = useModals();
-  const queryParams = useSelector((state) => contextConfigurationSelectors.selectQueryParamsSelector(state, NamespaceEnum.SESSION_TRACES, externalFiltersToQueryParams));
+  const queryParams = useSelector((state) => contextConfigurationSelectors.selectQueryParamsSelector(
+    state,
+    NamespaceEnum.SESSION_TRACES,
+    externalFiltersToQueryParams,
+  ));
 
   const { uuid } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data, isLoading, isFetching } = useGetTracesByProjectUUIDQuery({ uuid, queryParams }, { skip: !queryParams.includes('sessionUuid') });
+  const { data, isLoading, isFetching } = useGetTracesByProjectUUIDQuery(
+    { uuid, queryParams },
+    { skip: !queryParams.includes('sessionUuid') },
+  );
   const items = data?.items ?? [];
   const count = data?.total;
 
@@ -33,11 +40,16 @@ function SessionsTracesList() {
   const modifier = items?.length ? '' : 'c-spinner--centered';
 
   return (
-    <div className="flex flex-col gap-2">
-      <Filters />
+    <div className="flex flex-col gap-4 p-4">
+      <div className="flex justify-end">
+        <Filters />
+      </div>
 
-      <Spinner fullHeight modifier={modifier} spinning={isLoading || isFetching}>
-
+      <Spinner
+        fullHeight
+        modifier={modifier}
+        spinning={isLoading || isFetching}
+      >
         <SmartTable
           clickable
           columns={getColumns}

@@ -27,10 +27,17 @@ function Body() {
 
   return (
     <div className="flex flex-row h-full">
-      <TreeComponent />
+      <div className="flex p-8 border border-solid border-[var(--coo-secondary-03)]">
+        <TreeComponent />
+      </div>
 
-      <Board main={<TraceDetail />} modifier="w-full" />
-
+      <div className="flex border border-solid border-[var(--coo-secondary-03)] w-full">
+        <Board
+          borderType="none"
+          main={<TraceDetail />}
+          modifier="w-full"
+        />
+      </div>
     </div>
   );
 }

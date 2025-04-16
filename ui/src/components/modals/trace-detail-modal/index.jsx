@@ -20,7 +20,6 @@ function TraceDetailModal() {
       onCancel={handleOnCancel}
       open
     >
-
       <Body />
     </RbitModal>
   );
