@@ -2,8 +2,9 @@ import SessionLatenciesTable from '@Container/tracing/project-detail/dashboard/s
 import SpanLatenciesTable from '@Container/tracing/project-detail/dashboard/span-latencies-table';
 import TraceLatenciesTable from '@Container/tracing/project-detail/dashboard/trace-latencies-table';
 import { FormbitContextProvider } from '@radicalbit/formbit';
-import { Board } from '@radicalbit/radicalbit-design-system';
+import { Board, SectionTitle, Tabs } from '@radicalbit/radicalbit-design-system';
 import dayjs from 'dayjs';
+import { useSearchParams } from 'react-router-dom';
 import Filters from './filters';
 import schema from './schema';
 import TraceByTimeLineChart from './trace-by-time-line-chart';
@@ -18,30 +19,66 @@ function ProjectDashboard() {
   return (
     <FormbitContextProvider initialValues={initialValues} schema={schema}>
       <div className="flex flex-col gap-4 p-4">
-        <Filters />
+        <div className="flex justify-end">
+          <Filters />
+        </div>
 
-        <div className="flex flex-col gap-2">
-          <Board
-            header={<h2>Trace latencies</h2>}
-            main={<TraceLatenciesTable />}
-          />
+        <div className="flex flex-col gap-8 ">
+          <div className="flex flex-col gap-4">
+            <TraceByTimeLineChart />
 
-          <Board
-            header={<h2>Session latencies</h2>}
-            main={<SessionLatenciesTable />}
-          />
+            <Board
+              header={<SectionTitle title="Trace latencies" />}
+              main={<TraceLatenciesTable />}
+            />
+          </div>
 
-          <Board
-            header={<h2>Span latencies</h2>}
-            main={<SpanLatenciesTable />}
-          />
-
-          <TraceByTimeLineChart />
-
-          <TracesBySessionHistogram />
+          <DashboardTabs />
         </div>
       </div>
     </FormbitContextProvider>
+  );
+}
+
+function DashboardTabs() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get('section') || 'session';
+
+  const handleOnChangeTabs = (tab) => {
+    searchParams.set('section', tab);
+    setSearchParams(searchParams);
+  };
+
+  return (
+    <Tabs
+      activeKey={activeTab}
+      items={[
+        {
+          label: 'Session',
+          key: 'session',
+          children: (
+            <div className="flex flex-col gap-4">
+              <Board
+                header={<SectionTitle title="Session latencies" />}
+                main={<SessionLatenciesTable />}
+              />
+
+              <TracesBySessionHistogram />
+            </div>),
+        },
+        {
+          label: 'Span',
+          key: 'span',
+          children: <Board
+            header={<SectionTitle title="Span latencies" />}
+            main={<SpanLatenciesTable />}
+          />,
+        },
+      ]}
+      modifier="h-[96%]"
+      noBorder
+      onChange={handleOnChangeTabs}
+    />
   );
 }
 
