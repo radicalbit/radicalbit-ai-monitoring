@@ -75,6 +75,14 @@ class ProjectService:
             total=projects.total,
         )
 
+    def update_project(self, project_in: ProjectIn, project_uuid: UUID) -> ProjectOut:
+        project = self._check_and_get_project(project_uuid)
+        traces = self.trace_dao.count_distinct_traces_by_project_uuid(project_uuid)
+        project.name = project_in.name
+        self.project_dao.update(project)
+        updated_project = self.project_dao.get_by_uuid(project_uuid)
+        return ProjectOut.from_project(project=updated_project, traces=traces)
+
     def delete_project(self, project_uuid: UUID) -> Optional[ProjectOut]:
         project = self._check_and_get_project(project_uuid)
         traces = self.trace_dao.count_distinct_traces_by_project_uuid(project_uuid)
