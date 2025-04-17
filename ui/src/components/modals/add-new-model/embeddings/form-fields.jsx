@@ -76,7 +76,7 @@ function DataType() {
 
   return (
     <FormField label="Data type" message={error('dataType')} modifier="w-full" required>
-      {DataTypeEnumLabel[DataTypeEnum.TEXT]}
+      {DataTypeEnumLabel[DataTypeEnum.TABULAR]}
     </FormField>
   );
 }
