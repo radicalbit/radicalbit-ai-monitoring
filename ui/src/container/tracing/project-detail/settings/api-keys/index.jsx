@@ -32,7 +32,6 @@ function ApiKeysProject() {
         </div>
           )}
       main={(<ApiKeysList />)}
-      modifier="max-w-[800px] w-full"
     />
   );
 }
