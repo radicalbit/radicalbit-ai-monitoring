@@ -1,6 +1,6 @@
+import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import MarkdownToJsx, { RuleType } from 'markdown-to-jsx';
 import { useParams } from 'react-router';
-import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
 import tracingInstructions from './tracing-instructions.md?raw';
 
 function InstructionsComponent() {
@@ -12,11 +12,10 @@ function InstructionsComponent() {
           title="How to connect"
           titleColor="primary"
         />
-    )}
+      )}
       main={(
         <MarkdownRenderComponent />
       )}
-      modifier="max-w-[800px] w-full"
     />
   );
 }
