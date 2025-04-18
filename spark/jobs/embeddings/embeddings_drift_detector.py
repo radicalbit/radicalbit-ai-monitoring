@@ -23,11 +23,13 @@ class EmbeddingsDriftDetector:
         centroid_df = self.embeddings.agg(*aggregation_expressions)
         return centroid_df
 
+
     def compute_distance(self) -> List[float]:
         """Computes the Euclidean distance between each embedding row and the centroid.
         """
 
         distance_column_name = f'{self.prefix_id}_euclidean_distance'
+
         embedding_centroid_df = self.compute_centroid()
 
         # Collect the centroid to the driver.
@@ -103,14 +105,14 @@ class EmbeddingsDriftDetector:
 
     def find_optimal_clusters_number(self, reduced_df) -> Tuple[int, Dict[int, float]]:
         k_min = 2
-        k_max = int(np.floor(len(self.column_names) / 3))
+        k_max = 4 #int(np.floor(len(self.column_names) / 3))
         k_values = range(k_min, k_max + 1)
 
         pca_features_col = 'pca_features'
 
         silhouette_scores = {}
         for k in k_values:
-            logger.info(f'Finding optimal cluster number - processing k: {k}')
+            print(f'Finding optimal cluster number - processing k: {k}')
             kmeans = KMeans(
                 featuresCol=pca_features_col, k=k, seed=42, predictionCol='prediction'
             )
@@ -158,10 +160,11 @@ class EmbeddingsDriftDetector:
 
         return silhouette_scores, inertia_scores
 
-    def compute_result(self) -> Dict[str, Any]:
+    def compute_result(self):
         #  ---  Process ---
         # step 1: scale data
         scaled_df = self.scale_embeddings()
+
 
         # step 2: find optimal components number
         optimal_components_number = self.find_k_optimal_components(scaled_df=scaled_df)
@@ -181,43 +184,46 @@ class EmbeddingsDriftDetector:
             reduced_df=optimal_pca, k_clusters=optimal_clusters_number
         )
 
+
         #  --- Visualisation info ---
         # distances
         centroid_embeddings_distance = self.compute_distance()
+        return centroid_embeddings_distance
 
-        # 2d scatterplot
-        def select_first_two_components(vector):
-            if vector is not None and hasattr(vector, 'size') and vector.size >= 2:
-                return Vectors.dense([vector[0], vector[1]])
-            else:
-                return None
-
-        select_first_two_udf = f.udf(select_first_two_components, VectorUDT())
-
-        two_d_pca = optimal_pca.withColumn(
-            'first_two_pca', select_first_two_udf(f.col('pca_features'))
-        ).select('first_two_pca')
-
-        x_y_pca = [
-            [row.first_two_pca[0], row.first_two_pca[1]] for row in two_d_pca.collect()
-        ]
-
-        # find 2d centroid
-        x_y_centroid = [
-            [np.mean([coord[0] for coord in x_y_pca])],
-            [np.mean([coord[1] for coord in x_y_pca])],
-        ]
-
-        return {
-            'table': {
-                'number_of_optimal_components': optimal_components_number,
-                'number_of_optimal_clusters': optimal_clusters_number,
-                'silhouette_score': final_silhouette_score,
-                'inertia': inertia_score,
-            },
-            'barplot': {'distances': centroid_embeddings_distance},
-            'scatterplot': {'x_y_coordinates': x_y_pca, 'x_y_centroid': x_y_centroid},
-        }
+        #
+        # # 2d scatterplot
+        # def select_first_two_components(vector):
+        #     if vector is not None and hasattr(vector, 'size') and vector.size >= 2:
+        #         return Vectors.dense([vector[0], vector[1]])
+        #     else:
+        #         return None
+        #
+        # select_first_two_udf = f.udf(select_first_two_components, VectorUDT())
+        #
+        # two_d_pca = optimal_pca.withColumn(
+        #     'first_two_pca', select_first_two_udf(f.col('pca_features'))
+        # ).select('first_two_pca')
+        #
+        # x_y_pca = [
+        #     [row.first_two_pca[0], row.first_two_pca[1]] for row in two_d_pca.collect()
+        # ]
+        #
+        # # find 2d centroid
+        # x_y_centroid = [
+        #     [np.mean([coord[0] for coord in x_y_pca])],
+        #     [np.mean([coord[1] for coord in x_y_pca])],
+        # ]
+        #
+        # return {
+        #     'table': {
+        #         'number_of_optimal_components': optimal_components_number,
+        #         'number_of_optimal_clusters': optimal_clusters_number,
+        #         'silhouette_score': final_silhouette_score,
+        #         'inertia': inertia_score,
+        #     },
+        #     'barplot': {'distances': centroid_embeddings_distance},
+        #     'scatterplot': {'x_y_coordinates': x_y_pca, 'x_y_centroid': x_y_centroid},
+        # }
 
 
 import pandas as pd
@@ -228,8 +234,8 @@ def main():
     # spark session
     spark = SparkSession.builder.appName('Drift-Emb').getOrCreate()
 
-    size = 50
-    emb_df = pd.DataFrame([np.random.uniform(size=12) for _ in range(size)])
+    size = 60
+    emb_df = pd.DataFrame([np.random.uniform(size=1536) for _ in range(size)])
     #emb_df = pd.read_csv("../../Downloads/embeddings.csv")
     print(emb_df.shape)
 
