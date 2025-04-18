@@ -73,6 +73,10 @@ Summary with all variable name and type (float, int, string, datetime).
     * Scatter plot for predictions vs ground truth and linear regression line
     * Histogram of the residuals
     * Kolmogorov-Smirnov test of normality for residuals
+* Text generation
+  * Probability: In language modeling, probability refers to the likelihood that the model assigns to a specific sequence of text occurring.
+
+  * Perplexity: Perplexity is a standard metric that measures how "surprised" or uncertain the model is when predicting the text sequence. 
 
 ## Data Drift
 
