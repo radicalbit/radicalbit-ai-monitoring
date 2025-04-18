@@ -1,7 +1,9 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from enum import Enum
 from typing import Optional, List
 from uuid import UUID
+
+from pydantic.alias_generators import to_camel
 
 
 class FieldTypes(str, Enum):
@@ -52,6 +54,7 @@ class ModelType(str, Enum):
     BINARY = "BINARY"
     MULTI_CLASS = "MULTI_CLASS"
     TEXT_GENERATION = "TEXT_GENERATION"
+    EMBEDDINGS = "EMBEDDINGS"
 
 
 class DataType(str, Enum):
@@ -82,3 +85,5 @@ class ModelOut(BaseModel):
     algorithm: Optional[str]
     created_at: str
     updated_at: str
+
+    model_config = ConfigDict(alias_generator=to_camel)
