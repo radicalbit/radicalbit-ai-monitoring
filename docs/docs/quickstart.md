@@ -159,3 +159,55 @@ In detail, you can browse between 4 tabs:
 ![Alt text](/img/quickstart/current_import.png "Import Reference")
 
 
+## Monitor a Text Generation Model
+
+This part of the guide demonstrates how to monitor a text generation model (like an LLM used for content creation or chatbots) using the Radicalbit AI Platform.
+
+### Introduction
+
+We'll monitor a hypothetical LLM generates a `completion` (the response). Monitoring helps ensure the quality, coherence, and safety of the generated text over time. Quality is often measured by metrics like perplexity and probability scores assigned by the model during generation.
+
+
+### Create the Model
+To create a new model, navigate to the *Models* section and click the plus (+) icon in the top right corner.
+
+![Alt text](/img/quickstart/empty-models-list.png "Empty Models List")
+
+The platform should open a modal to allow users to create a new model.
+
+![Alt text](/img/quickstart/new-model-text-generation.png "New Model")
+
+This modal prompts you to enter the following details:
+* **Name:** the name of the model;
+* **Model type:** the type of the model;
+* **Data type:** it explains the data type used by the model;
+* **Granularity:** the window used to calculate aggregated metrics;
+* **Framework:** an optional field to describe the frameworks used by the model;
+* **Algorithm:** an optional field to explain the algorithm used by the model.
+
+Please enter the following details and click on the *Next* button:
+* **Name:** `LLM-monitoring`;
+* **Model type:** `Text Generation`;
+* **Data type:** `Text`;
+* **Granularity:** `Hour`;
+
+
+### Import the text generated file
+
+First, prepare your data. For text generation, [import this JSON file, containing the text generatd data](/datasets/text-generation.json).
+
+This JSON structure adheres to the standard format defined by OpenAI.
+
+* **`id`**: A unique identifier for the completion request.
+* **`choices`**: An array containing the generation result(s).
+    * Includes metadata like `finish_reason` (e.g., `"stop"`) and `index`.
+    * Crucially, contains `logprobs` if requested.
+* **`logprobs.content`**: An array providing data for *each token* generated:
+    * `token`: The actual token string (e.g., `" In"`, `" the"`).
+    * `logprob`: The log probability assigned by the model to that token (higher value means more likely/confident).
+    * `bytes`: UTF-8 representation of the token.
+    * `top_logprobs`: (Often empty) Would list alternative likely tokens.
+
+Once you initiate the process, the platform will run background jobs to calculate the metrics.
+
+After processing, you can view the model's Overview, which presents summary statistics (such as overall Perplexity and Probability) and detailed information for each generated text instance from the file.
