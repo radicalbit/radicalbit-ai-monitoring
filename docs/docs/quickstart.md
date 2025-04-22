@@ -54,6 +54,7 @@ What follows is an example of data we will use in this tutorial:
 * **device:** it is the device used in the current session;
 * **days_as_customer:** it indicates how many days the user is a customer.
 
+
 ### Create the Model
 To create a new model, navigate to the *Models* section and click the plus (+) icon in the top right corner.
 
@@ -100,6 +101,17 @@ Match the following values to their corresponding fields:
 ![Alt text](/img/quickstart/new-model-modal-s4.png "Identify ground truth (target), timestamp, prediction, and probability fields")
 
 Click the *Save Model* button to finalize model creation.
+
+> **Note: Drift Configuration Source**
+>
+> Please be aware that customizing the drift detection methods (by specifying a list of algorithms or 
+> disabling drift with an empty list `[]`) 
+> is currently **only possible when creating the model using the [Python SDK](sdk/python-sdk.md#columndefinition)**.
+>
+> If you create the model via the **User Interface (UI)**, 
+> the platform will automatically apply the [**default drift calculation**](all-metrics.md#data-drift), 
+> using all available algorithms suitable for your data types. 
+
 
 ### Model details
 Entering into the model details, we can see three different main sections:
@@ -150,7 +162,7 @@ In detail, you can browse between 4 tabs:
 
 ![Alt text](/img/quickstart/current_model_quality.png "Import Reference")
 
-* **Model Drift:**  This tab provides information about potential changes in the data distributions, known as drift, which can lead to model degradation. The drift is detected according to the field type: Chi-square test for categorical variables and Two-Samples Kolmogorov-Smirnov test for numerical ones.
+* **Model Drift:**  This tab provides information about potential changes in the data distributions, known as drift, which can lead to model degradation. Drift is calculated using type-specific default algorithms.
 
 ![Alt text](/img/quickstart/current_model_drift.png "Import Reference")
 
