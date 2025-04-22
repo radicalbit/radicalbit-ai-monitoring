@@ -52,7 +52,7 @@ class PSI(DriftDetector):
             feature_dict_to_append['has_drift'] = False
             return feature_dict_to_append
         feature_dict_to_append['value'] = float(result_tmp['psi_value'])
-        feature_dict_to_append['has_drift'] = bool(result_tmp['psi_value'] >= threshold)
+        feature_dict_to_append['has_drift'] = bool(result_tmp['psi_value'] > threshold)
         return feature_dict_to_append
 
     @staticmethod

@@ -26,7 +26,7 @@ import tests.results.percentage_results as res
 from tests.utils.pytest_utils import prefix_id
 
 drift_chi2 = [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05).model_dump()]
-drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05).model_dump()]
+drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, threshold=0.05).model_dump()]
 drift_psi = [DriftMethod(name=DriftAlgorithmType.PSI, p_value=0.1).model_dump()]
 
 

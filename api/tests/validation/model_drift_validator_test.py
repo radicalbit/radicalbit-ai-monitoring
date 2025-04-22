@@ -80,7 +80,7 @@ def test_set_default_feature_drift_algorithms_none():
     )
 
     expected_drift_methods = [
-        DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05),
+        DriftMethod(name=DriftAlgorithmType.KS, threshold=0.05),
         DriftMethod(name=DriftAlgorithmType.WASSERSTEIN, threshold=0.1),
         DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1),
         DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1),

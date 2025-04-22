@@ -28,7 +28,7 @@ class HellingerDistance(DriftDetector):
             return feature_dict_to_append
         feature_dict_to_append['value'] = float(result_tmp['HellingerDistance'])
         feature_dict_to_append['has_drift'] = bool(
-            result_tmp['HellingerDistance'] <= threshold
+            result_tmp['HellingerDistance'] > threshold
         )
         return feature_dict_to_append
 
