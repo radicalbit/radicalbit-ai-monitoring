@@ -35,12 +35,28 @@ Differently from the reference section, here, the metrics are computed over time
 The **Data Drift** section contains the outcome of some drift detector executed for each variable.
 According to the field type (categorical or numerical), a specific drift is computed:
 
-- Categoricals: **Chi-Square Test**
-- Numerical: **2-Samples-KS Test** (for `float` variables), **PSI** (for `int` variables)
+- Categoricals: 
+  - **Chi-Square Test**
+  - **Jensen Shannon Distance**
+  - **Kullback-Liebler Divergence**
+  - **Hellinger Distance** 
+  
+- Numerical: 
+  - **2-Samples-KS Test** (for `float` variables) 
+  - **PSI** (for `int` variables)
+  - **Wasserstein Distance**
+  - **Jensen Shannon Distance**
+  - **Hellinger Distance**
+  - **Kullback-Liebler Divergence**
 
-If the dot placed at the side of the variable name is red, it means that a drift has been revealed and the relative chart (and statistical description) can be seen in the `Current/Data Quality` section.
+If the dot placed at the side of the variable name is red, it means that **at leats** one drift has been detected and the relative chart (and statistical description) can be seen in the `Current/Data Quality` section.
 
-![Alt text](/img/current/current-data-drift.png "Current Data Drift")
+Expand the card to view the drift status for each **individual feature**. A red dot indicates that drift has been detected for that feature; the calculated drift value and the detection threshold will also be displayed alongside it.
+
+Drift is detected for *Jensen Shannon Distance*, *Kullback-Liebler Divergence*, *Hellinger Distance*, *PSI*, *Wasserstein Distance*, and the *KS statistic* when the calculated value **exceeds a predefined threshold**. 
+For the *Chi-Square test*, drift is indicated if the resulting p-value is **less than or equal to the chosen significance level**.
+
+![Alt text](/img/current/current-data-multi-drift.png "Current Data Drift")
 
 
 ## Import
