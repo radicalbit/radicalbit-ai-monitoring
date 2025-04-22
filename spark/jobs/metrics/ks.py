@@ -45,18 +45,20 @@ class KolmogorovSmirnovTest(DriftDetector):
 
     def detect_drift(self, feature: ColumnDefinition, **kwargs) -> dict:
         feature_dict_to_append = {}
-        if not kwargs['p_value']:
-            raise AttributeError('p_value is not defined in kwargs')
-        p_value = self.__critical_value(significance_level=kwargs['p_value'])
+        if not kwargs['threshold']:
+            raise AttributeError('threshold is not defined in kwargs')
+        threshold = self.__critical_value(significance_level=kwargs['threshold'])
         feature_dict_to_append['type'] = DriftAlgorithmType.KS
-        feature_dict_to_append['limit'] = float(p_value)
+        feature_dict_to_append['limit'] = float(threshold)
         result_tmp = self.test(feature.name, feature.name)
         if result_tmp['ks_statistic'] is None or math.isnan(result_tmp['ks_statistic']):
             feature_dict_to_append['value'] = -1
             feature_dict_to_append['has_drift'] = False
             return feature_dict_to_append
         feature_dict_to_append['value'] = float(result_tmp['ks_statistic'])
-        feature_dict_to_append['has_drift'] = bool(result_tmp['ks_statistic'] > p_value)
+        feature_dict_to_append['has_drift'] = bool(
+            result_tmp['ks_statistic'] > threshold
+        )
         return feature_dict_to_append
 
     @staticmethod

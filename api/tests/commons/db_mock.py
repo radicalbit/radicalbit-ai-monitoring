@@ -539,7 +539,7 @@ drift_dict = {
             'featureName': 'gender',
             'fieldType': 'categorical',
             'driftCalc': [
-                {'type': 'CHI2', 'value': 0.87, 'hasDrift': True, 'limit': 0.05}
+                {'type': 'CHI2', 'value': 0.87, 'hasDrift': False, 'limit': 0.05}
             ],
         },
         {
