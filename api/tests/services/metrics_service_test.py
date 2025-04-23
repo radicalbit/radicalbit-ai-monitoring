@@ -7,14 +7,21 @@ import pytest
 from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
+from app.db.dao.current_dataset_embeddings_metrics_dao import (
+    CurrentDatasetEmbeddingsMetricsDAO,
+)
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.dao.reference_dataset_embeddings_metrics_dao import (
+    ReferenceDatasetEmbeddingsMetricsDAO,
+)
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.models.dataset_type import DatasetType
 from app.models.exceptions import MetricsBadRequestError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
+from app.models.metrics.embeddings_dto import EmbeddingsReportDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
 from app.models.model_dto import ModelType
@@ -40,6 +47,12 @@ class MetricsServiceTest(unittest.TestCase):
         )
         cls.completion_metrics_dao = MagicMock(spec_set=CompletionDatasetMetricsDAO)
         cls.completion_dataset_dao = MagicMock(spec_set=CompletionDatasetDAO)
+        cls.reference_embeddings_metrics_dao = MagicMock(
+            spec_set=ReferenceDatasetEmbeddingsMetricsDAO
+        )
+        cls.current_embeddings_metrics_dao = MagicMock(
+            spec_set=CurrentDatasetEmbeddingsMetricsDAO
+        )
         cls.model_service: ModelService = MagicMock(spec_set=ModelService)
         cls.metrics_service = MetricsService(
             reference_dataset_metrics_dao=cls.reference_metrics_dao,
@@ -48,6 +61,8 @@ class MetricsServiceTest(unittest.TestCase):
             current_dataset_dao=cls.current_dataset_dao,
             completion_dataset_metrics_dao=cls.completion_metrics_dao,
             completion_dataset_dao=cls.completion_dataset_dao,
+            reference_dataset_embeddings_metrics_dao=cls.reference_embeddings_metrics_dao,
+            current_dataset_embeddings_metrics_dao=cls.current_embeddings_metrics_dao,
             model_service=cls.model_service,
         )
         cls.mocks = [
@@ -57,6 +72,8 @@ class MetricsServiceTest(unittest.TestCase):
             cls.current_dataset_dao,
             cls.completion_metrics_dao,
             cls.completion_dataset_dao,
+            cls.reference_embeddings_metrics_dao,
+            cls.current_embeddings_metrics_dao,
         ]
 
     def test_get_reference_statistics_by_model_by_uuid(self):
@@ -735,6 +752,62 @@ class MetricsServiceTest(unittest.TestCase):
             model_type=model.model_type,
             job_status=completion_dataset.status,
             model_quality_data=None,
+        )
+
+    def test_get_reference_embeddings_by_model_by_uuid(self):
+        status = JobStatus.SUCCEEDED
+        model = db_mock.get_sample_model()
+        reference_dataset = db_mock.get_sample_reference_dataset(status=status.value)
+        reference_metrics = db_mock.get_sample_reference_embeddings_metrics()
+        self.reference_dataset_dao.get_reference_dataset_by_model_uuid = MagicMock(
+            return_value=reference_dataset
+        )
+        self.reference_embeddings_metrics_dao.get_reference_embeddings_metrics_by_model_uuid = MagicMock(
+            return_value=reference_metrics
+        )
+        res = self.metrics_service.get_reference_embeddings_by_model_by_uuid(model.uuid)
+        self.reference_dataset_dao.get_reference_dataset_by_model_uuid.assert_called_once_with(
+            model.uuid
+        )
+        self.reference_embeddings_metrics_dao.get_reference_embeddings_metrics_by_model_uuid.assert_called_once_with(
+            model.uuid
+        )
+
+        assert res == EmbeddingsReportDTO.from_dict(
+            job_status=status,
+            embeddings_data=reference_metrics.metrics,
+        )
+
+    def test_get_empty_reference_embeddings_by_model_by_uuid(self):
+        model = db_mock.get_sample_model()
+        status = JobStatus.IMPORTING
+        reference_dataset = db_mock.get_sample_reference_dataset(status=status.value)
+        self.reference_dataset_dao.get_reference_dataset_by_model_uuid = MagicMock(
+            return_value=reference_dataset
+        )
+        res = self.metrics_service.get_reference_embeddings_by_model_by_uuid(model.uuid)
+        self.reference_dataset_dao.get_reference_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+
+        assert res == EmbeddingsReportDTO.from_dict(
+            job_status=status,
+            embeddings_data=None,
+        )
+
+    def test_get_missing_reference_embeddings(self):
+        status = JobStatus.MISSING_REFERENCE
+        self.reference_dataset_dao.get_reference_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+        res = self.metrics_service.get_reference_embeddings_by_model_by_uuid(model_uuid)
+        self.reference_dataset_dao.get_reference_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid
+        )
+
+        assert res == EmbeddingsReportDTO.from_dict(
+            job_status=status,
+            embeddings_data=None,
         )
 
 

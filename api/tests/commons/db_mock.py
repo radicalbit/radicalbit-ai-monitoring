@@ -619,9 +619,9 @@ reference_embeddings_metrics_dict = {
     'reference_embeddings': {
         'centroid': {'x': 0.0, 'y': 0.0},
         'values': [
-            {'timestamp': 1627849200, 'x': 1.23, 'y': 4.56},
-            {'timestamp': 1627849260, 'x': 2.34, 'y': 5.67},
-            {'timestamp': 1627849320, 'x': 3.45, 'y': 6.78},
+            {'timestamp': '2021-08-01T10:00:00Z', 'x': 1.23, 'y': 4.56},
+            {'timestamp': '2021-08-01T10:01:00Z', 'x': 2.34, 'y': 5.67},
+            {'timestamp': '2021-08-01T10:02:00Z', 'x': 3.45, 'y': 6.78},
         ],
     },
     'histogram': {
@@ -640,9 +640,9 @@ current_embeddings_metrics_dict = {
     'reference_embeddings': {
         'centroid': {'x': 0.0, 'y': 0.0},
         'values': [
-            {'timestamp': 1627849200, 'x': 1.23, 'y': 4.56},
-            {'timestamp': 1627849260, 'x': 2.34, 'y': 5.67},
-            {'timestamp': 1627849320, 'x': 3.45, 'y': 6.78},
+            {'timestamp': '2021-08-01T10:00:00Z', 'x': 1.23, 'y': 4.56},
+            {'timestamp': '2021-08-01T10:01:00Z', 'x': 2.34, 'y': 5.67},
+            {'timestamp': '2021-08-01T10:02:00Z', 'x': 3.45, 'y': 6.78},
         ],
     },
     'current_embedding_metrics': {
@@ -654,9 +654,9 @@ current_embeddings_metrics_dict = {
     'current_embeddings': {
         'centroid': {'x': 0.5, 'y': 0.5},
         'values': [
-            {'timestamp': 1627849200, 'x': 1.23, 'y': 4.56},
-            {'timestamp': 1627849260, 'x': 2.34, 'y': 5.67},
-            {'timestamp': 1627849320, 'x': 3.45, 'y': 6.78},
+            {'timestamp': '2021-08-01T10:00:00Z', 'x': 1.23, 'y': 4.56},
+            {'timestamp': '2021-08-01T10:01:00Z', 'x': 2.34, 'y': 5.67},
+            {'timestamp': '2021-08-01T10:02:00Z', 'x': 3.45, 'y': 6.78},
         ],
     },
     'histogram': {
@@ -664,7 +664,7 @@ current_embeddings_metrics_dict = {
         'reference_values': [15, 25, 10, 5, 3],
         'current_values': [20, 15, 10, 10, 3],
     },
-    'drift_score': {'current_timestamp': 1627849500, 'score': 0.35},
+    'drift_score': {'current_timestamp': '2021-08-01T10:05:00Z', 'score': 0.35},
 }
 
 
