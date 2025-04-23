@@ -15,10 +15,16 @@ from app.db.dao.api_key_dao import ApiKeyDAO
 from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
+from app.db.dao.current_dataset_embeddings_metrics_dao import (
+    CurrentDatasetEmbeddingsMetricsDAO,
+)
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.model_dao import ModelDAO
 from app.db.dao.project_dao import ProjectDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.dao.reference_dataset_embeddings_metrics_dao import (
+    ReferenceDatasetEmbeddingsMetricsDAO,
+)
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.db.dao.traces_dao import TraceDAO
 from app.db.database import Database
@@ -83,6 +89,10 @@ current_dataset_dao = CurrentDatasetDAO(database)
 current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
 completion_dataset_dao = CompletionDatasetDAO(database)
 completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
+reference_dataset_embeddings_metrics_dao = ReferenceDatasetEmbeddingsMetricsDAO(
+    database
+)
+current_dataset_embeddings_metrics_dao = CurrentDatasetEmbeddingsMetricsDAO(database)
 project_dao = ProjectDAO(database)
 trace_dao = TraceDAO(ch_database)
 api_key_dao = ApiKeyDAO(database)
@@ -126,6 +136,8 @@ metrics_service = MetricsService(
     current_dataset_dao=current_dataset_dao,
     completion_dataset_metrics_dao=completion_dataset_metrics_dao,
     completion_dataset_dao=completion_dataset_dao,
+    reference_dataset_embeddings_metrics_dao=reference_dataset_embeddings_metrics_dao,
+    current_dataset_embeddings_metrics_dao=current_dataset_embeddings_metrics_dao,
     model_service=model_service,
 )
 api_key_security = ApiKeySecurity()

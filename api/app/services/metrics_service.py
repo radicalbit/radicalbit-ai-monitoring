@@ -5,13 +5,25 @@ from uuid import UUID
 from app.db.dao.completion_dataset_dao import CompletionDatasetDAO
 from app.db.dao.completion_dataset_metrics_dao import CompletionDatasetMetricsDAO
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
+from app.db.dao.current_dataset_embeddings_metrics_dao import (
+    CurrentDatasetEmbeddingsMetricsDAO,
+)
 from app.db.dao.current_dataset_metrics_dao import CurrentDatasetMetricsDAO
 from app.db.dao.reference_dataset_dao import ReferenceDatasetDAO
+from app.db.dao.reference_dataset_embeddings_metrics_dao import (
+    ReferenceDatasetEmbeddingsMetricsDAO,
+)
 from app.db.dao.reference_dataset_metrics_dao import ReferenceDatasetMetricsDAO
 from app.db.tables.completion_dataset_metrics_table import CompletionDatasetMetrics
 from app.db.tables.completion_dataset_table import CompletionDataset
+from app.db.tables.current_dataset_embeddings_metrics_table import (
+    CurrentDatasetEmbeddingsMetrics,
+)
 from app.db.tables.current_dataset_metrics_table import CurrentDatasetMetrics
 from app.db.tables.current_dataset_table import CurrentDataset
+from app.db.tables.reference_dataset_embeddings_metrics_table import (
+    ReferenceDatasetEmbeddingsMetrics,
+)
 from app.db.tables.reference_dataset_metrics_table import ReferenceDatasetMetrics
 from app.db.tables.reference_dataset_table import ReferenceDataset
 from app.models.dataset_type import DatasetType
@@ -19,6 +31,7 @@ from app.models.exceptions import MetricsBadRequestError, MetricsInternalError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
+from app.models.metrics.embeddings_dto import EmbeddingsReportDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.percentages_dto import PercentagesDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
@@ -35,6 +48,8 @@ class MetricsService:
         current_dataset_dao: CurrentDatasetDAO,
         completion_dataset_metrics_dao: CompletionDatasetMetricsDAO,
         completion_dataset_dao: CompletionDatasetDAO,
+        reference_dataset_embeddings_metrics_dao: ReferenceDatasetEmbeddingsMetricsDAO,
+        current_dataset_embeddings_metrics_dao: CurrentDatasetEmbeddingsMetricsDAO,
         model_service: ModelService,
     ):
         self.reference_dataset_metrics_dao = reference_dataset_metrics_dao
@@ -43,6 +58,12 @@ class MetricsService:
         self.current_dataset_dao = current_dataset_dao
         self.completion_dataset_metrics_dao = completion_dataset_metrics_dao
         self.completion_dataset_dao = completion_dataset_dao
+        self.reference_dataset_embeddings_metrics_dao = (
+            reference_dataset_embeddings_metrics_dao
+        )
+        self.current_dataset_embeddings_metrics_dao = (
+            current_dataset_embeddings_metrics_dao
+        )
         self.model_service = model_service
 
     def get_reference_statistics_by_model_by_uuid(
@@ -150,14 +171,15 @@ class MetricsService:
             missing_status=JobStatus.MISSING_CURRENT,
         )
 
-    def get_latest_current_uuid(self, model_uuid: UUID) -> Optional[UUID]:
-        """Retrieve the latest current dataset UUID for a model by its UUID."""
-        latest_current = (
-            self.current_dataset_dao.get_latest_current_dataset_by_model_uuid(
-                model_uuid
-            )
+    def get_reference_embeddings_by_model_by_uuid(
+        self, model_uuid: UUID
+    ) -> EmbeddingsReportDTO:
+        """Retrieve reference embeddings for a model by its UUID."""
+        return self._get_embeddings_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=self.check_and_get_reference_dataset_and_embeddings_metrics,
+            missing_status=JobStatus.MISSING_REFERENCE,
         )
-        return latest_current.uuid if latest_current else None
 
     def check_and_get_reference_dataset_and_metrics(
         self, model_uuid: UUID
@@ -194,6 +216,30 @@ class MetricsService:
             ),
             metrics_getter=lambda uuid: self.completion_dataset_metrics_dao.get_completion_metrics_by_model_uuid(
                 uuid, completion_uuid
+            ),
+        )
+
+    def check_and_get_reference_dataset_and_embeddings_metrics(
+        self, model_uuid: UUID
+    ) -> tuple[Optional[ReferenceDataset], Optional[ReferenceDatasetEmbeddingsMetrics]]:
+        """Check and retrieve the reference dataset and its embeddings metrics for a model by its UUID."""
+        return self._check_and_get_dataset_and_metrics(
+            model_uuid=model_uuid,
+            dataset_getter=self.reference_dataset_dao.get_reference_dataset_by_model_uuid,
+            metrics_getter=self.reference_dataset_embeddings_metrics_dao.get_reference_embeddings_metrics_by_model_uuid,
+        )
+
+    def check_and_get_current_dataset_and_embeddings_metrics(
+        self, model_uuid: UUID, current_uuid: UUID
+    ) -> tuple[Optional[CurrentDataset], Optional[CurrentDatasetEmbeddingsMetrics]]:
+        """Check and retrieve the current dataset and its embeddings metrics for a model by its UUID and a current dataset UUID."""
+        return self._check_and_get_dataset_and_metrics(
+            model_uuid=model_uuid,
+            dataset_getter=lambda uuid: self.current_dataset_dao.get_current_dataset_by_model_uuid(
+                uuid, current_uuid
+            ),
+            metrics_getter=lambda uuid: self.current_dataset_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid(
+                uuid, current_uuid
             ),
         )
 
@@ -297,6 +343,16 @@ class MetricsService:
         """Retrieve drift for a model by its UUID."""
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_drift_dto(
+            dataset=dataset,
+            metrics=metrics,
+            missing_status=missing_status,
+        )
+
+    def _get_embeddings_by_model_uuid(
+        self, model_uuid: UUID, dataset_and_metrics_getter, missing_status
+    ) -> EmbeddingsReportDTO:
+        dataset, metrics = dataset_and_metrics_getter(model_uuid)
+        return self._create_embeddings_dto(
             dataset=dataset,
             metrics=metrics,
             missing_status=missing_status,
@@ -428,4 +484,28 @@ class MetricsService:
         return DriftDTO.from_dict(
             job_status=dataset.status,
             drift_data=metrics.drift,
+        )
+
+    @staticmethod
+    def _create_embeddings_dto(
+        dataset: Optional[ReferenceDataset | CurrentDataset],
+        metrics: Optional[
+            ReferenceDatasetEmbeddingsMetrics | CurrentDatasetEmbeddingsMetrics
+        ],
+        missing_status,
+    ) -> EmbeddingsReportDTO:
+        """Create a EmbeddingsReportDTO from the provided dataset and metrics."""
+        if not dataset:
+            return EmbeddingsReportDTO.from_dict(
+                job_status=missing_status,
+                embeddings_data=None,
+            )
+        if not metrics:
+            return EmbeddingsReportDTO.from_dict(
+                job_status=dataset.status,
+                embeddings_data=None,
+            )
+        return EmbeddingsReportDTO.from_dict(
+            job_status=dataset.status,
+            embeddings_data=metrics.metrics,
         )

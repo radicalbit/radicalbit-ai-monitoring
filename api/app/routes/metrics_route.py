@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from app.core import get_config
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
+from app.models.metrics.embeddings_dto import EmbeddingsReportDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.percentages_dto import PercentagesDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
@@ -162,5 +163,13 @@ class MetricsRoute:
             return metrics_service.get_completion_model_quality_by_model_by_uuid(
                 model_uuid, completion_uuid
             )
+
+        @router.get(
+            '/{model_uuid}/reference/embeddings',
+            status_code=200,
+            response_model=EmbeddingsReportDTO,
+        )
+        def get_reference_embeddings_by_model_by_uuid(model_uuid: UUID):
+            return metrics_service.get_reference_embeddings_by_model_by_uuid(model_uuid)
 
         return router
