@@ -218,32 +218,3 @@ class EmbeddingsDriftDetector:
             'barplot': {'distances': centroid_embeddings_distance},
             'scatterplot': {'x_y_coordinates': x_y_pca, 'x_y_centroid': x_y_centroid},
         }
-
-from pyspark.sql import SparkSession
-import pandas as pd
-import numpy as np
-
-def main():
-    np.random.seed(1990)
-    # spark session
-    spark = SparkSession.builder.appName("emb-drift").getOrCreate()
-
-    df = pd.read_csv("../../Downloads/embeddings.csv")
-    print(df.shape)
-
-    df_spark = spark.createDataFrame(df)
-
-    emb = EmbeddingsDriftDetector(
-        spark=spark,
-        embeddings=df_spark,
-        prefix_id="001",
-        variance_threshold=0.80
-    )
-
-    res = emb.compute_result()
-
-    print(res)
-
-
-if __name__ == "__main__":
-    main()
