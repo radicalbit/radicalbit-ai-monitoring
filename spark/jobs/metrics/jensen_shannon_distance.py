@@ -33,7 +33,7 @@ class JensenShannonDistance(DriftDetector):
             feature_dict_to_append.update(
                 {
                     'value': float(result_tmp['JensenShannonDistance']),
-                    'has_drift': bool(result_tmp['JensenShannonDistance'] <= threshold),
+                    'has_drift': bool(result_tmp['JensenShannonDistance'] > threshold),
                 }
             )
         except IllegalArgumentException as e:

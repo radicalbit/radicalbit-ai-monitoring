@@ -7,7 +7,6 @@ import {
 } from '@radicalbit/radicalbit-design-system';
 
 import { useRef } from 'react';
-import { useParams } from 'react-router';
 import schema from './schema';
 import useHandleOnSubmit from './use-handle-on-submit';
 
@@ -22,6 +21,8 @@ function AddNewApiKeyModal() {
 function AddNewApiKeyModalInner() {
   const { hideModal } = useModals();
 
+  const { error } = useFormbitContext();
+
   return (
     <RbitModal
       actions={(<Actions />)}
@@ -30,15 +31,20 @@ function AddNewApiKeyModalInner() {
       onCancel={hideModal}
       open
     >
-      <ApiKeyName />
+      <>
+        <ApiKeyName />
 
+        {error('silent.backend') && <FormField message={error('silent.backend')} />}
+      </>
     </RbitModal>
   );
 }
 
 function ApiKeyName() {
   const ref = useRef(null);
+
   const { form, error, write } = useFormbitContext();
+  const { handleOnSubmit, args: { isLoading } } = useHandleOnSubmit();
 
   const handleOnChange = ({ target: { value } }) => {
     write('name', value);
@@ -50,6 +56,8 @@ function ApiKeyName() {
     <FormField label="Name" message={error('name')} modifier="w-full" required>
       <Input
         onChange={handleOnChange}
+        onPressEnter={handleOnSubmit}
+        readOnly={isLoading}
         ref={ref}
         value={form.name}
       />
@@ -58,14 +66,8 @@ function ApiKeyName() {
 }
 
 function Actions() {
-  const { uuid } = useParams();
-
   const { hideModal } = useModals();
   const { handleOnSubmit, args, isSubmitDisabled } = useHandleOnSubmit();
-
-  const handleOnClick = () => {
-    handleOnSubmit(uuid);
-  };
 
   return (
     <>
@@ -74,7 +76,7 @@ function Actions() {
       <Button
         disabled={isSubmitDisabled}
         loading={args.isLoading}
-        onClick={handleOnClick}
+        onClick={handleOnSubmit}
         type="primary"
       >
         Save

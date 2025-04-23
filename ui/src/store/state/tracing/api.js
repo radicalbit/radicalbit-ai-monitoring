@@ -22,11 +22,11 @@ export const tracingApiSlice = apiService.injectEndpoints({
       invalidatesTags: (_, __, { data: { uuid } }) => [
         { type: API_TAGS.TRACING_PROJECT, id: uuid },
       ],
-      query: ({ data }) => ({
+      query: ({ uuid, name }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/projects/${data.uuid}`,
+        url: `/projects/${uuid}`,
         method: 'post',
-        data,
+        data: { name },
       }),
     }),
 
@@ -161,9 +161,9 @@ export const tracingApiSlice = apiService.injectEndpoints({
 
         return [];
       },
-      query: ({ projectUuid, data }) => ({
+      query: ({ uuid, data }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/api-key/project/${projectUuid}`,
+        url: `/api-key/project/${uuid}`,
         method: 'post',
         data,
       }),

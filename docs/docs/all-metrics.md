@@ -1,5 +1,5 @@
 ---
-sidebar_position: 5
+sidebar_position: 7
 ---
 
 # All metrics
@@ -73,10 +73,23 @@ Summary with all variable name and type (float, int, string, datetime).
     * Scatter plot for predictions vs ground truth and linear regression line
     * Histogram of the residuals
     * Kolmogorov-Smirnov test of normality for residuals
+* Text generation
+  * Probability: In language modeling, probability refers to the likelihood that the model assigns to a specific sequence of text occurring.
+
+  * Perplexity: Perplexity is a standard metric that measures how "surprised" or uncertain the model is when predicting the text sequence. 
 
 ## Data Drift
 
 Data drift for all features using different algorithms depending on the data type: float, int, categorical. We use the following algorithms (but others will be added in the future):
-* [Chi-Square Test](https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test)
-* [Two-Sample Kolmogorov-Smirnov](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test#Two-sample_Kolmogorov%E2%80%93Smirnov_test)
-* [Population Stability Index](https://scholarworks.wmich.edu/dissertations/3208/)
+- Numerical: 
+  * [Two-Sample Kolmogorov-Smirnov](https://en.wikipedia.org/wiki/Kolmogorov%E2%80%93Smirnov_test#Two-sample_Kolmogorov%E2%80%93Smirnov_test)
+  * [Population Stability Index](https://scholarworks.wmich.edu/dissertations/3208/)
+  * [Wasserstein Distance](https://en.wikipedia.org/wiki/Wasserstein_metric)
+  * [Jensen Shannon Divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence)
+  * [Hellinger Distance](https://en.wikipedia.org/wiki/Hellinger_distance)
+  * [Kullback Leibler Divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence)
+- Categorical:
+  * [Chi-Square Test](https://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test)
+  * [Jensen Shannon Divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence)
+  * [Kullback Leibler Divergence](https://en.wikipedia.org/wiki/Kullback%E2%80%93Leibler_divergence)
+  * [Hellinger Distance](https://en.wikipedia.org/wiki/Hellinger_distance)

@@ -8,7 +8,7 @@ import {
   FontAwesomeIcon, SectionTitle, Spinner, Void,
 } from '@radicalbit/radicalbit-design-system';
 import { ModalsEnum, NamespaceEnum } from '@Src/constants';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useParams } from 'react-router';
 import useModals from '@Hooks/use-modals';
 import { useSelector } from 'react-redux';
@@ -29,11 +29,9 @@ function ApiKeysProject() {
           />
 
           <ApiKeyCreateButtonIcon />
-
         </div>
           )}
       main={(<ApiKeysList />)}
-      modifier="max-w-[800px] w-full"
     />
   );
 }
@@ -80,10 +78,11 @@ function ApiKeysList() {
 }
 
 function ApiKeyCreateButton() {
+  const { uuid } = useParams();
   const { showModal } = useModals();
 
   const handleOnClick = () => {
-    showModal(ModalsEnum.ADD_NEW_API_KEY);
+    showModal(ModalsEnum.ADD_NEW_API_KEY, { uuid });
   };
 
   return (
@@ -92,10 +91,11 @@ function ApiKeyCreateButton() {
 }
 
 function ApiKeyCreateButtonIcon() {
+  const { uuid } = useParams();
   const { showModal } = useModals();
 
   const handleOnClick = () => {
-    showModal(ModalsEnum.ADD_NEW_API_KEY);
+    showModal(ModalsEnum.ADD_NEW_API_KEY, { uuid });
   };
 
   return (

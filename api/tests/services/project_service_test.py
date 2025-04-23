@@ -1,3 +1,4 @@
+import copy
 import unittest
 from unittest.mock import MagicMock
 import uuid
@@ -132,6 +133,27 @@ class ProjectServiceTest(unittest.TestCase):
         assert result[1].traces == traces
         assert result[2].name == 'project3'
         assert result[2].traces == traces
+
+    def test_update_project_ok(self):
+        project = db_mock.get_sample_project()
+        traces = 5
+        self.project_dao.get_by_uuid = MagicMock(return_value=project)
+        self.trace_dao.count_distinct_traces_by_project_uuid = MagicMock(
+            return_value=traces
+        )
+        self.project_dao.update = MagicMock(return_value=1)
+        to_update = copy.deepcopy(project)
+        to_update.name = 'new_project_name'
+        self.project_dao.get_by_uuid = MagicMock(return_value=to_update)
+        project_in = db_mock.get_sample_project_in(name=to_update.name)
+        res = self.project_service.update_project(project_in, project.uuid)
+        self.project_dao.get_by_uuid.assert_called_with(project.uuid)
+        self.trace_dao.count_distinct_traces_by_project_uuid.assert_called_once_with(
+            project.uuid
+        )
+        self.project_dao.update.assert_called_once_with(to_update)
+
+        assert res == ProjectOut.from_project(project=to_update, traces=traces)
 
     def test_delete_project_ok(self):
         project = db_mock.get_sample_project()

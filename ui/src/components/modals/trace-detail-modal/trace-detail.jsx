@@ -2,7 +2,7 @@ import {
   Json, NewHeader, RelativeDateTime, SectionTitle, StatusSelector,
 } from '@radicalbit/radicalbit-design-system';
 import { numberFormatter } from '@Src/constants';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useParams, useSearchParams } from 'react-router-dom';
 
 const { useGetSpanDetailByUUIDQuery } = tracingApiSlice;

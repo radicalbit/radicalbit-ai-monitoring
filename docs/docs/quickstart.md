@@ -54,6 +54,7 @@ What follows is an example of data we will use in this tutorial:
 * **device:** it is the device used in the current session;
 * **days_as_customer:** it indicates how many days the user is a customer.
 
+
 ### Create the Model
 To create a new model, navigate to the *Models* section and click the plus (+) icon in the top right corner.
 
@@ -100,6 +101,17 @@ Match the following values to their corresponding fields:
 ![Alt text](/img/quickstart/new-model-modal-s4.png "Identify ground truth (target), timestamp, prediction, and probability fields")
 
 Click the *Save Model* button to finalize model creation.
+
+> **Note: Drift Configuration Source**
+>
+> Please be aware that customizing the drift detection methods (by specifying a list of algorithms or 
+> disabling drift with an empty list `[]`) 
+> is currently **only possible when creating the model using the [Python SDK](sdk/python-sdk.md#columndefinition)**.
+>
+> If you create the model via the **User Interface (UI)**, 
+> the platform will automatically apply the [**default drift calculation**](all-metrics.md#data-drift), 
+> using all available algorithms suitable for your data types. 
+
 
 ### Model details
 Entering into the model details, we can see three different main sections:
@@ -150,7 +162,7 @@ In detail, you can browse between 4 tabs:
 
 ![Alt text](/img/quickstart/current_model_quality.png "Import Reference")
 
-* **Model Drift:**  This tab provides information about potential changes in the data distributions, known as drift, which can lead to model degradation. The drift is detected according to the field type: Chi-square test for categorical variables and Two-Samples Kolmogorov-Smirnov test for numerical ones.
+* **Model Drift:**  This tab provides information about potential changes in the data distributions, known as drift, which can lead to model degradation. Drift is calculated using type-specific default algorithms.
 
 ![Alt text](/img/quickstart/current_model_drift.png "Import Reference")
 
@@ -158,4 +170,119 @@ In detail, you can browse between 4 tabs:
 
 ![Alt text](/img/quickstart/current_import.png "Import Reference")
 
+## Monitor a Text Generation Model
 
+This part of the guide demonstrates how to monitor a text generation model (like an LLM used for content creation or chatbots) using the Radicalbit AI Platform.
+
+### Introduction
+
+We'll monitor a hypothetical LLM generates a `completion` (the response). Monitoring helps ensure the quality, coherence, and safety of the generated text over time. Quality is often measured by metrics like perplexity and probability scores assigned by the model during generation.
+
+
+### Create the Model
+To create a new model, navigate to the *Models* section and click the plus (+) icon in the top right corner.
+
+![Alt text](/img/quickstart/empty-models-list.png "Empty Models List")
+
+The platform should open a modal to allow users to create a new model.
+
+![Alt text](/img/quickstart/new-model-text-generation.png "New Model")
+
+This modal prompts you to enter the following details:
+* **Name:** the name of the model;
+* **Model type:** the type of the model;
+* **Data type:** it explains the data type used by the model;
+* **Granularity:** the window used to calculate aggregated metrics;
+* **Framework:** an optional field to describe the frameworks used by the model;
+* **Algorithm:** an optional field to explain the algorithm used by the model.
+
+Please enter the following details and click on the *Next* button:
+* **Name:** `LLM-monitoring`;
+* **Model type:** `Text Generation`;
+* **Data type:** `Text`;
+* **Granularity:** `Hour`;
+
+
+### Import the text generated file
+
+First, prepare your data. For text generation, [import this JSON file, containing the text generatd data](/datasets/text-generation.json).
+
+This JSON structure adheres to the standard format defined by OpenAI.
+
+* **`id`**: A unique identifier for the completion request.
+* **`choices`**: An array containing the generation result(s).
+    * Includes metadata like `finish_reason` (e.g., `"stop"`) and `index`.
+    * Crucially, contains `logprobs` if requested.
+* **`logprobs.content`**: An array providing data for *each token* generated:
+    * `token`: The actual token string (e.g., `" In"`, `" the"`).
+    * `logprob`: The log probability assigned by the model to that token (higher value means more likely/confident).
+    * `bytes`: UTF-8 representation of the token.
+    * `top_logprobs`: (Often empty) Would list alternative likely tokens.
+
+Once you initiate the process, the platform will run background jobs to calculate the metrics.
+
+After processing, you can view the model's Overview, which presents summary statistics (such as overall Perplexity and Probability) and detailed information for each generated text instance from the file.
+
+## Trace an LLM Application
+
+### Introduction
+Learn how to activate tracing for your LLM application using our latest feature in this example. 
+First, create a new project on our platform, 
+then use the provided API Key when setting up tracing within your application code.
+
+### Project creation
+Using the Tracing feature requires a project. 
+Begin by selecting the third icon from the sidebar menu.
+This opens the project management view, where you can find all your projects. 
+
+![Alt text](/img/quickstart/create_project.png "Project creation")
+
+Click the plus (+) button found near the top-left to initiate creating a new project, and then assign it a name.
+
+![Alt text](/img/quickstart/project_name.png "Project name")
+
+After creating a project, its management area is organized into 2 main sections:
+
+- **API Key Management**: For creating and managing API keys for this project.
+- **How to connect**: Instructions on how to connect your application.
+
+![Alt text](/img/quickstart/tracing_settings.png "How to connect")
+By focusing on the three dots, on right side, it is also possible to change the project's name or to remove the project.
+
+![Alt text](/img/quickstart/tracing_settings_api.png "API Settings")
+
+### Setup the tracing feature
+
+Our platform leverages on [OpenLLMetry](https://opentelemetry.io/), an open-source library specifically designed for tracing LLM applications. 
+Trace data is gathered using an OpenTelemetry collector, 
+then processed and visualized within the Radicalbit AI Platform.
+
+To connect your application to this tracing system, 
+you need to configure the Traceloop SDK within your project. 
+Add the following configuration at the beginning of your LLM application code:
+
+```
+from traceloop.sdk import Traceloop
+
+Traceloop.init(
+    api_endpoint="http://localhost:9000/api/otel",
+    api_key="<YOUR_API_KEY>" # Replace with your actual API key
+)
+```
+
+### Session Management
+
+For proper trace grouping by conversation, setting a unique session_uuid per chat session is required
+
+```
+import uuid
+
+# Generate a new session UUID at the beginning of each chat/thread
+session_uuid = uuid.uuid4()
+Traceloop.set_association_properties({"session_uuid": str(session_uuid)})
+```
+
+> NOTE: You must set a newly generated, 
+> unique UUID as the session_uuid for each individual conversation thread to ensure accurate trace grouping.
+
+Once you have completed the setup, traces from your application will begin appearing on the dashboard.

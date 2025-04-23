@@ -33,7 +33,7 @@ class KullbackLeiblerDivergence(DriftDetector):
                 {
                     'value': float(result_tmp['KullbackLeiblerDivergence']),
                     'has_drift': bool(
-                        result_tmp['KullbackLeiblerDivergence'] <= threshold
+                        result_tmp['KullbackLeiblerDivergence'] > threshold
                     ),
                 }
             )

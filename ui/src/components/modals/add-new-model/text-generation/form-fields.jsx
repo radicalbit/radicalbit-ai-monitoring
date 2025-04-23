@@ -16,7 +16,7 @@ import useHandleOnSubmit from './use-handle-on-submit';
 function Name() {
   const ref = useRef(null);
 
-  const { handleOnSubmit, isSubmitDisabled } = useHandleOnSubmit();
+  const { handleOnSubmit, args } = useHandleOnSubmit();
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
@@ -31,7 +31,7 @@ function Name() {
       <Input
         onChange={handleOnChange}
         onPressEnter={handleOnSubmit}
-        readOnly={isSubmitDisabled}
+        readOnly={args.isLoading}
         ref={ref}
         value={form.name}
       />
@@ -43,7 +43,7 @@ function ModelType() {
   const { useFormbit } = useModalContext();
   const { form, write } = useFormbit;
 
-  const { isSubmitDisabled } = useHandleOnSubmit();
+  const { args } = useHandleOnSubmit();
 
   const handleOnChange = (value) => {
     write('modelType', value);
@@ -54,11 +54,12 @@ function ModelType() {
     ModelTypeEnum.MULTI_CLASSIFICATION,
     ModelTypeEnum.REGRESSION,
     ModelTypeEnum.TEXT_GENERATION,
+    ModelTypeEnum.EMBEDDINGS,
   ];
 
   return (
     <FormField label="Model type" modifier="w-full" required>
-      <Select onChange={handleOnChange} readOnly={isSubmitDisabled} value={form.modelType}>
+      <Select onChange={handleOnChange} readOnly={args.isLoading} value={form.modelType}>
         {Object.values(modelTypeSelections).map((value) => (
           <Select.Option key={value}>
             {ModelTypeEnumLabel[value]}
@@ -84,7 +85,7 @@ function Granularity() {
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
-  const { isSubmitDisabled } = useHandleOnSubmit();
+  const { args } = useHandleOnSubmit();
 
   const handleOnChange = (value) => {
     write('granularity', value);
@@ -92,7 +93,7 @@ function Granularity() {
 
   return (
     <FormField label="Granularity" message={error('granularity')} modifier="w-full" required>
-      <Select onChange={handleOnChange} readOnly={isSubmitDisabled} value={form.granularity}>
+      <Select onChange={handleOnChange} readOnly={args.isLoading} value={form.granularity}>
         {Object.values(GranularityEnum).map((value) => (
           <Select.Option key={value}>
             {GranularityEnumLabel[value]}
@@ -107,7 +108,7 @@ function Framework() {
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
-  const { handleOnSubmit, isSubmitDisabled } = useHandleOnSubmit();
+  const { handleOnSubmit, args } = useHandleOnSubmit();
 
   const handleOnChange = ({ target: { value } }) => {
     write('frameworks', value);
@@ -118,7 +119,7 @@ function Framework() {
       <Input
         onChange={handleOnChange}
         onPressEnter={handleOnSubmit}
-        readOnly={isSubmitDisabled}
+        readOnly={args.isLoading}
         value={form.frameworks}
       />
     </FormField>
@@ -129,7 +130,7 @@ function Algorithm() {
   const { useFormbit } = useModalContext();
   const { form, error, write } = useFormbit;
 
-  const { handleOnSubmit, isSubmitDisabled } = useHandleOnSubmit();
+  const { handleOnSubmit, args } = useHandleOnSubmit();
 
   const handleOnChange = ({ target: { value } }) => {
     write('algorithm', value);
@@ -140,7 +141,7 @@ function Algorithm() {
       <Input
         onChange={handleOnChange}
         onPressEnter={handleOnSubmit}
-        readOnly={isSubmitDisabled}
+        readOnly={args.isLoading}
         value={form.algorithm}
       />
     </FormField>

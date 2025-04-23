@@ -22,8 +22,14 @@ import tests.results.drift_calculator_results as res
 from tests.utils.pytest_utils import prefix_id
 
 drift_chi2 = [DriftMethod(name=DriftAlgorithmType.CHI2, p_value=0.05).model_dump()]
-drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05).model_dump()]
+drift_ks = [DriftMethod(name=DriftAlgorithmType.KS, threshold=0.05).model_dump()]
 drift_psi = [DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1).model_dump()]
+drift_hl = [DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1).model_dump()]
+drift_js = [DriftMethod(name=DriftAlgorithmType.JS, threshold=0.1).model_dump()]
+drift_ws = [
+    DriftMethod(name=DriftAlgorithmType.WASSERSTEIN, threshold=0.1).model_dump()
+]
+drift_kl = [DriftMethod(name=DriftAlgorithmType.KL, threshold=0.1).model_dump()]
 
 
 @pytest.fixture
@@ -657,31 +663,31 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
             name='model',
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_js,
         ),
         ColumnDefinition(
             name='price',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
-            drift=drift_psi,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name='rating',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks,
+            drift=drift_ws,
         ),
         ColumnDefinition(
             name='has_5g',
             type=SupportedTypes.bool,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_kl,
         ),
         ColumnDefinition(
             name='has_nfc',
             type=SupportedTypes.bool,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_hl,
         ),
         ColumnDefinition(
             name='has_ir_blaster',
@@ -693,19 +699,19 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
             name='processor_brand',
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_js,
         ),
         ColumnDefinition(
             name='num_cores',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_ks,
         ),
         ColumnDefinition(
             name='processor_speed',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks,
+            drift=drift_ws,
         ),
         ColumnDefinition(
             name='battery_capacity',
@@ -723,19 +729,19 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
             name='fast_charging',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks,
+            drift=drift_js,
         ),
         ColumnDefinition(
             name='ram_capacity',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_kl,
         ),
         ColumnDefinition(
             name='internal_memory',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_js,
         ),
         ColumnDefinition(
             name='screen_size',
@@ -747,55 +753,55 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
             name='refresh_rate',
             type=SupportedTypes.int,
             field_type=FieldTypes.numerical,
-            drift=drift_psi,
+            drift=drift_ws,
         ),
         ColumnDefinition(
             name='num_rear_cameras',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_js,
         ),
         ColumnDefinition(
             name='num_front_cameras',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_kl,
         ),
         ColumnDefinition(
             name='os',
             type=SupportedTypes.string,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_hl,
         ),
         ColumnDefinition(
             name='primary_camera_rear',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks,
+            drift=drift_ws,
         ),
         ColumnDefinition(
             name='primary_camera_front',
             type=SupportedTypes.float,
             field_type=FieldTypes.numerical,
-            drift=drift_ks,
+            drift=drift_ws,
         ),
         ColumnDefinition(
             name='extended_memory_available',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_js,
         ),
         ColumnDefinition(
             name='extended_upto',
             type=SupportedTypes.float,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_kl,
         ),
         ColumnDefinition(
             name='resolution_width',
             type=SupportedTypes.int,
             field_type=FieldTypes.categorical,
-            drift=drift_chi2,
+            drift=drift_hl,
         ),
         ColumnDefinition(
             name='resolution_height',

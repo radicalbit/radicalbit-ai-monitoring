@@ -3,6 +3,7 @@ export const ModelTypeEnum = {
   BINARY_CLASSIFICATION: 'BINARY',
   MULTI_CLASSIFICATION: 'MULTI_CLASS',
   TEXT_GENERATION: 'TEXT_GENERATION',
+  EMBEDDINGS: 'EMBEDDINGS',
 };
 
 export const DataTypeEnum = {
@@ -23,6 +24,7 @@ export const ModelTypeEnumLabel = {
   [ModelTypeEnum.BINARY_CLASSIFICATION]: 'Binary Classification',
   [ModelTypeEnum.MULTI_CLASSIFICATION]: 'Multiclass Classification',
   [ModelTypeEnum.TEXT_GENERATION]: 'Text Generation',
+  [ModelTypeEnum.EMBEDDINGS]: 'Embeddings',
 };
 
 export const DataTypeEnumLabel = {

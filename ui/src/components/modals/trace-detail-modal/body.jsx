@@ -1,6 +1,6 @@
 import TreeComponent from '@Components/modals/trace-detail-modal/tree';
 import { Board, Spinner } from '@radicalbit/radicalbit-design-system';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useParams, useSearchParams } from 'react-router-dom';
 import TraceDetail from './trace-detail';
 

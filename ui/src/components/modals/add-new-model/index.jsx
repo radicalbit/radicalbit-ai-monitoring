@@ -16,6 +16,7 @@ import {
   TextGenerationActionButton, TextGenerationBody,
   TextGenerationHeader,
 } from './text-generation';
+import { EmbeddingsActionButton, EmbeddingsBody, EmbeddingsHeader } from './embeddings';
 
 const { Step } = Steps;
 
@@ -79,6 +80,9 @@ function Header() {
   || (step === 3 && isFormInvalidStepFour()) ? 'error' : undefined;
 
   switch (modelType) {
+    case ModelTypeEnum.EMBEDDINGS:
+      return (<EmbeddingsHeader />);
+
     case ModelTypeEnum.TEXT_GENERATION:
       return (<TextGenerationHeader />);
 
@@ -191,6 +195,9 @@ function Body() {
   const modelType = form?.modelType;
 
   switch (modelType) {
+    case ModelTypeEnum.EMBEDDINGS:
+      return <EmbeddingsBody />;
+
     case ModelTypeEnum.TEXT_GENERATION:
       return <TextGenerationBody />;
 
@@ -225,6 +232,9 @@ function Actions() {
   const modelType = form?.modelType;
 
   switch (modelType) {
+    case ModelTypeEnum.EMBEDDINGS:
+      return (<EmbeddingsActionButton />);
+
     case ModelTypeEnum.TEXT_GENERATION:
       return (<TextGenerationActionButton />);
 

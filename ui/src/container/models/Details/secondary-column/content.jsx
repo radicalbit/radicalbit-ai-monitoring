@@ -20,6 +20,12 @@ const commonChildrenMenu = (modelType) => {
     case ModelTypeEnum.TEXT_GENERATION:
       return [{ label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW }];
 
+    case ModelTypeEnum.EMBEDDINGS:
+      return [
+        { label: 'Reference', key: MODEL_TABS_ENUM.REFERENCE_DASHBOARD },
+        { label: 'Current', key: MODEL_TABS_ENUM.CURRENT_DASHBOARD },
+      ];
+
     default:
       return [
         { label: 'Overview', key: MODEL_TABS_ENUM.OVERVIEW },

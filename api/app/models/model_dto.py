@@ -48,11 +48,12 @@ class DriftMethod(BaseModel):
     @model_validator(mode='after')
     def validate_drift_method(self) -> Self:
         match self.name:
-            case DriftAlgorithmType.CHI2 | DriftAlgorithmType.KS:
+            case DriftAlgorithmType.CHI2:
                 if self.p_value is None:
                     raise ValueError(f'{self.name.value} requires a p_value')
             case (
                 DriftAlgorithmType.HELLINGER
+                | DriftAlgorithmType.KS
                 | DriftAlgorithmType.JS
                 | DriftAlgorithmType.WASSERSTEIN
                 | DriftAlgorithmType.PSI
@@ -142,7 +143,7 @@ class ColumnDefinition(BaseModel, validate_assignment=True):
                 ]
             case FieldType.numerical:
                 return [
-                    DriftMethod(name=DriftAlgorithmType.KS, p_value=0.05),
+                    DriftMethod(name=DriftAlgorithmType.KS, threshold=0.05),
                     DriftMethod(name=DriftAlgorithmType.WASSERSTEIN, threshold=0.1),
                     DriftMethod(name=DriftAlgorithmType.PSI, threshold=0.1),
                     DriftMethod(name=DriftAlgorithmType.HELLINGER, threshold=0.1),

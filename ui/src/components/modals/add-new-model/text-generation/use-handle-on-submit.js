@@ -1,8 +1,7 @@
 import { globalConfigSliceActions } from '@State/global-configuration/slice';
 import { modelsApiSlice } from '@State/models/api';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DataTypeEnum } from '@State/models/constants';
 import { useModalContext } from '../modal-context-provider';
 

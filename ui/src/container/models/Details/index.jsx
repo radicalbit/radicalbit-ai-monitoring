@@ -7,6 +7,7 @@ import BinaryClassificationMetrics from './binary-classification';
 import MultiClassificationMetrics from './multi-classification';
 import RegressionMetrics from './regression';
 import TextGenerationMetrics from './text-generation';
+import EmbeddingsMetrics from './embeddings';
 
 const { useGetModelByUUIDQuery } = modelsApiSlice;
 
@@ -30,6 +31,9 @@ export function ModelDetails() {
 
     case ModelTypeEnum.TEXT_GENERATION:
       return <TextGenerationMetrics />;
+
+    case ModelTypeEnum.EMBEDDINGS:
+      return <EmbeddingsMetrics />;
 
     default:
       return false;

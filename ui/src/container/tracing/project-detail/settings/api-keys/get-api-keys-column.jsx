@@ -1,7 +1,7 @@
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon, Popconfirm, RelativeDateTime } from '@radicalbit/radicalbit-design-system';
 import { columnFactory } from '@Src/components/smart-table/utils';
-import { tracingApiSlice } from '@Src/store/state/tracing/api';
+import { tracingApiSlice } from '@State/tracing/api';
 import { useParams } from 'react-router';
 
 const { useDeleteApiKeyMutation, useAddNewApiKeyMutation } = tracingApiSlice;

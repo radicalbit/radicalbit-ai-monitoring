@@ -36,6 +36,8 @@ The available methods of a client instance are:
 		OutputType,
 		Granularity,
 		SupportedTypes,
+ 		DriftMethod,
+ 		DriftAlgorithmType
 	)
 
 	model_definition = CreateModel(
@@ -45,44 +47,84 @@ The available methods of a client instance are:
 		granularity=Granularity.HOUR,
 		features=[
 			ColumnDefinition(
-				name="first_name",
+				name="user_id",
 				type=SupportedTypes.string,
-				field_type=FieldType.categorical
+				field_type=FieldType.categorical,
+				drift=[
+					DriftMethod(
+ 						name=DriftAlgorithmType.JS, 
+ 						threshold=0.1
+ 					),
+					DriftMethod(
+ 						name=DriftAlgorithmType.HELLINGER, 
+ 						threshold=0.1
+ 					),
+				],
 			),
 			ColumnDefinition(
-				name="last_name",
+				name="question",
 				type=SupportedTypes.string,
-				field_type=FieldType.categorical
+				field_type=FieldType.categorical,
+			),
+			ColumnDefinition(
+				name="model_answer",
+				type=SupportedTypes.string,
+				field_type=FieldType.categorical,
+			),
+			ColumnDefinition(
+				name="gender",
+				type=SupportedTypes.string,
+				field_type=FieldType.categorical,
 			),
 			ColumnDefinition(
 				name="age",
 				type=SupportedTypes.int,
-				field_type=FieldType.numerical
+				field_type=FieldType.numerical,
+			),
+			ColumnDefinition(
+				name="device",
+				type=SupportedTypes.string,
+				field_type=FieldType.categorical,
+			),
+			ColumnDefinition(
+				name="days_as_customer",
+				type=SupportedTypes.int,
+				field_type=FieldType.numerical,
+				drift=[
+					DriftMethod(
+ 						name=DriftAlgorithmType.WASSERSTEIN, 
+ 						threshold=0.1
+ 					),
+					DriftMethod(
+ 						name=DriftAlgorithmType.KS, 
+						p_value=0.05
+ 					),
+				],
 			),
 		],
 		outputs=OutputType(
 			prediction=ColumnDefinition(
-				name="prediction",
-				type=SupportedTypes.float,
-				field_type=FieldType.numerical
+				name="prediction", 
+ 				type=SupportedTypes.float, 
+ 				field_type=FieldType.numerical
 			),
 			output=[
 				ColumnDefinition(
-					name="adult",
-					type=SupportedTypes.string,
-					field_type=FieldType.categorical
+					name="prediction",
+					type=SupportedTypes.float,
+					field_type=FieldType.numerical,
 				)
 			],
 		),
 		target=ColumnDefinition(
-			name="prediction",
-			type=SupportedTypes.float,
-			field_type=FieldType.numerical
+			name="ground_truth", 
+ 			type=SupportedTypes.int, 
+ 			field_type=FieldType.numerical
 		),
 		timestamp=ColumnDefinition(
-			name="prediction_timestamp",
+			name="timestamp",
 			type=SupportedTypes.datetime,
-			field_type=FieldType.datetime
+			field_type=FieldType.datetime,
 		),
 	)
 
@@ -261,7 +303,37 @@ Its properties are:
 * **`name`**: The name of the column
 * **`type`**: The [SupportedTypes](#supportedtypes) of the data represented inside this column
 * **`field_type`**: The [FieldType](#fieldtype) of the field
+* **`drift`**: an optional list of [DriftMethod](#driftmethod), only available for `features` set
 
+> **Note: Configuring Drift Detection Methods**
+> 
+> How drift detection algorithms are applied depends on how you configure the `drift` parameter:
+> * **Specify Methods:** Provide a list of algorithm by specifying a list of `DriftMethod`. 
+> Drift will be calculated using **only these specified methods**.
+> * **Use Defaults:** If `drift` is **not provided** (or is `None`/`null`), 
+> the platform defaults to calculating drift using [**all available algorithms**](../all-metrics.md#data-drift) suitable for each variable's type.
+> * **Disable Drift:** Pass an **empty list** (`` `drift=[]` ``) to **skip all drift calculations** 
+> for that run. 
+
+
+
+### DriftMethod
+It defines the drift's method for the specific feature
+
+* **`name`**: [DriftAlgorithmType](#driftalgotithmtypes)
+* **`threshold`**: a threshold value
+* **`p_value`**: a p_value value
+
+### DriftAlgorithmType
+Enumeration that defines the Algorithm's type
+Available values are: 
+	* **`HELLINGER`** = [Hellinger Distance](../all-metrics.md#data-drift)
+    * **`WASSERSTEIN`** = [Wasserstein distance](../all-metrics.md#data-drift)
+    * **`KS`** = [Two-Sample Kolmogorov-Smirnov](../all-metrics.md#data-drift)
+    * **`JS`** = [Jensen Shannon Divergence](../all-metrics.md#data-drift)
+    * **`PSI`** = [Population Stability Index](../all-metrics.md#data-drift)
+    * **`CHI2`** = [Chi-Square Test](../all-metrics.md#data-drift)
+    * **`KL`** = [Kullback Leibler Divergence](../all-metrics.md#data-drift)
 
 ### SupportedTypes
 
