@@ -27,19 +27,18 @@ def load_json():
         data = json.load(f)
     return json.dumps(data, indent=2)
 
-
 current_path = "s3a://test-bucket/df_current1-5cac31fe358e0efaab9d8ea844d3f15b.csv"
 reference_path = "s3a://test-bucket/df_reference-1894ad2a37bbcc09d7bbc333f368208c.csv"
+embeddings_path = "s3a://test-bucket/embeddings.csv"
 spark_k8s_client.submit_app(
     image=spark_image,
     app_path=f"local:///opt/spark/custom_jobs/{job_name}_job.py",
     app_arguments=[
         load_json(),
-        current_path,
+        embeddings_path,
         "8aa09366-5d37-4721-a20a-7f6638fb6d27",
-        reference_path,
-        "current_dataset_metrics",
-        "current_dataset",
+        "embeddings_reference_dataset_metrics",
+        "embeddings_reference_dataset",
     ],
     app_name=f"{spark_image}-completion-job",
     namespace="spark",

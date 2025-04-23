@@ -31,6 +31,7 @@ class ModelType(str, Enum):
     BINARY = 'BINARY'
     MULTI_CLASS = 'MULTI_CLASS'
     TEXT_GENERATION = 'TEXT_GENERATION'
+    EMBEDDINGS = 'EMBEDDINGS'
 
 
 class DataType(str, Enum):

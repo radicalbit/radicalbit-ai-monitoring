@@ -1,4 +1,3 @@
-import logging
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -8,9 +7,10 @@ from pyspark.ml.feature import PCA, StandardScaler, VectorAssembler
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import DataFrame, functions as f
 from pyspark.sql.types import DoubleType
-from utils.logger import logger_config
 
-logger = logging.getLogger(logger_config.get('logger_name', 'default'))
+# from utils.logger import logger_config
+
+# logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
 class EmbeddingsDriftDetector:
@@ -58,7 +58,7 @@ class EmbeddingsDriftDetector:
         ).select(distance_column_name)
 
         # Collect the results
-        return [row[distance_column_name] for row in df_with_distance.collect()]
+        return [float(row[distance_column_name]) for row in df_with_distance.collect()]
 
     def scale_embeddings(self) -> DataFrame:
         assembler = VectorAssembler(
@@ -88,7 +88,7 @@ class EmbeddingsDriftDetector:
 
         explained_variance_ratio = pca_initial_model.explainedVariance.toArray()
         cumulative_variance = np.cumsum(explained_variance_ratio)
-        return np.argmax(cumulative_variance >= self.variance_threshold) + 1
+        return int(np.argmax(cumulative_variance >= self.variance_threshold) + 1)
 
     def compute_pca_df(self, scaled_df: DataFrame, n_components: int) -> DataFrame:
         pca_final = PCA(
@@ -110,7 +110,7 @@ class EmbeddingsDriftDetector:
 
         silhouette_scores = {}
         for k in k_values:
-            logger.info('Finding optimal cluster number - processing k: %s', k)
+            # logger.info('Finding optimal cluster number - processing k: %s', k)
             kmeans = KMeans(
                 featuresCol=pca_features_col,
                 k=k,
@@ -132,7 +132,7 @@ class EmbeddingsDriftDetector:
 
         optimal_clusters_number = max(silhouette_scores, key=silhouette_scores.get)
 
-        return optimal_clusters_number, silhouette_scores
+        return int(optimal_clusters_number), silhouette_scores
 
     def compute_final_kmeans(
         self, reduced_df: DataFrame, k_clusters: int
@@ -161,7 +161,7 @@ class EmbeddingsDriftDetector:
 
         inertia_scores = model.summary.trainingCost
 
-        return silhouette_scores, inertia_scores
+        return float(silhouette_scores), float(inertia_scores)
 
     def compute_result(self):
         #  ---  Process ---
@@ -205,18 +205,17 @@ class EmbeddingsDriftDetector:
 
         x_y_pca = [
             [
-                row[f'{self.prefix_id}_first_two_pca'][0],
-                row[f'{self.prefix_id}_first_two_pca'][1],
+                float(row[f'{self.prefix_id}_first_two_pca'][0]),
+                float(row[f'{self.prefix_id}_first_two_pca'][1]),
             ]
             for row in two_d_pca.collect()
         ]
 
         # find 2d centroid
         x_y_centroid = [
-            [np.mean([coord[0] for coord in x_y_pca])],
-            [np.mean([coord[1] for coord in x_y_pca])],
+            [float(np.mean([coord[0] for coord in x_y_pca]))],
+            [float(np.mean([coord[1] for coord in x_y_pca]))],
         ]
-
         return {
             'table': {
                 'number_of_optimal_components': optimal_components_number,
