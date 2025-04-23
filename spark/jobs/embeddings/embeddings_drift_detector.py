@@ -98,7 +98,6 @@ class EmbeddingsDriftDetector:
         )
         pca_final_model = pca_final.fit(scaled_df)
         df_pca_final = pca_final_model.transform(scaled_df)
-
         return df_pca_final.select([f'{self.prefix_id}_pca_features'])
 
     def find_optimal_clusters_number(self, reduced_df) -> Tuple[int, Dict[int, float]]:
@@ -202,7 +201,6 @@ class EmbeddingsDriftDetector:
             f'{self.prefix_id}_first_two_pca',
             select_first_two_udf(f.col(f'{self.prefix_id}_pca_features')),
         ).select(f'{self.prefix_id}_first_two_pca')
-
         x_y_pca = [
             [
                 float(row[f'{self.prefix_id}_first_two_pca'][0]),
@@ -212,17 +210,62 @@ class EmbeddingsDriftDetector:
         ]
 
         # find 2d centroid
-        x_y_centroid = [
-            [float(np.mean([coord[0] for coord in x_y_pca]))],
-            [float(np.mean([coord[1] for coord in x_y_pca]))],
-        ]
+        x_y_centroid = {
+            'x': [float(np.mean([coord[0] for coord in x_y_pca]))],
+            'y': [float(np.mean([coord[1] for coord in x_y_pca]))],
+        }
         return {
-            'table': {
+            'reference_embeddings_metrics': {
                 'number_of_optimal_components': optimal_components_number,
                 'number_of_optimal_clusters': optimal_clusters_number,
                 'silhouette_score': final_silhouette_score,
                 'inertia': inertia_score,
             },
-            'barplot': {'distances': centroid_embeddings_distance},
-            'scatterplot': {'x_y_coordinates': x_y_pca, 'x_y_centroid': x_y_centroid},
+            'histogram': {
+                'buckets': [
+                    float(i)
+                    for i in np.histogram_bin_edges(
+                        centroid_embeddings_distance, bins='auto'
+                    )
+                ],
+                'reference_values': centroid_embeddings_distance,
+            },
+            'reference_embeddings': {
+                'values': [{'x': i[0], 'y': i[1]} for i in x_y_pca],
+                'centroid': x_y_centroid,
+            },
         }
+        # return {
+        #     "reference_embeddings_metrics": {
+        #         "n_comp": optimal_components_number,
+        #         "n_cluster": optimal_clusters_number,
+        #         "inertia": inertia_score,
+        #         "sil_score": final_silhouette_score
+        #     },
+        #     "reference_embeddings": {
+        #         "centroid": x_y_centroid,
+        #         "values": [
+        #             {"timestamp": 1627849200, "x": 1.23, "y": 4.56},
+        #             {"timestamp": 1627849260, "x": 2.34, "y": 5.67},
+        #             {"timestamp": 1627849320, "x": 3.45, "y": 6.78}
+        #         ]
+        #     },
+        #     "histogram": {
+        #         "buckets": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        #         "reference_values": [15, 25, 10, 5, 3]
+        #     }
+        # }
+
+
+if __name__ == '__main__':
+    from pyspark.sql import SparkSession
+
+    spark = SparkSession.builder.appName('emb-drift').getOrCreate()
+
+    df = spark.read.csv('./embeddings/embeddings.csv', inferSchema=True)
+
+    emb = EmbeddingsDriftDetector(
+        spark=spark, embeddings=df, prefix_id='001', variance_threshold=0.80
+    )
+
+    res = emb.compute_result()
