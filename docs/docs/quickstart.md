@@ -170,7 +170,6 @@ In detail, you can browse between 4 tabs:
 
 ![Alt text](/img/quickstart/current_import.png "Import Reference")
 
-
 ## Monitor a Text Generation Model
 
 This part of the guide demonstrates how to monitor a text generation model (like an LLM used for content creation or chatbots) using the Radicalbit AI Platform.
@@ -223,3 +222,67 @@ This JSON structure adheres to the standard format defined by OpenAI.
 Once you initiate the process, the platform will run background jobs to calculate the metrics.
 
 After processing, you can view the model's Overview, which presents summary statistics (such as overall Perplexity and Probability) and detailed information for each generated text instance from the file.
+
+## Trace an LLM Application
+
+### Introduction
+Learn how to activate tracing for your LLM application using our latest feature in this example. 
+First, create a new project on our platform, 
+then use the provided API Key when setting up tracing within your application code.
+
+### Project creation
+Using the Tracing feature requires a project. 
+Begin by selecting the third icon from the sidebar menu.
+This opens the project management view, where you can find all your projects. 
+
+![Alt text](/img/quickstart/create_project.png "Project creation")
+
+Click the plus (+) button found near the top-left to initiate creating a new project, and then assign it a name.
+
+![Alt text](/img/quickstart/project_name.png "Project name")
+
+After creating a project, its management area is organized into 2 main sections:
+
+- **API Key Management**: For creating and managing API keys for this project.
+- **How to connect**: Instructions on how to connect your application.
+
+![Alt text](/img/quickstart/tracing_settings.png "How to connect")
+By focusing on the three dots, on right side, it is also possible to change the project's name or to remove the project.
+
+![Alt text](/img/quickstart/tracing_settings_api.png "API Settings")
+
+### Setup the tracing feature
+
+Our platform leverages on [OpenLLMetry](https://opentelemetry.io/), an open-source library specifically designed for tracing LLM applications. 
+Trace data is gathered using an OpenTelemetry collector, 
+then processed and visualized within the Radicalbit AI Platform.
+
+To connect your application to this tracing system, 
+you need to configure the Traceloop SDK within your project. 
+Add the following configuration at the beginning of your LLM application code:
+
+```
+from traceloop.sdk import Traceloop
+
+Traceloop.init(
+    api_endpoint="http://localhost:9000/api/otel",
+    api_key="<YOUR_API_KEY>" # Replace with your actual API key
+)
+```
+
+### Session Management
+
+For proper trace grouping by conversation, setting a unique session_uuid per chat session is required
+
+```
+import uuid
+
+# Generate a new session UUID at the beginning of each chat/thread
+session_uuid = uuid.uuid4()
+Traceloop.set_association_properties({"session_uuid": str(session_uuid)})
+```
+
+> NOTE: You must set a newly generated, 
+> unique UUID as the session_uuid for each individual conversation thread to ensure accurate trace grouping.
+
+Once you have completed the setup, traces from your application will begin appearing on the dashboard.
