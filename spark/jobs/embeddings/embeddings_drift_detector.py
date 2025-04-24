@@ -4,6 +4,7 @@ import numpy as np
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.ml.feature import PCA, StandardScaler, VectorAssembler
+from pyspark.ml.functions import vector_to_array
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import DataFrame, functions as f
 from pyspark.sql.types import DoubleType
@@ -201,20 +202,19 @@ class EmbeddingsDriftDetector:
             f'{self.prefix_id}_first_two_pca',
             select_first_two_udf(f.col(f'{self.prefix_id}_pca_features')),
         ).select(f'{self.prefix_id}_first_two_pca')
-        x_y_pca = [
-            [
-                float(row[f'{self.prefix_id}_first_two_pca'][0]),
-                float(row[f'{self.prefix_id}_first_two_pca'][1]),
-            ]
-            for row in two_d_pca.collect()
-        ]
 
-        # find 2d centroid
-        x_y_centroid = {
-            'x': float(np.mean([coord[0] for coord in x_y_pca])),
-            'y': float(np.mean([coord[1] for coord in x_y_pca])),
-        }
-        histogram_value, histogram_bins = np.histogram(centroid_embeddings_distance)
+        df_with_array = two_d_pca.withColumn(
+            'pca_array', vector_to_array(f.col(f'{self.prefix_id}_first_two_pca'))
+        )
+        x_y_pca = df_with_array.select(
+            f.col('pca_array').getItem(0).alias('x'),
+            f.col('pca_array').getItem(1).alias('y'),
+        )
+        x_y_centroid = x_y_pca.agg(
+            f.mean(f.col('x')).alias('x'), f.mean(f.col('y')).alias('y')
+        )
+        histogram_values, histogram_bins = np.histogram(centroid_embeddings_distance)
+        reference_embeddings_values = [{'x': i.x, 'y': i.y} for i in x_y_pca.collect()]
         return {
             'reference_embeddings_metrics': {
                 'n_comp': optimal_components_number,
@@ -224,27 +224,10 @@ class EmbeddingsDriftDetector:
             },
             'histogram': {
                 'buckets': [float(i) for i in histogram_bins],
-                'reference_values': [float(i) for i in histogram_value],
+                'reference_values': [float(i) for i in histogram_values],
             },
             'reference_embeddings': {
-                'values': [{'x': i[0], 'y': i[1]} for i in x_y_pca],
-                'centroid': x_y_centroid,
+                'values': reference_embeddings_values,
+                'centroid': x_y_centroid.first().asDict(),
             },
         }
-
-
-# if __name__ == '__main__':
-#     from pyspark.sql import SparkSession
-#
-#     spark = SparkSession.builder.appName('emb-drift').getOrCreate()
-#
-#     df = spark.read.csv('./embeddings/embeddings.csv', inferSchema=True)
-#
-#     emb = EmbeddingsDriftDetector(
-#         spark=spark, embeddings=df, prefix_id='001', variance_threshold=0.80
-#     )
-#
-#     res = emb.compute_result()
-#
-#     with open("dict.json", 'w', encoding='utf-8') as json_file:
-#         json.dump(res, json_file, indent=4, ensure_ascii=False)
