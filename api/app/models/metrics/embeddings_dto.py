@@ -12,7 +12,7 @@ class Coordinate(BaseModel):
 
 
 class EmbeddingsValue(BaseModel):
-    timestamp: Optional[str]
+    # timestamp: Optional[str] = None
     x: float
     y: float
 
