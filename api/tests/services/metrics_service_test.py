@@ -21,7 +21,7 @@ from app.models.exceptions import MetricsBadRequestError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
-from app.models.metrics.embeddings_dto import EmbeddingsReportDTO
+from app.models.metrics.embeddings_dto import DriftScore, EmbeddingsReportDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
 from app.models.model_dto import ModelType
@@ -776,6 +776,7 @@ class MetricsServiceTest(unittest.TestCase):
         assert res == EmbeddingsReportDTO.from_dict(
             job_status=status,
             embeddings_data=reference_metrics.metrics,
+            drift_score=None,
         )
 
     def test_get_empty_reference_embeddings_by_model_by_uuid(self):
@@ -793,6 +794,7 @@ class MetricsServiceTest(unittest.TestCase):
         assert res == EmbeddingsReportDTO.from_dict(
             job_status=status,
             embeddings_data=None,
+            drift_score=None,
         )
 
     def test_get_missing_reference_embeddings(self):
@@ -808,6 +810,68 @@ class MetricsServiceTest(unittest.TestCase):
         assert res == EmbeddingsReportDTO.from_dict(
             job_status=status,
             embeddings_data=None,
+            drift_score=None,
+        )
+
+    def test_get_current_embeddings_by_model_by_uuid(self):
+        status = JobStatus.SUCCEEDED
+        model = db_mock.get_sample_model()
+        current_dataset = db_mock.get_sample_current_dataset(status=status.value)
+        current_metrics = db_mock.get_sample_current_embeddings_metrics()
+        self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
+            return_value=current_dataset
+        )
+        self.current_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid = MagicMock(
+            return_value=current_metrics
+        )
+        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(model.uuid, current_dataset.uuid)
+        self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
+            model.uuid, current_dataset.uuid
+        )
+        self.current_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid.assert_called_once_with(
+            model.uuid, current_dataset.uuid
+        )
+
+        assert res == EmbeddingsReportDTO.from_dict(
+            job_status=status,
+            embeddings_data=current_metrics.metrics,
+            drift_score=DriftScore.from_raw(
+                current_dataset.date, current_metrics.drift_score
+            ),
+        )
+
+    def test_get_empty_current_embeddings_by_model_by_uuid(self):
+        model = db_mock.get_sample_model()
+        status = JobStatus.IMPORTING
+        current_dataset = db_mock.get_sample_current_dataset(status=status.value)
+        self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
+            return_value=current_dataset
+        )
+        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(model.uuid, current_dataset.uuid)
+        self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid, current_dataset.uuid
+        )
+
+        assert res == EmbeddingsReportDTO.from_dict(
+            job_status=status,
+            embeddings_data=None,
+            drift_score=None,
+        )
+
+    def test_get_missing_current_embeddings(self):
+        status = JobStatus.MISSING_CURRENT
+        self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
+            return_value=None
+        )
+        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(model_uuid, current_uuid)
+        self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
+            model_uuid, current_uuid
+        )
+
+        assert res == EmbeddingsReportDTO.from_dict(
+            job_status=status,
+            embeddings_data=None,
+            drift_score=None,
         )
 
 

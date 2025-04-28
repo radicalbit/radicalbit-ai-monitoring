@@ -172,4 +172,12 @@ class MetricsRoute:
         def get_reference_embeddings_by_model_by_uuid(model_uuid: UUID):
             return metrics_service.get_reference_embeddings_by_model_by_uuid(model_uuid)
 
+        @router.get(
+            '/{model_uuid}/current/{current_uuid}/embeddings',
+            status_code=200,
+            response_model=EmbeddingsReportDTO,
+        )
+        def get_current_embeddings_by_model_by_uuid(model_uuid: UUID, current_uuid: UUID):
+            return metrics_service.get_current_embeddings_by_model_by_uuid(model_uuid, current_uuid)
+
         return router
