@@ -1,4 +1,4 @@
-import deepdiff
+
 from embeddings.embeddings_drift_detector import EmbeddingsDriftDetector
 import pytest
 
@@ -17,10 +17,21 @@ def test_drift_detector(spark_fixture, embeddings_dataset):
         spark_fixture, embeddings_dataset, '', 0.80
     )
     res = embedding_drift.compute_result()
-
-    assert not deepdiff.DeepDiff(
-        res,
-        ref_metrics,
-        ignore_order=True,
-        significant_digits=6,
+    assert (
+        res['reference_embeddings_metrics']['inertia']
+        == ref_metrics['reference_embeddings_metrics']['inertia']
     )
+    assert (
+        res['reference_embeddings_metrics']['n_cluster']
+        == ref_metrics['reference_embeddings_metrics']['n_cluster']
+    )
+    assert (
+        res['reference_embeddings_metrics']['n_comp']
+        == ref_metrics['reference_embeddings_metrics']['n_comp']
+    )
+    assert (
+        res['reference_embeddings_metrics']['sil_score']
+        == ref_metrics['reference_embeddings_metrics']['sil_score']
+    )
+    assert res['reference_embeddings'] == ref_metrics['reference_embeddings']
+    assert res['histogram'] == ref_metrics['histogram']

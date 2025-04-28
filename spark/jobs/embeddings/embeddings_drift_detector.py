@@ -203,6 +203,7 @@ class EmbeddingsDriftDetector:
             select_first_two_udf(f.col(f'{self.prefix_id}_pca_features')),
         ).select(f'{self.prefix_id}_first_two_pca')
 
+        # find 2d centroid
         df_with_array = two_d_pca.withColumn(
             'pca_array', vector_to_array(f.col(f'{self.prefix_id}_first_two_pca'))
         )
