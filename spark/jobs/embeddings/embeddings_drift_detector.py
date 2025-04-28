@@ -1,11 +1,12 @@
-from typing import Any, Dict, List, Tuple
+from typing import Dict, List, Tuple
+
 import numpy as np
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
 from pyspark.ml.feature import PCA, StandardScaler, VectorAssembler
-from pyspark.sql.types import DoubleType
 from pyspark.ml.linalg import Vectors, VectorUDT
 from pyspark.sql import DataFrame, functions as f
+from pyspark.sql.types import DoubleType
 
 
 class EmbeddingsDriftDetector:
@@ -17,7 +18,7 @@ class EmbeddingsDriftDetector:
         self.variance_threshold = variance_threshold
 
     def compute_centroid(self) -> List[float]:
-        """Computes the centroid and returns it as a Python list."""
+        """Compute the centroid and return it as a Python list."""
         aggregation_expressions = [f.mean(c).alias(c) for c in self.column_names]
         centroid_row = self.embeddings.agg(*aggregation_expressions).first()
 
@@ -28,7 +29,7 @@ class EmbeddingsDriftDetector:
         return [centroid_row[c] for c in self.column_names]
 
     def compute_distance(self) -> List[float]:
-        """Computes the Euclidean distance between each embedding row and the centroid using a UDF."""
+        """Compute the Euclidean distance between each embedding row and the centroid using a UDF."""
 
         distance_column_name = f'{self.prefix_id}_euclidean_distance'
 
@@ -42,18 +43,18 @@ class EmbeddingsDriftDetector:
         def euclidean_distance_udf(*embedding_vector_cols):
             centroid_val = broadcasted_centroid.value  # Access the broadcasted value
             diff = np.array(embedding_vector_cols) - np.array(centroid_val)
-            return float(np.sqrt(np.sum(diff ** 2)))
+            return float(np.sqrt(np.sum(diff**2)))
 
         # Apply the UDF
         df_with_distance = self.embeddings.withColumn(
             distance_column_name,
-            euclidean_distance_udf(*[f.col(c) for c in self.column_names])  # Unpack columns as arguments
+            euclidean_distance_udf(
+                *[f.col(c) for c in self.column_names]
+            ),  # Unpack columns as arguments
         ).select(distance_column_name)
 
         # Collect the results
-        distances = [row[distance_column_name] for row in df_with_distance.collect()]
-
-        return distances
+        return [row[distance_column_name] for row in df_with_distance.collect()]
 
     def scale_embeddings(self) -> DataFrame:
         assembler = VectorAssembler(
@@ -84,15 +85,13 @@ class EmbeddingsDriftDetector:
         explained_variance_ratio = pca_initial_model.explainedVariance.toArray()
         cumulative_variance = np.cumsum(explained_variance_ratio)
 
-        k_optimal_components = (
-            np.argmax(cumulative_variance >= self.variance_threshold) + 1
-        )
-
-        return k_optimal_components
+        return np.argmax(cumulative_variance >= self.variance_threshold) + 1
 
     def compute_pca_df(self, scaled_df: DataFrame, n_components: int) -> DataFrame:
         pca_final = PCA(
-            k=n_components, inputCol=f'{self.prefix_id}_scaled_features', outputCol=f'{self.prefix_id}_pca_features'
+            k=n_components,
+            inputCol=f'{self.prefix_id}_scaled_features',
+            outputCol=f'{self.prefix_id}_pca_features',
         )
         pca_final_model = pca_final.fit(scaled_df)
         df_pca_final = pca_final_model.transform(scaled_df)
@@ -108,9 +107,11 @@ class EmbeddingsDriftDetector:
 
         silhouette_scores = {}
         for k in k_values:
-            print(f'Finding optimal cluster number - processing k: {k}')
             kmeans = KMeans(
-                featuresCol=pca_features_col, k=k, seed=42, predictionCol=f'{self.prefix_id}_prediction'
+                featuresCol=pca_features_col,
+                k=k,
+                seed=42,
+                predictionCol=f'{self.prefix_id}_prediction',
             )
             model = kmeans.fit(reduced_df)
             predictions = model.transform(reduced_df)
@@ -129,7 +130,9 @@ class EmbeddingsDriftDetector:
 
         return optimal_clusters_number, silhouette_scores
 
-    def compute_final_kmeans(self, reduced_df: DataFrame, k_clusters: int) -> Tuple[float, float]:
+    def compute_final_kmeans(
+        self, reduced_df: DataFrame, k_clusters: int
+    ) -> Tuple[float, float]:
         pca_features_col = f'{self.prefix_id}_pca_features'
 
         kmeans = KMeans(
@@ -187,19 +190,21 @@ class EmbeddingsDriftDetector:
         def select_first_two_components(vector):
             if vector is not None and hasattr(vector, 'size') and vector.size >= 2:
                 return Vectors.dense([vector[0], vector[1]])
-            else:
-                return None
+            return None
 
         select_first_two_udf = f.udf(select_first_two_components, VectorUDT())
 
         two_d_pca = optimal_pca.withColumn(
-            f'{self.prefix_id}_first_two_pca', select_first_two_udf(f.col(f'{self.prefix_id}_pca_features'))
+            f'{self.prefix_id}_first_two_pca',
+            select_first_two_udf(f.col(f'{self.prefix_id}_pca_features')),
         ).select(f'{self.prefix_id}_first_two_pca')
 
         x_y_pca = [
             [
                 row[f'{self.prefix_id}_first_two_pca'][0],
-                row[f'{self.prefix_id}_first_two_pca'][1]] for row in two_d_pca.collect()
+                row[f'{self.prefix_id}_first_two_pca'][1],
+            ]
+            for row in two_d_pca.collect()
         ]
 
         # find 2d centroid
