@@ -45,24 +45,25 @@ jobs:
         run: |
           poetry run pytest -v
 
-#   pypi-push:
-#     if: startsWith(github.ref, 'refs/tags/v')
-#     runs-on: ubuntu-22.04
-#     defaults:
-#       run:
-#         working-directory: ./sdk
-#     needs: [test]
-#     steps:
-#       - uses: actions/checkout@v4
-#       - name: Set up Python
-#         uses: actions/setup-python@v5
-#         with:
-#           python-version: ${{ env.PYTHON_VERSION }}
-#       - name: Setup poetry
-#         run: |
-#           curl -sSL https://install.python-poetry.org | POETRY_VERSION=${{ env.POETRY_VERSION }} python -
-#           poetry lock
-#       - name: Publish to pypi
-#         run: |
-#           poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-#           poetry publish --build
+  pypi-push:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./sdk
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Setup poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | POETRY_VERSION=${{ env.POETRY_VERSION }} python -
+          poetry lock
+      - name: Publish to pypi
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+          poetry publish --build
+  
