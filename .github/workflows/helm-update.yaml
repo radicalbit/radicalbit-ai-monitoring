@@ -1,27 +1,27 @@
-# name: update-helm-wf
-# on:
-#   push:
-#     branches:
-#     - "main"
-#     paths:
-#       - "api/alembic/**"
-#       - ".github/workflows/helm-**"
+name: update-helm-wf
+on:
+  push:
+    branches:
+    - "main"
+    paths:
+      - "api/alembic/**"
+      - ".github/workflows/helm-**"
 
-# jobs:
-#   update-chart:
-#     runs-on: ubuntu-22.04
-#     steps:
-#       - uses: actions/checkout@v4
-#         with:
-#           repository: 'radicalbit/radicalbit-helm-charts'
-#           token: ${{ secrets.GIT_HUB_PAT }}
-#       - name: Update Chart timestamp
-#         uses: mikefarah/yq@v4.44.1
-#         with:
-#           cmd: yq -i ".lastUpdateTimestamp = $(date +%s)" "charts/radicalbit-ai-monitoring/values.yaml"
-#       - name: Commit changes
-#         uses: stefanzweifel/git-auto-commit-action@v5
-#         with:
-#           commit_message: Update Chart timestamp
-#         env:
-#           GITHUB_TOKEN: ${{ secrets.GIT_HUB_PAT }}
+jobs:
+  update-chart:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: 'radicalbit/radicalbit-helm-charts'
+          token: ${{ secrets.GIT_HUB_PAT }}
+      - name: Update Chart timestamp
+        uses: mikefarah/yq@v4.44.1
+        with:
+          cmd: yq -i ".lastUpdateTimestamp = $(date +%s)" "charts/radicalbit-ai-monitoring/values.yaml"
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update Chart timestamp
+        env:
+          GITHUB_TOKEN: ${{ secrets.GIT_HUB_PAT }}
