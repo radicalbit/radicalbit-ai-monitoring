@@ -66,7 +66,8 @@ class Database:
         self._connected = False
 
     def init_mappings(self):
-        Reflected.prepare(self._engine, reflect_views=True)
+        logger.info('Initiating DB orm mappings')
+        Reflected.prepare(self._engine, views=True)
 
     def begin_session(self) -> Session:
         return self._SessionFactory.begin()
