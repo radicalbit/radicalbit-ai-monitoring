@@ -824,7 +824,9 @@ class MetricsServiceTest(unittest.TestCase):
         self.current_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid = MagicMock(
             return_value=current_metrics
         )
-        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(model.uuid, current_dataset.uuid)
+        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(
+            model.uuid, current_dataset.uuid
+        )
         self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
             model.uuid, current_dataset.uuid
         )
@@ -847,7 +849,9 @@ class MetricsServiceTest(unittest.TestCase):
         self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
             return_value=current_dataset
         )
-        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(model.uuid, current_dataset.uuid)
+        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(
+            model.uuid, current_dataset.uuid
+        )
         self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
             model_uuid, current_dataset.uuid
         )
@@ -863,7 +867,9 @@ class MetricsServiceTest(unittest.TestCase):
         self.current_dataset_dao.get_current_dataset_by_model_uuid = MagicMock(
             return_value=None
         )
-        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(model_uuid, current_uuid)
+        res = self.metrics_service.get_current_embeddings_by_model_by_uuid(
+            model_uuid, current_uuid
+        )
         self.current_dataset_dao.get_current_dataset_by_model_uuid.assert_called_once_with(
             model_uuid, current_uuid
         )
