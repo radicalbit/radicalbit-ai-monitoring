@@ -1,5 +1,6 @@
-from typing import Dict, List, Tuple
 import logging
+from typing import Dict, List, Tuple
+
 import numpy as np
 from pyspark.ml.clustering import KMeans
 from pyspark.ml.evaluation import ClusteringEvaluator
@@ -230,5 +231,5 @@ class EmbeddingsDriftDetector:
             'reference_embeddings': {
                 'values': reference_embeddings_values,
                 'centroid': x_y_centroid.first().asDict(),
-            }
+            },
         }
