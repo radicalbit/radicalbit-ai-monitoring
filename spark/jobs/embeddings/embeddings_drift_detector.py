@@ -14,7 +14,7 @@ from utils.logger import logger_config
 logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
-class EmbeddingsDriftDetector:
+class EmbeddingsMetricsCalculator:
     def __init__(self, spark, embeddings, prefix_id, variance_threshold):
         self.spark = spark
         self.embeddings = embeddings

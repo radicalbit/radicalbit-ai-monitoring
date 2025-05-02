@@ -3,7 +3,7 @@ import os
 import sys
 import uuid
 
-from embeddings.embeddings_drift_detector import EmbeddingsDriftDetector
+from embeddings.embeddings_drift_detector import EmbeddingsMetricsCalculator
 import orjson
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
@@ -16,7 +16,7 @@ logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 def compute_metrics(spark_session: SparkSession, reference_dataset: DataFrame):
     complete_record = {}
-    embedding = EmbeddingsDriftDetector(spark_session, reference_dataset, '', 0.80)
+    embedding = EmbeddingsMetricsCalculator(spark_session, reference_dataset, '', 0.80)
     metrics = embedding.compute_result()
     del metrics['histogram']['distances']
     complete_record['METRICS'] = orjson.dumps(metrics).decode('utf-8')
