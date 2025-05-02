@@ -19,7 +19,15 @@ def compute_metrics(spark_session: SparkSession, reference_dataset: DataFrame):
     embedding = EmbeddingsMetricsCalculator(spark_session, reference_dataset, '', 0.80)
     metrics = embedding.compute_result()
     del metrics['histogram']['distances']
-    complete_record['METRICS'] = orjson.dumps(metrics).decode('utf-8')
+    reference_metrics = {
+        'reference_embeddings_metrics': metrics['embeddings_metrics'],
+        'histogram': {
+            'buckets': metrics['histogram']['buckets'],
+            'reference_values': metrics['histogram']['values'],
+        },
+        'reference_embeddings': metrics['embeddings'],
+    }
+    complete_record['METRICS'] = orjson.dumps(reference_metrics).decode('utf-8')
     return complete_record
 
 
