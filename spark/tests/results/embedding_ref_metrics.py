@@ -2,7 +2,7 @@ ref_metrics = {
     'reference_embeddings_metrics': {
         'n_comp': 32,
         'n_cluster': 2,
-        'inertia': 67839.95525645588,
+        'inertia': 67839.95525645599,
         'sil_score': 0.09446819346116185,
     },
     'reference_embeddings': {
