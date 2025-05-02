@@ -31,6 +31,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 pythonpath = "jobs"
+log_cli=true
+log_level="INFO"
 
 
 [tool.ruff]
