@@ -1,6 +1,5 @@
 from deepdiff import DeepDiff
 from embeddings.embeddings_drift_detector import EmbeddingsDriftDetector
-from numpy.testing import assert_allclose
 import pytest
 
 from tests.results.embedding_ref_metrics import ref_metrics
@@ -18,39 +17,9 @@ def test_drift_detector(spark_fixture, embeddings_dataset):
         spark_fixture, embeddings_dataset, '', 0.80
     )
     res = embedding_drift.compute_result()
-    assert_allclose(
-        res['reference_embeddings_metrics']['inertia'],
-        ref_metrics['reference_embeddings_metrics']['inertia'],
-        rtol=1e-07,
-        atol=0,
-    )
-    assert_allclose(
-        res['reference_embeddings_metrics']['n_cluster'],
-        ref_metrics['reference_embeddings_metrics']['n_cluster'],
-        rtol=1e-07,
-        atol=0,
-    )
-    assert_allclose(
-        res['reference_embeddings_metrics']['n_comp'],
-        ref_metrics['reference_embeddings_metrics']['n_comp'],
-        rtol=1e-07,
-        atol=0,
-    )
-    assert_allclose(
-        res['reference_embeddings_metrics']['sil_score'],
-        ref_metrics['reference_embeddings_metrics']['sil_score'],
-        rtol=1e-07,
-        atol=0,
-    )
-    assert DeepDiff(
-        res['reference_embeddings'],
-        ref_metrics['reference_embeddings'],
-        ignore_order=True,
-        significant_digits=6,
-    )
-    assert DeepDiff(
-        res['histogram'],
-        ref_metrics['histogram'],
+    assert not DeepDiff(
+        res,
+        ref_metrics,
         ignore_order=True,
         significant_digits=6,
     )
