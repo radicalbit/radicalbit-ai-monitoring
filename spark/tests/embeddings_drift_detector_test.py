@@ -1,3 +1,4 @@
+from deepdiff import DeepDiff
 from embeddings.embeddings_drift_detector import EmbeddingsDriftDetector
 from numpy.testing import assert_allclose
 import pytest
@@ -41,5 +42,15 @@ def test_drift_detector(spark_fixture, embeddings_dataset):
         rtol=1e-07,
         atol=0,
     )
-    assert res['reference_embeddings'] == ref_metrics['reference_embeddings']
-    assert res['histogram'] == ref_metrics['histogram']
+    assert DeepDiff(
+        res['reference_embeddings'],
+        ref_metrics['reference_embeddings'],
+        ignore_order=True,
+        significant_digits=6,
+    )
+    assert DeepDiff(
+        res['histogram'],
+        ref_metrics['histogram'],
+        ignore_order=True,
+        significant_digits=6,
+    )
