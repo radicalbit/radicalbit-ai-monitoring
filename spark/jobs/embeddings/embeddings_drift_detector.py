@@ -216,9 +216,9 @@ class EmbeddingsDriftDetector:
             f.mean(f.col('x')).alias('x'), f.mean(f.col('y')).alias('y')
         )
         histogram_values, histogram_bins = np.histogram(centroid_embeddings_distance)
-        reference_embeddings_values = [{'x': i.x, 'y': i.y} for i in x_y_pca.collect()]
+        embeddings_values = [{'x': i.x, 'y': i.y} for i in x_y_pca.collect()]
         return {
-            'reference_embeddings_metrics': {
+            'embeddings_metrics': {
                 'n_comp': optimal_components_number,
                 'n_cluster': optimal_clusters_number,
                 'sil_score': final_silhouette_score,
@@ -226,10 +226,11 @@ class EmbeddingsDriftDetector:
             },
             'histogram': {
                 'buckets': [float(i) for i in histogram_bins],
-                'reference_values': [float(i) for i in histogram_values],
+                'values': [float(i) for i in histogram_values],
+                'distances': [float(i) for i in centroid_embeddings_distance],
             },
-            'reference_embeddings': {
-                'values': reference_embeddings_values,
+            'embeddings': {
+                'values': embeddings_values,
                 'centroid': x_y_centroid.first().asDict(),
             },
         }

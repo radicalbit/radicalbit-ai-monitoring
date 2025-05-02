@@ -16,12 +16,10 @@ logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 def compute_metrics(spark_session: SparkSession, reference_dataset: DataFrame):
     complete_record = {}
-    embedding_drift = EmbeddingsDriftDetector(
-        spark_session, reference_dataset, '', 0.80
-    )
-    complete_record['METRICS'] = orjson.dumps(embedding_drift.compute_result()).decode(
-        'utf-8'
-    )
+    embedding = EmbeddingsDriftDetector(spark_session, reference_dataset, '', 0.80)
+    metrics = embedding.compute_result()
+    del metrics['histogram']['distances']
+    complete_record['METRICS'] = orjson.dumps(metrics).decode('utf-8')
     return complete_record
 
 
