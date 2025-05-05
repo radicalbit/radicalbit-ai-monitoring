@@ -442,7 +442,7 @@ test_drift_phone_res = {
             'feature_name': 'fast_charging',
             'field_type': 'numerical',
             'drift_calc': [
-                {'type': 'JS', 'value': -1.0, 'has_drift': False, 'limit': 0.1}
+                {'type': 'JS', 'value': 0.0, 'has_drift': False, 'limit': 0.1}
             ],
         },
         {

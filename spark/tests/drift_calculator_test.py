@@ -840,7 +840,6 @@ def test_drift_phone(spark_fixture, drift_dataset_phone):
         reference_dataset=reference_dataset,
         prefix_id=prefix_id,
     )
-
     assert not deepdiff.DeepDiff(
         drift,
         res.test_drift_phone_res,

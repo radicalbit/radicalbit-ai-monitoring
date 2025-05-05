@@ -16,7 +16,7 @@ class MapDriftEnumToClass(Enum):
     JS = JensenShannonDistance
     PSI = PSI
     CHI2 = Chi2Test
-    KL = KullbackLeiblerDivergence
+    KULLBACK = KullbackLeiblerDivergence
 
     @classmethod
     def get_calculator_class(cls, algo_type: str):

@@ -9,19 +9,31 @@ logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
 @pytest.fixture
-def embeddings_reference(spark_fixture, test_data_dir):
+def embeddings(spark_fixture, test_data_dir):
     return spark_fixture.read.csv(
         f'{test_data_dir}/reference/embeddings.csv', inferSchema=True, header=True
     )
 
 
 @pytest.fixture
-def embeddings_current(spark_fixture, test_data_dir):
+def embeddings_reference(spark_fixture, test_data_dir):
     return spark_fixture.read.csv(
-        f'{test_data_dir}/reference/embeddings.csv', inferSchema=True, header=True
+        f'{test_data_dir}/reference/embeddings_ref.csv', inferSchema=True, header=True
     )
 
 
-def test_compute_results(spark_fixture, embeddings_reference, embeddings_current):
+@pytest.fixture
+def embeddings_current(spark_fixture, test_data_dir):
+    return spark_fixture.read.csv(
+        f'{test_data_dir}/current/embeddings_cur.csv', inferSchema=True, header=True
+    )
+
+
+def test_compute_results_equal(spark_fixture, embeddings):
+    r = compute_metrics(spark_fixture, embeddings, embeddings)
+    assert r['drift_score']['score'] == 0.0
+
+
+def test_compute_results_diff(spark_fixture, embeddings_reference, embeddings_current):
     r = compute_metrics(spark_fixture, embeddings_reference, embeddings_current)
-    assert r["drift_score"]["score"] == 0.0
+    assert r['drift_score']['score'] > 0.0

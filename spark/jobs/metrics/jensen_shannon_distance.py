@@ -118,7 +118,11 @@ class JensenShannonDistance(DriftDetector):
         reference_quantiles = reference.approxQuantile(
             column_name, self.percentiles, self.relative_error
         )
-        reference_buckets = [-float(np.inf), *reference_quantiles, float(np.inf)]
+        reference_buckets = [
+            -float(np.inf),
+            *sorted(set(reference_quantiles)),
+            float(np.inf),
+        ]
 
         bucketizer = Bucketizer(
             splits=reference_buckets,
