@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, ConfigDict
@@ -28,16 +29,41 @@ class EmbeddingsMetrics(BaseModel):
     inertia: float
     sil_score: float
 
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
 
 class Histogram(BaseModel):
     buckets: List[float]
     reference_values: List[int]
     current_values: Optional[List[int]] = None
 
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
 
 class DriftScore(BaseModel):
     current_timestamp: str
     score: float
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+    @staticmethod
+    def from_raw(date: datetime, score: float) -> 'DriftScore':
+        return DriftScore(
+            current_timestamp=date.isoformat(),
+            score=score,
+        )
 
 
 class EmbeddingsReport(BaseModel):
@@ -69,11 +95,15 @@ class EmbeddingsReportDTO(BaseModel):
     def from_dict(
         job_status: JobStatus,
         embeddings_data: Optional[Dict],
+        drift_score: Optional[DriftScore],
     ) -> 'EmbeddingsReportDTO':
         """Create a EmbeddingsReportDTO from a dictionary of data."""
         embeddings = EmbeddingsReportDTO._create_embeddings(
             embeddings_data=embeddings_data
         )
+
+        if drift_score:
+            embeddings.drift_score = drift_score
 
         return EmbeddingsReportDTO(
             job_status=job_status,

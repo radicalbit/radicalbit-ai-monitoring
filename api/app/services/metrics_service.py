@@ -1,4 +1,4 @@
-import datetime
+from datetime import UTC, datetime
 from typing import Optional
 from uuid import UUID
 
@@ -31,7 +31,7 @@ from app.models.exceptions import MetricsBadRequestError, MetricsInternalError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
-from app.models.metrics.embeddings_dto import EmbeddingsReportDTO
+from app.models.metrics.embeddings_dto import DriftScore, EmbeddingsReportDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.percentages_dto import PercentagesDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
@@ -181,6 +181,18 @@ class MetricsService:
             missing_status=JobStatus.MISSING_REFERENCE,
         )
 
+    def get_current_embeddings_by_model_by_uuid(
+        self, model_uuid: UUID, current_uuid: UUID
+    ) -> EmbeddingsReportDTO:
+        """Retrieve current embeddings for a model by its UUID."""
+        return self._get_embeddings_by_model_uuid(
+            model_uuid=model_uuid,
+            dataset_and_metrics_getter=lambda uuid: self.check_and_get_current_dataset_and_embeddings_metrics(
+                uuid, current_uuid
+            ),
+            missing_status=JobStatus.MISSING_CURRENT,
+        )
+
     def check_and_get_reference_dataset_and_metrics(
         self, model_uuid: UUID
     ) -> tuple[Optional[ReferenceDataset], Optional[ReferenceDatasetMetrics]]:
@@ -325,10 +337,8 @@ class MetricsService:
         missing_status,
     ) -> PercentagesDTO:
         """Retrieve data quality for a model by its UUID."""
-        model = self.model_service.get_model_by_uuid(model_uuid)
         dataset, metrics = dataset_and_metrics_getter(model_uuid)
         return self._create_percentages_dto(
-            model_type=model.model_type,
             dataset=dataset,
             metrics=metrics,
             missing_status=missing_status,
@@ -365,21 +375,19 @@ class MetricsService:
         missing_status,
     ) -> StatisticsDTO:
         """Create a StatisticsDTO from the provided dataset and metrics."""
-        if not dataset:
+        job_status = dataset.status if dataset else missing_status
+        dataset_date = dataset.date if dataset else datetime.now(tz=UTC)
+
+        if not dataset or not metrics:
             return StatisticsDTO.from_dict(
-                job_status=missing_status,
-                date=datetime.datetime.now(tz=datetime.UTC),
+                job_status=job_status,
+                date=dataset_date,
                 statistics_data=None,
             )
-        if not metrics:
-            return StatisticsDTO.from_dict(
-                job_status=dataset.status,
-                date=dataset.date,
-                statistics_data=None,
-            )
+
         return StatisticsDTO.from_dict(
-            job_status=dataset.status,
-            date=dataset.date,
+            job_status=job_status,
+            date=dataset_date,
             statistics_data=metrics.statistics,
         )
 
@@ -394,24 +402,20 @@ class MetricsService:
         missing_status,
     ) -> ModelQualityDTO:
         """Create a ModelQualityDTO from the provided dataset and metrics."""
-        if not dataset:
+        job_status = dataset.status if dataset else missing_status
+
+        if not dataset or not metrics:
             return ModelQualityDTO.from_dict(
                 dataset_type=dataset_type,
                 model_type=model_type,
-                job_status=missing_status,
+                job_status=job_status,
                 model_quality_data=None,
             )
-        if not metrics:
-            return ModelQualityDTO.from_dict(
-                dataset_type=dataset_type,
-                model_type=model_type,
-                job_status=dataset.status,
-                model_quality_data=None,
-            )
+
         return ModelQualityDTO.from_dict(
             dataset_type=dataset_type,
             model_type=model_type,
-            job_status=dataset.status,
+            job_status=job_status,
             model_quality_data=metrics.model_quality,
         )
 
@@ -423,44 +427,38 @@ class MetricsService:
         missing_status,
     ) -> DataQualityDTO:
         """Create a DataQualityDTO from the provided dataset and metrics."""
-        if not dataset:
+        job_status = dataset.status if dataset else missing_status
+
+        if not dataset or not metrics:
             return DataQualityDTO.from_dict(
                 model_type=model_type,
-                job_status=missing_status,
+                job_status=job_status,
                 data_quality_data=None,
             )
-        if not metrics:
-            return DataQualityDTO.from_dict(
-                model_type=model_type,
-                job_status=dataset.status,
-                data_quality_data=None,
-            )
+
         return DataQualityDTO.from_dict(
             model_type=model_type,
-            job_status=dataset.status,
+            job_status=job_status,
             data_quality_data=metrics.data_quality,
         )
 
     @staticmethod
     def _create_percentages_dto(
-        model_type: ModelType,
         dataset: Optional[ReferenceDataset | CurrentDataset],
         metrics: Optional[ReferenceDatasetMetrics | CurrentDatasetMetrics],
         missing_status,
     ) -> PercentagesDTO:
         """Create a PercentagesDTO from the provided dataset and metrics."""
-        if not dataset:
+        job_status = dataset.status if dataset else missing_status
+
+        if not dataset or not metrics:
             return PercentagesDTO.from_dict(
-                job_status=missing_status,
+                job_status=job_status,
                 percentages_data=None,
             )
-        if not metrics:
-            return PercentagesDTO.from_dict(
-                job_status=dataset.status,
-                percentages_data=None,
-            )
+
         return PercentagesDTO.from_dict(
-            job_status=dataset.status,
+            job_status=job_status,
             percentages_data=metrics.percentages,
         )
 
@@ -471,18 +469,16 @@ class MetricsService:
         missing_status,
     ) -> DriftDTO:
         """Create a DriftDTO from the provided dataset and metrics."""
-        if not dataset:
+        job_status = dataset.status if dataset else missing_status
+
+        if not dataset or not metrics:
             return DriftDTO.from_dict(
-                job_status=missing_status,
+                job_status=job_status,
                 drift_data=None,
             )
-        if not metrics:
-            return DriftDTO.from_dict(
-                job_status=dataset.status,
-                drift_data=None,
-            )
+
         return DriftDTO.from_dict(
-            job_status=dataset.status,
+            job_status=job_status,
             drift_data=metrics.drift,
         )
 
@@ -495,17 +491,24 @@ class MetricsService:
         missing_status,
     ) -> EmbeddingsReportDTO:
         """Create a EmbeddingsReportDTO from the provided dataset and metrics."""
-        if not dataset:
+        job_status = dataset.status if dataset else missing_status
+
+        if not dataset or not metrics:
             return EmbeddingsReportDTO.from_dict(
-                job_status=missing_status,
+                job_status=job_status,
                 embeddings_data=None,
+                drift_score=None,
             )
-        if not metrics:
-            return EmbeddingsReportDTO.from_dict(
-                job_status=dataset.status,
-                embeddings_data=None,
-            )
+
+        drift_score = (
+            DriftScore.from_raw(dataset.date, metrics.drift_score)
+            if isinstance(metrics, CurrentDatasetEmbeddingsMetrics)
+            and metrics.drift_score is not None
+            else None
+        )
+
         return EmbeddingsReportDTO.from_dict(
-            job_status=dataset.status,
+            job_status=job_status,
             embeddings_data=metrics.metrics,
+            drift_score=drift_score,
         )
