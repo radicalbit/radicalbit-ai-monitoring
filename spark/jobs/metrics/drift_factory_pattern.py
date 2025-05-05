@@ -30,43 +30,6 @@ class FeatureDriftManager:
                 DriftAlgoClass(spark_session, reference_data, current_data, prefix_id),
             )
 
-        # self._register_detector(
-        #     DriftAlgorithmType.JS,
-        #     JensenShannonDistance(
-        #         spark_session, reference_data, current_data, prefix_id
-        #     ),
-        # )
-        #
-        # self._register_detector(
-        #     DriftAlgorithmType.CHI2,
-        #     Chi2Test(spark_session, reference_data, current_data, prefix_id),
-        # )
-        # self._register_detector(
-        #     DriftAlgorithmType.KS,
-        #     KolmogorovSmirnovTest(
-        #         spark_session, reference_data, current_data, prefix_id
-        #     ),
-        # )
-        # self._register_detector(
-        #     DriftAlgorithmType.PSI,
-        #     PSI(spark_session, reference_data, current_data, prefix_id),
-        # )
-        # self._register_detector(
-        #     DriftAlgorithmType.HELLINGER,
-        #     HellingerDistance(spark_session, reference_data, current_data, prefix_id),
-        # )
-        # self._register_detector(
-        #     DriftAlgorithmType.WASSERSTEIN,
-        #     WassersteinDistance(spark_session, reference_data, current_data, prefix_id),
-        # )
-        #
-        # self._register_detector(
-        #     DriftAlgorithmType.KL,
-        #     KullbackLeiblerDivergence(
-        #         spark_session, reference_data, current_data, prefix_id
-        #     ),
-        # )
-
     def _register_detector(
         self, name: DriftAlgorithmType, detector: DriftDetector
     ) -> None:
