@@ -3,8 +3,9 @@ import os
 import sys
 import uuid
 
-from models.reference_dataset import ReferenceDataset
-from pyspark.sql import SparkSession
+from embeddings.embeddings_drift_detector import EmbeddingsMetricsCalculator
+import orjson
+from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
 from utils.db import update_job_status, write_to_db
 from utils.logger import logger_config
@@ -13,9 +14,21 @@ from utils.models import JobStatus, ModelOut
 logger = logging.getLogger(logger_config.get('logger_name', 'default'))
 
 
-def compute_metrics(reference_dataset, model, reference_uuid):
-    # TODO: Define the logic of computing embeddings metrics
-    return {}
+def compute_metrics(spark_session: SparkSession, reference_dataset: DataFrame):
+    complete_record = {}
+    embedding = EmbeddingsMetricsCalculator(spark_session, reference_dataset, '', 0.80)
+    metrics = embedding.compute_result()
+    del metrics['histogram']['distances']
+    reference_metrics = {
+        'reference_embeddings_metrics': metrics['embeddings_metrics'],
+        'histogram': {
+            'buckets': metrics['histogram']['buckets'],
+            'reference_values': metrics['histogram']['values'],
+        },
+        'reference_embeddings': metrics['embeddings'],
+    }
+    complete_record['METRICS'] = orjson.dumps(reference_metrics).decode('utf-8')
+    return complete_record
 
 
 def main(
@@ -46,12 +59,11 @@ def main(
             'fs.s3a.connection.ssl.enabled', 'false'
         )
 
-    raw_dataframe = spark_session.read.csv(reference_dataset_path, header=True)
-    reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=raw_dataframe, prefix_id=reference_uuid
+    raw_dataframe = spark_session.read.csv(
+        reference_dataset_path, inferSchema=True, header=True
     )
 
-    complete_record = compute_metrics(reference_dataset, model, reference_uuid)
+    complete_record = compute_metrics(spark_session, raw_dataframe)
 
     complete_record.update(
         {'UUID': str(uuid.uuid4()), 'REFERENCE_UUID': reference_uuid}
@@ -64,7 +76,6 @@ def main(
             StructField('METRICS', StringType(), True),
         ]
     )
-
     write_to_db(spark_session, complete_record, schema, metrics_table_name)
     update_job_status(reference_uuid, JobStatus.SUCCEEDED, dataset_table_name)
 
@@ -74,28 +85,25 @@ if __name__ == '__main__':
         'radicalbit_reference_embeddings_metrics'
     ).getOrCreate()
 
-    # Json of ModelOut is first param
     model = ModelOut.model_validate_json(sys.argv[1])
-    # Reference dataset s3 path is second param
-    reference_dataset_path = sys.argv[2]
-    # Reference file uuid third param
-    reference_uuid = sys.argv[3]
-    # Metrics table name fourth param
+    embeddings_reference_dataset_path = sys.argv[2]
+    embeddings_reference_uuid = sys.argv[3]
     metrics_table_name = sys.argv[4]
-    # Dataset table name fourth param
     dataset_table_name = sys.argv[5]
 
     try:
         main(
             spark_session,
             model,
-            reference_dataset_path,
-            reference_uuid,
+            embeddings_reference_dataset_path,
+            embeddings_reference_uuid,
             metrics_table_name,
             dataset_table_name,
         )
     except Exception as e:
         logger.exception(e)
-        update_job_status(reference_uuid, JobStatus.ERROR, dataset_table_name)
+        update_job_status(
+            embeddings_reference_uuid, JobStatus.ERROR, dataset_table_name
+        )
     finally:
         spark_session.stop()
