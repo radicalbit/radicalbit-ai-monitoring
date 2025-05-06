@@ -48,7 +48,7 @@ from app.models.inferred_schema_dto import (
     SupportedTypes,
 )
 from app.models.job_status import JobStatus
-from app.models.model_dto import ModelOut
+from app.models.model_dto import ModelOut, ModelType
 from app.models.spark_app_config import get_spark_app_config
 from app.services.model_service import ModelService
 
@@ -209,9 +209,13 @@ class FileService:
                 f'Reference dataset for model {model_uuid} not found'
             )
         if columns is None:
-            model_columns = model_out.features + model_out.outputs.output
-            model_columns.append(model_out.target)
-            columns = [model_column.name for model_column in model_columns]
+            model_columns = (
+                model_out.features
+                if model_out.model_type == ModelType.EMBEDDINGS
+                else model_out.features + model_out.outputs.output
+            )
+            model_columns_with_target = [*model_columns, model_out.target]
+            columns = [col.name for col in model_columns_with_target]
 
         self.validate_file(csv_file, sep, columns)
         _f_name = csv_file.filename
