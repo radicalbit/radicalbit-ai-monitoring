@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import unittest
 from unittest.mock import MagicMock
+import uuid
 
 import pytest
 
@@ -21,7 +22,11 @@ from app.models.exceptions import MetricsBadRequestError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
-from app.models.metrics.embeddings_dto import DriftScore, EmbeddingsReportDTO
+from app.models.metrics.embeddings_dto import (
+    DriftScore,
+    EmbeddingsDriftDTO,
+    EmbeddingsReportDTO,
+)
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
 from app.models.model_dto import ModelType
@@ -879,6 +884,46 @@ class MetricsServiceTest(unittest.TestCase):
             embeddings_data=None,
             drift_score=None,
         )
+
+    def test_get_current_embeddings_drift_by_model_by_uuid(self):
+        status = JobStatus.SUCCEEDED
+        model = db_mock.get_sample_model()
+        current_dataset1 = db_mock.get_sample_current_dataset(status=status.value)
+        current_dataset2 = db_mock.get_sample_current_dataset(
+            uuid=uuid.uuid4(),
+            status=status.value,
+            date=current_dataset1.date + timedelta(days=1),
+        )
+        current_metrics1 = db_mock.get_sample_current_embeddings_metrics(
+            drift_score=0.2
+        )
+        current_metrics2 = db_mock.get_sample_current_embeddings_metrics(
+            current_uuid=current_dataset2.uuid, drift_score=0.9
+        )
+
+        self.current_dataset_dao.get_all_current_datasets_by_model_uuid = MagicMock(
+            return_value=[current_dataset1, current_dataset2]
+        )
+        self.current_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid = MagicMock(
+            side_effect=[current_metrics1, current_metrics2]
+        )
+        res = self.metrics_service.get_current_embeddings_drift_by_model_by_uuid(
+            model.uuid
+        )
+        self.current_dataset_dao.get_all_current_datasets_by_model_uuid.assert_called_once_with(
+            model.uuid
+        )
+        assert (
+            self.current_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid.call_count
+            == 2
+        )
+
+        expected_drift_scores = [
+            DriftScore.from_raw(current_dataset1.date, current_metrics1.drift_score),
+            DriftScore.from_raw(current_dataset2.date, current_metrics2.drift_score),
+        ]
+
+        assert res == EmbeddingsDriftDTO.from_drift_scores(expected_drift_scores)
 
 
 model_uuid = db_mock.MODEL_UUID

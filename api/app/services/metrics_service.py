@@ -31,7 +31,11 @@ from app.models.exceptions import MetricsBadRequestError, MetricsInternalError
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
-from app.models.metrics.embeddings_dto import DriftScore, EmbeddingsReportDTO
+from app.models.metrics.embeddings_dto import (
+    DriftScore,
+    EmbeddingsDriftDTO,
+    EmbeddingsReportDTO,
+)
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.percentages_dto import PercentagesDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
@@ -193,6 +197,20 @@ class MetricsService:
             missing_status=JobStatus.MISSING_CURRENT,
         )
 
+    def get_current_embeddings_drift_by_model_by_uuid(
+        self,
+        model_uuid: UUID,
+    ) -> EmbeddingsDriftDTO:
+        """Retrieve current embeddings drift for a model by its UUID."""
+        datasets, metrics_list = (
+            self.check_and_get_all_current_dataset_and_embeddings_metrics(model_uuid)
+        )
+
+        return self._create_embeddings_drift_dto(
+            datasets,
+            metrics_list,
+        )
+
     def check_and_get_reference_dataset_and_metrics(
         self, model_uuid: UUID
     ) -> tuple[Optional[ReferenceDataset], Optional[ReferenceDatasetMetrics]]:
@@ -254,6 +272,30 @@ class MetricsService:
                 uuid, current_uuid
             ),
         )
+
+    def check_and_get_all_current_dataset_and_embeddings_metrics(
+        self, model_uuid: UUID
+    ) -> tuple[list[CurrentDataset], list[CurrentDatasetEmbeddingsMetrics]]:
+        """Retrieve all current datasets and their embeddings metrics for a model by its UUID, only if their status is SUCCEEDED."""
+
+        datasets = self.current_dataset_dao.get_all_current_datasets_by_model_uuid(
+            model_uuid
+        )
+        if not datasets:
+            return [], []
+
+        succeeded_datasets = [d for d in datasets if d.status == JobStatus.SUCCEEDED]
+        if not succeeded_datasets:
+            return [], []
+
+        metrics_list: list[CurrentDatasetEmbeddingsMetrics] = []
+        for dataset in succeeded_datasets:
+            metrics = self.current_dataset_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid(
+                model_uuid, dataset.uuid
+            )
+            metrics_list.append(metrics)
+
+        return succeeded_datasets, metrics_list
 
     @staticmethod
     def _check_and_get_dataset_and_metrics(
@@ -512,3 +554,21 @@ class MetricsService:
             embeddings_data=metrics.metrics,
             drift_score=drift_score,
         )
+
+    @staticmethod
+    def _create_embeddings_drift_dto(
+        datasets: list[CurrentDataset],
+        metrics_list: list[CurrentDatasetEmbeddingsMetrics],
+    ) -> EmbeddingsDriftDTO:
+        """Create a EmbeddingsDriftDTO from the provided dataset and metrics."""
+        drift_scores: list[DriftScore] = []
+
+        for dataset, metrics in zip(datasets, metrics_list):
+            drift_score = (
+                DriftScore.from_raw(dataset.date, metrics.drift_score)
+                if metrics.drift_score is not None
+                else None
+            )
+            drift_scores.append(drift_score)
+
+        return EmbeddingsDriftDTO.from_drift_scores(drift_scores)

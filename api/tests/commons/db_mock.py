@@ -191,12 +191,13 @@ def get_sample_current_dataset(
     model_uuid: uuid.UUID = MODEL_UUID,
     path: str = 'current/test.csv',
     status: str = JobStatus.IMPORTING.value,
+    date: datetime = datetime.datetime.now(tz=datetime.UTC),
 ) -> CurrentDataset:
     return CurrentDataset(
         uuid=uuid,
         model_uuid=model_uuid,
         path=path,
-        date=datetime.datetime.now(tz=datetime.UTC),
+        date=date,
         correlation_id_column='some_column',
         status=status,
     )
