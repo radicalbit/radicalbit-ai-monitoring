@@ -288,12 +288,16 @@ class MetricsService:
         if not succeeded_datasets:
             return [], []
 
-        metrics_list: list[CurrentDatasetEmbeddingsMetrics] = []
-        for dataset in succeeded_datasets:
-            metrics = self.current_dataset_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid(
-                model_uuid, dataset.uuid
+        metrics_list: list[CurrentDatasetEmbeddingsMetrics] = [
+            metrics
+            for dataset in succeeded_datasets
+            if (
+                metrics
+                := self.current_dataset_embeddings_metrics_dao.get_current_embeddings_metrics_by_model_uuid(
+                    model_uuid, dataset.uuid
+                )
             )
-            metrics_list.append(metrics)
+        ]
 
         return succeeded_datasets, metrics_list
 
