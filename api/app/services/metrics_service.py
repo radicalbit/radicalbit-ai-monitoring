@@ -561,14 +561,10 @@ class MetricsService:
         metrics_list: list[CurrentDatasetEmbeddingsMetrics],
     ) -> EmbeddingsDriftDTO:
         """Create a EmbeddingsDriftDTO from the provided dataset and metrics."""
-        drift_scores: list[DriftScore] = []
-
-        for dataset, metrics in zip(datasets, metrics_list):
-            drift_score = (
-                DriftScore.from_raw(dataset.date, metrics.drift_score)
-                if metrics.drift_score is not None
-                else None
-            )
-            drift_scores.append(drift_score)
+        drift_scores = [
+            DriftScore.from_raw(dataset.date, metrics.drift_score)
+            for dataset, metrics in zip(datasets, metrics_list)
+            if metrics.drift_score is not None
+        ]
 
         return EmbeddingsDriftDTO.from_drift_scores(drift_scores)

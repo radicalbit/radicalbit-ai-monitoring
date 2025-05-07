@@ -13,6 +13,7 @@ from fastapi import HTTPException, UploadFile
 from fastapi_pagination import Page, Params
 import pandas as pd
 from pydantic import ValidationError
+from spark.jobs.utils.models import ModelType
 from spark_on_k8s.client import ExecutorInstances, PodResources, SparkOnK8S
 from spark_on_k8s.utils.configuration import Configuration
 
@@ -48,7 +49,7 @@ from app.models.inferred_schema_dto import (
     SupportedTypes,
 )
 from app.models.job_status import JobStatus
-from app.models.model_dto import ModelOut, ModelType
+from app.models.model_dto import ModelOut
 from app.models.spark_app_config import get_spark_app_config
 from app.services.model_service import ModelService
 
@@ -208,16 +209,13 @@ class FileService:
             raise ModelNotFoundError(
                 f'Reference dataset for model {model_uuid} not found'
             )
-        if columns is None:
-            model_columns = (
-                model_out.features
-                if model_out.model_type == ModelType.EMBEDDINGS
-                else model_out.features + model_out.outputs.output
-            )
-            model_columns_with_target = [*model_columns, model_out.target]
-            columns = [col.name for col in model_columns_with_target]
+        if model_out.model_type is not ModelType.EMBEDDINGS:
+            if columns is None:
+                model_columns = model_out.features + model_out.outputs.output
+                model_columns.append(model_out.target)
+                columns = [model_column.name for model_column in model_columns]
 
-        self.validate_file(csv_file, sep, columns)
+            self.validate_file(csv_file, sep, columns)
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
