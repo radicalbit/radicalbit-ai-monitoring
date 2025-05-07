@@ -13,7 +13,6 @@ from fastapi import HTTPException, UploadFile
 from fastapi_pagination import Page, Params
 import pandas as pd
 from pydantic import ValidationError
-from spark.jobs.utils.models import ModelType
 from spark_on_k8s.client import ExecutorInstances, PodResources, SparkOnK8S
 from spark_on_k8s.utils.configuration import Configuration
 
@@ -49,7 +48,7 @@ from app.models.inferred_schema_dto import (
     SupportedTypes,
 )
 from app.models.job_status import JobStatus
-from app.models.model_dto import ModelOut
+from app.models.model_dto import ModelOut, ModelType
 from app.models.spark_app_config import get_spark_app_config
 from app.services.model_service import ModelService
 
