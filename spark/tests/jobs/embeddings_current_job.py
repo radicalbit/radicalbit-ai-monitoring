@@ -1,3 +1,4 @@
+import json
 import logging
 
 import pytest
@@ -31,9 +32,13 @@ def embeddings_current(spark_fixture, test_data_dir):
 
 def test_compute_results_equal(spark_fixture, embeddings):
     r = compute_metrics(spark_fixture, embeddings, embeddings)
-    assert r['drift_score']['score'] == 0.0
+    drift_score = json.loads(r['DRIFT_SCORE'])
+    assert isinstance(drift_score, float)
+    assert drift_score == 0.0
 
 
 def test_compute_results_diff(spark_fixture, embeddings_reference, embeddings_current):
     r = compute_metrics(spark_fixture, embeddings_reference, embeddings_current)
-    assert r['drift_score']['score'] > 0.0
+    drift_score = json.loads(r['DRIFT_SCORE'])
+    assert isinstance(drift_score, float)
+    assert drift_score > 0

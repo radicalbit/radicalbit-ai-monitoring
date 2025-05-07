@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 import os
 import sys
@@ -6,6 +5,7 @@ import uuid
 
 from embeddings.embeddings_metrics_calculator import EmbeddingsMetricsCalculator
 from metrics.drift_calculator import DriftCalculator
+import orjson
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import DoubleType, StringType, StructField, StructType
 from utils.db import update_job_status, write_to_db
@@ -19,7 +19,8 @@ def compute_metrics(
     spark_session: SparkSession,
     current_dataset: DataFrame,
     reference_dataset: DataFrame,
-):
+) -> dict:
+    complete_record = {}
     cur_embedding_calculator = EmbeddingsMetricsCalculator(
         spark_session, current_dataset, 'rb', 0.80
     )
@@ -41,7 +42,7 @@ def compute_metrics(
         ),
         'rb',
     )
-    return {
+    metrics = {
         'reference_embeddings_metrics': ref_emdeddings['embeddings_metrics'],
         'reference_embeddings': ref_emdeddings['embeddings'],
         'current_embeddings_metrics': cur_emdeddings['embeddings_metrics'],
@@ -50,12 +51,13 @@ def compute_metrics(
             'buckets': ref_emdeddings['histogram']['buckets'],
             'reference_values': ref_emdeddings['histogram']['values'],
             'current_values': cur_emdeddings['histogram']['values'],
-        },
-        'drift_score': {
-            'current_timestamp': datetime.now().timestamp(),
-            'score': drift_score,
+            'distances_ref': ref_emdeddings['histogram']['distances'],
+            'distances_cur': cur_emdeddings['histogram']['distances'],
         },
     }
+    complete_record['METRICS'] = orjson.dumps(metrics).decode('utf-8')
+    complete_record['DRIFT_SCORE'] = orjson.dumps(drift_score).decode('utf-8')
+    return complete_record
 
 
 def main(
@@ -100,7 +102,6 @@ def main(
         reference_dataset=raw_reference,
     )
     complete_record.update({'UUID': str(uuid.uuid4()), 'CURRENT_UUID': current_uuid})
-
     schema = StructType(
         [
             StructField('UUID', StringType(), True),

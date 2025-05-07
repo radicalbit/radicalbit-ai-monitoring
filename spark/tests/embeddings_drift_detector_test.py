@@ -21,7 +21,7 @@ def embeddings_dataset_v2(spark_fixture, test_data_dir):
     )
 
 
-def test_drift_detector(spark_fixture, embeddings_dataset):
+def test_embeddings_calculator(spark_fixture, embeddings_dataset):
     embedding_drift = EmbeddingsMetricsCalculator(
         spark_fixture, embeddings_dataset, '', 0.80
     )
