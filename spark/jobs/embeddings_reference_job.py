@@ -3,7 +3,7 @@ import os
 import sys
 import uuid
 
-from embeddings.embeddings_drift_detector import EmbeddingsMetricsCalculator
+from embeddings.embeddings_metrics_calculator import EmbeddingsMetricsCalculator
 import orjson
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
