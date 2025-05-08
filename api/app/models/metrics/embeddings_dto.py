@@ -117,3 +117,27 @@ class EmbeddingsReportDTO(BaseModel):
         if not embeddings_data:
             return None
         return EmbeddingsReport(**embeddings_data)
+
+
+class EmbeddingsDriftDTO(BaseModel):
+    average_drift_score: float
+    last_drift_score: DriftScore
+    drift_scores: List[DriftScore]
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        populate_by_name=True,
+        alias_generator=to_camel,
+    )
+
+    @staticmethod
+    def from_drift_scores(drift_scores: List[DriftScore]) -> 'EmbeddingsDriftDTO':
+        """Create a EmbeddingsDriftDTO from a drift scores."""
+        average_score = sum(ds.score for ds in drift_scores) / len(drift_scores)
+        last_score = max(drift_scores, key=lambda ds: ds.current_timestamp)
+
+        return EmbeddingsDriftDTO(
+            average_drift_score=average_score,
+            last_drift_score=last_score,
+            drift_scores=drift_scores,
+        )

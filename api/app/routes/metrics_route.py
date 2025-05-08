@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from app.core import get_config
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
-from app.models.metrics.embeddings_dto import EmbeddingsReportDTO
+from app.models.metrics.embeddings_dto import EmbeddingsDriftDTO, EmbeddingsReportDTO
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.percentages_dto import PercentagesDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
@@ -99,6 +99,16 @@ class MetricsRoute:
         )
         def get_latest_current_drift_by_model_by_uuid(model_uuid: UUID):
             return metrics_service.get_current_drift(model_uuid, None)
+
+        @router.get(
+            '/{model_uuid}/current/embeddings/drift',
+            status_code=200,
+            response_model=EmbeddingsDriftDTO,
+        )
+        def get_current_embeddings_drift_by_model_by_uuid(model_uuid: UUID):
+            return metrics_service.get_current_embeddings_drift_by_model_by_uuid(
+                model_uuid
+            )
 
         @router.get(
             '/{model_uuid}/current/{current_uuid}/drift',

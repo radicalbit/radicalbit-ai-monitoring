@@ -17,7 +17,11 @@ from app.models.exceptions import (
 from app.models.job_status import JobStatus
 from app.models.metrics.data_quality_dto import DataQualityDTO
 from app.models.metrics.drift_dto import DriftDTO
-from app.models.metrics.embeddings_dto import DriftScore, EmbeddingsReportDTO
+from app.models.metrics.embeddings_dto import (
+    DriftScore,
+    EmbeddingsDriftDTO,
+    EmbeddingsReportDTO,
+)
 from app.models.metrics.model_quality_dto import ModelQualityDTO
 from app.models.metrics.statistics_dto import StatisticsDTO
 from app.models.model_dto import ModelType
@@ -265,4 +269,31 @@ class MetricsRouteTest(unittest.TestCase):
         assert jsonable_encoder(embeddings) == res.json()
         self.metrics_service.get_current_embeddings_by_model_by_uuid.assert_called_once_with(
             model_uuid, current_uuid
+        )
+
+    def test_get_current_embeddings_drift_by_model_by_uuid(self):
+        model_uuid = uuid.uuid4()
+        date = datetime.datetime.now(tz=datetime.UTC)
+        current_metrics1 = db_mock.get_sample_current_embeddings_metrics(
+            current_uuid=uuid.uuid4(), drift_score=0.2
+        )
+        current_metrics2 = db_mock.get_sample_current_embeddings_metrics(
+            current_uuid=uuid.uuid4(), drift_score=0.6
+        )
+        expected_drift_scores = [
+            DriftScore.from_raw(date, current_metrics1.drift_score),
+            DriftScore.from_raw(
+                date + datetime.timedelta(days=1), current_metrics2.drift_score
+            ),
+        ]
+        embeddings_drift = EmbeddingsDriftDTO.from_drift_scores(expected_drift_scores)
+        self.metrics_service.get_current_embeddings_drift_by_model_by_uuid = MagicMock(
+            return_value=embeddings_drift
+        )
+
+        res = self.client.get(f'{self.prefix}/{model_uuid}/current/embeddings/drift')
+        assert res.status_code == 200
+        assert jsonable_encoder(embeddings_drift) == res.json()
+        self.metrics_service.get_current_embeddings_drift_by_model_by_uuid.assert_called_once_with(
+            model_uuid
         )

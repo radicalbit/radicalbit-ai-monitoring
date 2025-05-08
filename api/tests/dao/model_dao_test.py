@@ -1,3 +1,4 @@
+import datetime
 import uuid
 
 from app.db.dao.current_dataset_dao import CurrentDatasetDAO
@@ -115,14 +116,18 @@ class ModelDAOTest(DatabaseIntegration):
         model1 = db_mock.get_sample_model(id=2, uuid=model1_uuid, name='first_model')
         self.model_dao.insert(model1)
         current1 = db_mock.get_sample_current_dataset(
-            uuid=current1_uuid, model_uuid=model1_uuid
+            uuid=current1_uuid,
+            model_uuid=model1_uuid,
+            date=current.date + datetime.timedelta(days=1),
         )
         self.dataset_dao.insert_current_dataset(current1)
         metrics1 = db_mock.get_sample_current_metrics(current_uuid=current1_uuid)
         self.metrics_dao.insert_current_dataset_metrics(metrics1)
         current2_uuid = uuid.uuid4()
         current2 = db_mock.get_sample_current_dataset(
-            uuid=current2_uuid, model_uuid=model1_uuid
+            uuid=current2_uuid,
+            model_uuid=model1_uuid,
+            date=current.date + datetime.timedelta(days=2),
         )
         self.dataset_dao.insert_current_dataset(current2)
         metrics2 = db_mock.get_sample_current_metrics(current_uuid=current2_uuid)
