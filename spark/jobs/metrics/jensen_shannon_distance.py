@@ -120,7 +120,7 @@ class JensenShannonDistance(DriftDetector):
         )
         reference_buckets = [
             -float(np.inf),
-            *sorted(set(reference_quantiles)),
+            *sorted(reference_quantiles),
             float(np.inf),
         ]
 
