@@ -5,7 +5,8 @@ import {
   VisualMapComponent,
 } from 'echarts/components';
 import * as echarts from 'echarts/lib/echarts';
-import { Board, SectionTitle } from '@radicalbit/radicalbit-design-system';
+import { Board, SectionTitle, Void } from '@radicalbit/radicalbit-design-system';
+import LogoSquared from '@Img/logo-collapsed.svg';
 import confusionMatrixOptions from './options';
 
 echarts.use([
@@ -17,7 +18,25 @@ echarts.use([
 function ConfusionMatrix({
   dataset, labelClass, colors, height = '20rem',
 }) {
-  if (!dataset) return false;
+  if (!dataset) {
+    return false;
+  }
+
+  if (dataset.length > 10) {
+    return (
+      <Void
+        description={(
+          <>
+            That chart can be shown only for a dataset
+            <br />
+            that contains less then 10 classes
+          </>
+        )}
+        image={<LogoSquared />}
+        title="Confusion Matrix"
+      />
+    );
+  }
 
   const handleOnChartReady = (echart) => {
     // To handle the second opening of a modal when the rtkq hook read from cache
@@ -25,6 +44,7 @@ function ConfusionMatrix({
     setTimeout(echart.resize);
   };
 
+  console.debug(dataset);
   return (
     <Board
       header={<SectionTitle size="small" title="Confusion Matrix" />}

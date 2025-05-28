@@ -9,6 +9,7 @@ export default function lineChartOptions(currentDataset, referenceDataset) {
   });
 
   const legendLabel = dataSeries.map(({ name }) => name);
+  const legendSelected = legendLabel.reduce((acc, name, idx) => ({ [name]: idx === 0, ...acc }), {});
 
   if (referenceDataset) {
     const series = referenceDataset.map((el) => {
@@ -36,7 +37,7 @@ export default function lineChartOptions(currentDataset, referenceDataset) {
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.TIME),
     ...commonChartOptions.gridOptions(CHART_TYPE.LINE),
     ...commonChartOptions.colorList,
-    ...commonChartOptions.legendOptions(legendLabel),
+    ...commonChartOptions.legendOptions(legendLabel, legendSelected),
     tooltip: { trigger: 'axis' },
     emphasis: { focus: 'series' },
     title: {

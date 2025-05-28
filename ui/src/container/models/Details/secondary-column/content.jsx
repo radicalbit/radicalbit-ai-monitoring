@@ -5,10 +5,7 @@ import getJobStatus from '@Helpers/get-spinner-job-status';
 import { selectors as layoutSelectors } from '@State/layout';
 import { ModelTypeEnum } from '@State/models/constants';
 import { useGetModelsQueryWithPolling } from '@State/models/polling-hook';
-import {
-  Menu, MenuInlineOnce,
-  Truncate,
-} from '@radicalbit/radicalbit-design-system';
+import { Menu, MenuInlineOnce, Truncate } from '@radicalbit/radicalbit-design-system';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';

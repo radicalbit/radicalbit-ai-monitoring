@@ -202,16 +202,20 @@ const tooltipOptions = () => ({
   },
 });
 
-const dataZoomOptions = () => ([
+const dataZoomOptions = ({ endValue = 0 }) => ([
   {
+    type: 'slider',
     show: true,
+    xAxisIndex: 0,
+    startValue: 0,
+    endValue,
   },
   {
     type: 'inside',
   },
 ]);
 
-const legendOptions = (data) => {
+const legendOptions = (data, legendSelected) => {
   const options = {
     legend: {
       right: 0,
@@ -235,6 +239,10 @@ const legendOptions = (data) => {
 
   if (data) {
     options.legend.data = data;
+  }
+
+  if (legendSelected) {
+    options.legend.selected = legendSelected;
   }
 
   return options;

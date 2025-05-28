@@ -25,7 +25,9 @@ export default function chartOptions(title, referenceDataset, currentDataset) {
   };
 
   if (currentData.length >= 20 || referenceData.length >= 20) {
-    options.dataZoom = commonChartOptions.dataZoomOptions();
+    const endValue = Math.min(Math.floor(referenceData.length / 10), 50);
+
+    options.dataZoom = commonChartOptions.dataZoomOptions({ endValue });
     options.grid.bottom = 40;
   }
 
