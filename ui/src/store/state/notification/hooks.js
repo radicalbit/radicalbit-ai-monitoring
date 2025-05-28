@@ -13,8 +13,8 @@ const useNotification = () => {
 
   useEffect(() => {
     if (notificationShowMessage) {
-      const { type, title, content } = notificationMessage;
-      Message[type]({ title, content });
+      const { type, title } = notificationMessage;
+      Message[type](title);
 
       dispatch(resetNotificationMessage());
     }

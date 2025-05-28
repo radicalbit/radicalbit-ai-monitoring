@@ -44,7 +44,6 @@ function ConfusionMatrix({
     setTimeout(echart.resize);
   };
 
-  console.debug(dataset);
   return (
     <Board
       header={<SectionTitle size="small" title="Confusion Matrix" />}
