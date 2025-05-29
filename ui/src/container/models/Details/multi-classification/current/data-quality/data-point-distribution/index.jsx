@@ -139,8 +139,6 @@ function DataPointDistributionChart() {
     setTimeout(echart.resize);
   };
 
-  console.debug('uuid', uuid);
-
   return (
     <Board
       header={(
