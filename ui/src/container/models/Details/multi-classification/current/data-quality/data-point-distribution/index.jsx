@@ -56,7 +56,6 @@ function DataPointDistribution() {
       </div>
 
       <DataPointDistributionChart />
-
     </div>
   );
 }
@@ -125,12 +124,12 @@ function DataPointDistributionChart() {
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const title = model?.target.name;
 
-  const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
+  const { currentData } = useGetCurrentDataQualityQueryWithPolling();
 
   const currentClassMetrics = currentData?.dataQuality.classMetrics ?? [];
   const sortedCurrentClassMetrics = [...currentClassMetrics].sort((a, b) => a.name - b.name);
 
-  const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });
+  const { currentData: referenceData } = useGetReferenceDataQualityQuery({ uuid });
   const referenceClassMetrics = referenceData?.dataQuality.classMetrics ?? [];
   const sortedReferenceClassMetrics = [...referenceClassMetrics].sort((a, b) => a.name - b.name);
 
@@ -139,6 +138,8 @@ function DataPointDistributionChart() {
     // and the echart graph will render immediately.
     setTimeout(echart.resize);
   };
+
+  console.debug('uuid', uuid);
 
   return (
     <Board

@@ -9,7 +9,7 @@ const { useGetReferenceDataQualityQuery } = modelsApiSlice;
 export default () => {
   const { uuid } = useParams();
 
-  const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
+  const { currentData } = useGetCurrentDataQualityQueryWithPolling();
   const items = currentData?.dataQuality?.featureMetrics ?? [];
 
   const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });
