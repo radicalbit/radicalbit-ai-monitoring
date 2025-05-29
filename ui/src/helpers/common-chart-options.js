@@ -91,6 +91,7 @@ const yAxisValueType = (yAxisData, yAxisName) => {
       },
     },
   };
+
   if (yAxisData) {
     options.yAxis.data = yAxisData;
   }
@@ -100,6 +101,37 @@ const yAxisValueType = (yAxisData, yAxisName) => {
     options.yAxis.nameGap = 25;
     options.yAxis.nameLocation = 'middle';
   }
+
+  return options;
+};
+
+const yAxisPercentageType = (yAxisData, yAxisName) => {
+  const options = {
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value) => `${(value * 100).toFixed(0)}%`,
+        fontSize: 9,
+        color: '#9b99a1',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#9f9f9f54',
+        },
+      },
+    },
+  };
+
+  if (yAxisData) {
+    options.yAxis.data = yAxisData;
+  }
+
+  if (yAxisName) {
+    options.yAxis.name = yAxisName;
+    options.yAxis.nameGap = 25;
+    options.yAxis.nameLocation = 'middle';
+  }
+
   return options;
 };
 
@@ -116,6 +148,7 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
       },
     },
   };
+
   if (yAxisData) {
     options.yAxis.data = yAxisData;
   }
@@ -125,6 +158,7 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
     options.yAxis.nameGap = 25;
     options.yAxis.nameLocation = 'middle';
   }
+
   return options;
 };
 
@@ -340,6 +374,8 @@ const yAxisOptions = (optionType, data, yAxisName) => {
   switch (optionType) {
     case OPTIONS_TYPE.VALUE:
       return yAxisValueType(data, yAxisName);
+    case OPTIONS_TYPE.PERCENTAGE:
+      return yAxisPercentageType(data, yAxisName);
     case OPTIONS_TYPE.CATEGORY:
       return yAxisCategoryType(data, yAxisName);
     default:
@@ -428,6 +464,7 @@ const OPTIONS_TYPE = {
   CATEGORY: 'CATEGORY',
   TIME: 'TIME',
   VALUE: 'VALUE',
+  PERCENTAGE: 'PERCENTAGE',
 };
 
 const CHART_TYPE = {
