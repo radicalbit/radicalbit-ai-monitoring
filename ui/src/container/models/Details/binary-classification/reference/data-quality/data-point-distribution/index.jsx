@@ -110,6 +110,7 @@ function DataPointDistributionChart() {
       )}
       main={(
         <ReactEchartsCore
+          key={uuid}
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={chartOptions(title, classMetrics)}

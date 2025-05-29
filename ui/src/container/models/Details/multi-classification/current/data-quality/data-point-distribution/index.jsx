@@ -150,9 +150,10 @@ function DataPointDistributionChart() {
           }}
           title={<SectionTitle size="small" title={title} />}
         />
-)}
+      )}
       main={(
         <ReactEchartsCore
+          key={uuid}
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics)}
