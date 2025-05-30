@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, computed_field
 from pydantic.alias_generators import to_camel
 
 from app.models.exceptions import MetricsInternalError
@@ -41,6 +41,18 @@ class Histogram(BaseModel):
     buckets: List[float]
     reference_values: List[int]
     current_values: Optional[List[int]] = None
+
+    @computed_field
+    def reference_values_percentage(self) -> List[float]:
+        s = sum(self.reference_values)
+        return [round((i / s) * 100, 2) for i in self.reference_values]
+
+    @computed_field
+    def current_values_percentage(self) -> Optional[List[float]]:
+        if self.current_values is None:
+            return None
+        s = sum(self.current_values)
+        return [round((i / s) * 100, 2) for i in self.current_values]
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
