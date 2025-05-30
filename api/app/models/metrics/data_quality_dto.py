@@ -45,14 +45,14 @@ class Histogram(BaseModel):
     @computed_field
     def reference_values_percentage(self) -> List[float]:
         s = sum(self.reference_values)
-        return [round((i / s) * 100, 2) for i in self.reference_values]
+        return [round((i / s), 2) for i in self.reference_values]
 
     @computed_field
     def current_values_percentage(self) -> Optional[List[float]]:
         if self.current_values is None:
             return None
         s = sum(self.current_values)
-        return [round((i / s) * 100, 2) for i in self.current_values]
+        return [round((i / s), 2) for i in self.current_values]
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
