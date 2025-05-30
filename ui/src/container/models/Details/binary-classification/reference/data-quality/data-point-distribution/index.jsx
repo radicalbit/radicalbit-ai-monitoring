@@ -42,11 +42,9 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-
       <DataPointDistributionCounter />
 
       <DataPointDistributionChart />
-
     </div>
   );
 }
@@ -112,6 +110,7 @@ function DataPointDistributionChart() {
       )}
       main={(
         <ReactEchartsCore
+          key={uuid}
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={chartOptions(title, classMetrics)}

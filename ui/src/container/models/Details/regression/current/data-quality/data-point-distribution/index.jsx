@@ -106,10 +106,11 @@ function DataPointDistributionChart() {
           }}
           title={<SectionTitle size="small" title={title} />}
         />
-)}
+      )}
       main={(
         <div>
           <ReactEchartsCore
+            key={uuid}
             echarts={echarts}
             onChartReady={handleOnChartReady}
             option={chartOptions(dataset, CHART_COLOR.REFERENCE, CHART_COLOR.CURRENT)}

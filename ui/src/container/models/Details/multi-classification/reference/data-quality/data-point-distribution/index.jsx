@@ -49,7 +49,6 @@ function DataPointDistribution() {
       </div>
 
       <DataPointDistributionChart />
-
     </div>
   );
 }
@@ -139,10 +138,11 @@ function DataPointDistributionChart() {
           }}
           title={<SectionTitle size="small" title={title} />}
         />
-)}
+      )}
       main={(
         <div>
           <ReactEchartsCore
+            key={uuid}
             echarts={echarts}
             onChartReady={handleOnChartReady}
             option={chartOptions(title, sortedClassMetrics)}

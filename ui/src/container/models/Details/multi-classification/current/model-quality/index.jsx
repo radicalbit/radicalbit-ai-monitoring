@@ -14,6 +14,7 @@ import {
 import { memo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
+import { Tooltip } from 'antd';
 import MulticlassChartMetrics from './class-chart-metrics';
 import ClassTableMetrics from './class-table-metrics';
 import SearchChart from './search-chart';
@@ -49,25 +50,21 @@ function MultiClassificationModelQualityMetrics() {
         <div className="flex flex-row gap-4 p-4">
           <div className="flex flex-col w-full gap-4 ">
             <FormbitContextProvider initialValues={initialValues}>
-
               <SearchChart />
 
               <MulticlassChartMetrics />
-
             </FormbitContextProvider>
           </div>
 
-          <div className="flex ">
+          <div className="py-1">
             <FaCode />
           </div>
         </div>
-
       );
     }
 
     return (
       <div className="flex flex-col gap-4 p-4">
-
         <GlobalMetrics />
 
         <ClassTableMetrics />
@@ -205,10 +202,18 @@ function FaCode() {
   };
 
   if (mode === MODE.CHART) {
-    return <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} size="lg" />;
+    return (
+      <Tooltip title="Switch to table view">
+        <FontAwesomeIcon icon={faTable} onClick={handleOnClickTable} size="lg" />
+      </Tooltip>
+    );
   }
 
-  return <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="lg" />;
+  return (
+    <Tooltip title="Switch to line chart view">
+      <FontAwesomeIcon icon={faChartLine} onClick={handleOnClickCode} size="lg" />
+    </Tooltip>
+  );
 }
 
 const useGetModeParam = () => {

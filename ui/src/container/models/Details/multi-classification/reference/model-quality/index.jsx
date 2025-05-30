@@ -13,14 +13,17 @@ import SomethingWentWrong from '@Components/ErrorPage/something-went-wrong';
 import ClassTableMetrics from './class-table-metrics';
 
 function MultiClassificationModelQualityMetrics() {
-  const { data, isLoading } = useGetReferenceModelQualityQueryWithPolling();
+  const { data, isLoading, isError } = useGetReferenceModelQualityQueryWithPolling();
   const modelQuality = data?.modelQuality;
+  const jobStatus = data?.jobStatus;
 
   if (!modelQuality) {
-    return <SomethingWentWrong />;
+    return false;
   }
 
-  const jobStatus = data?.jobStatus;
+  if (isError) {
+    return <SomethingWentWrong />;
+  }
 
   if (jobStatus === JOB_STATUS.SUCCEEDED) {
     return (

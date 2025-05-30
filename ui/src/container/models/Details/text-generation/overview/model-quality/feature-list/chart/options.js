@@ -41,7 +41,8 @@ export default function chartOptions(dataset, barChartSelectedIndex) {
   options.grid.left = 20;
   options.grid.bottom = 40;
 
-  options.dataZoom = commonChartOptions.dataZoomOptions();
+  const endValue = Math.min(Math.floor(dataset.length / 10), 50);
+  options.dataZoom = commonChartOptions.dataZoomOptions({ endValue });
   options.dataZoom[0].minSpan = 5;
   options.dataZoom[0].maxSpan = 5;
 

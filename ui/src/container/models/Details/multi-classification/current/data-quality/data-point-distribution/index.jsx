@@ -56,7 +56,6 @@ function DataPointDistribution() {
       </div>
 
       <DataPointDistributionChart />
-
     </div>
   );
 }
@@ -125,12 +124,12 @@ function DataPointDistributionChart() {
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const title = model?.target.name;
 
-  const { data: currentData } = useGetCurrentDataQualityQueryWithPolling();
+  const { currentData } = useGetCurrentDataQualityQueryWithPolling();
 
   const currentClassMetrics = currentData?.dataQuality.classMetrics ?? [];
   const sortedCurrentClassMetrics = [...currentClassMetrics].sort((a, b) => a.name - b.name);
 
-  const { data: referenceData } = useGetReferenceDataQualityQuery({ uuid });
+  const { currentData: referenceData } = useGetReferenceDataQualityQuery({ uuid });
   const referenceClassMetrics = referenceData?.dataQuality.classMetrics ?? [];
   const sortedReferenceClassMetrics = [...referenceClassMetrics].sort((a, b) => a.name - b.name);
 
@@ -150,9 +149,10 @@ function DataPointDistributionChart() {
           }}
           title={<SectionTitle size="small" title={title} />}
         />
-)}
+      )}
       main={(
         <ReactEchartsCore
+          key={uuid}
           echarts={echarts}
           onChartReady={handleOnChartReady}
           option={chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics)}
