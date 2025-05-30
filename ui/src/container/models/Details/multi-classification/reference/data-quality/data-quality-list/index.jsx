@@ -83,7 +83,6 @@ function NumericalFeature({ item }) {
 
           <div className="basis-3/5 ">
             <NumericalBarChart dataset={dataset} />
-
           </div>
         </div>
       )}

@@ -21,7 +21,6 @@ export default function chartOptions(dataset, referenceColor, currentColor) {
   };
 
   options.xAxis.axisLabel.rotate = 20;
-  options.barCategoryGap = '0';
 
   return options;
 }

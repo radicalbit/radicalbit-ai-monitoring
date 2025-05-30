@@ -139,6 +139,7 @@ function DataPointDistributionChart() {
     setTimeout(echart.resize);
   };
 
+  console.debug('foo', chartOptions(title, sortedReferenceClassMetrics, sortedCurrentClassMetrics));
   return (
     <Board
       header={(
