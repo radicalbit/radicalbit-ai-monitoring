@@ -77,7 +77,6 @@ function NumericalFeature({ item }) {
       )}
       main={(
         <div className="flex flex-col gap-4">
-
           <div className="flex flex-row gap-12">
             <div className="basis-2/5 ">
               <NumericalTable data={item} />
@@ -87,7 +86,6 @@ function NumericalFeature({ item }) {
               <NumericalBarChart dataset={dataset} />
             </div>
           </div>
-
         </div>
       )}
       modifier="my-4 min-h-70"

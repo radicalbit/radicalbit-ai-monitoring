@@ -43,11 +43,9 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-
       <DataPointDistributionCounter />
 
       <DataPointDistributionChart />
-
     </div>
   );
 }
