@@ -24,6 +24,7 @@ function DataQualityList() {
     return (<NoFeaturesAvailable />);
   }
 
+  console.debug(items);
   return (
     <Spinner className="mb-16" fullHeight fullWidth>
       <Virtuoso
@@ -47,6 +48,7 @@ function DataQualityList() {
 }
 
 function NumericalFeature({ item }) {
+  console.debug(item);
   const dataset = item?.histogram ?? [];
 
   return (
