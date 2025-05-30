@@ -13,12 +13,20 @@ export default function chartOptions(title, dataset) {
     ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
     tooltip: {
       ...commonChartOptions.tooltipOptions(CHART_TYPE.BAR),
-      formatter: (params) => {
-        console.debug(params);
-        return `
-          ${params.marker} Name: ${params.name}<br/> Count: ${params.data.count}
-        `;
-      },
+      formatter: (params) => `
+      ${params.marker} <strong>Class:</strong> ${params.name}
+      <br/>
+      <table style="margin-top:4px">
+        <tr>
+          <td style="padding-right:10px"><strong>Count</strong></td>
+          <td style="text-align:right">${params.data.count}</td>
+        </tr>
+        <tr>
+          <td style="padding-right:10px"><strong>Perc</strong></td>
+          <td style="text-align:right">${(params.data.value * 100).toFixed(0)}%</td>
+        </tr>
+      </table>
+    `,
     },
     series: [
       {

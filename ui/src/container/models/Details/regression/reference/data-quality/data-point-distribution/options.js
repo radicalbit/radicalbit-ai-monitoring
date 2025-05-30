@@ -3,7 +3,7 @@ import { numberFormatter } from '@Src/constants';
 import * as commonChartOptions from '@Helpers/common-chart-options';
 
 export default function chartOptions(dataset, color) {
-  const { length, [length - 1]: last, ...rest } = dataset?.buckets.map((value) => numberFormatter().format(value));
+  const { length, [length - 1]: last, ...rest } = (dataset?.buckets || []).map((value) => numberFormatter().format(value));
 
   const values = Object.values(rest);
 
