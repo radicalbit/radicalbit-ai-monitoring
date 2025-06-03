@@ -79,7 +79,7 @@ function DataPointDistributionCounter() {
 
         </div>
       )}
-      modifier="shadow"
+      modifier="shadow grow"
       size="small"
       type="secondary"
     />
@@ -105,7 +105,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="shadow"
+      modifier="shadow grow"
       size="small"
       type="secondary"
     />

@@ -28,7 +28,6 @@ function NumericalBarChart({ dataset }) {
     return false;
   }
 
-  console.debug(chartOptions(dataset, CHART_COLOR.REFERENCE, CHART_COLOR.CURRENT));
   return (
     <div className="w-full h-full">
       <ReactEchartsCore
