@@ -29,7 +29,7 @@ export default function chartOptions(dataset, referenceColor, currentColor) {
     tooltip: {
       ...commonChartOptions.tooltipOptions(CHART_TYPE.BAR),
       formatter: (params) => `
-      ${params.marker} <strong>Class:</strong> ${params.name}
+      ${params.marker} <strong>Range:</strong> ${params.name}
       <br/>
       <table style="margin-top:4px">
         <tr>
