@@ -79,7 +79,7 @@ function DataPointDistributionCounter() {
 
         </div>
       )}
-      modifier="shadow"
+      modifier="shadow grow"
       size="small"
       type="secondary"
     />
@@ -105,7 +105,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="shadow"
+      modifier="shadow grow"
       size="small"
       type="secondary"
     />
@@ -118,9 +118,9 @@ function DataPointDistributionChart() {
   const { data: model } = useGetModelByUUIDQuery({ uuid });
   const title = model?.target.name;
 
-  const { data } = useGetReferenceDataQualityQuery({ uuid });
+  const { currentData: data } = useGetReferenceDataQualityQuery({ uuid });
 
-  const classMetrics = data?.dataQuality.classMetrics ?? {};
+  const classMetrics = data?.dataQuality?.classMetrics ?? [];
   const sortedClassMetrics = [...classMetrics].sort((a, b) => a.name - b.name);
 
   const handleOnChartReady = (echart) => {

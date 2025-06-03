@@ -49,7 +49,7 @@ const numberCompactFormatter = (value, maximumSignificantDigits) => {
 function DataPointDistribution() {
   return (
     <div className="flex flex-row gap-4">
-      <div className="flex flex-col gap-4 basis-1/6 ">
+      <div className="flex flex-col gap-4 basis-1/6">
         <DataPointDistributionCounter />
 
         <ClassCounter />
@@ -85,7 +85,7 @@ function DataPointDistributionCounter() {
 
         </div>
       )}
-      modifier="shadow"
+      modifier="shadow grow"
       size="small"
       type="primary"
     />
@@ -100,7 +100,7 @@ function ClassCounter() {
 
   return (
     <Board
-      header={<SectionTitle size="small" title="Classes" />}
+      header={<SectionTitle size="small" title="Classesss" />}
       main={(
         <div className="flex flex-col h-full items-center justify-center gap-4">
           <div className="flex flex-row items-end ">
@@ -111,7 +111,7 @@ function ClassCounter() {
 
         </div>
       )}
-      modifier="shadow"
+      modifier="shadow grow"
       size="small"
       type="secondary"
     />

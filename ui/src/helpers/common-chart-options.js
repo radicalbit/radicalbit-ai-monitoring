@@ -76,6 +76,35 @@ const xAxisValueType = (xAxisData, xAxisName) => {
   return options;
 };
 
+const xAxisPercentageType = (xAxisData, xAxisName) => {
+  const options = {
+    xAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value) => `${(value * 100).toFixed(0)}%`,
+        fontSize: 9,
+        color: '#9b99a1',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#9f9f9f54',
+        },
+      },
+    },
+  };
+
+  if (xAxisData) {
+    options.xAxis.data = xAxisData;
+  }
+
+  if (xAxisName) {
+    options.xAxis.name = xAxisName;
+    options.xAxis.nameGap = 25;
+    options.xAxis.nameLocation = 'middle';
+  }
+  return options;
+};
+
 const yAxisValueType = (yAxisData, yAxisName) => {
   const options = {
     yAxis: {
@@ -91,6 +120,7 @@ const yAxisValueType = (yAxisData, yAxisName) => {
       },
     },
   };
+
   if (yAxisData) {
     options.yAxis.data = yAxisData;
   }
@@ -100,6 +130,37 @@ const yAxisValueType = (yAxisData, yAxisName) => {
     options.yAxis.nameGap = 25;
     options.yAxis.nameLocation = 'middle';
   }
+
+  return options;
+};
+
+const yAxisPercentageType = (yAxisData, yAxisName) => {
+  const options = {
+    yAxis: {
+      type: 'value',
+      axisLabel: {
+        formatter: (value) => `${(value * 100).toFixed(0)}%`,
+        fontSize: 9,
+        color: '#9b99a1',
+      },
+      splitLine: {
+        lineStyle: {
+          color: '#9f9f9f54',
+        },
+      },
+    },
+  };
+
+  if (yAxisData) {
+    options.yAxis.data = yAxisData;
+  }
+
+  if (yAxisName) {
+    options.yAxis.name = yAxisName;
+    options.yAxis.nameGap = 25;
+    options.yAxis.nameLocation = 'middle';
+  }
+
   return options;
 };
 
@@ -116,6 +177,7 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
       },
     },
   };
+
   if (yAxisData) {
     options.yAxis.data = yAxisData;
   }
@@ -125,6 +187,7 @@ const yAxisCategoryType = (yAxisData, yAxisName) => {
     options.yAxis.nameGap = 25;
     options.yAxis.nameLocation = 'middle';
   }
+
   return options;
 };
 
@@ -202,10 +265,10 @@ const tooltipOptions = () => ({
   },
 });
 
-const dataZoomOptions = ({ endValue = 0 }) => ([
+const dataZoomOptions = ({ endValue }) => ([
   {
     type: 'slider',
-    show: true,
+    show: !!endValue,
     xAxisIndex: 0,
     startValue: 0,
     endValue,
@@ -340,6 +403,8 @@ const yAxisOptions = (optionType, data, yAxisName) => {
   switch (optionType) {
     case OPTIONS_TYPE.VALUE:
       return yAxisValueType(data, yAxisName);
+    case OPTIONS_TYPE.PERCENTAGE:
+      return yAxisPercentageType(data, yAxisName);
     case OPTIONS_TYPE.CATEGORY:
       return yAxisCategoryType(data, yAxisName);
     default:
@@ -351,6 +416,8 @@ const xAxisOptions = (optionType, data, xAxisName) => {
   switch (optionType) {
     case OPTIONS_TYPE.VALUE:
       return xAxisValueType(data, xAxisName);
+    case OPTIONS_TYPE.PERCENTAGE:
+      return xAxisPercentageType(data, xAxisName);
     case OPTIONS_TYPE.CATEGORY:
       return xAxisCategoryType(data, xAxisName);
     case OPTIONS_TYPE.TIME:
@@ -428,6 +495,7 @@ const OPTIONS_TYPE = {
   CATEGORY: 'CATEGORY',
   TIME: 'TIME',
   VALUE: 'VALUE',
+  PERCENTAGE: 'PERCENTAGE',
 };
 
 const CHART_TYPE = {

@@ -4,14 +4,30 @@ import { CHART_COLOR, CHART_TYPE, OPTIONS_TYPE } from '@Helpers/common-chart-opt
 export default function chartOptions(title, dataset) {
   const xAxisLabel = dataset?.map(({ name }) => name);
 
-  const referenceData = dataset?.map(({ count, percentage }) => ({ percentage, count, value: count }));
+  const referenceData = dataset?.map(({ count, percentage }) => ({ percentage, count, value: percentage }));
 
   const options = {
     ...commonChartOptions.gridOptions(CHART_TYPE.BAR),
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.CATEGORY, xAxisLabel),
-    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
+    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.PERCENTAGE),
     ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
-    ...commonChartOptions.tooltipOptions(CHART_TYPE.BAR),
+    tooltip: {
+      ...commonChartOptions.tooltipOptions(CHART_TYPE.BAR),
+      formatter: (params) => `
+      ${params.marker} <strong>Class:</strong> ${params.name}
+      <br/>
+      <table style="margin-top:4px">
+        <tr>
+          <td style="padding-right:10px"><strong>Count</strong></td>
+          <td style="text-align:right">${params.data.count}</td>
+        </tr>
+        <tr>
+          <td style="padding-right:10px"><strong>Perc</strong></td>
+          <td style="text-align:right">${(params.data.value * 100).toFixed(0)}%</td>
+        </tr>
+      </table>
+    `,
+    },
     series: [
       {
         ...commonChartOptions.seriesOptions(CHART_TYPE.BAR, title, CHART_COLOR.REFERENCE_LIGHT, referenceData),

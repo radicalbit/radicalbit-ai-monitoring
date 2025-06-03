@@ -9,13 +9,36 @@ export default function chartOptions(dataset, color) {
 
   const xAxisData = values.map((el, idx) => `[${el}${(idx < values.length - 1) ? `-${values[idx + 1]})` : (idx === values.length - 1) ? `-${last}]` : ''} `);
 
+  const combinedReference = dataset.referenceValues.map((count, index) => ({
+    count,
+    percentage: dataset.referenceValuesPercentage[index],
+    value: dataset.referenceValuesPercentage[index],
+  }));
+
   const options = {
     ...commonChartOptions.gridOptions(CHART_TYPE.BAR),
     ...commonChartOptions.xAxisOptions(OPTIONS_TYPE.CATEGORY, xAxisData),
-    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.VALUE),
+    ...commonChartOptions.yAxisOptions(OPTIONS_TYPE.PERCENTAGE),
     ...commonChartOptions.commonOptions(CHART_TYPE.BAR),
+    tooltip: {
+      ...commonChartOptions.tooltipOptions(CHART_TYPE.BAR),
+      formatter: (params) => `
+      ${params.marker} <strong>Range:</strong> ${params.name}
+      <br/>
+      <table style="margin-top:4px">
+        <tr>
+          <td style="padding-right:10px"><strong>Count</strong></td>
+          <td style="text-align:right">${params.data.count}</td>
+        </tr>
+        <tr>
+          <td style="padding-right:10px"><strong>Perc</strong></td>
+          <td style="text-align:right">${(params.data.value * 100).toFixed(0)}%</td>
+        </tr>
+      </table>
+    `,
+    },
     series: [
-      commonChartOptions.seriesOptions(CHART_TYPE.BAR, 'reference', color, dataset.referenceValues),
+      commonChartOptions.seriesOptions(CHART_TYPE.BAR, 'reference', color, combinedReference),
     ],
   };
 
