@@ -67,7 +67,7 @@ class ModelRoute:
             logger.info('Model %s with name %s deleted.', model.uuid, model.name)
             return model
 
-        @router.post('/{model_uuid}', status_code=200)
+        @router.patch('/{model_uuid}/update-features', status_code=200)
         def update_model_features_by_uuid(
             model_uuid: UUID, model_features: ModelFeatures
         ):

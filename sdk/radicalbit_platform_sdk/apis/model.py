@@ -92,8 +92,8 @@ class Model:
             self.__features = features
 
         invoke(
-            method='POST',
-            url=f'{self.__base_url}/api/models/{str(self.__uuid)}',
+            method='PATCH',
+            url=f'{self.__base_url}/api/models/{str(self.__uuid)}/update-features',
             valid_response_code=200,
             data=ModelFeatures(features=features).model_dump_json(),
             func=__callback,
