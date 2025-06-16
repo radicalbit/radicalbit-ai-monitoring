@@ -75,7 +75,7 @@ class ModelRouteTest(unittest.TestCase):
             json=jsonable_encoder(model_features),
         )
 
-        assert res.status_code == 404
+        assert res.status_code == 400
         self.model_service.update_model_features_by_uuid.assert_called_once_with(
             db_mock.MODEL_UUID, model_features
         )
