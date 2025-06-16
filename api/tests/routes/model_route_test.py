@@ -56,8 +56,8 @@ class ModelRouteTest(unittest.TestCase):
         model_features = db_mock.get_sample_model_features()
         self.model_service.update_model_features_by_uuid = MagicMock(return_value=True)
 
-        res = self.client.post(
-            f'{self.prefix}/{db_mock.MODEL_UUID}',
+        res = self.client.patch(
+            f'{self.prefix}/{db_mock.MODEL_UUID}/update-features',
             json=jsonable_encoder(model_features),
         )
 
@@ -70,12 +70,12 @@ class ModelRouteTest(unittest.TestCase):
         model_features = db_mock.get_sample_model_features()
         self.model_service.update_model_features_by_uuid = MagicMock(return_value=False)
 
-        res = self.client.post(
-            f'{self.prefix}/{db_mock.MODEL_UUID}',
+        res = self.client.patch(
+            f'{self.prefix}/{db_mock.MODEL_UUID}/update-features',
             json=jsonable_encoder(model_features),
         )
 
-        assert res.status_code == 404
+        assert res.status_code == 400
         self.model_service.update_model_features_by_uuid.assert_called_once_with(
             db_mock.MODEL_UUID, model_features
         )

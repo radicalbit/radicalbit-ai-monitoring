@@ -28,12 +28,12 @@ export const modelsApiSlice = apiService.injectEndpoints({
       }),
     }),
 
-    editModel: builder.mutation({
-      invalidatesTags: (_, __, { data: { uuid } }) => [{ type: API_TAGS.MODEL, id: uuid }],
-      query: ({ data }) => ({
+    updateModelFeatures: builder.mutation({
+      invalidatesTags: (_, __, { uuid }) => [{ type: API_TAGS.MODEL, id: uuid }],
+      query: ({ data, uuid }) => ({
         baseUrl: import.meta.env.VITE_BASE_URL,
-        url: `/models/${data.uuid}`,
-        method: 'post',
+        url: `/models/${uuid}/update-features-default`,
+        method: 'patch',
         data,
       }),
 

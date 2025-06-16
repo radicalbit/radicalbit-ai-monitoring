@@ -98,8 +98,8 @@ class ModelTest(unittest.TestCase):
             ),
         ]
         responses.add(
-            method=responses.POST,
-            url=f'{base_url}/api/models/{str(model_id)}',
+            method=responses.PATCH,
+            url=f'{base_url}/api/models/{str(model_id)}/update-features',
             body=ModelFeatures(features=new_features).model_dump_json(),
             status=200,
         )

@@ -173,6 +173,29 @@ class ModelFeatures(BaseModel):
     )
 
 
+class ColumnDefinitionFE(BaseModel, validate_assignment=True):
+    name: str
+    type: SupportedTypes
+    field_type: FieldType
+
+    model_config = ConfigDict(populate_by_name=True, alias_generator=to_camel)
+
+
+class ModelFeaturesFE(BaseModel):
+    features: List[ColumnDefinitionFE]
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+    def to_model_features_default(self) -> ModelFeatures:
+        """Convert ModelFeatures coming from FE in update page to validated ModelFeatures with default drift algorithm"""
+        model_features = ModelFeatures.model_validate(self.model_dump())
+        for feature in model_features.features:
+            feature.drift = feature.get_default_drift_methods()
+        return model_features
+
+
 class ModelIn(BaseModel, validate_assignment=True):
     uuid: Optional[UUID] = None
     name: str

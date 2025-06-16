@@ -10,7 +10,7 @@ from app.core import get_config
 from app.models.alert_dto import AlertDTO
 from app.models.commons.order_type import OrderType
 from app.models.metrics.tot_percentages_dto import TotPercentagesDTO
-from app.models.model_dto import ModelFeatures, ModelIn, ModelOut
+from app.models.model_dto import ModelFeatures, ModelFeaturesFE, ModelIn, ModelOut
 from app.services.model_service import ModelService
 
 logger = logging.getLogger(get_config().log_config.logger_name)
@@ -67,12 +67,23 @@ class ModelRoute:
             logger.info('Model %s with name %s deleted.', model.uuid, model.name)
             return model
 
-        @router.post('/{model_uuid}', status_code=200)
+        @router.patch('/{model_uuid}/update-features', status_code=200)
         def update_model_features_by_uuid(
             model_uuid: UUID, model_features: ModelFeatures
         ):
             if model_service.update_model_features_by_uuid(model_uuid, model_features):
                 return Response(status_code=200)
-            return Response(status_code=404)
+            return Response(status_code=400)
+
+        @router.patch('/{model_uuid}/update-features-default', status_code=200)
+        def update_model_features_default_by_uuid(
+            model_uuid: UUID, model_features: ModelFeaturesFE
+        ):
+            default_drift_features = model_features.to_model_features_default()
+            if model_service.update_model_features_by_uuid(
+                model_uuid, default_drift_features
+            ):
+                return Response(status_code=200)
+            return Response(status_code=400)
 
         return router
