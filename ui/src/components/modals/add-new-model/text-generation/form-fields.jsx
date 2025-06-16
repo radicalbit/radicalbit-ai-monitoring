@@ -54,7 +54,7 @@ function ModelType() {
     ModelTypeEnum.MULTI_CLASSIFICATION,
     ModelTypeEnum.REGRESSION,
     ModelTypeEnum.TEXT_GENERATION,
-    ModelTypeEnum.EMBEDDINGS,
+    // ModelTypeEnum.EMBEDDINGS, temporary hidden
   ];
 
   return (
