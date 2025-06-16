@@ -189,6 +189,7 @@ class ModelFeaturesFE(BaseModel):
     )
 
     def to_model_features_default(self) -> ModelFeatures:
+        """Convert ModelFeatures coming from FE in update page to validated ModelFeatures with default drift algorithm"""
         model_features = ModelFeatures.model_validate(self.model_dump())
         for feature in model_features.features:
             feature.drift = feature.get_default_drift_methods()
