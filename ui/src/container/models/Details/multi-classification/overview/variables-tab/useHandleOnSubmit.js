@@ -1,16 +1,14 @@
 import { useFormbitContext } from '@radicalbit/formbit';
 import { modelsApiSlice } from '@State/models/api';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 
-const { useEditModelMutation, useGetModelByUUIDQuery } = modelsApiSlice;
+const { useUpdateModelFeaturesMutation } = modelsApiSlice;
 
 export default () => {
   const { uuid } = useParams();
-  const { data } = useGetModelByUUIDQuery({ uuid });
-
   const { isDirty, submitForm } = useFormbitContext();
 
-  const [triggerEditModel, args] = useEditModelMutation();
+  const [trigger, args] = useUpdateModelFeaturesMutation();
 
   const isSubmitDisabled = !isDirty;
 
@@ -22,12 +20,7 @@ export default () => {
     submitForm(async ({ form: { variables } }, setError, clearIsDirty) => {
       const filteredVariables = variables.filter(({ rowType }) => rowType === '');
 
-      const updatedData = {
-        ...data,
-        features: filteredVariables,
-      };
-
-      const response = await triggerEditModel({ data: updatedData, successMessage: 'Model updated' });
+      const response = await trigger({ data: { features: filteredVariables }, uuid, successMessage: 'Model updated' });
 
       if (response.error) {
         console.error(response.error);
