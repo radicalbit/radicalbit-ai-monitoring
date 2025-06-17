@@ -48,8 +48,8 @@ class HellingerDistance(DriftDetector):
 
         """
         self.spark_session = spark_session
-        self.reference_data = reference_data
-        self.current_data = current_data
+        self.reference_data = reference_data.dropna()
+        self.current_data = current_data.dropna()
         self.reference_data_length = self.reference_data.count()
         self.current_data_length = self.current_data.count()
         self.prefix_id = prefix_id
