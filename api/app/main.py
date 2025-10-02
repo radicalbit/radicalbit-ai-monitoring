@@ -72,74 +72,9 @@ logger = logging.getLogger(get_config().log_config.logger_name)
 
 database = Database(conf=get_config().db_config)
 ch_database = ClickHouseDatabase(conf=get_config().clickhouse_config)
-
-if get_config().kubernetes_config.kubeconfig_file_path:
-    k8s_client_manager = KubernetesClientManager(
-        get_config().kubernetes_config.kubeconfig_file_path
-    )
-else:
-    k8s_client_manager = KubernetesClientManager()
-
-spark_k8s_client = SparkOnK8S(k8s_client_manager=k8s_client_manager)
-
-model_dao = ModelDAO(database)
-reference_dataset_dao = ReferenceDatasetDAO(database)
-reference_dataset_metrics_dao = ReferenceDatasetMetricsDAO(database)
-current_dataset_dao = CurrentDatasetDAO(database)
-current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
-completion_dataset_dao = CompletionDatasetDAO(database)
-completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
-reference_dataset_embeddings_metrics_dao = ReferenceDatasetEmbeddingsMetricsDAO(
-    database
-)
-current_dataset_embeddings_metrics_dao = CurrentDatasetEmbeddingsMetricsDAO(database)
 project_dao = ProjectDAO(database)
 trace_dao = TraceDAO(ch_database)
 api_key_dao = ApiKeyDAO(database)
-
-model_service = ModelService(
-    model_dao=model_dao,
-    reference_dataset_dao=reference_dataset_dao,
-    current_dataset_dao=current_dataset_dao,
-    completion_dataset_dao=completion_dataset_dao,
-)
-s3_config = get_config().s3_config
-
-if s3_config.s3_endpoint_url is not None:
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=s3_config.aws_access_key_id,
-        aws_secret_access_key=s3_config.aws_secret_access_key,
-        region_name=s3_config.aws_region,
-        endpoint_url=s3_config.s3_endpoint_url,
-    )
-else:
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=s3_config.aws_access_key_id,
-        aws_secret_access_key=s3_config.aws_secret_access_key,
-        region_name=s3_config.aws_region,
-    )
-
-file_service = FileService(
-    reference_dataset_dao,
-    current_dataset_dao,
-    completion_dataset_dao,
-    model_service,
-    s3_client,
-    spark_k8s_client,
-)
-metrics_service = MetricsService(
-    reference_dataset_metrics_dao=reference_dataset_metrics_dao,
-    reference_dataset_dao=reference_dataset_dao,
-    current_dataset_metrics_dao=current_dataset_metrics_dao,
-    current_dataset_dao=current_dataset_dao,
-    completion_dataset_metrics_dao=completion_dataset_metrics_dao,
-    completion_dataset_dao=completion_dataset_dao,
-    reference_dataset_embeddings_metrics_dao=reference_dataset_embeddings_metrics_dao,
-    current_dataset_embeddings_metrics_dao=current_dataset_embeddings_metrics_dao,
-    model_service=model_service,
-)
 api_key_security = ApiKeySecurity()
 api_key_service = ApiKeyService(
     api_key_dao=api_key_dao, project_dao=project_dao, api_key_security=api_key_security
@@ -149,7 +84,74 @@ project_service = ProjectService(
 )
 trace_service = TraceService(trace_dao=trace_dao, project_dao=project_dao)
 otel_service = OtelService(api_key_dao=api_key_dao)
-spark_k8s_service = SparkK8SService(spark_k8s_client)
+
+model_service = None
+file_service = None
+metrics_service = None
+spark_k8s_service = None
+
+if get_config().full_features_enabled:
+    if get_config().kubernetes_config.kubeconfig_file_path:
+        k8s_client_manager = KubernetesClientManager(
+            get_config().kubernetes_config.kubeconfig_file_path
+        )
+    else:
+        k8s_client_manager = KubernetesClientManager()
+
+    spark_k8s_client = SparkOnK8S(k8s_client_manager=k8s_client_manager)
+    model_dao = ModelDAO(database)
+    reference_dataset_dao = ReferenceDatasetDAO(database)
+    reference_dataset_metrics_dao = ReferenceDatasetMetricsDAO(database)
+    current_dataset_dao = CurrentDatasetDAO(database)
+    current_dataset_metrics_dao = CurrentDatasetMetricsDAO(database)
+    completion_dataset_dao = CompletionDatasetDAO(database)
+    completion_dataset_metrics_dao = CompletionDatasetMetricsDAO(database)
+    reference_dataset_embeddings_metrics_dao = ReferenceDatasetEmbeddingsMetricsDAO(
+        database
+    )
+    current_dataset_embeddings_metrics_dao = CurrentDatasetEmbeddingsMetricsDAO(database)
+    model_service = ModelService(
+        model_dao=model_dao,
+        reference_dataset_dao=reference_dataset_dao,
+        current_dataset_dao=current_dataset_dao,
+        completion_dataset_dao=completion_dataset_dao,
+    )
+    s3_config = get_config().s3_config
+    if s3_config.s3_endpoint_url is not None:
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=s3_config.aws_access_key_id,
+            aws_secret_access_key=s3_config.aws_secret_access_key,
+            region_name=s3_config.aws_region,
+            endpoint_url=s3_config.s3_endpoint_url,
+        )
+    else:
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=s3_config.aws_access_key_id,
+            aws_secret_access_key=s3_config.aws_secret_access_key,
+            region_name=s3_config.aws_region,
+        )
+    file_service = FileService(
+        reference_dataset_dao,
+        current_dataset_dao,
+        completion_dataset_dao,
+        model_service,
+        s3_client,
+        spark_k8s_client,
+    )
+    metrics_service = MetricsService(
+        reference_dataset_metrics_dao=reference_dataset_metrics_dao,
+        reference_dataset_dao=reference_dataset_dao,
+        current_dataset_metrics_dao=current_dataset_metrics_dao,
+        current_dataset_dao=current_dataset_dao,
+        completion_dataset_metrics_dao=completion_dataset_metrics_dao,
+        completion_dataset_dao=completion_dataset_dao,
+        reference_dataset_embeddings_metrics_dao=reference_dataset_embeddings_metrics_dao,
+        current_dataset_embeddings_metrics_dao=current_dataset_embeddings_metrics_dao,
+        model_service=model_service,
+    )
+    spark_k8s_service = SparkK8SService(spark_k8s_client)
 
 
 @asynccontextmanager
@@ -175,10 +177,12 @@ app.add_middleware(
     ],
 )
 
-app.include_router(ModelRoute.get_router(model_service), prefix='/api/models')
-app.include_router(UploadDatasetRoute.get_router(file_service), prefix='/api/models')
-app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schema')
-app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
+if get_config().full_features_enabled:
+    app.include_router(ModelRoute.get_router(model_service), prefix='/api/models')
+    app.include_router(UploadDatasetRoute.get_router(file_service), prefix='/api/models')
+    app.include_router(InferSchemaRoute.get_router(file_service), prefix='/api/schema')
+    app.include_router(MetricsRoute.get_router(metrics_service), prefix='/api/models')
+
 app.include_router(ProjectRoute.get_router(project_service), prefix='/api/projects')
 app.include_router(TraceRoute.get_router(trace_service), prefix='/api/traces')
 app.include_router(ApiKeyRoute.get_router(api_key_service), prefix='/api/api-key')

@@ -141,6 +141,7 @@ class AppConfig(BaseSettings):
     s3_config: S3Config = S3Config()
     spark_config: SparkConfig = SparkConfig()
     clickhouse_config: ClickHouseConfig = ClickHouseConfig()
+    full_features_enabled: bool = False
 
 
 @lru_cache
