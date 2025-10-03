@@ -81,9 +81,21 @@ def main(
 
 
 if __name__ == '__main__':
-    spark_session = SparkSession.builder.appName(
-        'radicalbit_reference_embeddings_metrics'
-    ).getOrCreate()
+    spark_session = SparkSession.builder.appName('radicalbit_completion_metrics')
+
+    if os.getenv('S3_ENDPOINT_URL'):
+        endpoint = os.getenv('S3_ENDPOINT_URL')
+        if endpoint.startswith('https://'):
+            # We are using deployed MinIO over https
+            spark_session.config(
+                'spark.driver.extraJavaOptions',
+                '-Dcom.amazonaws.sdk.disableCertChecking',
+            ).config(
+                'spark.executor.extraJavaOptions',
+                '-Dcom.amazonaws.sdk.disableCertChecking',
+            )
+
+    spark_session = spark_session.getOrCreate()
 
     model = ModelOut.model_validate_json(sys.argv[1])
     embeddings_reference_dataset_path = sys.argv[2]
