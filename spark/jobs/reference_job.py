@@ -98,7 +98,7 @@ def main(
             'fs.s3a.endpoint', os.getenv('S3_ENDPOINT_URL')
         )
         spark_context._jsc.hadoopConfiguration().set('fs.s3a.path.style.access', 'true')
-        if endpoint.startswith("https://"):
+        if endpoint.startswith('https://'):
             # We are using deployed MinIO over https
             spark_context._jsc.hadoopConfiguration().set(
                 'fs.s3a.connection.ssl.enabled', 'true'
@@ -106,7 +106,7 @@ def main(
             spark_context._jsc.hadoopConfiguration().set(
                 'fs.s3a.connection.ssl.cert-check', 'false'
             )
-        elif endpoint.startswith("http://"):
+        elif endpoint.startswith('http://'):
             # We are using deployed MinIO over http
             spark_context._jsc.hadoopConfiguration().set(
                 'fs.s3a.connection.ssl.enabled', 'false'
@@ -138,10 +138,21 @@ def main(
 
 
 if __name__ == '__main__':
-    spark_session = SparkSession.builder.appName(
-        'radicalbit_reference_metrics'
-    ).getOrCreate()
+    spark_session = SparkSession.builder.appName('radicalbit_completion_metrics')
 
+    if os.getenv('S3_ENDPOINT_URL'):
+        endpoint = os.getenv('S3_ENDPOINT_URL')
+        if endpoint.startswith('https://'):
+            # We are using deployed MinIO over https
+            spark_session.config(
+                'spark.driver.extraJavaOptions',
+                '-Dcom.amazonaws.sdk.disableCertChecking',
+            ).config(
+                'spark.executor.extraJavaOptions',
+                '-Dcom.amazonaws.sdk.disableCertChecking',
+            )
+
+    spark_session = spark_session.getOrCreate()
     # Json of ModelOut is first param
     model = ModelOut.model_validate_json(sys.argv[1])
     # Reference dataset s3 path is second param
