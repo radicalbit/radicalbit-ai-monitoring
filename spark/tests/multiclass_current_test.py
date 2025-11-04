@@ -1,4 +1,5 @@
 import datetime
+import json
 import uuid
 
 import deepdiff
@@ -188,6 +189,9 @@ def test_calculation_dataset_target_int(spark_fixture, dataset_target_int):
         ignore_order=True,
         significant_digits=6,
     )
+
+    print(json.dumps(model_quality))
+    print(json.dumps(res.test_calculation_dataset_target_int_mq_res))
 
     assert not deepdiff.DeepDiff(
         model_quality,
