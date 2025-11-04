@@ -208,7 +208,7 @@ class CurrentMetricsMulticlassService:
             precision = float(tp) / (tp + fp) if (tp + fp) > 0 else float('nan')
             recall = float(tp) / (tp + fn) if (tp + fn) > 0 else float('nan')
             fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
-            f_measure = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else float('nan')
+            f_measure = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
             
             metrics_by_class[class_idx_str] = {
                 'true_positive_rate': recall,
@@ -256,11 +256,19 @@ class CurrentMetricsMulticlassService:
                 fp = row[f'fp_{class_idx_int}'] or 0
                 fn = row[f'fn_{class_idx_int}'] or 0
                 tn = row[f'tn_{class_idx_int}'] or 0
-                
+
+                print(tp)
+                print(fp)
+                print(fn)
+                print(tn)
+
+
                 precision = float(tp) / (tp + fp) if (tp + fp) > 0 else float('nan')
                 recall = float(tp) / (tp + fn) if (tp + fn) > 0 else float('nan')
                 fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
-                f_measure = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else float('nan')
+                print(precision)
+                print(recall)
+                f_measure = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
                 
                 grouped_metrics[(time_group, class_idx_str, 'true_positive_rate')] = recall
                 grouped_metrics[(time_group, class_idx_str, 'false_positive_rate')] = fpr

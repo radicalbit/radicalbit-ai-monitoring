@@ -471,6 +471,9 @@ def test_calculation_dataset_for_hour(spark_fixture, dataset_for_hour):
         significant_digits=6,
     )
 
+    print(json.dumps(model_quality))
+    print(json.dumps(res.test_calculation_dataset_for_hour_mq_res))
+
     assert not deepdiff.DeepDiff(
         model_quality,
         res.test_calculation_dataset_for_hour_mq_res,
