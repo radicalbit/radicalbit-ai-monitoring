@@ -125,6 +125,9 @@ class CurrentMetricsMulticlassService:
                 ]
             )
 
+        # Cache to avoid recomputation across multiple metric evaluations
+        dataset_with_group.cache()
+
         list_of_time_group = (
             dataset_with_group.select('time_group')
             .distinct()
@@ -132,40 +135,55 @@ class CurrentMetricsMulticlassService:
             .rdd.flatMap(lambda x: x)
             .collect()
         )
+        
+        # Cache each group dataset to avoid redundant filtering
         array_of_groups = [
-            dataset_with_group.where(F.col('time_group') == x)
+            dataset_with_group.where(F.col('time_group') == x).cache()
             for x in list_of_time_group
         ]
 
-        return [
+        # Pre-compute metrics to avoid nested loop evaluation overhead
+        # Global metrics for all classes
+        global_metrics_by_class = {}
+        for index, label in self.index_label_map.items():
+            global_metrics_by_class[index] = {
+                metric_label: self.__evaluate_multi_class_classification(
+                    self.indexed_current, metric_name, float(index)
+                )
+                for metric_name, metric_label in self.model_quality_multiclass_classificator_by_label.items()
+            }
+
+        # Grouped metrics for all classes and time periods
+        grouped_metrics_by_class = {}
+        for index in self.index_label_map.keys():
+            grouped_metrics_by_class[index] = {}
+            for metric_name, metric_label in self.model_quality_multiclass_classificator_by_label.items():
+                grouped_metrics_by_class[index][metric_label] = [
+                    {
+                        'timestamp': group,
+                        'value': self.__evaluate_multi_class_classification(
+                            group_dataset, metric_name, float(index)
+                        ),
+                    }
+                    for group, group_dataset in zip(list_of_time_group, array_of_groups)
+                ]
+
+        # Build final result structure
+        result = [
             {
                 'class_name': label,
-                'metrics': {
-                    metric_label: self.__evaluate_multi_class_classification(
-                        self.indexed_current, metric_name, float(index)
-                    )
-                    for (
-                        metric_name,
-                        metric_label,
-                    ) in self.model_quality_multiclass_classificator_by_label.items()
-                },
-                'grouped_metrics': {
-                    metric_label: [
-                        {
-                            'timestamp': group,
-                            'value': self.__evaluate_multi_class_classification(
-                                group_dataset, metric_name, float(index)
-                            ),
-                        }
-                        for group, group_dataset in zip(
-                            list_of_time_group, array_of_groups
-                        )
-                    ]
-                    for metric_name, metric_label in self.model_quality_multiclass_classificator_by_label.items()
-                },
+                'metrics': global_metrics_by_class[index],
+                'grouped_metrics': grouped_metrics_by_class[index],
             }
             for index, label in self.index_label_map.items()
         ]
+
+        # Clean up cached dataframes
+        dataset_with_group.unpersist()
+        for df in array_of_groups:
+            df.unpersist()
+
+        return result
 
     def __evaluate_multi_class_classification(
         self, dataset: DataFrame, metric_name: str, class_index: float
