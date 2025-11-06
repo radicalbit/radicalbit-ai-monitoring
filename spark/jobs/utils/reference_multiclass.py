@@ -1,3 +1,4 @@
+import math
 from typing import Dict, List
 
 from metrics.data_quality_calculator import DataQualityCalculator
@@ -55,36 +56,123 @@ class ReferenceMetricsMulticlassService:
 
     # FIXME use pydantic struct like data quality
     def __calc_multiclass_by_label_metrics(self) -> List[Dict]:
+        # Filter out null/nan values once
+        filtered_dataset = self.indexed_reference.filter(
+            ~(
+                f.col(self.reference.model.outputs.prediction.name).isNull()
+                | f.isnan(f.col(self.reference.model.outputs.prediction.name))
+            )
+            & ~(
+                f.col(self.reference.model.target.name).isNull()
+                | f.isnan(f.col(self.reference.model.target.name))
+            )
+        )
+
+        pred_col = f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx'
+        label_col = f'{self.prefix_id}_{self.reference.model.target.name}-idx'
+
+        # Batch compute all metrics for all classes at once
+        metrics_by_class = self.__batch_compute_metrics_for_all_classes(
+            filtered_dataset, pred_col, label_col
+        )
+
+        # Build result structure matching original output format exactly
         return [
             {
                 'class_name': label,
-                'metrics': {
-                    metric_label: self.__evaluate_multi_class_classification(
-                        self.indexed_reference.filter(
-                            ~(
-                                f.col(
-                                    self.reference.model.outputs.prediction.name
-                                ).isNull()
-                                | f.isnan(
-                                    f.col(self.reference.model.outputs.prediction.name)
-                                )
-                            )
-                            & ~(
-                                f.col(self.reference.model.target.name).isNull()
-                                | f.isnan(f.col(self.reference.model.target.name))
-                            )
-                        ),
-                        metric_name,
-                        float(index),
-                    )
-                    for (
-                        metric_name,
-                        metric_label,
-                    ) in self.model_quality_multiclass_classificator_by_label.items()
-                },
+                'metrics': metrics_by_class[index],
             }
             for index, label in self.index_label_map.items()
         ]
+
+    def __batch_compute_metrics_for_all_classes(self, dataset, pred_col, label_col):
+        """Batch compute all metrics for all classes using single aggregation"""
+        from pyspark.sql.functions import col, sum as sql_sum, when
+
+        # Single aggregation to compute ALL confusion matrix values at once
+        class_indices = [float(idx) for idx in self.index_label_map]
+
+        # Build aggregation expressions for all classes
+        agg_exprs = []
+        for class_idx in class_indices:
+            agg_exprs.extend(
+                [
+                    sql_sum(
+                        when(
+                            (col(pred_col) == class_idx)
+                            & (col(label_col) == class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'tp_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) == class_idx)
+                            & (col(label_col) != class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'fp_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) != class_idx)
+                            & (col(label_col) == class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'fn_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) != class_idx)
+                            & (col(label_col) != class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'tn_{int(class_idx)}'),
+                ]
+            )
+
+        # Execute single aggregation for ALL classes
+        confusion_data = dataset.agg(*agg_exprs).collect()[0].asDict()
+
+        # Compute metrics from collected confusion matrix
+        metrics_by_class = {}
+        for class_idx_str in self.index_label_map:
+            class_idx_int = int(float(class_idx_str))
+
+            tp = confusion_data[f'tp_{class_idx_int}'] or 0
+            fp = confusion_data[f'fp_{class_idx_int}'] or 0
+            fn = confusion_data[f'fn_{class_idx_int}'] or 0
+            tn = confusion_data[f'tn_{class_idx_int}'] or 0
+
+            # If there are no actual samples of this class in this time bucket (tp+fn=0),
+            # all metrics are undefined (NaN) - the class doesn't exist in this period
+            if (tp + fn) == 0:
+                precision = float('nan')
+                recall = float('nan')
+                fpr = float('nan')
+            else:
+                # When no predictions were made for this class (tp+fp=0), precision is 0.0
+                precision = float(tp) / (tp + fp) if (tp + fp) > 0 else 0.0
+                recall = float(tp) / (
+                    tp + fn
+                )  # Can't be divide by zero since tp+fn > 0
+                fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
+
+            if math.isnan(precision + recall):
+                f_measure = float('nan')
+            else:
+                f_measure = (
+                    2 * precision * recall / (precision + recall)
+                    if (precision + recall) > 0
+                    else 0.0
+                )
+
+            metrics_by_class[class_idx_str] = {
+                'true_positive_rate': recall,
+                'false_positive_rate': fpr,
+                'precision': precision,
+                'recall': recall,
+                'f_measure': f_measure,
+            }
+
+        return metrics_by_class
 
     def __calc_multiclass_global_metrics(self) -> Dict:
         return {
