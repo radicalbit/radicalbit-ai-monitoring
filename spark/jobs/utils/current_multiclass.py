@@ -1,3 +1,4 @@
+import math
 from typing import Dict, List
 
 from metrics.data_quality_calculator import DataQualityCalculator
@@ -136,7 +137,9 @@ class CurrentMetricsMulticlassService:
             .collect()
         )
 
-        pred_col = f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx'
+        pred_col = (
+            f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx'
+        )
         label_col = f'{self.prefix_id}_{self.current.model.target.name}-idx'
 
         # Batch compute all metrics using SQL operations instead of 2500 evaluator calls
@@ -178,38 +181,82 @@ class CurrentMetricsMulticlassService:
     def __batch_compute_metrics_for_all_classes(self, dataset, pred_col, label_col):
         """Batch compute all metrics for all classes using single aggregation"""
         from pyspark.sql.functions import col, sum as sql_sum, when
-        
+
         # Single aggregation to compute ALL confusion matrix values at once
-        class_indices = [float(idx) for idx in self.index_label_map.keys()]
-        
+        class_indices = [float(idx) for idx in self.index_label_map]
+
         # Build aggregation expressions for all classes
         agg_exprs = []
         for class_idx in class_indices:
-            agg_exprs.extend([
-                sql_sum(when((col(pred_col) == class_idx) & (col(label_col) == class_idx), 1).otherwise(0)).alias(f'tp_{int(class_idx)}'),
-                sql_sum(when((col(pred_col) == class_idx) & (col(label_col) != class_idx), 1).otherwise(0)).alias(f'fp_{int(class_idx)}'),
-                sql_sum(when((col(pred_col) != class_idx) & (col(label_col) == class_idx), 1).otherwise(0)).alias(f'fn_{int(class_idx)}'),
-                sql_sum(when((col(pred_col) != class_idx) & (col(label_col) != class_idx), 1).otherwise(0)).alias(f'tn_{int(class_idx)}'),
-            ])
-        
+            agg_exprs.extend(
+                [
+                    sql_sum(
+                        when(
+                            (col(pred_col) == class_idx)
+                            & (col(label_col) == class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'tp_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) == class_idx)
+                            & (col(label_col) != class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'fp_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) != class_idx)
+                            & (col(label_col) == class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'fn_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) != class_idx)
+                            & (col(label_col) != class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'tn_{int(class_idx)}'),
+                ]
+            )
+
         # Execute single aggregation for ALL classes
         confusion_data = dataset.agg(*agg_exprs).collect()[0].asDict()
-        
+
         # Compute metrics from collected confusion matrix
         metrics_by_class = {}
-        for class_idx_str in self.index_label_map.keys():
+        for class_idx_str in self.index_label_map:
             class_idx_int = int(float(class_idx_str))
-            
+
             tp = confusion_data[f'tp_{class_idx_int}'] or 0
             fp = confusion_data[f'fp_{class_idx_int}'] or 0
             fn = confusion_data[f'fn_{class_idx_int}'] or 0
             tn = confusion_data[f'tn_{class_idx_int}'] or 0
-            
-            precision = float(tp) / (tp + fp) if (tp + fp) > 0 else float('nan')
-            recall = float(tp) / (tp + fn) if (tp + fn) > 0 else float('nan')
-            fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
-            f_measure = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
-            
+
+            # If there are no actual samples of this class in this time bucket (tp+fn=0),
+            # all metrics are undefined (NaN) - the class doesn't exist in this period
+            if (tp + fn) == 0:
+                precision = float('nan')
+                recall = float('nan')
+                fpr = float('nan')
+            else:
+                # When no predictions were made for this class (tp+fp=0), precision is 0.0
+                precision = float(tp) / (tp + fp) if (tp + fp) > 0 else 0.0
+                recall = float(tp) / (
+                    tp + fn
+                )  # Can't be divide by zero since tp+fn > 0
+                fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
+
+            if math.isnan(precision + recall):
+                f_measure = float('nan')
+            else:
+                f_measure = (
+                    2 * precision * recall / (precision + recall)
+                    if (precision + recall) > 0
+                    else 0.0
+                )
+
             metrics_by_class[class_idx_str] = {
                 'true_positive_rate': recall,
                 'false_positive_rate': fpr,
@@ -217,65 +264,102 @@ class CurrentMetricsMulticlassService:
                 'recall': recall,
                 'f_measure': f_measure,
             }
-        
+
         return metrics_by_class
-    
-    def __batch_compute_grouped_metrics(self, dataset, pred_col, label_col, time_groups):
+
+    def __batch_compute_grouped_metrics(
+        self, dataset, pred_col, label_col, time_groups
+    ):
         """Batch compute metrics for all time groups and classes using single aggregation"""
         from pyspark.sql.functions import col, sum as sql_sum, when
-        
-        class_indices = [float(idx) for idx in self.index_label_map.keys()]
-        
+
+        class_indices = [float(idx) for idx in self.index_label_map]
+
         # Build aggregation expressions for all classes
         agg_exprs = []
         for class_idx in class_indices:
-            agg_exprs.extend([
-                sql_sum(when((col(pred_col) == class_idx) & (col(label_col) == class_idx), 1).otherwise(0)).alias(f'tp_{int(class_idx)}'),
-                sql_sum(when((col(pred_col) == class_idx) & (col(label_col) != class_idx), 1).otherwise(0)).alias(f'fp_{int(class_idx)}'),
-                sql_sum(when((col(pred_col) != class_idx) & (col(label_col) == class_idx), 1).otherwise(0)).alias(f'fn_{int(class_idx)}'),
-                sql_sum(when((col(pred_col) != class_idx) & (col(label_col) != class_idx), 1).otherwise(0)).alias(f'tn_{int(class_idx)}'),
-            ])
-        
+            agg_exprs.extend(
+                [
+                    sql_sum(
+                        when(
+                            (col(pred_col) == class_idx)
+                            & (col(label_col) == class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'tp_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) == class_idx)
+                            & (col(label_col) != class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'fp_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) != class_idx)
+                            & (col(label_col) == class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'fn_{int(class_idx)}'),
+                    sql_sum(
+                        when(
+                            (col(pred_col) != class_idx)
+                            & (col(label_col) != class_idx),
+                            1,
+                        ).otherwise(0)
+                    ).alias(f'tn_{int(class_idx)}'),
+                ]
+            )
+
         # Single aggregation grouped by time_group for ALL classes and time groups at once!
-        confusion_by_time = (
-            dataset
-            .groupBy('time_group')
-            .agg(*agg_exprs)
-            .collect()
-        )
-        
+        confusion_by_time = dataset.groupBy('time_group').agg(*agg_exprs).collect()
+
         # Convert to lookup dictionary
         grouped_metrics = {}
         for row in confusion_by_time:
             time_group = row['time_group']
-            
-            for class_idx_str in self.index_label_map.keys():
+
+            for class_idx_str in self.index_label_map:
                 class_idx_int = int(float(class_idx_str))
-                
+
                 tp = row[f'tp_{class_idx_int}'] or 0
                 fp = row[f'fp_{class_idx_int}'] or 0
                 fn = row[f'fn_{class_idx_int}'] or 0
                 tn = row[f'tn_{class_idx_int}'] or 0
 
-                print(tp)
-                print(fp)
-                print(fn)
-                print(tn)
+                # If there are no actual samples of this class in this time bucket (tp+fn=0),
+                # all metrics are undefined (NaN) - the class doesn't exist in this period
+                if (tp + fn) == 0:
+                    precision = float('nan')
+                    recall = float('nan')
+                    fpr = float('nan')
+                else:
+                    # When no predictions were made for this class (tp+fp=0), precision is 0.0
+                    precision = float(tp) / (tp + fp) if (tp + fp) > 0 else 0.0
+                    recall = float(tp) / (
+                        tp + fn
+                    )  # Can't be divide by zero since tp+fn > 0
+                    fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
 
+                if math.isnan(precision + recall):
+                    f_measure = float('nan')
+                else:
+                    f_measure = (
+                        2 * precision * recall / (precision + recall)
+                        if (precision + recall) > 0
+                        else 0.0
+                    )
 
-                precision = float(tp) / (tp + fp) if (tp + fp) > 0 else float('nan')
-                recall = float(tp) / (tp + fn) if (tp + fn) > 0 else float('nan')
-                fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
-                print(precision)
-                print(recall)
-                f_measure = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0
-                
-                grouped_metrics[(time_group, class_idx_str, 'true_positive_rate')] = recall
-                grouped_metrics[(time_group, class_idx_str, 'false_positive_rate')] = fpr
+                grouped_metrics[(time_group, class_idx_str, 'true_positive_rate')] = (
+                    recall
+                )
+                grouped_metrics[(time_group, class_idx_str, 'false_positive_rate')] = (
+                    fpr
+                )
                 grouped_metrics[(time_group, class_idx_str, 'precision')] = precision
                 grouped_metrics[(time_group, class_idx_str, 'recall')] = recall
                 grouped_metrics[(time_group, class_idx_str, 'f_measure')] = f_measure
-        
+
         return grouped_metrics
 
     def __evaluate_multi_class_classification(

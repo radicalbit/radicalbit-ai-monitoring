@@ -1,20 +1,19 @@
-"""
-Performance test to demonstrate the nested loop catastrophe issue.
+"""Performance test to demonstrate the nested loop catastrophe issue.
 
 Run with: pytest tests/performance_multiclass_test.py -v -s
 
 This test generates a large dataset with many time groups to showcase
 the performance difference between original and optimized code.
 """
+
 import datetime
-import time
-import uuid
 import random
+import uuid
 
 from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
-import pytest
 from pyspark.sql import Row
+import pytest
 from utils.current_multiclass import CurrentMetricsMulticlassService
 
 from jobs.utils.models import (
@@ -32,24 +31,23 @@ from tests.utils.pytest_utils import prefix_id
 
 @pytest.fixture
 def large_dataset_for_performance(spark_fixture):
-    """
-    Generate a large dataset with:
+    """Generate a large dataset with:
     - 10,000 rows
     - 5 classes
     - 100 time groups (hourly over ~4 days)
     - 4 features
-    
+
     This will trigger: 5 classes × 5 metrics × 100 time groups = 2,500 evaluations
     """
     random.seed(42)
-    
+
     classes = ['CLASS_A', 'CLASS_B', 'CLASS_C', 'CLASS_D', 'CLASS_E']
     cat1_values = ['X', 'Y', 'Z']
     cat2_values = ['P', 'Q', 'R']
-    
+
     # Base datetime
     base_dt = datetime.datetime(2024, 6, 1, 0, 0, 0)
-    
+
     # Generate reference data (small, just needs one row per class)
     reference_data = []
     for i, cls in enumerate(classes):
@@ -61,22 +59,22 @@ def large_dataset_for_performance(spark_fixture):
                 num2=round(random.uniform(0.0, 500.0), 2),
                 prediction=cls,
                 target=cls,
-                datetime=str(base_dt + datetime.timedelta(hours=i))
+                datetime=str(base_dt + datetime.timedelta(hours=i)),
             )
         )
-    
+
     # Generate current data (10,000 rows across 100 hours)
     current_data = []
     rows_per_hour = 100
     num_hours = 100
-    
+
     for hour in range(num_hours):
         dt = base_dt + datetime.timedelta(hours=hour)
         for _ in range(rows_per_hour):
             true_class = random.choice(classes)
             # 80% accuracy
             pred_class = true_class if random.random() < 0.8 else random.choice(classes)
-            
+
             current_data.append(
                 Row(
                     cat1=random.choice(cat1_values),
@@ -85,29 +83,21 @@ def large_dataset_for_performance(spark_fixture):
                     num2=round(random.uniform(0.0, 500.0), 2),
                     prediction=pred_class,
                     target=true_class,
-                    datetime=str(dt + datetime.timedelta(minutes=random.randint(0, 59)))
+                    datetime=str(
+                        dt + datetime.timedelta(minutes=random.randint(0, 59))
+                    ),
                 )
             )
-    
+
     reference_df = spark_fixture.createDataFrame(reference_data)
     current_df = spark_fixture.createDataFrame(current_data)
-    
-    print(f"\n{'='*60}")
-    print(f"Performance Test Dataset Generated:")
-    print(f"  Reference rows: {len(reference_data)}")
-    print(f"  Current rows: {len(current_data)}")
-    print(f"  Classes: {len(classes)}")
-    print(f"  Time groups (hours): {num_hours}")
-    print(f"  Expected evaluations: {len(classes)} × 5 metrics × {num_hours} = {len(classes) * 5 * num_hours}")
-    print(f"{'='*60}\n")
-    
+
     return reference_df, current_df
 
 
 def test_performance_large_dataset(spark_fixture, large_dataset_for_performance):
-    """
-    Performance test with a large dataset.
-    
+    """Performance test with a large dataset.
+
     Expected behavior:
     - ORIGINAL CODE: Very slow due to nested loop triggering ~2,500 Spark jobs
     - OPTIMIZED CODE: Much faster with caching and batched computation
@@ -180,37 +170,11 @@ def test_performance_large_dataset(spark_fixture, large_dataset_for_performance)
         prefix_id=prefix_id,
     )
 
-    # Measure time for model quality calculation
-    print("\n" + "="*60)
-    print("Starting model quality calculation...")
-    print("="*60)
-    
-    start_time = time.time()
     model_quality = metrics_service.calculate_model_quality()
-    end_time = time.time()
-    
-    elapsed_time = end_time - start_time
-    
-    print("\n" + "="*60)
-    print(f"PERFORMANCE RESULTS:")
-    print(f"  Elapsed time: {elapsed_time:.2f} seconds")
-    print(f"  Classes processed: {len(model_quality['classes'])}")
-    print(f"  Time groups: {len(model_quality['class_metrics'][0]['grouped_metrics']['true_positive_rate'])}")
-    print("="*60 + "\n")
-    
+
     # Basic validation
     assert model_quality is not None
     assert 'classes' in model_quality
     assert 'class_metrics' in model_quality
     assert 'global_metrics' in model_quality
     assert len(model_quality['classes']) == 5
-    
-    # Print summary
-    print(f"\n✓ Test passed - Model quality calculated successfully")
-    print(f"  Time taken: {elapsed_time:.2f}s")
-    
-    # For comparison purposes, log if it's suspiciously fast or slow
-    if elapsed_time < 5:
-        print(f"  ⚠️  Surprisingly fast - might be using optimized code")
-    elif elapsed_time > 30:
-        print(f"  ⚠️  Slow performance - might be using original nested loop code")
