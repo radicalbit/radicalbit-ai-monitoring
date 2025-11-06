@@ -115,10 +115,10 @@ class DataQualityCalculator:
                 histograms[column] = ([0.0] * 11, [0] * 10)
                 continue
 
-            # Generate bucket boundaries
+            # Generate bucket boundaries matching original RDD histogram behavior
             if min_val == max_val:
-                # All values are the same
-                buckets = [min_val - 0.5, min_val + 0.5]
+                # All values are the same - match RDD histogram behavior exactly
+                buckets = [min_val, min_val]
                 counts = [dataframe.filter(F.col(column).isNotNull()).count()]
             else:
                 buckets = np.linspace(min_val, max_val, 11).tolist()
@@ -481,7 +481,8 @@ class DataQualityCalculator:
         if min_val is None or max_val is None:
             histogram = Histogram(buckets=[0.0] * 11, reference_values=[0] * 10)
         elif min_val == max_val:
-            buckets = [min_val - 0.5, min_val + 0.5]
+            # Match RDD histogram behavior exactly for constant values
+            buckets = [min_val, min_val]
             counts = [dataframe.filter(F.col(target_column).isNotNull()).count()]
             histogram = Histogram(buckets=buckets, reference_values=counts)
         else:

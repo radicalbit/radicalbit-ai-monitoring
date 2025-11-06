@@ -10,7 +10,6 @@ import datetime
 import random
 import uuid
 
-from models.current_dataset import CurrentDataset
 from models.reference_dataset import ReferenceDataset
 from pyspark.sql import Row
 import pytest
@@ -48,24 +47,21 @@ def large_reference_dataset_for_performance(spark_fixture):
     base_dt = datetime.datetime(2024, 6, 1, 0, 0, 0)
 
     # Generate reference data (10,000 rows)
-    reference_data = []
     rows_per_class = 2000  # 2000 rows per class
 
-    for cls in classes:
-        for _ in range(rows_per_class):
-            reference_data.append(
-                Row(
-                    cat1=random.choice(cat1_values),
-                    cat2=random.choice(cat2_values),
-                    num1=round(random.uniform(0.0, 100.0), 2),
-                    num2=round(random.uniform(0.0, 500.0), 2),
-                    prediction=cls,
-                    target=cls,
-                    datetime=str(
-                        base_dt + datetime.timedelta(hours=random.randint(0, 99))
-                    ),
-                )
-            )
+    reference_data = [
+        Row(
+            cat1=random.choice(cat1_values),
+            cat2=random.choice(cat2_values),
+            num1=round(random.uniform(0.0, 100.0), 2),
+            num2=round(random.uniform(0.0, 500.0), 2),
+            prediction=cls,
+            target=cls,
+            datetime=str(base_dt + datetime.timedelta(hours=random.randint(0, 99))),
+        )
+        for cls in classes
+        for _ in range(rows_per_class)
+    ]
 
     # Generate current data (small, just needs one row per class)
     current_data = []
@@ -150,9 +146,6 @@ def test_performance_large_reference_dataset(
     )
 
     reference_dataframe, current_dataframe = large_reference_dataset_for_performance
-    current_dataset = CurrentDataset(
-        model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id
-    )
     reference_dataset = ReferenceDataset(
         model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
     )

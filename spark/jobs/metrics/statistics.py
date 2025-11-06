@@ -28,8 +28,6 @@ def _calculate_statistics(
     number_of_categorical,
     number_of_datetime,
 ):
-    """Internal optimized statistics calculation logic."""
-
     # Pre-calculate columns for deduplication
     dedup_columns = [c for c in dataframe_columns if c != timestamp_column_name]
 
