@@ -29,14 +29,14 @@ def _calculate_statistics(
     number_of_datetime,
 ):
     """Internal optimized statistics calculation logic."""
-    
+
     # Pre-calculate columns for deduplication
     dedup_columns = [c for c in dataframe_columns if c != timestamp_column_name]
-    
+
     # Calculate unique count separately to avoid nested Spark job in F.lit()
     unique_count = dataframe.dropDuplicates(dedup_columns).count()
     duplicate_count = number_of_observations - unique_count
-    
+
     # Build missing cell count expressions
     missing_count_exprs = [
         F.count(F.when(F.isnan(c) | F.col(c).isNull(), c)).alias(c)
@@ -44,10 +44,10 @@ def _calculate_statistics(
         else F.count(F.when(F.col(c).isNull(), c)).alias(c)
         for c, t in dataframe_dtypes
     ]
-    
+
     # Use reduce for efficient column summing
     missing_cells_sum = reduce(add, [F.col(c) for c in dataframe_columns])
-    
+
     stats = (
         dataframe.select(missing_count_exprs)
         .withColumn(MISSING_CELLS, missing_cells_sum)
@@ -78,10 +78,10 @@ def _calculate_statistics(
             DATETIME,
         )
     )
-    
+
     # Direct conversion without pandas overhead
     stats_dict = stats.first().asDict()
-    
+
     return Statistics(**stats_dict)
 
 
@@ -95,7 +95,7 @@ def calculate_statistics_reference(
     number_of_numerical = len(reference_dataset.get_numerical_variables())
     number_of_categorical = len(reference_dataset.get_categorical_variables())
     number_of_datetime = len(reference_dataset.get_datetime_variables())
-    
+
     return _calculate_statistics(
         dataframe=reference_dataset.reference,
         dataframe_columns=reference_dataset.reference.columns,
@@ -117,7 +117,7 @@ def calculate_statistics_current(
     number_of_numerical = len(current_dataset.get_numerical_variables())
     number_of_categorical = len(current_dataset.get_categorical_variables())
     number_of_datetime = len(current_dataset.get_datetime_variables())
-    
+
     return _calculate_statistics(
         dataframe=current_dataset.current,
         dataframe_columns=current_dataset.current.columns,

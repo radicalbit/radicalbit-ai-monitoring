@@ -68,7 +68,9 @@ class ReferenceMetricsMulticlassService:
             )
         )
 
-        pred_col = f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx'
+        pred_col = (
+            f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx'
+        )
         label_col = f'{self.prefix_id}_{self.reference.model.target.name}-idx'
 
         # Batch compute all metrics for all classes at once

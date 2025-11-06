@@ -61,7 +61,9 @@ def large_reference_dataset_for_performance(spark_fixture):
                     num2=round(random.uniform(0.0, 500.0), 2),
                     prediction=cls,
                     target=cls,
-                    datetime=str(base_dt + datetime.timedelta(hours=random.randint(0, 99))),
+                    datetime=str(
+                        base_dt + datetime.timedelta(hours=random.randint(0, 99))
+                    ),
                 )
             )
 
@@ -86,7 +88,9 @@ def large_reference_dataset_for_performance(spark_fixture):
     return reference_df, current_df
 
 
-def test_performance_large_reference_dataset(spark_fixture, large_reference_dataset_for_performance):
+def test_performance_large_reference_dataset(
+    spark_fixture, large_reference_dataset_for_performance
+):
     """Performance test with a large reference dataset.
 
     Expected behavior:

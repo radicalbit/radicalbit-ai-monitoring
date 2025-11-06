@@ -1,4 +1,5 @@
 import datetime
+import json
 import uuid
 
 import deepdiff
@@ -453,6 +454,9 @@ def test_calculation_easy_dataset(spark_fixture, easy_dataset):
     assert model_quality == my_approx(
         res.test_calculation_easy_dataset_mq_res,
     )
+
+    print(json.dumps(data_quality.model_dump(serialize_as_any=True, exclude_none=True)))
+    print(json.dumps(res.test_calculation_easy_dataset_dq_res))
 
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
