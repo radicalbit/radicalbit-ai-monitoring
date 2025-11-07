@@ -89,11 +89,11 @@ class DataQualityCalculator:
             )
         )
 
-        # ✅ OPTIMIZATION: Direct conversion without pandas overhead
+        # Optimized:: Direct conversion without pandas overhead
         global_dict = global_stat.first().asDict()
         global_data_quality = split_dict(global_dict)
 
-        # ✅ OPTIMIZATION: Use DataFrame API instead of RDD for histograms
+        # Optimized:: Use DataFrame API instead of RDD for histograms
         # Calculate min/max for all columns in a single pass
         min_max_exprs = []
         for column in numerical_features:
@@ -190,11 +190,11 @@ class DataQualityCalculator:
             *(missing_values_agg + missing_values_perc_agg + distinct_values)
         )
 
-        # ✅ OPTIMIZATION: Direct conversion without pandas overhead
+        # Optimized:: Direct conversion without pandas overhead
         global_dict = global_stat.first().asDict()
         global_data_quality = split_dict(global_dict)
 
-        # ✅ OPTIMIZATION: Single query for all categorical features instead of N queries
+        # Optimized:: Single query for all categorical features instead of N queries
         # Unpivot all categorical columns and compute counts in one pass
         if categorical_features:
             # Create expressions for unpivoting
@@ -291,7 +291,7 @@ class DataQualityCalculator:
                 [feature, f'{prefix_id}_type']
             ).unionByName(reference.select([feature, f'{prefix_id}_type']))
 
-            # ✅ OPTIMIZATION: Single aggregation for both min and max
+            # Optimized:: Single aggregation for both min and max
             min_max_result = reference_and_current.agg(
                 F.min(
                     F.when(
@@ -354,7 +354,7 @@ class DataQualityCalculator:
             if len(generated_buckets) == 1:
                 tot_df = tot_df.filter(F.col('bucket') == 1)
 
-            # ✅ OPTIMIZATION: Use DataFrame API instead of RDD
+            # Optimized:: Use DataFrame API instead of RDD
             collected_data = tot_df.select('curr_count', 'ref_count').collect()
             cur = [row['curr_count'] for row in collected_data]
             ref = [row['ref_count'] for row in collected_data]
@@ -439,7 +439,7 @@ class DataQualityCalculator:
             )
         )
 
-        # ✅ OPTIMIZATION: Direct conversion without pandas overhead
+        # Optimized:: Direct conversion without pandas overhead
         global_dict = global_stat.first().asDict()
         global_data_quality = split_dict(global_dict)
 
@@ -470,7 +470,7 @@ class DataQualityCalculator:
             target_column, dataframe, dataframe_count
         )
 
-        # ✅ OPTIMIZATION: Use DataFrame API instead of RDD for histogram
+        # Optimized:: Use DataFrame API instead of RDD for histogram
         min_max_result = dataframe.select(
             F.min(target_column).alias('min_val'), F.max(target_column).alias('max_val')
         ).first()
@@ -565,5 +565,5 @@ class DataQualityCalculator:
             )
         )
 
-        # ✅ OPTIMIZATION: Direct conversion without pandas overhead
+        # Optimized:: Direct conversion without pandas overhead
         return result.first().asDict()
