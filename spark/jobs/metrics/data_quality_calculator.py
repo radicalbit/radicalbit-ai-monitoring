@@ -197,8 +197,10 @@ class DataQualityCalculator:
         # Optimized:: Single query for all categorical features instead of N queries
         # Unpivot all categorical columns and compute counts in one pass
         if categorical_features:
-            # Create expressions for unpivoting
-            stack_expr = ', '.join([f"'{col}', {col}" for col in categorical_features])
+            # Create expressions for unpivoting - cast all to string to handle mixed types
+            stack_expr = ', '.join(
+                [f"'{col}', CAST({col} AS STRING)" for col in categorical_features]
+            )
 
             unpivoted = dataframe.selectExpr(
                 f'stack({len(categorical_features)}, {stack_expr}) as (feature_name, feature_value)'
