@@ -67,14 +67,17 @@ class PercentageCalculator:
             # bootstrap Parameters
             n_iterations = 500
             n_size = len(metrics_cur_np)
-            bootstrap_means = []
+
+            # Use RandomState for better performance (avoid repeated seed calls)
+            rng = np.random.RandomState(42)
+
+            # Pre-allocate numpy array instead of list with append
+            bootstrap_means = np.zeros(n_iterations)
 
             # perform bootstrap sampling
-            np.random.seed(42)  # For reproducibility
-
-            for _ in range(n_iterations):
-                sample = np.random.choice(metrics_cur_np, size=n_size, replace=True)
-                bootstrap_means.append(np.mean(sample))
+            for i in range(n_iterations):
+                sample = rng.choice(metrics_cur_np, size=n_size, replace=True)
+                bootstrap_means[i] = np.mean(sample)
 
             # calculate 95% confidence interval
             lower_bound = np.percentile(bootstrap_means, 2.5)
@@ -105,13 +108,19 @@ class PercentageCalculator:
             )
 
         elif model.model_type == ModelType.MULTI_CLASS:
+            # Pre-build dictionary to avoid O(n²) nested loop
+            class_metrics_map = {
+                cm_ref['class_name']: cm_ref['metrics']
+                for cm_ref in model_quality_reference['class_metrics']
+            }
+
             flagged_metrics = 0
             cumulative_sum = 0
             for cm in model_quality_current['class_metrics']:
+                # O(1) lookup instead of nested loop
+                mq_ref = class_metrics_map[cm['class_name']]
+
                 for key_m in cm['grouped_metrics']:
-                    for cm_ref in model_quality_reference['class_metrics']:
-                        if cm_ref['class_name'] == cm['class_name']:
-                            mq_ref = cm_ref['metrics']
                     metric_ref = mq_ref[key_m]
                     metrics_cur = [x['value'] for x in cm['grouped_metrics'][key_m]]
                     if len(metrics_cur) < 2:
@@ -144,100 +153,151 @@ class PercentageCalculator:
             current_dataframe: DataFrame,
             reference_dataframe: DataFrame,
         ):
-            # Switch between numerical and categorical columns
-            numerical_features = [
-                numerical.name for numerical in model.get_numerical_features()
-            ]
+            # Cache DataFrames to avoid recomputation
+            reference_dataframe.cache()
+            current_dataframe.cache()
 
-            categorical_features = [
-                categorical.name for categorical in model.get_categorical_features()
-            ]
-            details = []
+            try:
+                # Switch between numerical and categorical columns
+                numerical_features = [
+                    numerical.name for numerical in model.get_numerical_features()
+                ]
 
-            # Using the `for` loop to create new columns by identifying the outliers for each feature
-            for column in numerical_features:
-                # Q1 : First Quartile ., Q3 : Third Quartile
-                Q1 = reference_dataframe.approxQuantile(column, [0.25], relativeError=0)
-                Q3 = reference_dataframe.approxQuantile(column, [0.75], relativeError=0)
+                categorical_features = [
+                    categorical.name for categorical in model.get_categorical_features()
+                ]
+                details = []
 
-                # IQR : Inter Quantile Range
-                # We need to define the index [0], as Q1 & Q3 are a set of lists., to perform a mathematical operation
-                # Q1 & Q3 are defined separately so as to have a clear indication on First Quantile & 3rd Quantile
-                IQR = Q3[0] - Q1[0]
+                # Process numerical features with optimized approach
+                if numerical_features:
+                    # Build all outlier detection columns in one pass
+                    outlier_columns = []
 
-                # selecting the data, with -1.5*IQR to + 1.5*IQR., where param = 1.5 default value
-                less_Q1 = Q1[0] - 1.5 * IQR
-                more_Q3 = Q3[0] + 1.5 * IQR
+                    for column in numerical_features:
+                        # Optimize: Single approxQuantile call for both Q1 and Q3
+                        quantiles = reference_dataframe.approxQuantile(
+                            column, [0.25, 0.75], relativeError=0
+                        )
+                        Q1, Q3 = quantiles[0], quantiles[1]
 
-                is_outlier_col = f'is_outlier_{column}'
+                        # IQR : Inter Quantile Range
+                        IQR = Q3 - Q1
 
-                current_dataframe = current_dataframe.withColumn(
-                    is_outlier_col,
-                    F.when(
-                        (current_dataframe[column] > more_Q3)
-                        | (current_dataframe[column] < less_Q1),
-                        1,
-                    ).otherwise(0),
-                )
+                        # selecting the data, with -1.5*IQR to + 1.5*IQR., where param = 1.5 default value
+                        less_Q1 = Q1 - 1.5 * IQR
+                        more_Q3 = Q3 + 1.5 * IQR
 
-                details.append(
-                    {
-                        'feature_name': column,
-                        'score': current_dataframe.select(is_outlier_col)
-                        .groupby()
-                        .sum()
-                        .collect()[0][0]
-                        / current_dataframe.select(is_outlier_col).count(),
-                    }
-                )
+                        is_outlier_col = f'is_outlier_{column}'
+                        outlier_columns.append(is_outlier_col)
 
-            indexers = [
-                StringIndexer(
-                    inputCol=column, outputCol=column + '_index', handleInvalid='keep'
-                ).fit(reference_dataframe)
-                for column in categorical_features
-            ]
+                        current_dataframe = current_dataframe.withColumn(
+                            is_outlier_col,
+                            F.when(
+                                (current_dataframe[column] > more_Q3)
+                                | (current_dataframe[column] < less_Q1),
+                                1,
+                            ).otherwise(0),
+                        )
 
-            pipeline = Pipeline(stages=indexers)
-            indexed_current_outliers_df = pipeline.fit(reference_dataframe).transform(
-                current_dataframe
-            )
+                    # Optimize: Single aggregation for all numerical features
+                    agg_exprs = [
+                        F.sum(col).alias(f'sum_{col}') for col in outlier_columns
+                    ]
+                    agg_exprs.append(F.count('*').alias('total_count'))
 
-            for column in categorical_features:
-                is_outlier_col = f'is_outlier_{column}'
+                    results = current_dataframe.agg(*agg_exprs).collect()[0]
+                    total_count = results['total_count']
 
-                count_reference = reference_dataframe.select(column).distinct().count()
+                    for i, column in enumerate(numerical_features):
+                        is_outlier_col = outlier_columns[i]
+                        sum_value = results[f'sum_{is_outlier_col}']
+                        score = sum_value / total_count if total_count > 0 else 0
 
-                current_dataframe = indexed_current_outliers_df.withColumn(
-                    is_outlier_col,
-                    F.when(
-                        (
-                            indexed_current_outliers_df[column + '_index']
-                            > count_reference
-                        ),
-                        1,
-                    ).otherwise(0),
-                )
+                        details.append(
+                            {
+                                'feature_name': column,
+                                'score': score,
+                            }
+                        )
 
-                details.append(
-                    {
-                        'feature_name': column,
-                        'score': current_dataframe.select(is_outlier_col)
-                        .groupby()
-                        .sum()
-                        .collect()[0][0]
-                        / current_dataframe.select(is_outlier_col).count(),
-                    }
-                )
+                # Process categorical features
+                if categorical_features:
+                    # Optimize: Remove redundant .fit() - let pipeline do it
+                    indexers = [
+                        StringIndexer(
+                            inputCol=column,
+                            outputCol=column + '_index',
+                            handleInvalid='keep',
+                        )
+                        for column in categorical_features
+                    ]
 
-            return details
+                    pipeline = Pipeline(stages=indexers)
+                    indexed_current_outliers_df = pipeline.fit(
+                        reference_dataframe
+                    ).transform(current_dataframe)
+
+                    # Optimize: Pre-compute all distinct counts
+                    distinct_counts = {}
+                    for column in categorical_features:
+                        distinct_counts[column] = (
+                            reference_dataframe.select(column).distinct().count()
+                        )
+
+                    # Build outlier columns for categorical features
+                    categorical_outlier_columns = []
+                    cat_df = indexed_current_outliers_df
+                    for column in categorical_features:
+                        is_outlier_col = f'is_outlier_{column}'
+                        categorical_outlier_columns.append(is_outlier_col)
+                        count_reference = distinct_counts[column]
+
+                        cat_df = cat_df.withColumn(
+                            is_outlier_col,
+                            F.when(
+                                (
+                                    indexed_current_outliers_df[column + '_index']
+                                    > count_reference
+                                ),
+                                1,
+                            ).otherwise(0),
+                        )
+
+                    # Optimize: Single aggregation for all categorical features
+                    agg_exprs = [
+                        F.sum(col).alias(f'sum_{col}')
+                        for col in categorical_outlier_columns
+                    ]
+                    agg_exprs.append(F.count('*').alias('total_count'))
+
+                    results = cat_df.agg(*agg_exprs).collect()[0]
+                    total_count = results['total_count']
+
+                    for i, column in enumerate(categorical_features):
+                        is_outlier_col = categorical_outlier_columns[i]
+                        sum_value = results[f'sum_{is_outlier_col}']
+                        score = sum_value / total_count if total_count > 0 else 0
+
+                        details.append(
+                            {
+                                'feature_name': column,
+                                'score': score,
+                            }
+                        )
+
+                return details
+
+            finally:
+                # Always unpersist cached DataFrames
+                reference_dataframe.unpersist()
+                current_dataframe.unpersist()
 
         det = find_outliers(model, current_dataset.current, reference_dataset.reference)
-        s = 0
-        for k in det:
-            s += k['score']
 
-        perc_data_quality = {'value': 1 - (s / len(det)), 'details': det}
+        # Optimize: Use sum() instead of loop
+        s = sum(k['score'] for k in det) if det else 0
+
+        perc_data_quality = {'value': 1 - (s / len(det)) if det else 1, 'details': det}
 
         return {
             'data_quality': perc_data_quality,

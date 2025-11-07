@@ -76,8 +76,12 @@ class Chi2Test(DriftDetector):
         """
         if self.__have_same_size():
             # Optimized: Use DataFrame API instead of RDD conversions
-            self.reference = self.reference.withColumn('id', F.monotonically_increasing_id())
-            self.current = self.current.withColumn('id', F.monotonically_increasing_id())
+            self.reference = self.reference.withColumn(
+                'id', F.monotonically_increasing_id()
+            )
+            self.current = self.current.withColumn(
+                'id', F.monotonically_increasing_id()
+            )
             concatenated_data = self.reference.join(
                 self.current, self.reference.id == self.current.id, how='inner'
             )
@@ -89,12 +93,15 @@ class Chi2Test(DriftDetector):
                 # Optimized: Use distributed sample instead of takeSample
                 fraction = self.current_size / self.reference_size
                 subsample_reference = (
-                    self.reference
-                    .sample(withReplacement=True, fraction=fraction, seed=1990)
+                    self.reference.sample(
+                        withReplacement=True, fraction=fraction, seed=1990
+                    )
                     .limit(self.current_size)
                     .withColumn('id', F.monotonically_increasing_id())
                 )
-                self.current = self.current.withColumn('id', F.monotonically_increasing_id())
+                self.current = self.current.withColumn(
+                    'id', F.monotonically_increasing_id()
+                )
                 concatenated_data = subsample_reference.join(
                     self.current, subsample_reference.id == self.current.id, how='inner'
                 )
@@ -102,12 +109,15 @@ class Chi2Test(DriftDetector):
                 # Optimized: Use distributed sample instead of takeSample
                 fraction = self.reference_size / self.current_size
                 subsample_current = (
-                    self.current
-                    .sample(withReplacement=True, fraction=fraction, seed=1990)
+                    self.current.sample(
+                        withReplacement=True, fraction=fraction, seed=1990
+                    )
                     .limit(self.reference_size)
                     .withColumn('id', F.monotonically_increasing_id())
                 )
-                self.reference = self.reference.withColumn('id', F.monotonically_increasing_id())
+                self.reference = self.reference.withColumn(
+                    'id', F.monotonically_increasing_id()
+                )
                 concatenated_data = subsample_current.join(
                     self.reference,
                     subsample_current.id == self.reference.id,
@@ -139,8 +149,7 @@ class Chi2Test(DriftDetector):
         pipeline = Pipeline(stages=indexers)
         fitted_pipeline = pipeline.fit(concatenated_data)
         return (
-            fitted_pipeline
-            .transform(concatenated_data)
+            fitted_pipeline.transform(concatenated_data)
             .drop(reference_column, current_column)
             .withColumnRenamed(f'{reference_column}_index', reference_column)
             .withColumnRenamed(f'{current_column}_index', current_column)
@@ -186,12 +195,11 @@ class Chi2Test(DriftDetector):
             reference_column=reference_column,
             current_column=current_column,
         )
-        vector_data = self.__current_column_to_vector(
+        return self.__current_column_to_vector(
             data=numeric_concatenated_data,
             reference_column=reference_column,
             current_column=current_column,
         )
-        return vector_data
 
     def test_independence(self, reference_column: str, current_column: str) -> Dict:
         """Performs the chi-square test of independence.
@@ -206,26 +214,24 @@ class Chi2Test(DriftDetector):
         """
         # Optimized: Filter pushdown - apply na.drop early
         self.reference = (
-            self.reference_data
-            .na.drop(subset=[reference_column])
+            self.reference_data.na.drop(subset=[reference_column])
             .select(reference_column)
             .withColumnRenamed(reference_column, f'{reference_column}_reference')
         )
         self.current = (
-            self.current_data
-            .na.drop(subset=[current_column])
+            self.current_data.na.drop(subset=[current_column])
             .select(current_column)
             .withColumnRenamed(current_column, f'{current_column}_current')
         )
         reference_column = f'{reference_column}_reference'
         current_column = f'{current_column}_current'
-        
+
         # Optimized: Cache before count to avoid re-scanning
         self.reference = self.reference.cache()
         self.current = self.current.cache()
         self.reference_size = self.reference.count()
         self.current_size = self.current.count()
-        
+
         result = ChiSquareTest.test(
             self.__prepare_data_for_test(reference_column, current_column),
             f'{current_column}_vector',
@@ -235,11 +241,11 @@ class Chi2Test(DriftDetector):
 
         # Optimized: Single collect() call instead of three
         row = result.select('pValue', 'degreesOfFreedom', 'statistic').first()
-        
+
         # Clean up cache
         self.reference.unpersist()
         self.current.unpersist()
-        
+
         return {
             'pValue': row['pValue'],
             'degreesOfFreedom': row['degreesOfFreedom'],
@@ -255,18 +261,16 @@ class Chi2Test(DriftDetector):
         """
         # Optimized: Filter pushdown - apply na.drop early
         self.reference = (
-            self.reference_data
-            .na.drop(subset=[reference_column])
+            self.reference_data.na.drop(subset=[reference_column])
             .select(reference_column)
             .withColumnRenamed(reference_column, f'{self.prefix_id}_value')
         )
         self.current = (
-            self.current_data
-            .na.drop(subset=[current_column])
+            self.current_data.na.drop(subset=[current_column])
             .select(current_column)
             .withColumnRenamed(current_column, f'{self.prefix_id}_value')
         )
-        
+
         # Optimized: Cache before count to avoid re-scanning
         self.reference = self.reference.cache()
         self.current = self.current.cache()
@@ -287,20 +291,20 @@ class Chi2Test(DriftDetector):
             concatenated_data.groupBy(f'{self.prefix_id}_value')
             .agg(
                 cnt_cond(F.col('type') == 'reference').alias('ref_count'),
-                cnt_cond(F.col('type') == 'current').alias('cur_count')
+                cnt_cond(F.col('type') == 'current').alias('cur_count'),
             )
             .collect()
         )
-        
+
         # Extract arrays from single collect result
         ref_fr = np.array([row['ref_count'] for row in counts])
         cur_fr = np.array([row['cur_count'] for row in counts])
-        
+
         # Clean up caches
         concatenated_data.unpersist()
         self.reference.unpersist()
         self.current.unpersist()
-        
+
         proportion = sum(cur_fr) / sum(ref_fr)
         ref_fr = ref_fr * proportion
         res = chisquare(cur_fr, ref_fr)

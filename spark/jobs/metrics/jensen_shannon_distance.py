@@ -121,13 +121,17 @@ class JensenShannonDistance(DriftDetector):
         """
         # OPTIMIZATION 1: Filter before select for better pushdown
         # OPTIMIZATION 2: Cache filtered DataFrames since they're used multiple times
-        reference = df_reference.filter(
-            f.col(column_name).isNotNull()
-        ).select(column_name).cache()
-        
-        current = df_current.filter(
-            f.col(column_name).isNotNull()
-        ).select(column_name).cache()
+        reference = (
+            df_reference.filter(f.col(column_name).isNotNull())
+            .select(column_name)
+            .cache()
+        )
+
+        current = (
+            df_current.filter(f.col(column_name).isNotNull())
+            .select(column_name)
+            .cache()
+        )
 
         # Compute quantiles on cached reference data
         reference_quantiles = reference.approxQuantile(
@@ -161,15 +165,12 @@ class JensenShannonDistance(DriftDetector):
         reference_count = reference_total_row['total']
 
         # OPTIMIZATION 4: Remove unnecessary orderBy (order not needed for JS distance)
-        reference_bucket_percentages = (
-            reference_bucket_counts.withColumn(
-                f'{self.prefix_id}_percentage',
-                (f.col(f'{self.prefix_id}_count') / f.lit(reference_count)),
-            )
-            .select(
-                f.col(f'{self.prefix_id}_bucket'),
-                f.col(f'{self.prefix_id}_percentage'),
-            )
+        reference_bucket_percentages = reference_bucket_counts.withColumn(
+            f'{self.prefix_id}_percentage',
+            (f.col(f'{self.prefix_id}_count') / f.lit(reference_count)),
+        ).select(
+            f.col(f'{self.prefix_id}_bucket'),
+            f.col(f'{self.prefix_id}_percentage'),
         )
 
         # Process current data
@@ -186,15 +187,12 @@ class JensenShannonDistance(DriftDetector):
         current_count = current_total_row['total']
 
         # OPTIMIZATION 4: Remove unnecessary orderBy
-        current_bucket_percentages = (
-            current_bucket_counts.withColumn(
-                f'{self.prefix_id}_percentage',
-                (f.col(f'{self.prefix_id}_count') / f.lit(current_count)),
-            )
-            .select(
-                f.col(f'{self.prefix_id}_bucket'),
-                f.col(f'{self.prefix_id}_percentage'),
-            )
+        current_bucket_percentages = current_bucket_counts.withColumn(
+            f'{self.prefix_id}_percentage',
+            (f.col(f'{self.prefix_id}_count') / f.lit(current_count)),
+        ).select(
+            f.col(f'{self.prefix_id}_bucket'),
+            f.col(f'{self.prefix_id}_percentage'),
         )
 
         # Unpersist cached DataFrames
@@ -216,6 +214,7 @@ class JensenShannonDistance(DriftDetector):
         The Jensen-Shannon value.
 
         """
+
         def align_dicts(reference_dict, current_dict):
             """Check if reference and current have the same keys.
             When reference and current don't have the same keys,
@@ -247,17 +246,18 @@ class JensenShannonDistance(DriftDetector):
 
         def df_to_dict(df, key_col, value_col):
             """Convert DataFrame to dictionary using native Spark collect.
-            
+
             OPTIMIZATION: Replace toPandas() with native Spark operations to avoid
             driver memory issues with high-cardinality columns.
-            
+
             Parameters:
             - df: DataFrame with key and value columns
             - key_col: Name of the key column
             - value_col: Name of the value column
-            
+
             Returns:
             Dictionary mapping keys to values
+
             """
             rows = df.select(key_col, value_col).collect()
             return {row[key_col]: row[value_col] for row in rows}
@@ -275,13 +275,13 @@ class JensenShannonDistance(DriftDetector):
             reference_category_dict = df_to_dict(
                 reference_category_percentages,
                 f'{self.prefix_id}_category',
-                f'{self.prefix_id}_percentage'
+                f'{self.prefix_id}_percentage',
             )
 
             current_category_dict = df_to_dict(
                 current_category_percentages,
                 f'{self.prefix_id}_category',
-                f'{self.prefix_id}_percentage'
+                f'{self.prefix_id}_percentage',
             )
 
             if reference_category_dict.keys() != current_category_dict.keys():
@@ -307,13 +307,13 @@ class JensenShannonDistance(DriftDetector):
         reference_bucket_dict = df_to_dict(
             reference_bucket_percentage,
             f'{self.prefix_id}_bucket',
-            f'{self.prefix_id}_percentage'
+            f'{self.prefix_id}_percentage',
         )
 
         current_bucket_dict = df_to_dict(
             current_bucket_percentage,
             f'{self.prefix_id}_bucket',
-            f'{self.prefix_id}_percentage'
+            f'{self.prefix_id}_percentage',
         )
 
         if reference_bucket_dict.keys() != current_bucket_dict.keys():
