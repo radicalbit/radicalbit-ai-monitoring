@@ -1,6 +1,5 @@
 import math
 
-import numpy as np
 from pyspark.sql import DataFrame, functions as f
 from scipy.stats import wasserstein_distance
 from utils.drift_detector import DriftDetector
@@ -18,16 +17,15 @@ class WassersteinDistance(DriftDetector):
         feature_dict_to_append['type'] = DriftAlgorithmType.WASSERSTEIN
         feature_dict_to_append['limit'] = threshold
         result_tmp = self.compute_distance(feature.name)
-        if result_tmp['WassersteinDistance'] is None or math.isnan(
-            result_tmp['WassersteinDistance']
-        ):
+        # Optimized: Store value in variable to avoid redundant dictionary lookups
+        distance_value = result_tmp['WassersteinDistance']
+        if distance_value is None or math.isnan(distance_value):
             feature_dict_to_append['value'] = -1
             feature_dict_to_append['has_drift'] = False
             return feature_dict_to_append
-        feature_dict_to_append['value'] = float(result_tmp['WassersteinDistance'])
-        feature_dict_to_append['has_drift'] = bool(
-            result_tmp['WassersteinDistance'] > threshold
-        )
+        # Keep explicit type conversions to ensure Python types (not numpy types)
+        feature_dict_to_append['value'] = float(distance_value)
+        feature_dict_to_append['has_drift'] = bool(distance_value > threshold)
         return feature_dict_to_append
 
     @property
@@ -64,18 +62,19 @@ class WassersteinDistance(DriftDetector):
         Float with computed distance
 
         """
-
-        reference_values = np.array(
+        # Optimized: Use toPandas() instead of rdd.flatMap().collect()
+        # This leverages Apache Arrow for faster serialization between JVM and Python
+        reference_values = (
             df_reference.select(column_name)
             .filter(f.col(column_name).isNotNull())
-            .rdd.flatMap(lambda xi: xi)
-            .collect()
+            .toPandas()[column_name]
+            .values
         )
-        current_values = np.array(
+        current_values = (
             df_current.select(column_name)
             .filter(f.col(column_name).isNotNull())
-            .rdd.flatMap(lambda xi: xi)
-            .collect()
+            .toPandas()[column_name]
+            .values
         )
 
         return wasserstein_distance(reference_values, current_values)
