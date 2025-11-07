@@ -48,8 +48,9 @@ class HellingerDistance(DriftDetector):
 
         """
         self.spark_session = spark_session
-        self.reference_data = reference_data.dropna()
-        self.current_data = current_data.dropna()
+        # Optimized: Cache after dropna to avoid re-scanning
+        self.reference_data = reference_data.dropna().cache()
+        self.current_data = current_data.dropna().cache()
         self.reference_data_length = self.reference_data.count()
         self.current_data_length = self.current_data.count()
         self.prefix_id = prefix_id
@@ -68,11 +69,11 @@ class HellingerDistance(DriftDetector):
         DataFrame with two columns: category and percentage
 
         """
-
         category_counts = df.groupBy(column_name).agg(
             f.count('*').alias(f'{prefix_id}_count')
         )
-        total_count = df.count()
+        # Optimized: Calculate total from aggregated results instead of full scan
+        total_count = category_counts.agg(f.sum(f'{prefix_id}_count')).first()[0]
         result_df = category_counts.withColumn(
             f'{prefix_id}_percentage',
             (f.col(f'{prefix_id}_count') / f.lit(total_count)),
@@ -123,8 +124,6 @@ class HellingerDistance(DriftDetector):
         Tuple with two objects: the interpolation points and the pdf
 
         """
-
-        # np_array = df.select(column_name).toPandas().to_numpy().reshape(-1)
         np_array = np.array(df.select(column_name).rdd.flatMap(lambda xi: xi).collect())
         kde = gaussian_kde(np_array)
         x = np.linspace(min(np_array), max(np_array), bins)
@@ -168,17 +167,19 @@ class HellingerDistance(DriftDetector):
                 df=self.current_data, column_name=column, prefix_id=self.prefix_id
             )
 
-            reference_category_dict = (
-                reference_category_percentages.toPandas()
-                .set_index(f'{self.prefix_id}_category')[f'{self.prefix_id}_percentage']
-                .to_dict()
-            )
+            # Optimized: Use collect() instead of toPandas() for better performance
+            reference_rows = reference_category_percentages.collect()
+            current_rows = current_category_percentages.collect()
 
-            current_category_dict = (
-                current_category_percentages.toPandas()
-                .set_index(f'{self.prefix_id}_category')[f'{self.prefix_id}_percentage']
-                .to_dict()
-            )
+            reference_category_dict = {
+                row[f'{self.prefix_id}_category']: row[f'{self.prefix_id}_percentage']
+                for row in reference_rows
+            }
+
+            current_category_dict = {
+                row[f'{self.prefix_id}_category']: row[f'{self.prefix_id}_percentage']
+                for row in current_rows
+            }
 
             """
             Note: Only for discrete variables!
