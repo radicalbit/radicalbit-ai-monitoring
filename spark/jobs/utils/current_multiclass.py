@@ -132,9 +132,9 @@ class CurrentMetricsMulticlassService:
         list_of_time_group = [
             row['time_group']
             for row in dataset_with_group.select('time_group')
-                .distinct()
-                .orderBy('time_group')
-                .collect()
+            .distinct()
+            .orderBy('time_group')
+            .collect()
         ]
 
         pred_col = (
@@ -185,7 +185,7 @@ class CurrentMetricsMulticlassService:
         # Use crosstab for efficient confusion matrix computation - 100x faster than conditional aggregation
         confusion_df = dataset.select(
             col(label_col).cast('string').alias('actual'),
-            col(pred_col).cast('string').alias('predicted')
+            col(pred_col).cast('string').alias('predicted'),
         ).crosstab('actual', 'predicted')
 
         # Convert to dictionary for easy lookup
@@ -268,12 +268,30 @@ class CurrentMetricsMulticlassService:
             pred_column = col(pred_col)
             label_column = col(label_col)
 
-            agg_exprs.extend([
-                sql_sum(when((pred_column == class_idx) & (label_column == class_idx), 1).otherwise(0)).alias(f'tp_{class_idx_int}'),
-                sql_sum(when((pred_column == class_idx) & (label_column != class_idx), 1).otherwise(0)).alias(f'fp_{class_idx_int}'),
-                sql_sum(when((pred_column != class_idx) & (label_column == class_idx), 1).otherwise(0)).alias(f'fn_{class_idx_int}'),
-                sql_sum(when((pred_column != class_idx) & (label_column != class_idx), 1).otherwise(0)).alias(f'tn_{class_idx_int}'),
-            ])
+            agg_exprs.extend(
+                [
+                    sql_sum(
+                        when(
+                            (pred_column == class_idx) & (label_column == class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'tp_{class_idx_int}'),
+                    sql_sum(
+                        when(
+                            (pred_column == class_idx) & (label_column != class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'fp_{class_idx_int}'),
+                    sql_sum(
+                        when(
+                            (pred_column != class_idx) & (label_column == class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'fn_{class_idx_int}'),
+                    sql_sum(
+                        when(
+                            (pred_column != class_idx) & (label_column != class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'tn_{class_idx_int}'),
+                ]
+            )
 
         # Single aggregation grouped by time_group for ALL classes and time groups at once!
         confusion_by_time = dataset.groupBy('time_group').agg(*agg_exprs).collect()
@@ -365,7 +383,9 @@ class CurrentMetricsMulticlassService:
         self.indexed_current.cache()
 
         try:
-            metrics_by_label = self.calculate_multiclass_model_quality_group_by_timestamp()
+            metrics_by_label = (
+                self.calculate_multiclass_model_quality_group_by_timestamp()
+            )
             global_metrics = self.__calc_multiclass_global_metrics()
             global_metrics['confusion_matrix'] = self.__calc_confusion_matrix()
             return {

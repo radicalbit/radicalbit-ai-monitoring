@@ -94,7 +94,7 @@ class ReferenceMetricsMulticlassService:
         # Use crosstab for efficient confusion matrix computation - 100x faster than conditional aggregation
         confusion_df = dataset.select(
             col(label_col).cast('string').alias('actual'),
-            col(pred_col).cast('string').alias('predicted')
+            col(pred_col).cast('string').alias('predicted'),
         ).crosstab('actual', 'predicted')
 
         # Convert to dictionary for easy lookup
