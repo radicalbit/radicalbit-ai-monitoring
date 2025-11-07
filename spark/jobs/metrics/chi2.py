@@ -75,16 +75,9 @@ class Chi2Test(DriftDetector):
 
         """
         if self.__have_same_size():
-            self.reference = (
-                self.reference.rdd.flatMap(lambda x: x)
-                .zipWithIndex()
-                .toDF((*self.reference.columns, 'id'))
-            )
-            self.current = (
-                self.current.rdd.flatMap(lambda x: x)
-                .zipWithIndex()
-                .toDF((*self.current.columns, 'id'))
-            )
+            # Optimized: Use DataFrame API instead of RDD conversions
+            self.reference = self.reference.withColumn('id', F.monotonically_increasing_id())
+            self.current = self.current.withColumn('id', F.monotonically_increasing_id())
             concatenated_data = self.reference.join(
                 self.current, self.reference.id == self.current.id, how='inner'
             )
@@ -93,42 +86,28 @@ class Chi2Test(DriftDetector):
             max_size = max(self.reference_size, self.current_size)
 
             if self.reference_size == max_size:
-                # create a reference subsample with a size equal to the current
+                # Optimized: Use distributed sample instead of takeSample
+                fraction = self.current_size / self.reference_size
                 subsample_reference = (
-                    self.spark_session.createDataFrame(
-                        self.reference.rdd.takeSample(
-                            withReplacement=True, num=self.current_size, seed=1990
-                        )
-                    )
-                    .rdd.flatMap(lambda x: x)
-                    .zipWithIndex()
-                    .toDF((*self.reference.columns, 'id'))
+                    self.reference
+                    .sample(withReplacement=True, fraction=fraction, seed=1990)
+                    .limit(self.current_size)
+                    .withColumn('id', F.monotonically_increasing_id())
                 )
-                self.current = (
-                    self.current.rdd.flatMap(lambda x: x)
-                    .zipWithIndex()
-                    .toDF((*self.current.columns, 'id'))
-                )
+                self.current = self.current.withColumn('id', F.monotonically_increasing_id())
                 concatenated_data = subsample_reference.join(
                     self.current, subsample_reference.id == self.current.id, how='inner'
                 )
             else:
-                # create a current subsample with a size equal to the reference
+                # Optimized: Use distributed sample instead of takeSample
+                fraction = self.reference_size / self.current_size
                 subsample_current = (
-                    self.spark_session.createDataFrame(
-                        self.current.rdd.takeSample(
-                            withReplacement=True, num=self.reference_size, seed=1990
-                        )
-                    )
-                    .rdd.flatMap(lambda x: x)
-                    .zipWithIndex()
-                    .toDF((*self.current.columns, 'id'))
+                    self.current
+                    .sample(withReplacement=True, fraction=fraction, seed=1990)
+                    .limit(self.reference_size)
+                    .withColumn('id', F.monotonically_increasing_id())
                 )
-                self.reference = (
-                    self.reference.rdd.flatMap(lambda x: x)
-                    .zipWithIndex()
-                    .toDF((*self.reference.columns, 'id'))
-                )
+                self.reference = self.reference.withColumn('id', F.monotonically_increasing_id())
                 concatenated_data = subsample_current.join(
                     self.reference,
                     subsample_current.id == self.reference.id,
@@ -152,19 +131,19 @@ class Chi2Test(DriftDetector):
         - pyspark.sql.DataFrame: The DataFrame with numeric casting applied.
 
         """
+        # Optimized: Single pipeline fit instead of double fitting
         indexers = [
-            StringIndexer(inputCol=column, outputCol=column + '_index').fit(
-                concatenated_data
-            )
+            StringIndexer(inputCol=column, outputCol=f'{column}_index')
             for column in [reference_column, current_column]
         ]
         pipeline = Pipeline(stages=indexers)
+        fitted_pipeline = pipeline.fit(concatenated_data)
         return (
-            pipeline.fit(concatenated_data)
+            fitted_pipeline
             .transform(concatenated_data)
             .drop(reference_column, current_column)
-            .withColumnRenamed(reference_column + '_index', reference_column)
-            .withColumnRenamed(current_column + '_index', current_column)
+            .withColumnRenamed(f'{reference_column}_index', reference_column)
+            .withColumnRenamed(f'{current_column}_index', current_column)
         )
 
     @staticmethod
@@ -212,7 +191,7 @@ class Chi2Test(DriftDetector):
             reference_column=reference_column,
             current_column=current_column,
         )
-        return vector_data.select(reference_column, f'{current_column}_vector')
+        return vector_data
 
     def test_independence(self, reference_column: str, current_column: str) -> Dict:
         """Performs the chi-square test of independence.
@@ -225,22 +204,28 @@ class Chi2Test(DriftDetector):
         - dict: A dictionary containing the test results including p-value, degrees of freedom, and statistic.
 
         """
+        # Optimized: Filter pushdown - apply na.drop early
         self.reference = (
-            self.reference_data.select(reference_column)
+            self.reference_data
+            .na.drop(subset=[reference_column])
+            .select(reference_column)
             .withColumnRenamed(reference_column, f'{reference_column}_reference')
-            .drop(*[reference_column])
-            .na.drop()
         )
         self.current = (
-            self.current_data.select(current_column)
+            self.current_data
+            .na.drop(subset=[current_column])
+            .select(current_column)
             .withColumnRenamed(current_column, f'{current_column}_current')
-            .drop(*[current_column])
-            .na.drop()
         )
         reference_column = f'{reference_column}_reference'
         current_column = f'{current_column}_current'
+        
+        # Optimized: Cache before count to avoid re-scanning
+        self.reference = self.reference.cache()
+        self.current = self.current.cache()
         self.reference_size = self.reference.count()
         self.current_size = self.current.count()
+        
         result = ChiSquareTest.test(
             self.__prepare_data_for_test(reference_column, current_column),
             f'{current_column}_vector',
@@ -248,10 +233,17 @@ class Chi2Test(DriftDetector):
             True,
         )
 
+        # Optimized: Single collect() call instead of three
+        row = result.select('pValue', 'degreesOfFreedom', 'statistic').first()
+        
+        # Clean up cache
+        self.reference.unpersist()
+        self.current.unpersist()
+        
         return {
-            'pValue': result.select('pValue').collect()[0][0],
-            'degreesOfFreedom': result.select('degreesOfFreedom').collect()[0][0],
-            'statistic': result.select('statistic').collect()[0][0],
+            'pValue': row['pValue'],
+            'degreesOfFreedom': row['degreesOfFreedom'],
+            'statistic': row['statistic'],
         }
 
     def test_goodness_fit(self, reference_column, current_column) -> dict:
@@ -261,44 +253,54 @@ class Chi2Test(DriftDetector):
         - dict: A dictionary containing the test results including p-value and statistic.
 
         """
-
+        # Optimized: Filter pushdown - apply na.drop early
         self.reference = (
-            self.reference_data.select(reference_column)
+            self.reference_data
+            .na.drop(subset=[reference_column])
+            .select(reference_column)
             .withColumnRenamed(reference_column, f'{self.prefix_id}_value')
-            .na.drop()
         )
         self.current = (
-            self.current_data.select(current_column)
+            self.current_data
+            .na.drop(subset=[current_column])
+            .select(current_column)
             .withColumnRenamed(current_column, f'{self.prefix_id}_value')
-            .na.drop()
         )
+        
+        # Optimized: Cache before count to avoid re-scanning
+        self.reference = self.reference.cache()
+        self.current = self.current.cache()
         self.reference_size = self.reference.count()
         self.current_size = self.current.count()
 
         self.current = self.current.withColumn('type', F.lit('current'))
         self.reference = self.reference.withColumn('type', F.lit('reference'))
 
-        concatenated_data = self.current.unionByName(self.reference)
+        # Optimized: Cache concatenated_data as it's used twice
+        concatenated_data = self.current.unionByName(self.reference).cache()
 
         def cnt_cond(cond):
             return F.sum(F.when(cond, 1).otherwise(0))
 
-        ref_fr = np.array(
+        # Optimized: Single groupBy with both aggregations instead of two separate groupBy operations
+        counts = (
             concatenated_data.groupBy(f'{self.prefix_id}_value')
             .agg(
-                cnt_cond(F.col('type') == 'reference').alias(f'{self.prefix_id}_count')
+                cnt_cond(F.col('type') == 'reference').alias('ref_count'),
+                cnt_cond(F.col('type') == 'current').alias('cur_count')
             )
-            .select(f'{self.prefix_id}_count')
-            .rdd.flatMap(lambda x: x)
             .collect()
         )
-        cur_fr = np.array(
-            concatenated_data.groupBy(f'{self.prefix_id}_value')
-            .agg(cnt_cond(F.col('type') == 'current').alias(f'{self.prefix_id}_count'))
-            .select(f'{self.prefix_id}_count')
-            .rdd.flatMap(lambda x: x)
-            .collect()
-        )
+        
+        # Extract arrays from single collect result
+        ref_fr = np.array([row['ref_count'] for row in counts])
+        cur_fr = np.array([row['cur_count'] for row in counts])
+        
+        # Clean up caches
+        concatenated_data.unpersist()
+        self.reference.unpersist()
+        self.current.unpersist()
+        
         proportion = sum(cur_fr) / sum(ref_fr)
         ref_fr = ref_fr * proportion
         res = chisquare(cur_fr, ref_fr)
