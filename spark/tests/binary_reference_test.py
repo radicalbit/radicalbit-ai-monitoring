@@ -82,6 +82,13 @@ def dataset_with_nulls(spark_fixture, test_data_dir):
     )
 
 
+@pytest.fixture
+def enhanced_data_hyphens(spark_fixture, test_data_dir):
+    return spark_fixture.read.csv(
+        f'{test_data_dir}/reference/enhanced_data_hyphens.csv', header=True
+    )
+
+
 def test_calculation(spark_fixture, dataset):
     output = OutputType(
         prediction=ColumnDefinition(
@@ -903,6 +910,115 @@ def test_model_quality_nulls(spark_fixture, dataset_with_nulls):
     assert not deepdiff.DeepDiff(
         model_quality,
         res.test_model_quality_nulls_res,
+        ignore_order=True,
+        significant_digits=6,
+    )
+
+
+def test_calculation_enhanced_data_with_hyphens(spark_fixture, enhanced_data_hyphens):
+    output = OutputType(
+        prediction=ColumnDefinition(
+            name='prediction-1',
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        prediction_proba=ColumnDefinition(
+            name='prediction-proba',
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+        ),
+        output=[
+            ColumnDefinition(
+                name='prediction-1',
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+            ColumnDefinition(
+                name='prediction-proba',
+                type=SupportedTypes.float,
+                field_type=FieldTypes.numerical,
+            ),
+        ],
+    )
+    target = ColumnDefinition(
+        name='target-1', type=SupportedTypes.float, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name='datetime-1', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
+    granularity = Granularity.HOUR
+    features = [
+        ColumnDefinition(
+            name='feature-0', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-1', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-2', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-3', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-4', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-5', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-6', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-7', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-8', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='feature-9', type=SupportedTypes.float, field_type=FieldTypes.numerical
+        ),
+        ColumnDefinition(
+            name='cat-1', type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name='cat-2', type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name='model',
+        description='description',
+        model_type=ModelType.BINARY,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks='framework',
+        algorithm='algorithm',
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=enhanced_data_hyphens, prefix_id=prefix_id
+    )
+    metrics_service = ReferenceMetricsService(reference_dataset, prefix_id)
+
+    stats = calculate_statistics_reference(reference_dataset)
+    model_quality = metrics_service.calculate_model_quality()
+    data_quality = metrics_service.calculate_data_quality()
+
+    assert stats.model_dump(serialize_as_any=True) == my_approx(
+        res.test_calculation_enhanced_data_hyphens_stats_res
+    )
+    assert model_quality == my_approx(res.test_calculation_enhanced_data_hyphens_mq_res)
+
+    assert not deepdiff.DeepDiff(
+        data_quality.model_dump(serialize_as_any=True, exclude_none=True),
+        res.test_calculation_enhanced_data_hyphens_dq_res,
         ignore_order=True,
         significant_digits=6,
     )

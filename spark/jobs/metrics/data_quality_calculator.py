@@ -198,8 +198,9 @@ class DataQualityCalculator:
         # Unpivot all categorical columns and compute counts in one pass
         if categorical_features:
             # Create expressions for unpivoting - cast all to string to handle mixed types
+            # Backticks escape column names with special characters like hyphens
             stack_expr = ', '.join(
-                [f"'{col}', CAST({col} AS STRING)" for col in categorical_features]
+                [f"'{col}', CAST(`{col}` AS STRING)" for col in categorical_features]
             )
 
             unpivoted = dataframe.selectExpr(
