@@ -46,9 +46,9 @@ def dataset_with_nulls(spark_fixture, test_data_dir):
 
 
 @pytest.fixture
-def dataset_perfect_classs(spark_fixture, test_data_dir):
+def dataset_perfect_classes(spark_fixture, test_data_dir):
     return spark_fixture.read.csv(
-        f'{test_data_dir}/reference/multiclass/dataset_perfect_classs.csv',
+        f'{test_data_dir}/reference/multiclass/dataset_perfect_classes.csv',
         header=True,
     )
 
@@ -225,7 +225,7 @@ def test_calculation_dataset_target_string(spark_fixture, dataset_target_string)
     )
 
 
-def test_calculation_dataset_perfect_classs(spark_fixture, dataset_perfect_classs):
+def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_classes):
     output = OutputType(
         prediction=ColumnDefinition(
             name='prediction',
@@ -280,7 +280,7 @@ def test_calculation_dataset_perfect_classs(spark_fixture, dataset_perfect_class
     )
 
     reference_dataset = ReferenceDataset(
-        model=model, raw_dataframe=dataset_perfect_classs, prefix_id=prefix_id
+        model=model, raw_dataframe=dataset_perfect_classes, prefix_id=prefix_id
     )
 
     multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
@@ -290,19 +290,19 @@ def test_calculation_dataset_perfect_classs(spark_fixture, dataset_perfect_class
     model_quality = multiclass_service.calculate_model_quality()
 
     assert stats.model_dump(serialize_as_any=True) == my_approx(
-        res.test_calculation_dataset_perfect_classs_stats_res
+        res.test_calculation_dataset_perfect_classes_stats_res
     )
 
     assert not deepdiff.DeepDiff(
         data_quality.model_dump(serialize_as_any=True, exclude_none=True),
-        res.test_calculation_dataset_perfect_classs_dq_res,
+        res.test_calculation_dataset_perfect_classes_dq_res,
         ignore_order=True,
         significant_digits=6,
     )
 
     assert not deepdiff.DeepDiff(
         model_quality,
-        res.test_calculation_dataset_perfect_classs_mq_res,
+        res.test_calculation_dataset_perfect_classes_mq_res,
         ignore_order=True,
         significant_digits=6,
     )
