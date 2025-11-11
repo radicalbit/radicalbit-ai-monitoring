@@ -13,7 +13,7 @@ from pandas import DataFrame
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-from pyspark.sql.types import IntegerType
+from pyspark.sql.types import DoubleType
 from utils.misc import split_dict
 from utils.models import ModelOut
 from utils.spark import check_not_null
@@ -132,18 +132,15 @@ class DataQualityCalculator:
                 )
 
                 # Count values in each bucket
-                bucket_counts = (
-                    bucketed.groupBy(f'{column}_bucket')
-                    .count()
-                    .orderBy(f'{column}_bucket')
-                    .select('count')
-                    .collect()
-                )
-                counts = [row['count'] for row in bucket_counts]
+                bucket_counts = bucketed.groupBy(f'{column}_bucket').count().collect()
 
-                # Ensure we have exactly 10 buckets
-                while len(counts) < 10:
-                    counts.append(0)
+                # Create a dictionary mapping bucket index to count
+                count_dict = {
+                    int(row[f'{column}_bucket']): row['count'] for row in bucket_counts
+                }
+
+                # Fill in counts for all 10 buckets (0-9)
+                counts = [count_dict.get(i, 0) for i in range(10)]
 
             histograms[column] = (buckets, counts)
 
@@ -343,9 +340,9 @@ class DataQualityCalculator:
                 .agg(F.count(F.col(feature)).alias('ref_count'))
             )
 
-            buckets_number = list(range(10))
+            buckets_number = [float(i) for i in range(10)]
             bucket_df = spark_session.createDataFrame(
-                buckets_number, IntegerType()
+                buckets_number, DoubleType()
             ).withColumnRenamed('value', 'bucket')
             tot_df = (
                 bucket_df.join(current_df, on=['bucket'], how='left')
