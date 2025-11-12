@@ -117,8 +117,14 @@ class PercentageCalculator:
             flagged_metrics = 0
             cumulative_sum = 0
             for cm in model_quality_current['class_metrics']:
+                current_class = cm['class_name']
+
+                # Skip classes that don't exist in reference dataset
+                if current_class not in class_metrics_map:
+                    continue
+
                 # O(1) lookup instead of nested loop
-                mq_ref = class_metrics_map[cm['class_name']]
+                mq_ref = class_metrics_map[current_class]
 
                 for key_m in cm['grouped_metrics']:
                     metric_ref = mq_ref[key_m]
