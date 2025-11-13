@@ -118,7 +118,7 @@ class CategoricalFeatureMetrics(FeatureMetrics):
     )
 
 
-class ClassMetrics(BaseModel):
+class ClassMetricsPercentage(BaseModel):
     name: str
     count: int
     percentage: Optional[float] = None
@@ -128,8 +128,17 @@ class ClassMetrics(BaseModel):
     def to_freq(cls, value: Optional[float]) -> Optional[float]:
         if value:
             return value / 100
-        else:
-            return value
+        return value
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
+class ClassMetrics(BaseModel):
+    name: str
+    count: int
+    percentage: Optional[float] = None
 
     model_config = ConfigDict(
         populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
@@ -138,7 +147,7 @@ class ClassMetrics(BaseModel):
 
 class ClassificationDataQuality(BaseModel):
     n_observations: int
-    class_metrics: List[ClassMetrics]
+    class_metrics: List[ClassMetricsPercentage]
     class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
