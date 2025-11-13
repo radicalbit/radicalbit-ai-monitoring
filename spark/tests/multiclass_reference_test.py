@@ -445,3 +445,136 @@ def test_calculation_dataset_indexing(spark_fixture, dataset_indexing):
         ignore_order=True,
         significant_digits=6,
     )
+
+
+def test_categorical_features_mixed_types_fixed(spark_fixture):
+    # Create a dataset with categorical features of mixed types
+    data = [
+        ('A', '123', 'X', 10, 1.5, 2.0, 'cat1', 'desc1', 1, '2023-01-01 10:00:00', 0),
+        ('B', '456', 'Y', 20, 2.5, 3.0, 'cat2', 'desc2', 2, '2023-01-01 11:00:00', 1),
+        ('C', '789', 'Z', 30, 3.5, 4.0, 'cat3', 'desc3', 0, '2023-01-01 12:00:00', 2),
+    ]
+
+    columns = [
+        'title',  # STRING - categorical
+        'code',  # STRING - categorical
+        'sec',  # STRING - categorical
+        'dive',  # INT - categorical
+        'group',  # DOUBLE - categorical
+        'class',  # DOUBLE - categorical
+        'category',  # STRING - categorical
+        'desc',  # STRING - categorical
+        'prediction',  # INT
+        'datetime',  # TIMESTAMP
+        'target',  # INT
+    ]
+
+    dataset = spark_fixture.createDataFrame(data, columns)
+
+    # Define model with ALL features as categorical to trigger the error
+    output = OutputType(
+        prediction=ColumnDefinition(
+            name='prediction', type=SupportedTypes.int, field_type=FieldTypes.numerical
+        ),
+        prediction_proba=None,
+        output=[
+            ColumnDefinition(
+                name='prediction',
+                type=SupportedTypes.int,
+                field_type=FieldTypes.numerical,
+            )
+        ],
+    )
+    target = ColumnDefinition(
+        name='target', type=SupportedTypes.int, field_type=FieldTypes.numerical
+    )
+    timestamp = ColumnDefinition(
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
+
+    # Define all the different-typed columns as categorical features
+    # This is what triggers the bug
+    features = [
+        ColumnDefinition(
+            name='title', type=SupportedTypes.string, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name='code',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name='sec',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name='dive', type=SupportedTypes.int, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name='group', type=SupportedTypes.float, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name='class', type=SupportedTypes.float, field_type=FieldTypes.categorical
+        ),
+        ColumnDefinition(
+            name='category',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+        ColumnDefinition(
+            name='desc',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+    ]
+
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name='model',
+        description='description',
+        model_type=ModelType.MULTI_CLASS,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=Granularity.HOUR,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks='framework',
+        algorithm='algorithm',
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=dataset, prefix_id=prefix_id
+    )
+
+    multiclass_service = ReferenceMetricsMulticlassService(reference_dataset, prefix_id)
+
+    # This should now work with the fix (casting all categorical columns to STRING)
+    data_quality = multiclass_service.calculate_data_quality()
+
+    # Verify the data quality was calculated successfully
+    assert data_quality is not None
+    assert data_quality.n_observations == 3
+    assert len(data_quality.feature_metrics) == 8  # All 8 categorical features
+
+    # Verify all features are present with their metrics
+    feature_names = {fm.feature_name for fm in data_quality.feature_metrics}
+    expected_features = {
+        'title',
+        'code',
+        'sec',
+        'dive',
+        'group',
+        'class',
+        'category',
+        'desc',
+    }
+    assert feature_names == expected_features
+
+    # Verify that the fix worked - all categorical values should be strings now
+    for feature_metric in data_quality.feature_metrics:
+        assert feature_metric.type == 'categorical'
+        assert feature_metric.distinct_value > 0

@@ -98,6 +98,20 @@ def dataset_demo(spark_fixture, test_data_dir):
     )
 
 
+@pytest.fixture
+def dataset_perfect_classes_additional_value(spark_fixture, test_data_dir):
+    return (
+        spark_fixture.read.csv(
+            f'{test_data_dir}/reference/multiclass/dataset_perfect_classes.csv',
+            header=True,
+        ),
+        spark_fixture.read.csv(
+            f'{test_data_dir}/current/multiclass/dataset_perfect_classes_additional_value.csv',
+            header=True,
+        ),
+    )
+
+
 def test_calculation_dataset_perfect_classes(spark_fixture, dataset_perfect_classes):
     output = OutputType(
         prediction=ColumnDefinition(
@@ -633,6 +647,115 @@ def test_percentages_dataset_demo(spark_fixture, dataset_demo):
     assert not deepdiff.DeepDiff(
         percentages,
         res.test_dataset_demo,
+        ignore_order=True,
+        significant_digits=6,
+    )
+
+
+def test_calculation_dataset_perfect_classes_additional_value(
+    spark_fixture, dataset_perfect_classes_additional_value
+):
+    output = OutputType(
+        prediction=ColumnDefinition(
+            name='prediction',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+        ),
+        prediction_proba=None,
+        output=[
+            ColumnDefinition(
+                name='prediction',
+                type=SupportedTypes.string,
+                field_type=FieldTypes.categorical,
+            )
+        ],
+    )
+    target = ColumnDefinition(
+        name='target', type=SupportedTypes.string, field_type=FieldTypes.categorical
+    )
+    timestamp = ColumnDefinition(
+        name='datetime', type=SupportedTypes.datetime, field_type=FieldTypes.datetime
+    )
+    granularity = Granularity.HOUR
+    features = [
+        ColumnDefinition(
+            name='cat1',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
+        ),
+        ColumnDefinition(
+            name='cat2',
+            type=SupportedTypes.string,
+            field_type=FieldTypes.categorical,
+            drift=drift_chi2,
+        ),
+        ColumnDefinition(
+            name='num1',
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
+        ),
+        ColumnDefinition(
+            name='num2',
+            type=SupportedTypes.float,
+            field_type=FieldTypes.numerical,
+            drift=drift_ks,
+        ),
+    ]
+    model = ModelOut(
+        uuid=uuid.uuid4(),
+        name='model',
+        description='description',
+        model_type=ModelType.MULTI_CLASS,
+        data_type=DataType.TABULAR,
+        timestamp=timestamp,
+        granularity=granularity,
+        outputs=output,
+        target=target,
+        features=features,
+        frameworks='framework',
+        algorithm='algorithm',
+        created_at=str(datetime.datetime.now()),
+        updated_at=str(datetime.datetime.now()),
+    )
+
+    reference_dataframe, current_dataframe = dataset_perfect_classes_additional_value
+    current_dataset = CurrentDataset(
+        model=model, raw_dataframe=current_dataframe, prefix_id=prefix_id
+    )
+    reference_dataset = ReferenceDataset(
+        model=model, raw_dataframe=reference_dataframe, prefix_id=prefix_id
+    )
+
+    metrics_service = CurrentMetricsMulticlassService(
+        spark_session=spark_fixture,
+        current=current_dataset,
+        reference=reference_dataset,
+        prefix_id=prefix_id,
+    )
+
+    model_quality = metrics_service.calculate_model_quality()
+
+    drift = DriftCalculator.calculate_drift(
+        spark_session=spark_fixture,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+        prefix_id=prefix_id,
+    )
+
+    percentages = PercentageCalculator.calculate_percentages(
+        spark_session=spark_fixture,
+        drift=drift,
+        model_quality_current=model_quality,
+        current_dataset=current_dataset,
+        reference_dataset=reference_dataset,
+        model=model,
+        prefix_id=prefix_id,
+    )
+    assert not deepdiff.DeepDiff(
+        percentages,
+        res.test_percentage_perfect_classes_additional_value,
         ignore_order=True,
         significant_digits=6,
     )
