@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, ConfigDict, computed_field
+from pydantic import BaseModel, ConfigDict, computed_field, field_validator
 from pydantic.alias_generators import to_camel
 
 from app.models.exceptions import MetricsInternalError
@@ -118,6 +118,23 @@ class CategoricalFeatureMetrics(FeatureMetrics):
     )
 
 
+class ClassMetricsPercentage(BaseModel):
+    name: str
+    count: int
+    percentage: Optional[float] = None
+
+    @field_validator('percentage', mode='after')
+    @classmethod
+    def to_freq(cls, value: Optional[float]) -> Optional[float]:
+        if value:
+            return value / 100
+        return value
+
+    model_config = ConfigDict(
+        populate_by_name=True, alias_generator=to_camel, protected_namespaces=()
+    )
+
+
 class ClassMetrics(BaseModel):
     name: str
     count: int
@@ -130,7 +147,7 @@ class ClassMetrics(BaseModel):
 
 class ClassificationDataQuality(BaseModel):
     n_observations: int
-    class_metrics: List[ClassMetrics]
+    class_metrics: List[ClassMetricsPercentage]
     class_metrics_prediction: List[ClassMetrics]
     feature_metrics: List[NumericalFeatureMetrics | CategoricalFeatureMetrics]
 
