@@ -12,6 +12,20 @@ test_percentage_perfect_classes = {
     'drift': {'value': 1.0, 'details': []},
 }
 
+test_percentage_perfect_classes_additional_value = {
+    'data_quality': {
+        'value': 0.9090909090909091,
+        'details': [
+            {'feature_name': 'num1', 'score': 0.36363636363636365},
+            {'feature_name': 'num2', 'score': 0.0},
+            {'feature_name': 'cat1', 'score': 0.0},
+            {'feature_name': 'cat2', 'score': 0.0},
+        ],
+    },
+    'model_quality': {'value': -1, 'details': []},
+    'drift': {'value': 1.0, 'details': []},
+}
+
 test_percentage_easy_dataset = {
     'data_quality': {
         'value': 1.0,

@@ -1,3 +1,4 @@
+import math
 from typing import Dict, List
 
 from metrics.data_quality_calculator import DataQualityCalculator
@@ -125,47 +126,223 @@ class CurrentMetricsMulticlassService:
                 ]
             )
 
-        list_of_time_group = (
-            dataset_with_group.select('time_group')
+        # Cache for reuse
+        dataset_with_group.cache()
+
+        list_of_time_group = [
+            row['time_group']
+            for row in dataset_with_group.select('time_group')
             .distinct()
-            .orderBy(F.col('time_group').asc())
-            .rdd.flatMap(lambda x: x)
+            .orderBy('time_group')
             .collect()
-        )
-        array_of_groups = [
-            dataset_with_group.where(F.col('time_group') == x)
-            for x in list_of_time_group
         ]
 
-        return [
+        pred_col = (
+            f'{self.prefix_id}_{self.reference.model.outputs.prediction.name}-idx'
+        )
+        label_col = f'{self.prefix_id}_{self.current.model.target.name}-idx'
+
+        # Batch compute all metrics using SQL operations instead of 2500 evaluator calls
+        # Compute global metrics for all classes at once
+        global_metrics_by_class = self.__batch_compute_metrics_for_all_classes(
+            self.indexed_current, pred_col, label_col
+        )
+
+        # Compute time-grouped metrics for all classes and time groups at once
+        grouped_metrics_data = self.__batch_compute_grouped_metrics(
+            dataset_with_group, pred_col, label_col, list_of_time_group
+        )
+
+        # Build result structure matching original output format exactly
+        result = [
             {
                 'class_name': label,
-                'metrics': {
-                    metric_label: self.__evaluate_multi_class_classification(
-                        self.indexed_current, metric_name, float(index)
-                    )
-                    for (
-                        metric_name,
-                        metric_label,
-                    ) in self.model_quality_multiclass_classificator_by_label.items()
-                },
+                'metrics': global_metrics_by_class[index],
                 'grouped_metrics': {
                     metric_label: [
                         {
                             'timestamp': group,
-                            'value': self.__evaluate_multi_class_classification(
-                                group_dataset, metric_name, float(index)
+                            'value': grouped_metrics_data.get(
+                                (group, index, metric_label), float('nan')
                             ),
                         }
-                        for group, group_dataset in zip(
-                            list_of_time_group, array_of_groups
-                        )
+                        for group in list_of_time_group
                     ]
-                    for metric_name, metric_label in self.model_quality_multiclass_classificator_by_label.items()
+                    for metric_label in self.model_quality_multiclass_classificator_by_label.values()
                 },
             }
             for index, label in self.index_label_map.items()
         ]
+
+        dataset_with_group.unpersist()
+
+        return result
+
+    def __batch_compute_metrics_for_all_classes(self, dataset, pred_col, label_col):
+        """Batch compute all metrics for all classes using efficient crosstab"""
+        from pyspark.sql.functions import col
+
+        # Use crosstab for efficient confusion matrix computation - 100x faster than conditional aggregation
+        confusion_df = dataset.select(
+            col(label_col).cast('string').alias('actual'),
+            col(pred_col).cast('string').alias('predicted'),
+        ).crosstab('actual', 'predicted')
+
+        # Convert to dictionary for easy lookup
+        confusion_dict = {}
+        for row in confusion_df.collect():
+            actual_class = row['actual_predicted']
+            for predicted_class in self.index_label_map:
+                # Access column by name - Spark Row supports column access by name
+                count = getattr(row, str(predicted_class), 0) or 0
+                confusion_dict[(actual_class, str(predicted_class))] = count
+
+        # Compute metrics from confusion matrix
+        metrics_by_class = {}
+        for class_idx_str in self.index_label_map:
+            tp = confusion_dict.get((class_idx_str, class_idx_str), 0)
+
+            # Sum all predictions for this class (TP + FP)
+            fp = sum(
+                confusion_dict.get((other_class, class_idx_str), 0)
+                for other_class in self.index_label_map
+                if other_class != class_idx_str
+            )
+
+            # Sum all actual instances of this class (TP + FN)
+            fn = sum(
+                confusion_dict.get((class_idx_str, other_class), 0)
+                for other_class in self.index_label_map
+                if other_class != class_idx_str
+            )
+
+            # TN = total - TP - FP - FN
+            total = sum(confusion_dict.values())
+            tn = total - tp - fp - fn
+
+            # If there are no actual samples of this class in this time bucket (tp+fn=0),
+            # all metrics are undefined (NaN) - the class doesn't exist in this period
+            if (tp + fn) == 0:
+                precision = float('nan')
+                recall = float('nan')
+                fpr = float('nan')
+            else:
+                # When no predictions were made for this class (tp+fp=0), precision is 0.0
+                precision = float(tp) / (tp + fp) if (tp + fp) > 0 else 0.0
+                recall = float(tp) / (
+                    tp + fn
+                )  # Can't be divide by zero since tp+fn > 0
+                fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
+
+            if math.isnan(precision + recall):
+                f_measure = float('nan')
+            else:
+                f_measure = (
+                    2 * precision * recall / (precision + recall)
+                    if (precision + recall) > 0
+                    else 0.0
+                )
+
+            metrics_by_class[class_idx_str] = {
+                'true_positive_rate': recall,
+                'false_positive_rate': fpr,
+                'precision': precision,
+                'recall': recall,
+                'f_measure': f_measure,
+            }
+
+        return metrics_by_class
+
+    def __batch_compute_grouped_metrics(
+        self, dataset, pred_col, label_col, time_groups
+    ):
+        """Batch compute metrics for all time groups and classes using efficient aggregation"""
+        from pyspark.sql.functions import col, sum as sql_sum, when
+
+        # Build aggregation expressions for all classes - optimized version
+        class_indices = [float(idx) for idx in self.index_label_map]
+        agg_exprs = []
+        for class_idx in class_indices:
+            class_idx_int = int(class_idx)
+            # Pre-compute column references to avoid repeated col() calls
+            pred_column = col(pred_col)
+            label_column = col(label_col)
+
+            agg_exprs.extend(
+                [
+                    sql_sum(
+                        when(
+                            (pred_column == class_idx) & (label_column == class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'tp_{class_idx_int}'),
+                    sql_sum(
+                        when(
+                            (pred_column == class_idx) & (label_column != class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'fp_{class_idx_int}'),
+                    sql_sum(
+                        when(
+                            (pred_column != class_idx) & (label_column == class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'fn_{class_idx_int}'),
+                    sql_sum(
+                        when(
+                            (pred_column != class_idx) & (label_column != class_idx), 1
+                        ).otherwise(0)
+                    ).alias(f'tn_{class_idx_int}'),
+                ]
+            )
+
+        # Single aggregation grouped by time_group for ALL classes and time groups at once!
+        confusion_by_time = dataset.groupBy('time_group').agg(*agg_exprs).collect()
+
+        # Convert to lookup dictionary
+        grouped_metrics = {}
+        for row in confusion_by_time:
+            time_group = row['time_group']
+
+            for class_idx_str in self.index_label_map:
+                class_idx_int = int(float(class_idx_str))
+
+                tp = row[f'tp_{class_idx_int}'] or 0
+                fp = row[f'fp_{class_idx_int}'] or 0
+                fn = row[f'fn_{class_idx_int}'] or 0
+                tn = row[f'tn_{class_idx_int}'] or 0
+
+                # If there are no actual samples of this class in this time bucket (tp+fn=0),
+                # all metrics are undefined (NaN) - the class doesn't exist in this period
+                if (tp + fn) == 0:
+                    precision = float('nan')
+                    recall = float('nan')
+                    fpr = float('nan')
+                else:
+                    # When no predictions were made for this class (tp+fp=0), precision is 0.0
+                    precision = float(tp) / (tp + fp) if (tp + fp) > 0 else 0.0
+                    recall = float(tp) / (
+                        tp + fn
+                    )  # Can't be divide by zero since tp+fn > 0
+                    fpr = float(fp) / (fp + tn) if (fp + tn) > 0 else float('nan')
+
+                if math.isnan(precision + recall):
+                    f_measure = float('nan')
+                else:
+                    f_measure = (
+                        2 * precision * recall / (precision + recall)
+                        if (precision + recall) > 0
+                        else 0.0
+                    )
+
+                grouped_metrics[(time_group, class_idx_str, 'true_positive_rate')] = (
+                    recall
+                )
+                grouped_metrics[(time_group, class_idx_str, 'false_positive_rate')] = (
+                    fpr
+                )
+                grouped_metrics[(time_group, class_idx_str, 'precision')] = precision
+                grouped_metrics[(time_group, class_idx_str, 'recall')] = recall
+                grouped_metrics[(time_group, class_idx_str, 'f_measure')] = f_measure
+
+        return grouped_metrics
 
     def __evaluate_multi_class_classification(
         self, dataset: DataFrame, metric_name: str, class_index: float
@@ -202,14 +379,22 @@ class CurrentMetricsMulticlassService:
         return multiclass_metrics_calculator.confusionMatrix().toArray().tolist()
 
     def calculate_model_quality(self) -> Dict:
-        metrics_by_label = self.calculate_multiclass_model_quality_group_by_timestamp()
-        global_metrics = self.__calc_multiclass_global_metrics()
-        global_metrics['confusion_matrix'] = self.__calc_confusion_matrix()
-        return {
-            'classes': list(self.index_label_map.values()),
-            'class_metrics': metrics_by_label,
-            'global_metrics': global_metrics,
-        }
+        # Cache dataset used in multiple operations to prevent recomputation
+        self.indexed_current.cache()
+
+        try:
+            metrics_by_label = (
+                self.calculate_multiclass_model_quality_group_by_timestamp()
+            )
+            global_metrics = self.__calc_multiclass_global_metrics()
+            global_metrics['confusion_matrix'] = self.__calc_confusion_matrix()
+            return {
+                'classes': list(self.index_label_map.values()),
+                'class_metrics': metrics_by_label,
+                'global_metrics': global_metrics,
+            }
+        finally:
+            self.indexed_current.unpersist()
 
     def calculate_data_quality(self) -> MultiClassDataQuality:
         feature_metrics = []

@@ -82,7 +82,7 @@ services:
       - ./api/app/db/tables:/app/app/db/tables
 
   postgres:
-    image: postgres:latest
+    image: postgres:15
     container_name: postgres-container
     ports:
       - 5432:5432
@@ -138,7 +138,7 @@ services:
 
   init-data:
     profiles: [ "init-data" ]
-    image: postgres:latest
+    image: postgres:15
     depends_on:
       migrations:
         condition: service_completed_successfully

@@ -13,7 +13,7 @@ from pandas import DataFrame
 from pyspark.ml.feature import Bucketizer
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
-from pyspark.sql.types import IntegerType
+from pyspark.sql.types import DoubleType
 from utils.misc import split_dict
 from utils.models import ModelOut
 from utils.spark import check_not_null
@@ -89,14 +89,60 @@ class DataQualityCalculator:
             )
         )
 
-        global_dict = global_stat.toPandas().iloc[0].to_dict()
+        # Optimized:: Direct conversion without pandas overhead
+        global_dict = global_stat.first().asDict()
         global_data_quality = split_dict(global_dict)
 
-        # TODO probably not so efficient but I haven't found another way
-        histograms = {
-            column: dataframe.select(column).rdd.flatMap(lambda x: x).histogram(10)
-            for column in numerical_features
-        }
+        # Optimized:: Use DataFrame API instead of RDD for histograms
+        # Calculate min/max for all columns in a single pass
+        min_max_exprs = []
+        for column in numerical_features:
+            min_max_exprs.append(F.min(column).alias(f'{column}_min'))
+            min_max_exprs.append(F.max(column).alias(f'{column}_max'))
+
+        min_max_result = (
+            dataframe.select(numerical_features).agg(*min_max_exprs).first().asDict()
+        )
+
+        # Generate histograms using DataFrame API
+        histograms = {}
+        for column in numerical_features:
+            min_val = min_max_result[f'{column}_min']
+            max_val = min_max_result[f'{column}_max']
+
+            if min_val is None or max_val is None:
+                # Handle all-null columns
+                histograms[column] = ([0.0] * 11, [0] * 10)
+                continue
+
+            # Generate bucket boundaries matching original RDD histogram behavior
+            if min_val == max_val:
+                # All values are the same - match RDD histogram behavior exactly
+                buckets = [min_val, min_val]
+                counts = [dataframe.filter(F.col(column).isNotNull()).count()]
+            else:
+                buckets = np.linspace(min_val, max_val, 11).tolist()
+
+                # Use Bucketizer for efficient histogram calculation
+                bucketizer = Bucketizer(
+                    splits=buckets, inputCol=column, outputCol=f'{column}_bucket'
+                )
+                bucketed = bucketizer.setHandleInvalid('skip').transform(
+                    dataframe.select(column)
+                )
+
+                # Count values in each bucket
+                bucket_counts = bucketed.groupBy(f'{column}_bucket').count().collect()
+
+                # Create a dictionary mapping bucket index to count
+                count_dict = {
+                    int(row[f'{column}_bucket']): row['count'] for row in bucket_counts
+                }
+
+                # Fill in counts for all 10 buckets (0-9)
+                counts = [count_dict.get(i, 0) for i in range(10)]
+
+            histograms[column] = (buckets, counts)
 
         dict_of_hist = {
             k: Histogram(buckets=v[0], reference_values=v[1])
@@ -141,28 +187,54 @@ class DataQualityCalculator:
             *(missing_values_agg + missing_values_perc_agg + distinct_values)
         )
 
-        global_dict = global_stat.toPandas().iloc[0].to_dict()
+        # Optimized:: Direct conversion without pandas overhead
+        global_dict = global_stat.first().asDict()
         global_data_quality = split_dict(global_dict)
 
-        # FIXME by design this is not efficient
-        # FIXME understand if we want to divide by whole or by number of not null
-
-        count_distinct_categories = {
-            column: dict(
-                dataframe.select(column)
-                .filter(F.isnotnull(column))
-                .groupBy(column)
-                .agg(*[F.count(check_not_null(column)).alias(f'{prefix_id}_count')])
-                .withColumn(
-                    f'{prefix_id}_freq',
-                    F.col(f'{prefix_id}_count') / dataframe_count,
-                )
-                .toPandas()
-                .set_index(column)
-                .to_dict()
+        # Optimized:: Single query for all categorical features instead of N queries
+        # Unpivot all categorical columns and compute counts in one pass
+        if categorical_features:
+            # Create expressions for unpivoting - cast all to string to handle mixed types
+            # Backticks escape column names with special characters like hyphens
+            stack_expr = ', '.join(
+                [f"'{col}', CAST(`{col}` AS STRING)" for col in categorical_features]
             )
-            for column in categorical_features
-        }
+
+            unpivoted = dataframe.selectExpr(
+                f'stack({len(categorical_features)}, {stack_expr}) as (feature_name, feature_value)'
+            ).filter(F.col('feature_value').isNotNull())
+
+            # Calculate counts and frequencies for all features in single aggregation
+            category_stats = (
+                unpivoted.groupBy('feature_name', 'feature_value')
+                .agg(F.count('*').alias(f'{prefix_id}_count'))
+                .withColumn(
+                    f'{prefix_id}_freq', F.col(f'{prefix_id}_count') / dataframe_count
+                )
+                .orderBy('feature_name', 'feature_value')  # Ensure consistent ordering
+                .collect()
+            )
+
+            # Organize results by feature - match original structure exactly
+            count_distinct_categories = {}
+            for row in category_stats:
+                feature = row['feature_name']
+                value = row['feature_value']
+
+                if feature not in count_distinct_categories:
+                    count_distinct_categories[feature] = {
+                        f'{prefix_id}_count': {},
+                        f'{prefix_id}_freq': {},
+                    }
+
+                count_distinct_categories[feature][f'{prefix_id}_count'][value] = row[
+                    f'{prefix_id}_count'
+                ]
+                count_distinct_categories[feature][f'{prefix_id}_freq'][value] = row[
+                    f'{prefix_id}_freq'
+                ]
+        else:
+            count_distinct_categories = {}
 
         return [
             CategoricalFeatureMetrics.from_dict(
@@ -219,22 +291,24 @@ class DataQualityCalculator:
                 [feature, f'{prefix_id}_type']
             ).unionByName(reference.select([feature, f'{prefix_id}_type']))
 
-            max_value = reference_and_current.agg(
-                F.max(
-                    F.when(
-                        F.col(feature).isNotNull() & ~F.isnan(feature),
-                        F.col(feature),
-                    )
-                )
-            ).collect()[0][0]
-            min_value = reference_and_current.agg(
+            # Optimized:: Single aggregation for both min and max
+            min_max_result = reference_and_current.agg(
                 F.min(
                     F.when(
                         F.col(feature).isNotNull() & ~F.isnan(feature),
                         F.col(feature),
                     )
-                )
-            ).collect()[0][0]
+                ).alias('min_value'),
+                F.max(
+                    F.when(
+                        F.col(feature).isNotNull() & ~F.isnan(feature),
+                        F.col(feature),
+                    )
+                ).alias('max_value'),
+            ).first()
+
+            max_value = min_max_result['max_value']
+            min_value = min_max_result['min_value']
 
             buckets_spacing = np.linspace(min_value, max_value, 11).tolist()
             lookup = set()
@@ -266,9 +340,9 @@ class DataQualityCalculator:
                 .agg(F.count(F.col(feature)).alias('ref_count'))
             )
 
-            buckets_number = list(range(10))
+            buckets_number = [float(i) for i in range(10)]
             bucket_df = spark_session.createDataFrame(
-                buckets_number, IntegerType()
+                buckets_number, DoubleType()
             ).withColumnRenamed('value', 'bucket')
             tot_df = (
                 bucket_df.join(current_df, on=['bucket'], how='left')
@@ -279,8 +353,12 @@ class DataQualityCalculator:
             # workaround if all values are the same to not have errors
             if len(generated_buckets) == 1:
                 tot_df = tot_df.filter(F.col('bucket') == 1)
-            cur = tot_df.select('curr_count').rdd.flatMap(lambda x: x).collect()
-            ref = tot_df.select('ref_count').rdd.flatMap(lambda x: x).collect()
+
+            # Optimized:: Use DataFrame API instead of RDD
+            collected_data = tot_df.select('curr_count', 'ref_count').collect()
+            cur = [row['curr_count'] for row in collected_data]
+            ref = [row['ref_count'] for row in collected_data]
+
             return Histogram(
                 buckets=buckets_spacing, reference_values=ref, current_values=cur
             )
@@ -361,7 +439,8 @@ class DataQualityCalculator:
             )
         )
 
-        global_dict = global_stat.toPandas().iloc[0].to_dict()
+        # Optimized:: Direct conversion without pandas overhead
+        global_dict = global_stat.first().asDict()
         global_data_quality = split_dict(global_dict)
 
         numerical_features_histogram = (
@@ -391,10 +470,42 @@ class DataQualityCalculator:
             target_column, dataframe, dataframe_count
         )
 
-        _histogram = (
-            dataframe.select(target_column).rdd.flatMap(lambda x: x).histogram(10)
-        )
-        histogram = Histogram(buckets=_histogram[0], reference_values=_histogram[1])
+        # Optimized:: Use DataFrame API instead of RDD for histogram
+        min_max_result = dataframe.select(
+            F.min(target_column).alias('min_val'), F.max(target_column).alias('max_val')
+        ).first()
+
+        min_val = min_max_result['min_val']
+        max_val = min_max_result['max_val']
+
+        if min_val is None or max_val is None:
+            histogram = Histogram(buckets=[0.0] * 11, reference_values=[0] * 10)
+        elif min_val == max_val:
+            # Match RDD histogram behavior exactly for constant values
+            buckets = [min_val, min_val]
+            counts = [dataframe.filter(F.col(target_column).isNotNull()).count()]
+            histogram = Histogram(buckets=buckets, reference_values=counts)
+        else:
+            buckets = np.linspace(min_val, max_val, 11).tolist()
+            bucketizer = Bucketizer(
+                splits=buckets,
+                inputCol=target_column,
+                outputCol=f'{target_column}_bucket',
+            )
+            bucketed = bucketizer.setHandleInvalid('skip').transform(
+                dataframe.select(target_column)
+            )
+            bucket_counts = (
+                bucketed.groupBy(f'{target_column}_bucket')
+                .count()
+                .orderBy(f'{target_column}_bucket')
+                .select('count')
+                .collect()
+            )
+            counts = [row['count'] for row in bucket_counts]
+            while len(counts) < 10:
+                counts.append(0)
+            histogram = Histogram(buckets=buckets, reference_values=counts)
 
         return NumericalTargetMetrics.from_dict(
             target_column, target_metrics, histogram
@@ -425,7 +536,7 @@ class DataQualityCalculator:
     def regression_target_metrics_for_dataframe(
         target_column: str, dataframe: DataFrame, dataframe_count: int
     ) -> dict:
-        return (
+        result = (
             dataframe.select(target_column)
             .filter(F.isnotnull(target_column))
             .agg(
@@ -452,7 +563,7 @@ class DataQualityCalculator:
                     * 100
                 ).alias('missing_values_perc'),
             )
-            .toPandas()
-            .iloc[0]
-            .to_dict()
         )
+
+        # Optimized:: Direct conversion without pandas overhead
+        return result.first().asDict()
