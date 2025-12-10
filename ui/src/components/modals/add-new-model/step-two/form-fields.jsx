@@ -3,15 +3,11 @@ import {
   AlertLegacy,
   Button,
   FontAwesomeIcon,
-  FormField,
-  Radio,
   SectionTitle,
   Upload,
 } from '@radicalbit/radicalbit-design-system';
-import useHandleOnNext from './use-handle-on-next';
 import { useModalContext } from '../modal-context-provider';
-
-const RadioGroup = Radio.Group;
+import useHandleOnNext from './use-handle-on-next';
 
 function Header() {
   return (
@@ -29,36 +25,6 @@ function Header() {
       )}
       titleWeight="normal"
     />
-  );
-}
-
-function Seperator() {
-  const { useFormbit } = useModalContext();
-  const { form, error, writeAll } = useFormbit;
-
-  const handleOnChangeSeparator = ({ target: { value } }) => {
-    writeAll([
-      ['separator', value],
-      ['__metadata.clearFieldNextStep', true],
-    ]);
-  };
-
-  return (
-    <FormField message={error('separator')}>
-      <div className="flex flex-col">
-        <SectionTitle size="small" title="CSV Separator:" />
-
-        <RadioGroup modifier="margin-05" onChange={handleOnChangeSeparator} value={form.separator}>
-          <Radio id="separator-comma" value=",">
-            <label className="cursor-pointer" htmlFor="separator-comma">Comma (,)</label>
-          </Radio>
-
-          <Radio id="separator-semicolon" value=";">
-            <label className="cursor-pointer" htmlFor="separator-semicolon">Semicolon (;)</label>
-          </Radio>
-        </RadioGroup>
-      </div>
-    </FormField>
   );
 }
 
@@ -203,6 +169,5 @@ export {
   ErrorAlert,
   Header,
   Recap,
-  Seperator,
   UploadButton,
 };

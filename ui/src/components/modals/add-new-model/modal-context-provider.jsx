@@ -23,7 +23,7 @@ function ModalContextProvider({ children }) {
   });
 
   const useFormbitStepTwo = useFormbit({
-    initialValues: { separator: ',', __metadata: { clearFieldNextStep: true } },
+    initialValues: { __metadata: { clearFieldNextStep: true } },
     yup: schemaStepTwo,
   });
 

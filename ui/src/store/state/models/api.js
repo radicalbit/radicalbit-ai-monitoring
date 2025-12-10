@@ -40,11 +40,10 @@ export const modelsApiSlice = apiService.injectEndpoints({
     }),
 
     inferSchema: builder.mutation({
-      query: ({ file, separator }) => {
+      query: ({ file }) => {
         const data = new FormData();
 
         data.append('data_file', new File([file], file.name, { type: 'text/csv' }));
-        data.append('separator', separator);
 
         return {
           baseUrl: import.meta.env.VITE_BASE_URL,

@@ -1,5 +1,5 @@
 import {
-  ErrorAlert, Header, Recap, Seperator, UploadButton,
+  ErrorAlert, Header, Recap, UploadButton,
 } from './form-fields';
 
 function Csv() {
@@ -10,8 +10,6 @@ function Csv() {
         <Header />
 
         <div className="flex flex-col gap-2">
-          <Seperator />
-
           <UploadButton />
 
           <ErrorAlert />
