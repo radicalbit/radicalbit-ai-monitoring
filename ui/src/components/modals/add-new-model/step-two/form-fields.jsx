@@ -116,7 +116,7 @@ function Recap() {
           <label>
             <strong>Field Delimiters: </strong>
 
-            Double quotes (") or unquoted (consistent throughout)
+            {'Double quotes (\\") or unquoted (consistent throughout)'}
           </label>
         </li>
 
