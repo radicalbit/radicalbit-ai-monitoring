@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, Form, UploadFile, status
+from fastapi import APIRouter, File, UploadFile, status
 
 from app.models.inferred_schema_dto import InferredSchemaDTO
 from app.services.file_service import FileService
@@ -15,11 +15,9 @@ class InferSchemaRoute:
             response_model=InferredSchemaDTO,
         )
         def infer_schema_from_file(
-            data_file: UploadFile = File(...), separator: str = Form(',')
+            data_file: UploadFile = File(...),
         ):
-            schema_result: InferredSchemaDTO = file_service.infer_schema(
-                data_file, sep=separator
-            )
+            schema_result: InferredSchemaDTO = file_service.infer_schema(data_file)
             return schema_result
 
         return router

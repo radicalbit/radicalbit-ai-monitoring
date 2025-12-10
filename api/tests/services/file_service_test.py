@@ -81,10 +81,20 @@ class FileServiceTest(unittest.TestCase):
         with pytest.raises(Exception):
             FileService.infer_schema(file)
 
-    def test_infer_schema_separator(self):
+    def test_validate_file_rejects_non_comma_sep_param(self):
+        file = csv.get_correct_sample_csv_file()
+        with pytest.raises(InvalidFileException):
+            self.files_service.validate_file(file, sep=';', columns=['Name', 'Age'])
+
+    def test_validate_file_rejects_semicolon_delimited_file(self):
         file = csv.get_file_using_sep(';')
-        schema = FileService.infer_schema(file, sep=';')
-        assert schema == csv.correct_schema()
+        with pytest.raises(InvalidFileException):
+            self.files_service.validate_file(file, sep=',', columns=[])
+
+    def test_infer_schema_rejects_semicolon_delimited_file(self):
+        file = csv.get_file_using_sep(';')
+        with pytest.raises(InvalidFileException):
+            FileService.infer_schema(file)
 
     def test_validate_completion_json_file_ok(self):
         json_file = json.get_completion_sample_json_file()
