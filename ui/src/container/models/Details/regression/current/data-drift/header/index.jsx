@@ -18,7 +18,7 @@ function DataDriftHeader() {
 
 function TotalFeaturesCounter() {
   const { data } = useGetCurrentDriftQueryWithPolling();
-  const featureMetrics = data?.drift.featureMetrics.filter((feature) => feature.driftCalc.some((d) => d.hasDrift)) ?? [];
+  const featureMetrics = data?.drift.featureMetrics.filter((feature) => feature.driftCalc.hasDrift) ?? [];
   const featuresWithDriftCounter = featureMetrics.length;
   const featuresCounter = data?.drift.featureMetrics.length;
 

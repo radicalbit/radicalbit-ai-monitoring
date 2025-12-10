@@ -36,9 +36,9 @@ export default () => {
       return;
     }
 
-    submitForm(async ({ form: { file, separator } }, setError) => {
+    submitForm(async ({ form: { file } }, setError) => {
       try {
-        const { error, data } = await triggerInferSchema({ file, separator });
+        const { error, data } = await triggerInferSchema({ file });
 
         if (error) {
           const parsedErrorMessage = parseErrorMessage(error);

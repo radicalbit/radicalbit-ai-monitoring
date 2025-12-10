@@ -23,7 +23,6 @@ const schema = yup.object({
   framework: yup.string(),
 
   algorithm: yup.string(),
-
 });
 
 export default schema;
