@@ -1,4 +1,5 @@
 from copy import deepcopy
+import csv
 import datetime
 from io import BytesIO
 import json
@@ -76,7 +77,7 @@ class FileService:
         logger.info('File Service Initialized.')
 
     def upload_reference_file(
-        self, model_uuid: UUID, csv_file: UploadFile, sep: str = ',', columns=None
+        self, model_uuid: UUID, csv_file: UploadFile, columns=None
     ) -> ReferenceDatasetDTO:
         model_out = self.model_svc.get_model_by_uuid(model_uuid)
         if not model_out:
@@ -90,7 +91,7 @@ class FileService:
         if columns is None:
             columns = []
 
-        self.validate_file(csv_file, sep, columns)
+        self.validate_file(csv_file, columns)
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
@@ -195,7 +196,6 @@ class FileService:
         model_uuid: UUID,
         csv_file: UploadFile,
         correlation_id_column: Optional[str] = None,
-        sep: str = ',',
         columns=None,
     ) -> CurrentDatasetDTO:
         model_out = self.model_svc.get_model_by_uuid(model_uuid)
@@ -214,7 +214,7 @@ class FileService:
                 model_columns.append(model_out.target)
                 columns = [model_column.name for model_column in model_columns]
 
-            self.validate_file(csv_file, sep, columns)
+            self.validate_file(csv_file, columns)
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
@@ -542,10 +542,10 @@ class FileService:
         return f's3://{self.bucket_name}/{object_name}'
 
     @staticmethod
-    def infer_schema(csv_file: UploadFile, sep: str = ',') -> InferredSchemaDTO:
-        FileService.validate_file(csv_file, sep)
+    def infer_schema(csv_file: UploadFile) -> InferredSchemaDTO:
+        FileService.validate_file(csv_file)
         with csv_file.file as f:
-            df = pd.read_csv(f, sep=sep)
+            df = pd.read_csv(f, sep=',')
 
         return FileService.schema_from_pandas(df)
 
@@ -578,17 +578,18 @@ class FileService:
         return data
 
     @staticmethod
-    def validate_file(
-        csv_file: UploadFile, sep: str = ',', columns: List[str] = []
-    ) -> None:
+    def validate_file(csv_file: UploadFile, columns: List[str] = []) -> None:
         file_upload_config = get_config().file_upload_config
         _f_name = csv_file.filename
+
         if csv_file.filename is None or csv_file.size == 0:
             raise InvalidFileException('The file is empty. Please enter a valid file.')
+
         if csv_file.size is not None and csv_file.size >= file_upload_config.max_bytes:
             raise FileTooLargeException(
                 f'File is more thant {file_upload_config.max_mega_bytes}MB'
             )
+
         if (
             _f_name is not None
             and pathlib.Path(_f_name).suffix
@@ -598,8 +599,11 @@ class FileService:
                 f'File has not a valid extension. Valid extensions are: {(*file_upload_config.accepted_file_types,)}'
             )
 
-        df = pd.read_csv(csv_file.file, sep=sep)
+        FileService._ensure_comma_delimiter(csv_file)
+
+        df = pd.read_csv(csv_file.file, sep=',')
         col_errors = [col for col in columns if col not in df.columns]
+
         if len(col_errors) > 0:
             raise InvalidFileException(
                 f'Columns {(*col_errors,)} not found in file {_f_name}'
@@ -607,6 +611,39 @@ class FileService:
 
         csv_file.file.flush()
         csv_file.file.seek(0)
+
+    @staticmethod
+    def _ensure_comma_delimiter(csv_file: UploadFile) -> None:
+        f = csv_file.file
+        pos = f.tell()
+
+        try:
+            sample_bytes = f.read(8192)
+            if not sample_bytes:
+                return
+
+            try:
+                sample = sample_bytes.decode('utf-8')
+            except Exception:
+                sample = sample_bytes.decode('utf-8', errors='ignore')
+
+            sniffer = csv.Sniffer()
+            dialect = sniffer.sniff(sample, delimiters=',;\t|')
+
+            if dialect.delimiter != ',':
+                raise InvalidFileException("Only ',' separator is allowed.")
+
+            first_line = sample.splitlines()[0] if sample.splitlines() else ''
+
+            if ';' in first_line and ',' not in first_line:
+                raise InvalidFileException("Only ',' separator is allowed.")
+
+        except csv.Error as err:
+            raise InvalidFileException(
+                "Unable to detect CSV delimiter. Only ',' is allowed."
+            ) from err
+        finally:
+            f.seek(pos)
 
     @staticmethod
     def validate_json_file(json_file: UploadFile):

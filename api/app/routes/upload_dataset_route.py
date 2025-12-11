@@ -27,9 +27,10 @@ class UploadDatasetRoute:
             response_model=ReferenceDatasetDTO,
         )
         def upload_reference_file(
-            model_uuid: UUID, csv_file: UploadFile = File(...), sep: str = Form(',')
+            model_uuid: UUID,
+            csv_file: UploadFile = File(...),
         ) -> ReferenceDatasetDTO:
-            return file_service.upload_reference_file(model_uuid, csv_file, sep)
+            return file_service.upload_reference_file(model_uuid, csv_file)
 
         @router.post(
             '/{model_uuid}/reference/bind',
@@ -49,11 +50,12 @@ class UploadDatasetRoute:
         def upload_current_file(
             model_uuid: UUID,
             csv_file: UploadFile = File(...),
-            sep: str = Form(','),
             correlation_id_column: Optional[str] = Form(None),
         ) -> CurrentDatasetDTO:
             return file_service.upload_current_file(
-                model_uuid, csv_file, correlation_id_column, sep
+                model_uuid,
+                csv_file,
+                correlation_id_column,
             )
 
         @router.post(
