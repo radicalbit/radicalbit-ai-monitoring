@@ -6,8 +6,8 @@ import { useModalContext } from '../modal-context-provider';
 const { useInferSchemaMutation } = modelsApiSlice;
 
 const parseErrorMessage = (error) => {
-  if (error.message) {
-    return error.message;
+  if (error?.data?.message) {
+    return error.data.message;
   }
 
   if (error.status) {
@@ -44,8 +44,11 @@ export default () => {
           const parsedErrorMessage = parseErrorMessage(error);
 
           console.error(error);
+
           setError('silent.backend', parsedErrorMessage);
-          write('file', { ...form.file, status: 'error', response: parsedErrorMessage });
+          write('file', {
+            ...file, name: file.name, status: 'error', response: parsedErrorMessage,
+          });
 
           return;
         }
