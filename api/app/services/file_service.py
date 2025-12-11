@@ -77,7 +77,7 @@ class FileService:
         logger.info('File Service Initialized.')
 
     def upload_reference_file(
-        self, model_uuid: UUID, csv_file: UploadFile, sep: str = ',', columns=None
+        self, model_uuid: UUID, csv_file: UploadFile, columns=None
     ) -> ReferenceDatasetDTO:
         model_out = self.model_svc.get_model_by_uuid(model_uuid)
         if not model_out:
@@ -91,7 +91,7 @@ class FileService:
         if columns is None:
             columns = []
 
-        self.validate_file(csv_file, sep, columns)
+        self.validate_file(csv_file, columns)
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
@@ -196,7 +196,6 @@ class FileService:
         model_uuid: UUID,
         csv_file: UploadFile,
         correlation_id_column: Optional[str] = None,
-        sep: str = ',',
         columns=None,
     ) -> CurrentDatasetDTO:
         model_out = self.model_svc.get_model_by_uuid(model_uuid)
@@ -215,7 +214,7 @@ class FileService:
                 model_columns.append(model_out.target)
                 columns = [model_column.name for model_column in model_columns]
 
-            self.validate_file(csv_file, sep, columns)
+            self.validate_file(csv_file, columns)
         _f_name = csv_file.filename
         _f_uuid = uuid4()
         try:
@@ -544,7 +543,7 @@ class FileService:
 
     @staticmethod
     def infer_schema(csv_file: UploadFile) -> InferredSchemaDTO:
-        FileService.validate_file(csv_file, sep=',')
+        FileService.validate_file(csv_file)
         with csv_file.file as f:
             df = pd.read_csv(f, sep=',')
 
@@ -579,12 +578,7 @@ class FileService:
         return data
 
     @staticmethod
-    def validate_file(
-        csv_file: UploadFile, sep: str = ',', columns: List[str] = []
-    ) -> None:
-        if sep != ',':
-            raise InvalidFileException("Only ',' separator is allowed.")
-
+    def validate_file(csv_file: UploadFile, columns: List[str] = []) -> None:
         file_upload_config = get_config().file_upload_config
         _f_name = csv_file.filename
 
@@ -607,7 +601,7 @@ class FileService:
 
         FileService._ensure_comma_delimiter(csv_file)
 
-        df = pd.read_csv(csv_file.file, sep=sep)
+        df = pd.read_csv(csv_file.file, sep=',')
         col_errors = [col for col in columns if col not in df.columns]
 
         if len(col_errors) > 0:

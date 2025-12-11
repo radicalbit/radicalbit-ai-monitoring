@@ -57,17 +57,17 @@ class FileServiceTest(unittest.TestCase):
 
     def test_validate_file_ok(self):
         file = csv.get_correct_sample_csv_file()
-        self.files_service.validate_file(file, sep=',', columns=['Name', 'Age'])
+        self.files_service.validate_file(file, columns=['Name', 'Age'])
 
     def test_validate_file_error(self):
         file = csv.get_uncorrect_sample_csv_file()
         with pytest.raises(InvalidFileException):
-            self.files_service.validate_file(file, sep=',', columns=['a', 'b'])
+            self.files_service.validate_file(file, columns=['a', 'b'])
 
     def test_validate_empty_file_error(self):
         file = csv.get_empty_sample_csv_file()
         with pytest.raises(InvalidFileException):
-            self.files_service.validate_file(file, sep=',', columns=[])
+            self.files_service.validate_file(file, columns=[])
 
     def test_infer_schema_ok(self):
         file = csv.get_correct_sample_csv_file()
@@ -81,15 +81,10 @@ class FileServiceTest(unittest.TestCase):
         with pytest.raises(Exception):
             FileService.infer_schema(file)
 
-    def test_validate_file_rejects_non_comma_sep_param(self):
-        file = csv.get_correct_sample_csv_file()
-        with pytest.raises(InvalidFileException):
-            self.files_service.validate_file(file, sep=';', columns=['Name', 'Age'])
-
     def test_validate_file_rejects_semicolon_delimited_file(self):
         file = csv.get_file_using_sep(';')
         with pytest.raises(InvalidFileException):
-            self.files_service.validate_file(file, sep=',', columns=[])
+            self.files_service.validate_file(file, columns=[])
 
     def test_infer_schema_rejects_semicolon_delimited_file(self):
         file = csv.get_file_using_sep(';')
