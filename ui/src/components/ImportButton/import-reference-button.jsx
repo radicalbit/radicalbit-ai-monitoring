@@ -11,8 +11,8 @@ const { useImportReferenceDataMutation } = modelsApiSlice;
 function ImportReferenceButton({ type = 'primary-light' }) {
   const { uuid: modelUUID } = useParams();
 
-  const [triggerImportFeedback, { isLoading, isError }] = useImportReferenceDataMutation({ fixedCacheKey: `imports-reference-data-${modelUUID}` });
-  const isSubmitDisabled = isLoading || isError;
+  const [triggerImportFeedback, { isLoading }] = useImportReferenceDataMutation({ fixedCacheKey: `imports-reference-data-${modelUUID}` });
+  const isSubmitDisabled = isLoading;
 
   const disableUploadAction = () => false;
 
