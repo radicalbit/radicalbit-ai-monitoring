@@ -1,0 +1,8 @@
+{
+  "label": "Model sections",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Each created model includes three main sections — Overview, Reference, and Current — as well as a summary section called the Launchpad. This document provides an in-depth explanation of each section."
+  }
+}
