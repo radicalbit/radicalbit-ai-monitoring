@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.3.0...v1.4.0) (2025-12-16)
+
+
+### Features
+
+* remove separator from add new model ([#296](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/296)) ([d3b92bc](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d3b92bcb5b14a4a6042fcfffa9a2015ae26f68ee))
+* **spark:** multiclass classification optimization + drift ([#294](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/294)) ([8f5a435](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/8f5a43540e4ed3567710846ad2b61fea5bb3e3bf))
+
+
+### Bug Fixes
+
+* enforce comma-only CSV delimiter for schema inference ([#297](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/297)) ([b9bead8](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/b9bead80f079d08389a9daa3f38309e624f67355))
+* is Error ([#298](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/298)) ([11e465c](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/11e465ce25f53024c5b40851f6b2aa6ac014b6e5))
+* percentage calculation ([#295](https://github.com/radicalbit/radicalbit-ai-monitoring/issues/295)) ([d26a511](https://github.com/radicalbit/radicalbit-ai-monitoring/commit/d26a511b9917399806224b4818f98669eceb7625))
+
 ## [1.3.0](https://github.com/radicalbit/radicalbit-ai-monitoring/compare/v1.2.0...v1.3.0) (2025-06-17)
 
 

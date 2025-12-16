@@ -1,0 +1,8 @@
+{
+  "label": "Tracing sections",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Each project includes four main sections — Dashboard, Traces, Sessions and Settings. This document provides an in-depth explanation of each section."
+  }
+}
