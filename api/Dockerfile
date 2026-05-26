@@ -28,7 +28,7 @@ WORKDIR /app
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends tini libpq5 && \
-    apt-get install -y --only-upgrade libcap2 libsystemd0 libudev1 && \
+    apt-get install -y --only-upgrade libcap2 libsystemd0 libudev1 libgssapi-krb5-2 libk5crypto3 libkrb5-3 libkrb5support0 && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN rm -rf /usr/local/lib/python3.11/site-packages/*
