@@ -1,33 +1,47 @@
-FROM python:3.11.8-slim AS build
+FROM python:3.11.15-slim AS builder
 
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml ./
-RUN pip install --no-cache-dir poetry==1.8.2 && \
-    poetry export -f requirements.txt -o requirements.txt
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc libpq-dev python3-dev git && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-FROM python:3.11.8-slim
+COPY poetry.lock pyproject.toml ./
+
+RUN pip install --no-cache-dir --no-compile poetry==1.8.2 && \
+    poetry export --without-hashes --with main -f requirements.txt -o requirements.txt && \
+    pip install --no-cache-dir --no-compile -r requirements.txt && \
+    pip uninstall -y poetry setuptools wheel pip && \
+    rm -f requirements.txt poetry.lock pyproject.toml && \
+    rm -rf /root/.cache
+
+FROM python:3.11.15-slim
 
 ENV HTTP_INTERFACE=0.0.0.0
 ENV HTTP_PORT=9000
 ENV LOG_LEVEL=debug
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONUNBUFFERED=1
 
 EXPOSE 9000
 
 WORKDIR /app
 
-COPY --from=build /app/requirements.txt .
-
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gcc libpq-dev python3-dev tini curl && \
+    apt-get install -y --no-install-recommends tini libpq5 && \
+    apt-get install -y --only-upgrade libcap2 libsystemd0 libudev1 libgssapi-krb5-2 libk5crypto3 libkrb5-3 libkrb5support0 && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN rm -rf /usr/local/lib/python3.11/site-packages/*
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+RUN groupadd -r appuser && useradd -r -g appuser -d /app -s /sbin/nologin appuser
 
 COPY ./app ./app
-
 COPY ./entrypoint.sh .
-RUN chmod +x ./entrypoint.sh
+
+RUN chmod +x ./entrypoint.sh && chown -R appuser:appuser /app
+
+USER appuser
 
 ENTRYPOINT ["tini", "-v", "--", "./entrypoint.sh"]
