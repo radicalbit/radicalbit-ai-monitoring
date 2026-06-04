@@ -3,6 +3,7 @@ import logging
 from logging.config import dictConfig
 
 import boto3
+from botocore.config import Config as BotoConfig
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from spark_on_k8s.client import SparkOnK8S
@@ -105,6 +106,18 @@ model_service = ModelService(
 )
 s3_config = get_config().s3_config
 
+gcs_compatible_config = (
+    BotoConfig(
+        s3={'payload_signing_enabled': False},
+        signature_version='s3v4',
+        request_checksum_calculation='when_required',
+        response_checksum_validation='when_required',
+    )
+    if s3_config.s3_endpoint_url
+    and 'storage.googleapis.com' in (s3_config.s3_endpoint_url or '')
+    else None
+)
+
 if s3_config.s3_endpoint_url is not None:
     s3_client = boto3.client(
         's3',
@@ -112,6 +125,7 @@ if s3_config.s3_endpoint_url is not None:
         aws_secret_access_key=s3_config.aws_secret_access_key,
         region_name=s3_config.aws_region,
         endpoint_url=s3_config.s3_endpoint_url,
+        config=gcs_compatible_config,
     )
 else:
     s3_client = boto3.client(
