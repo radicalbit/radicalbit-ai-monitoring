@@ -8,7 +8,6 @@ import pathlib
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-import boto3
 from botocore.exceptions import ClientError, NoCredentialsError
 from fastapi import HTTPException, UploadFile
 from fastapi_pagination import Page, Params
@@ -52,6 +51,7 @@ from app.models.job_status import JobStatus
 from app.models.model_dto import ModelOut, ModelType
 from app.models.spark_app_config import get_spark_app_config
 from app.services.model_service import ModelService
+from app.services.storage_client import StorageClient
 
 logger = logging.getLogger(get_config().log_config.logger_name)
 
@@ -63,16 +63,15 @@ class FileService:
         current_dataset_dao: CurrentDatasetDAO,
         completion_dataset_dao: CompletionDatasetDAO,
         model_service: ModelService,
-        s3_client: boto3.client,
+        storage_client: StorageClient,
         spark_k8s_client: SparkOnK8S,
     ) -> 'FileService':
         self.rd_dao = reference_dataset_dao
         self.cd_dao = current_dataset_dao
         self.completion_dataset_dao = completion_dataset_dao
         self.model_svc = model_service
-        self.s3_client = s3_client
-        s3_config = get_config().s3_config
-        self.bucket_name = s3_config.s3_bucket_name
+        self.storage_client = storage_client
+        self.bucket_name = storage_client.get_bucket_name()
         self.spark_k8s_client = spark_k8s_client
         logger.info('File Service Initialized.')
 
@@ -97,7 +96,7 @@ class FileService:
         try:
             file_type = 'reference'
             object_name = f'{str(model_out.uuid)}/{file_type}/{_f_uuid}/{_f_name}'
-            path = self._upload_file_to_s3(csv_file, model_out, object_name, file_type)
+            path = self._upload_file(csv_file, model_out, object_name, file_type)
 
             inserted_file = self.rd_dao.insert_reference_dataset(
                 ReferenceDataset(
@@ -119,7 +118,7 @@ class FileService:
                 app_path=spark_app_config.app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
-                    path.replace('s3://', 's3a://'),
+                    self._to_spark_uri(path),
                     str(inserted_file.uuid),
                     spark_app_config.metrics_table,
                     spark_app_config.dataset_table,
@@ -147,10 +146,8 @@ class FileService:
                 status_code=404, detail='A reference file was already loaded'
             )
         try:
-            url_parts = file_ref.file_url.replace('s3://', '').split('/')
-            # check if file exists in S3 with a HEAD operation.
-            # if exists then we could update DB otherwise an exception will be raised
-            self.s3_client.head_object(Bucket=url_parts[0], Key='/'.join(url_parts[1:]))
+            url_parts = self._strip_uri_scheme(file_ref.file_url).split('/')
+            self.storage_client.object_exists(url_parts[0], '/'.join(url_parts[1:]))
 
             inserted_file = self.rd_dao.insert_reference_dataset(
                 ReferenceDataset(
@@ -169,7 +166,7 @@ class FileService:
                 app_path=spark_config.spark_reference_app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
-                    file_ref.file_url.replace('s3://', 's3a://'),
+                    self._to_spark_uri(file_ref.file_url),
                     str(inserted_file.uuid),
                     ReferenceDatasetMetrics.__tablename__,
                     ReferenceDataset.__tablename__,
@@ -220,7 +217,7 @@ class FileService:
         try:
             file_type = 'current'
             object_name = f'{str(model_out.uuid)}/{file_type}/{_f_uuid}/{_f_name}'
-            path = self._upload_file_to_s3(csv_file, model_out, object_name, file_type)
+            path = self._upload_file(csv_file, model_out, object_name, file_type)
 
             inserted_file = self.cd_dao.insert_current_dataset(
                 CurrentDataset(
@@ -243,9 +240,9 @@ class FileService:
                 app_path=spark_app_config.app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
-                    path.replace('s3://', 's3a://'),
+                    self._to_spark_uri(path),
                     str(inserted_file.uuid),
-                    reference_dataset.path.replace('s3://', 's3a://'),
+                    self._to_spark_uri(reference_dataset.path),
                     spark_app_config.metrics_table,
                     spark_app_config.dataset_table,
                 ],
@@ -274,10 +271,8 @@ class FileService:
                 f'Reference dataset for model {model_uuid} not found'
             )
         try:
-            url_parts = file_ref.file_url.replace('s3://', '').split('/')
-            # check if file exists in S3 with a HEAD operation.
-            # if exists then we could update DB otherwise an exception will be raised
-            self.s3_client.head_object(Bucket=url_parts[0], Key='/'.join(url_parts[1:]))
+            url_parts = self._strip_uri_scheme(file_ref.file_url).split('/')
+            self.storage_client.object_exists(url_parts[0], '/'.join(url_parts[1:]))
 
             inserted_file = self.cd_dao.insert_current_dataset(
                 CurrentDataset(
@@ -297,9 +292,9 @@ class FileService:
                 app_path=spark_config.spark_current_app_path,
                 app_arguments=[
                     model_out.model_dump_json(),
-                    file_ref.file_url.replace('s3://', 's3a://'),
+                    self._to_spark_uri(file_ref.file_url),
                     str(inserted_file.uuid),
-                    reference_dataset.path.replace('s3://', 's3a://'),
+                    self._to_spark_uri(reference_dataset.path),
                     CurrentDatasetMetrics.__tablename__,
                     CurrentDataset.__tablename__,
                 ],
@@ -336,7 +331,7 @@ class FileService:
         try:
             file_type = 'completion'
             object_name = f'{str(model_out.uuid)}/{file_type}/{_f_uuid}/{_f_name}'
-            path = self._upload_file_to_s3(
+            path = self._upload_file(
                 validated_json_file, model_out, object_name, file_type
             )
 
@@ -359,7 +354,7 @@ class FileService:
                 app_name=str(model_out.uuid),
                 app_path=spark_app_config.app_path,
                 app_arguments=[
-                    path.replace('s3://', 's3a://'),
+                    self._to_spark_uri(path),
                     str(inserted_file.uuid),
                     spark_app_config.metrics_table,
                     spark_app_config.dataset_table,
@@ -383,8 +378,8 @@ class FileService:
             logger.error('Model %s not found', model_uuid)
             raise ModelNotFoundError(f'Model {model_uuid} not found')
         try:
-            url_parts = file_completion.file_url.replace('s3://', '').split('/')
-            self.s3_client.head_object(Bucket=url_parts[0], Key='/'.join(url_parts[1:]))
+            url_parts = self._strip_uri_scheme(file_completion.file_url).split('/')
+            self.storage_client.object_exists(url_parts[0], '/'.join(url_parts[1:]))
 
             inserted_file = self.completion_dataset_dao.insert_completion_dataset(
                 CompletionDataset(
@@ -402,7 +397,7 @@ class FileService:
                 app_name=str(model_out.uuid),
                 app_path=spark_config.spark_completion_app_path,
                 app_arguments=[
-                    file_completion.file_url.replace('s3://', 's3a://'),
+                    self._to_spark_uri(file_completion.file_url),
                     str(inserted_file.uuid),
                     CompletionDatasetMetrics.__tablename__,
                     CompletionDataset.__tablename__,
@@ -520,26 +515,31 @@ class FileService:
             for completion_dataset in completions
         ]
 
-    def _upload_file_to_s3(
+    def _to_spark_uri(self, path: str) -> str:
+        scheme = self.storage_client.get_uri_scheme()
+        spark_scheme = self.storage_client.get_spark_uri_scheme()
+        return path.replace(f'{scheme}://', f'{spark_scheme}://')
+
+    def _strip_uri_scheme(self, path: str) -> str:
+        scheme = self.storage_client.get_uri_scheme()
+        return path.replace(f'{scheme}://', '')
+
+    def _upload_file(
         self,
         input_file: UploadFile,
         model_out: ModelOut,
         object_name: str,
         file_type: str,
     ):
-        self.s3_client.upload_fileobj(
+        return self.storage_client.upload_fileobj(
             input_file.file,
-            self.bucket_name,
             object_name,
-            ExtraArgs={
-                'Metadata': {
-                    'model_uuid': str(model_out.uuid),
-                    'model_name': model_out.name,
-                    'file_type': file_type,
-                }
+            {
+                'model_uuid': str(model_out.uuid),
+                'model_name': model_out.name,
+                'file_type': file_type,
             },
         )
-        return f's3://{self.bucket_name}/{object_name}'
 
     @staticmethod
     def infer_schema(csv_file: UploadFile) -> InferredSchemaDTO:

@@ -25,6 +25,7 @@ from app.models.job_status import JobStatus
 from app.models.model_dto import ModelOut, ModelType
 from app.services.file_service import FileService
 from app.services.model_service import ModelService
+from app.services.storage_client import StorageClient
 from tests.commons import csv_file_mock as csv, db_mock, json_file_mock as json
 from tests.commons.db_mock import get_sample_reference_dataset
 
@@ -36,14 +37,17 @@ class FileServiceTest(unittest.TestCase):
         cls.cd_dao = MagicMock(spec_set=CurrentDatasetDAO)
         cls.completion_dataset_dao = MagicMock(spec_set=CompletionDatasetDAO)
         cls.model_svc = MagicMock(spec_set=ModelService)
-        cls.s3_client = MagicMock()
+        cls.storage_client = MagicMock(spec=StorageClient)
+        cls.storage_client.get_bucket_name.return_value = 'test-bucket'
+        cls.storage_client.get_uri_scheme.return_value = 's3'
+        cls.storage_client.get_spark_uri_scheme.return_value = 's3a'
         cls.spark_k8s_client = MagicMock()
         cls.files_service = FileService(
             cls.rd_dao,
             cls.cd_dao,
             cls.completion_dataset_dao,
             cls.model_svc,
-            cls.s3_client,
+            cls.storage_client,
             cls.spark_k8s_client,
         )
         cls.mocks = [
@@ -51,7 +55,7 @@ class FileServiceTest(unittest.TestCase):
             cls.cd_dao,
             cls.completion_dataset_dao,
             cls.model_svc,
-            cls.s3_client,
+            cls.storage_client,
             cls.spark_k8s_client,
         ]
 
@@ -126,7 +130,7 @@ class FileServiceTest(unittest.TestCase):
         self.model_svc.get_model_by_uuid = MagicMock(
             return_value=ModelOut.from_model(model)
         )
-        self.s3_client.upload_fileobj = MagicMock()
+        self.storage_client.upload_fileobj = MagicMock(return_value='s3://test-bucket/some/path')
         self.rd_dao.get_reference_dataset_by_model_uuid = MagicMock(return_value=None)
         self.rd_dao.insert_reference_dataset = MagicMock(return_value=inserted_file)
         self.spark_k8s_client.submit_app = MagicMock()
@@ -136,7 +140,7 @@ class FileServiceTest(unittest.TestCase):
         self.model_svc.get_model_by_uuid.assert_called_once()
         self.rd_dao.get_reference_dataset_by_model_uuid.assert_called_once()
         self.rd_dao.insert_reference_dataset.assert_called_once()
-        self.s3_client.upload_fileobj.assert_called_once()
+        self.storage_client.upload_fileobj.assert_called_once()
         self.spark_k8s_client.submit_app.assert_called_once()
         assert result == ReferenceDatasetDTO.from_reference_dataset(inserted_file)
 
@@ -197,7 +201,7 @@ class FileServiceTest(unittest.TestCase):
             return_value=ModelOut.from_model(model)
         )
 
-        self.s3_client.head_object = MagicMock()
+        self.storage_client.object_exists = MagicMock(return_value=True)
         self.rd_dao.get_reference_dataset_by_model_uuid = MagicMock(return_value=None)
         self.rd_dao.insert_reference_dataset = MagicMock(return_value=inserted_file)
 
@@ -205,7 +209,7 @@ class FileServiceTest(unittest.TestCase):
 
         self.rd_dao.get_reference_dataset_by_model_uuid.assert_called_once()
         self.rd_dao.insert_reference_dataset.assert_called_once()
-        self.s3_client.head_object.assert_called_once()
+        self.storage_client.object_exists.assert_called_once()
         assert result == ReferenceDatasetDTO.from_reference_dataset(inserted_file)
 
     def test_bind_reference_file_already_exists(self):
@@ -265,7 +269,7 @@ class FileServiceTest(unittest.TestCase):
         self.rd_dao.get_reference_dataset_by_model_uuid = MagicMock(
             return_value=reference_file
         )
-        self.s3_client.upload_fileobj = MagicMock()
+        self.storage_client.upload_fileobj = MagicMock(return_value='s3://test-bucket/some/path')
         self.cd_dao.insert_current_dataset = MagicMock(return_value=inserted_file)
         self.spark_k8s_client.submit_app = MagicMock()
 
@@ -277,7 +281,7 @@ class FileServiceTest(unittest.TestCase):
         self.model_svc.get_model_by_uuid.assert_called_once()
         self.rd_dao.get_reference_dataset_by_model_uuid.assert_called_once()
         self.cd_dao.insert_current_dataset.assert_called_once()
-        self.s3_client.upload_fileobj.assert_called_once()
+        self.storage_client.upload_fileobj.assert_called_once()
         self.spark_k8s_client.submit_app.assert_called_once()
         assert result == CurrentDatasetDTO.from_current_dataset(inserted_file)
 
@@ -317,7 +321,7 @@ class FileServiceTest(unittest.TestCase):
         self.model_svc.get_model_by_uuid = MagicMock(
             return_value=ModelOut.from_model(model)
         )
-        self.s3_client.upload_fileobj = MagicMock()
+        self.storage_client.upload_fileobj = MagicMock(return_value='s3://test-bucket/some/path')
         self.completion_dataset_dao.insert_completion_dataset = MagicMock(
             return_value=inserted_file
         )
@@ -330,7 +334,7 @@ class FileServiceTest(unittest.TestCase):
 
         self.model_svc.get_model_by_uuid.assert_called_once()
         self.completion_dataset_dao.insert_completion_dataset.assert_called_once()
-        self.s3_client.upload_fileobj.assert_called_once()
+        self.storage_client.upload_fileobj.assert_called_once()
         self.spark_k8s_client.submit_app.assert_called_once()
         assert result == CompletionDatasetDTO.from_completion_dataset(inserted_file)
 

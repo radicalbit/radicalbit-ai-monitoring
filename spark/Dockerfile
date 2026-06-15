@@ -16,7 +16,8 @@ RUN curl -o /opt/spark/jars/bcprov-jdk15on-1.70.jar https://repo1.maven.org/mave
     curl -o /opt/spark/jars/bcpkix-jdk15on-1.70.jar https://repo1.maven.org/maven2/org/bouncycastle/bcpkix-jdk15on/1.70/bcpkix-jdk15on-1.70.jar && \
     curl -o /opt/spark/jars/hadoop-aws-3.3.4.jar https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.4/hadoop-aws-3.3.4.jar && \
     curl -o /opt/spark/jars/aws-java-sdk-bundle-1.12.723.jar https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.12.723/aws-java-sdk-bundle-1.12.723.jar && \
-    curl -o /opt/spark/jars/postgresql-42.7.3.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.3/postgresql-42.7.3.jar
+    curl -o /opt/spark/jars/postgresql-42.7.3.jar https://repo1.maven.org/maven2/org/postgresql/postgresql/42.7.3/postgresql-42.7.3.jar && \
+    curl -o /opt/spark/jars/gcs-connector-3.0.3-shaded.jar https://repo1.maven.org/maven2/com/google/cloud/bigdataoss/gcs-connector/3.0.3/gcs-connector-3.0.3-shaded.jar
 
 USER root
 

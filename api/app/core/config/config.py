@@ -48,6 +48,13 @@ class S3Config(BaseSettings):
     s3_bucket_name: str = 'test-bucket'
 
 
+class GCSConfig(BaseSettings):
+    gcs_project_id: str = ''
+    gcs_bucket_name: str = 'test-bucket'
+    google_application_credentials: Optional[str] = None  # None = Workload Identity / ADC
+    gcs_k8s_secret_name: str = 'gcs-storage-auth'
+
+
 class SparkConfig(BaseSettings):
     spark_image: str = 'radicalbit/radicalbit-spark-py:latest'
     spark_image_pull_policy: str = 'IfNotPresent'
@@ -139,6 +146,8 @@ class AppConfig(BaseSettings):
     file_upload_config: FileUploadConfig = FileUploadConfig()
     kubernetes_config: KubernetesConfig = KubernetesConfig()
     s3_config: S3Config = S3Config()
+    gcs_config: GCSConfig = GCSConfig()
+    storage_backend: str = 'minio'  # s3 | minio | gcs
     spark_config: SparkConfig = SparkConfig()
     clickhouse_config: ClickHouseConfig = ClickHouseConfig()
 
@@ -150,14 +159,10 @@ def get_config():
 
 def create_secrets():
     config = get_config()
-    s3_config = config.s3_config
     db_config = config.db_config
 
-    return {
-        'AWS_ACCESS_KEY_ID': s3_config.aws_access_key_id,
-        'AWS_SECRET_ACCESS_KEY': s3_config.aws_secret_access_key,
-        'AWS_REGION': s3_config.aws_region,
-        'S3_ENDPOINT_URL': s3_config.s3_endpoint_url,
+    db_secrets = {
+        'STORAGE_BACKEND': config.storage_backend,
         'POSTGRES_URL': f'jdbc:postgresql://{db_config.db_host}:{db_config.db_port}/{db_config.db_name}',
         'POSTGRES_DB': db_config.db_name,
         'POSTGRES_HOST': db_config.db_host,
@@ -166,3 +171,24 @@ def create_secrets():
         'POSTGRES_PASSWORD': db_config.db_pwd,
         'POSTGRES_SCHEMA': db_config.db_schema,
     }
+
+    if config.storage_backend == 'gcs':
+        gcs_config = config.gcs_config
+        storage_secrets = {
+            'GCS_PROJECT_ID': gcs_config.gcs_project_id,
+            'GCS_BUCKET_NAME': gcs_config.gcs_bucket_name,
+        }
+        if gcs_config.google_application_credentials:
+            storage_secrets['GOOGLE_APPLICATION_CREDENTIALS'] = (
+                gcs_config.google_application_credentials
+            )
+    else:
+        s3_config = config.s3_config
+        storage_secrets = {
+            'AWS_ACCESS_KEY_ID': s3_config.aws_access_key_id,
+            'AWS_SECRET_ACCESS_KEY': s3_config.aws_secret_access_key,
+            'AWS_REGION': s3_config.aws_region,
+            'S3_ENDPOINT_URL': s3_config.s3_endpoint_url,
+        }
+
+    return {**db_secrets, **storage_secrets}

@@ -3,7 +3,6 @@ import logging
 from logging.config import dictConfig
 
 import boto3
-from botocore.config import Config as BotoConfig
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from spark_on_k8s.client import SparkOnK8S
@@ -61,6 +60,7 @@ from app.routes.upload_dataset_route import UploadDatasetRoute
 from app.services.api_key_security import ApiKeySecurity
 from app.services.api_key_service import ApiKeyService
 from app.services.file_service import FileService
+from app.services.storage_client import GCSStorageClient, S3StorageClient
 from app.services.metrics_service import MetricsService
 from app.services.model_service import ModelService
 from app.services.otel_service import OtelService
@@ -104,35 +104,29 @@ model_service = ModelService(
     current_dataset_dao=current_dataset_dao,
     completion_dataset_dao=completion_dataset_dao,
 )
-s3_config = get_config().s3_config
+_config = get_config()
 
-gcs_compatible_config = (
-    BotoConfig(
-        s3={'payload_signing_enabled': False},
-        signature_version='s3v4',
-        request_checksum_calculation='when_required',
-        response_checksum_validation='when_required',
-    )
-    if s3_config.s3_endpoint_url
-    and 'storage.googleapis.com' in (s3_config.s3_endpoint_url or '')
-    else None
-)
-
-if s3_config.s3_endpoint_url is not None:
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=s3_config.aws_access_key_id,
-        aws_secret_access_key=s3_config.aws_secret_access_key,
-        region_name=s3_config.aws_region,
-        endpoint_url=s3_config.s3_endpoint_url,
-        config=gcs_compatible_config,
-    )
+if _config.storage_backend == 'gcs':
+    storage_client = GCSStorageClient(gcs_config=_config.gcs_config)
 else:
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=s3_config.aws_access_key_id,
-        aws_secret_access_key=s3_config.aws_secret_access_key,
-        region_name=s3_config.aws_region,
+    s3_config = _config.s3_config
+    if s3_config.s3_endpoint_url is not None:
+        _boto_client = boto3.client(
+            's3',
+            aws_access_key_id=s3_config.aws_access_key_id,
+            aws_secret_access_key=s3_config.aws_secret_access_key,
+            region_name=s3_config.aws_region,
+            endpoint_url=s3_config.s3_endpoint_url,
+        )
+    else:
+        _boto_client = boto3.client(
+            's3',
+            aws_access_key_id=s3_config.aws_access_key_id,
+            aws_secret_access_key=s3_config.aws_secret_access_key,
+            region_name=s3_config.aws_region,
+        )
+    storage_client = S3StorageClient(
+        s3_client=_boto_client, bucket_name=s3_config.s3_bucket_name
     )
 
 file_service = FileService(
@@ -140,7 +134,7 @@ file_service = FileService(
     current_dataset_dao,
     completion_dataset_dao,
     model_service,
-    s3_client,
+    storage_client,
     spark_k8s_client,
 )
 metrics_service = MetricsService(

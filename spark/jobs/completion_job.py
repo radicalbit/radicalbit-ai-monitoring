@@ -4,6 +4,7 @@ import sys
 import uuid
 
 from metrics.completion_metrics import CompletionMetrics
+from utils.storage import configure_storage
 import orjson
 from pyspark.sql import DataFrame, SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
@@ -33,34 +34,8 @@ def main(
 ):
     spark_context = spark_session.sparkContext
 
-    spark_context._jsc.hadoopConfiguration().set(
-        'fs.s3a.access.key', os.getenv('AWS_ACCESS_KEY_ID')
-    )
-    spark_context._jsc.hadoopConfiguration().set(
-        'fs.s3a.secret.key', os.getenv('AWS_SECRET_ACCESS_KEY')
-    )
-    spark_context._jsc.hadoopConfiguration().set(
-        'fs.s3a.endpoint.region', os.getenv('AWS_REGION')
-    )
-    if os.getenv('S3_ENDPOINT_URL'):
-        endpoint = os.getenv('S3_ENDPOINT_URL')
-        spark_context._jsc.hadoopConfiguration().set(
-            'fs.s3a.endpoint', os.getenv('S3_ENDPOINT_URL')
-        )
-        spark_context._jsc.hadoopConfiguration().set('fs.s3a.path.style.access', 'true')
-        if endpoint.startswith('https://'):
-            # We are using deployed MinIO over https
-            spark_context._jsc.hadoopConfiguration().set(
-                'fs.s3a.connection.ssl.enabled', 'true'
-            )
-            spark_context._jsc.hadoopConfiguration().set(
-                'fs.s3a.connection.ssl.cert-check', 'false'
-            )
-        elif endpoint.startswith('http://'):
-            # We are using deployed MinIO over http
-            spark_context._jsc.hadoopConfiguration().set(
-                'fs.s3a.connection.ssl.enabled', 'false'
-            )
+    configure_storage(spark_context)
+
     df = spark_session.read.option('multiline', 'true').json(completion_dataset_path)
     complete_record = compute_metrics(df)
 

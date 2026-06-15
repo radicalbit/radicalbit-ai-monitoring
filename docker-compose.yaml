@@ -36,11 +36,18 @@ services:
       CLICKHOUSE_DB_PWD: "default"
       CLICKHOUSE_DB_NAME: "default"
       CLICKHOUSE_DB_SCHEMA: "default"
+      # --- MinIO (default) ---
+      STORAGE_BACKEND: "minio"
       AWS_ACCESS_KEY_ID: "minio"
       AWS_SECRET_ACCESS_KEY: "minio123"
       AWS_REGION: "us-east-1"
       S3_ENDPOINT_URL: "http://minio:9000"
       S3_BUCKET_NAME: "test-bucket"
+      # --- Google Cloud Storage (native, uncomment and remove MinIO block above) ---
+      # STORAGE_BACKEND: "gcs"
+      # GCS_PROJECT_ID: "your-gcp-project-id"
+      # GCS_BUCKET_NAME: "your-gcs-bucket"
+      # GOOGLE_APPLICATION_CREDENTIALS: "/etc/gcp/gcp.json"  # omit for Workload Identity / ADC
       KUBECONFIG_FILE_PATH: "/opt/kubeconfig/kubeconfig.yaml"
       SPARK_IMAGE: "radicalbit-spark-py:develop"
     depends_on:
@@ -49,8 +56,6 @@ services:
       clickhouse:
         condition: service_healthy
       migrations:
-        condition: service_completed_successfully
-      createbuckets:
         condition: service_completed_successfully
       k3s:
         condition: service_healthy
@@ -106,6 +111,7 @@ services:
         condition: service_healthy
 
   minio:
+    profiles: ["minio"]
     image: minio/minio
     ports:
       - "9090:9000"
@@ -124,6 +130,7 @@ services:
       retries: 2
 
   createbuckets:
+    profiles: ["minio"]
     image: minio/mc
     depends_on:
       minio:
@@ -156,7 +163,7 @@ services:
       "
 
   minio-mirror:
-    profiles: ["init-data"]
+    profiles: ["minio", "init-data"]
     image: minio/mc
     depends_on:
       minio:
